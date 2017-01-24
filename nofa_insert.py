@@ -29,6 +29,7 @@ from nofa_insert_dialog import NOFAInsertDialog
 from dataset_dialog import DatasetDialog
 from project_dialog import ProjectDialog
 from reference_dialog import ReferenceDialog
+from preview_dialog import PreviewDialog
 import os.path
 import psycopg2
 import logging
@@ -228,6 +229,8 @@ class NOFAInsert:
         self.dlg.existingDataset.currentIndexChanged.connect(self.update_dataset)
         self.dlg.existingProject.currentIndexChanged.connect(self.update_project)
 
+        self.dlg.insert_button.clicked.connect(self.preview)
+
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
@@ -305,6 +308,10 @@ class NOFAInsert:
         ################################################################
         self.datadlg.dataset_dialog_button.clicked.connect(self._dataset_button)
 
+
+    def preview(self):
+        self.prwdlg = PreviewDialog()
+        self.prwdlg.show()
 
 
     def _dataset_button(self):
@@ -444,7 +451,7 @@ class NOFAInsert:
             cur.execute(
                 u'SELECT "projectNumber", "projectName", "startYear", "endYear", "projectLeader", '
                 u'"projectMembers", "organisation", "financer", "remarks" '
-                u'FROM nofa."m_project" WHERE "projectNumber" = (%s);', (int(currentproject_number),))
+                u'FROM nofa."m_project" WHERE "projectNumber" = (%s);', (currentproject_number,))
             project = cur.fetchone()
             #QMessageBox.information(None, "DEBUG:", str(project))
 
