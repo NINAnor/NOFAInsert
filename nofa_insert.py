@@ -388,84 +388,86 @@ class NOFAInsert:
 
     def update_dataset(self):
         currentdataset = self.dlg.existingDataset.currentText()
+        if currentdataset != 'None':
 
-        # Get dataset record from NOFA db:
-        cur = self._db_cur()
-        cur.execute(
-            u'SELECT "datasetID", "datasetName", "rightsHolder", "institutionCode", "license", '
-            u'"bibliographicCitation", "datasetComment", "informationWithheld", "dataGeneralizations" '
-            u'FROM nofa."m_dataset" WHERE "datasetName" = (%s);',  (currentdataset,))
-        dataset = cur.fetchone()
+            # Get dataset record from NOFA db:
+            cur = self._db_cur()
+            cur.execute(
+                u'SELECT "datasetID", "datasetName", "rightsHolder", "institutionCode", "license", '
+                u'"bibliographicCitation", "datasetComment", "informationWithheld", "dataGeneralizations" '
+                u'FROM nofa."m_dataset" WHERE "datasetName" = (%s);',  (currentdataset,))
+            dataset = cur.fetchone()
 
-        # Create a python-list from query result
-        dataset_list = dataset
-        #referenceID_list = [p[0] for p in projects]
+            # Create a python-list from query result
+            dataset_list = dataset
+            #referenceID_list = [p[0] for p in projects]
 
-        # Inject sorted python-list for existingProjects into UI
-        #dataset_list.sort()
-        #dataset_list.insert(0, 'None')
-
-
-        self.dataset['dataset_id'] = str(dataset_list[0])
-        self.dataset['dataset_name'] = dataset_list[1]
-        self.dataset['rightsholder'] = dataset_list[2]
-        self.dataset['owner_institution'] = dataset_list[3]
-        self.dataset['license'] = dataset_list[4]
-        self.dataset['citation'] = dataset_list[5]
-        self.dataset['comment'] = dataset_list[6]
-        self.dataset['information'] = dataset_list[7]
-        self.dataset['generalizations'] = dataset_list[8]
+            # Inject sorted python-list for existingProjects into UI
+            #dataset_list.sort()
+            #dataset_list.insert(0, 'None')
 
 
-        self.dlg.display_dataset_1.setText(self.dataset['dataset_name'])
-        self.dlg.display_dataset_1.setWordWrap(True)
-        self.dlg.display_dataset_2.setText(self.dataset['dataset_id'])
-        self.dlg.display_dataset_3.setText(self.dataset['rightsholder'])
-        self.dlg.display_dataset_4.setText(self.dataset['owner_institution'])
-        self.dlg.display_dataset_5.setText(self.dataset['license'])
-        self.dlg.display_dataset_6.setText(self.dataset['citation'])
-        self.dlg.display_dataset_6.setWordWrap(True)
-        self.dlg.display_dataset_7.setText(self.dataset['comment'])
-        self.dlg.display_dataset_7.setWordWrap(True)
-        self.dlg.display_dataset_8.setText(self.dataset['information'])
-        self.dlg.display_dataset_8.setWordWrap(True)
-        self.dlg.display_dataset_9.setText(self.dataset['generalizations'])
-        self.dlg.display_dataset_9.setWordWrap(True)
-        #QMessageBox.information(None, "DEBUG:", str(dataset_list))
+            self.dataset['dataset_id'] = str(dataset_list[0])
+            self.dataset['dataset_name'] = dataset_list[1]
+            self.dataset['rightsholder'] = dataset_list[2]
+            self.dataset['owner_institution'] = dataset_list[3]
+            self.dataset['license'] = dataset_list[4]
+            self.dataset['citation'] = dataset_list[5]
+            self.dataset['comment'] = dataset_list[6]
+            self.dataset['information'] = dataset_list[7]
+            self.dataset['generalizations'] = dataset_list[8]
+
+
+            self.dlg.display_dataset_1.setText(self.dataset['dataset_name'])
+            self.dlg.display_dataset_1.setWordWrap(True)
+            self.dlg.display_dataset_2.setText(self.dataset['dataset_id'])
+            self.dlg.display_dataset_3.setText(self.dataset['rightsholder'])
+            self.dlg.display_dataset_4.setText(self.dataset['owner_institution'])
+            self.dlg.display_dataset_5.setText(self.dataset['license'])
+            self.dlg.display_dataset_6.setText(self.dataset['citation'])
+            self.dlg.display_dataset_6.setWordWrap(True)
+            self.dlg.display_dataset_7.setText(self.dataset['comment'])
+            self.dlg.display_dataset_7.setWordWrap(True)
+            self.dlg.display_dataset_8.setText(self.dataset['information'])
+            self.dlg.display_dataset_8.setWordWrap(True)
+            self.dlg.display_dataset_9.setText(self.dataset['generalizations'])
+            self.dlg.display_dataset_9.setWordWrap(True)
+            #QMessageBox.information(None, "DEBUG:", str(dataset_list))
 
     def update_project(self):
         currentproject = self.dlg.existingProject.currentText()
-        currentproject_name = currentproject.split(':')[0]
-        #QMessageBox.information(None, "DEBUG:", str(currentproject_name))
+        if currentproject != 'None':
+            currentproject_number = currentproject.split(':')[0]
+            #QMessageBox.information(None, "DEBUG:", str(currentproject_number))
 
-        cur = self._db_cur()
-        cur.execute(
-            u'SELECT "projectNumber", "projectName", "startYear", "endYear", "projectLeader", '
-            u'"projectMembers", "organisation", "financer", "remarks" '
-            u'FROM nofa."m_project" WHERE "projectNumber" = (%s);', (currentproject_name,))
-        project = cur.fetchone()
-        QMessageBox.information(None, "DEBUG:", str(project))
+            cur = self._db_cur()
+            cur.execute(
+                u'SELECT "projectNumber", "projectName", "startYear", "endYear", "projectLeader", '
+                u'"projectMembers", "organisation", "financer", "remarks" '
+                u'FROM nofa."m_project" WHERE "projectNumber" = (%s);', (int(currentproject_number),))
+            project = cur.fetchone()
+            #QMessageBox.information(None, "DEBUG:", str(project))
 
-        # Create a python-list from query result
+            # Create a python-list from query result
 
-        self.project['project_number'] = str(project[0])
-        self.project['project_name'] = project[1]
-        self.project['start_year'] = str(project[2])
-        self.project['end_year'] = str(project[3])
-        self.project['project_leader'] = project[4]
-        self.project['members'] = project[5]
-        self.project['organisation'] = project[6]
-        self.project['financer'] = project[7]
-        self.project['project_remarks'] = project[8]
+            self.project['project_number'] = str(project[0])
+            self.project['project_name'] = project[1]
+            self.project['start_year'] = str(project[2])
+            self.project['end_year'] = str(project[3])
+            self.project['project_leader'] = project[4]
+            self.project['members'] = project[5]
+            self.project['organisation'] = project[6]
+            self.project['financer'] = project[7]
+            self.project['project_remarks'] = project[8]
 
-        self.dlg.listview_project.clear()
-        for key, value in self.project.iteritems():
-            if value is not None:
-                prjitem = QListWidgetItem(key + ':    ' + value)
-            else:
-                prjitem = QListWidgetItem(key + ':    None')
+            self.dlg.listview_project.clear()
+            for key, value in self.project.iteritems():
+                if value is not None:
+                    prjitem = QListWidgetItem(key + ':    ' + value)
+                else:
+                    prjitem = QListWidgetItem(key + ':    None')
 
-            self.dlg.listview_project.addItem(prjitem)
+                self.dlg.listview_project.addItem(prjitem)
 
 
     def unload(self):
