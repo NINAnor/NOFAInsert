@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/NOFAInsert" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
