@@ -395,7 +395,7 @@ class NOFAInsert:
 
     def update_dataset(self):
         currentdataset = self.dlg.existingDataset.currentText()
-        if currentdataset != 'None':
+        if currentdataset != 'None' and  currentdataset !='' and currentdataset!= None:
 
             # Get dataset record from NOFA db:
             cur = self._db_cur()
@@ -424,7 +424,16 @@ class NOFAInsert:
             self.dataset['information'] = dataset_list[7]
             self.dataset['generalizations'] = dataset_list[8]
 
+            self.dlg.listview_dataset.clear()
+            for key, value in self.dataset.iteritems():
+                if value is not None:
+                    dstitem = QListWidgetItem(key + ':    ' + value)
 
+                    self.dlg.listview_dataset.addItem(dstitem)
+
+            self.dlg.metadata.setItemText(1, 'Dataset - ' + self.dataset['dataset_name'])
+
+            '''
             self.dlg.display_dataset_1.setText(self.dataset['dataset_name'])
             self.dlg.display_dataset_1.setWordWrap(True)
             self.dlg.display_dataset_2.setText(self.dataset['dataset_id'])
@@ -439,12 +448,16 @@ class NOFAInsert:
             self.dlg.display_dataset_8.setWordWrap(True)
             self.dlg.display_dataset_9.setText(self.dataset['generalizations'])
             self.dlg.display_dataset_9.setWordWrap(True)
+            '''
             #QMessageBox.information(None, "DEBUG:", str(dataset_list))
 
     def update_project(self):
+        #QMessageBox.information(None, "DEBUG:", str(self.project_list))
+
         currentproject = self.dlg.existingProject.currentText()
-        if currentproject != 'None':
-            currentproject_number = currentproject.split(':')[0]
+
+        currentproject_number = currentproject.split(':')[0]
+        if currentproject_number != 'None' and currentproject_number != '':
             #QMessageBox.information(None, "DEBUG:", str(currentproject_number))
 
             cur = self._db_cur()
@@ -455,7 +468,7 @@ class NOFAInsert:
             project = cur.fetchone()
             #QMessageBox.information(None, "DEBUG:", str(project))
 
-            # Create a python-list from query result
+        # Create a python-list from query result
 
             self.project['project_number'] = str(project[0])
             self.project['project_name'] = project[1]
@@ -475,6 +488,8 @@ class NOFAInsert:
                     prjitem = QListWidgetItem(key + ':    None')
 
                 self.dlg.listview_project.addItem(prjitem)
+
+            self.dlg.metadata.setItemText(2, 'Project - ' + self.project['project_name'])
 
 
     def unload(self):
@@ -569,14 +584,15 @@ class NOFAInsert:
         projects = cur.fetchall()
 
         # Create a python-list from query result
-        project_list = [u'{0}: {1}'.format(p[1], p[2]) for p in projects]
+        self.project_list = [u'{0}: {1}'.format(p[1], p[2]) for p in projects]
 
         # Inject sorted python-list for existingProjects into UI
-        project_list.sort()
-        project_list.insert(0, 'None')
+        self.project_list.sort()
+        self.project_list.insert(0, 'None')
         self.dlg.existingProject.clear()
-        self.dlg.existingProject.addItems(project_list)
-        self.dlg.existingProject.setCurrentIndex(project_list.index("None"))
+        self.dlg.existingProject.addItems(self.project_list)
+        if self.project['project_name'] == 'None':
+            self.dlg.existingProject.setCurrentIndex(self.project_list.index("None"))
 
         #########################################
 
@@ -779,7 +795,7 @@ class NOFAInsert:
     def populate_dataset(self):
 
         self.dataset['dataset_name'] = "Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text"
-
+        '''
         self.dlg.display_dataset_1.setText(self.dataset['dataset_name'])
         self.dlg.display_dataset_1.setWordWrap(True)
         self.dlg.display_dataset_2.setText(self.dataset['dataset_id'])
@@ -790,6 +806,12 @@ class NOFAInsert:
         self.dlg.display_dataset_7.setText(self.dataset['comment'])
         self.dlg.display_dataset_8.setText(self.dataset['information'])
         self.dlg.display_dataset_9.setText(self.dataset['generalizations'])
+        '''
+        for key, value in self.dataset.iteritems():
+            if value is not None:
+                dstitem = QListWidgetItem(key + ':    ' + value)
+
+                self.dlg.listview_dataset.addItem(dstitem)
 
 
     def populate_project(self):
@@ -802,13 +824,18 @@ class NOFAInsert:
         #self.dlg.listview_project.setStyleSheet("QListWidget::item { border: 0.5px solid black }")
 
         for key, value in self.project.iteritems():
+            if value is not None:
+                prjitem = QListWidgetItem(key + ':    ' + value)
 
-            prjitem = QListWidgetItem(key + ':    ' + value)
-
-            self.dlg.listview_project.addItem(prjitem)
+                self.dlg.listview_project.addItem(prjitem)
 
     def populate_reference(self):
-        pass
+
+        for key, value in self.reference.iteritems():
+            if value is not None:
+                rfritem = QListWidgetItem(key + ':    ' + str(value))
+
+                self.dlg.listview_reference.addItem(rfritem)
 
     def populate_information(self):
 

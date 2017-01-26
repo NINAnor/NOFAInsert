@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1094</width>
-    <height>820</height>
+    <height>640</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>1091</width>
-     <height>781</height>
+     <height>681</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -84,13 +84,13 @@
       </layout>
      </widget>
     </widget>
-    <widget class="QToolBox" name="toolBox">
+    <widget class="QToolBox" name="metadata">
      <property name="geometry">
       <rect>
        <x>0</x>
        <y>90</y>
        <width>411</width>
-       <height>661</height>
+       <height>521</height>
       </rect>
      </property>
      <widget class="QWidget" name="toolBoxPage1">
@@ -99,7 +99,7 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>553</height>
+        <height>413</height>
        </rect>
       </property>
       <attribute name="label">
@@ -136,7 +136,7 @@
           <x>10</x>
           <y>20</y>
           <width>361</width>
-          <height>511</height>
+          <height>381</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout">
@@ -290,94 +290,17 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>553</height>
+        <height>413</height>
        </rect>
       </property>
       <attribute name="label">
-       <string>Metadata - Dataset</string>
+       <string>Dataset - None</string>
       </attribute>
-      <widget class="QLabel" name="label_dataset_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>70</y>
-         <width>101</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>datasetID:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_dataset_3">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>110</y>
-         <width>81</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>rightsHolder:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_dataset_4">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>150</y>
-         <width>101</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Owner Institution :</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_dataset_1">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>-1</y>
-         <width>71</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>datasetName:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_dataset_5">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>190</y>
-         <width>101</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>license:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_edit_dataset">
        <property name="geometry">
         <rect>
          <x>130</x>
-         <y>530</y>
+         <y>388</y>
          <width>101</width>
          <height>21</height>
         </rect>
@@ -390,7 +313,7 @@
        <property name="geometry">
         <rect>
          <x>240</x>
-         <y>532</y>
+         <y>390</y>
          <width>151</width>
          <height>21</height>
         </rect>
@@ -399,338 +322,11 @@
         <string>Add a dataset</string>
        </property>
       </widget>
-      <widget class="QLabel" name="display_dataset_1">
-       <property name="geometry">
-        <rect>
-         <x>170</x>
-         <y>0</y>
-         <width>231</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>None</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_dataset_6">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>229</y>
-         <width>101</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>citation:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_dataset_7">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>269</y>
-         <width>101</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>comment:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_dataset_8">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>339</y>
-         <width>101</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>information:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_dataset_9">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>409</y>
-         <width>101</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>generalizations:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-      <widget class="QLabel" name="display_dataset_2">
-       <property name="geometry">
-        <rect>
-         <x>170</x>
-         <y>70</y>
-         <width>231</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>None</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="display_dataset_3">
-       <property name="geometry">
-        <rect>
-         <x>170</x>
-         <y>110</y>
-         <width>231</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>None</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="display_dataset_4">
-       <property name="geometry">
-        <rect>
-         <x>170</x>
-         <y>150</y>
-         <width>231</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>None</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="display_dataset_5">
-       <property name="geometry">
-        <rect>
-         <x>170</x>
-         <y>190</y>
-         <width>231</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>None</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="display_dataset_6">
-       <property name="geometry">
-        <rect>
-         <x>170</x>
-         <y>230</y>
-         <width>231</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>None</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="display_dataset_7">
-       <property name="geometry">
-        <rect>
-         <x>170</x>
-         <y>270</y>
-         <width>231</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>None</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="display_dataset_8">
-       <property name="geometry">
-        <rect>
-         <x>170</x>
-         <y>340</y>
-         <width>231</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>None</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="display_dataset_9">
-       <property name="geometry">
-        <rect>
-         <x>170</x>
-         <y>410</y>
-         <width>231</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>None</string>
-       </property>
-      </widget>
-      <widget class="QFrame" name="frame">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>0</y>
-         <width>391</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-      </widget>
-      <widget class="QFrame" name="frame_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>70</y>
-         <width>391</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <zorder>display_dataset_1</zorder>
-      </widget>
-      <widget class="QFrame" name="frame_7">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>270</y>
-         <width>391</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-      </widget>
-      <widget class="QFrame" name="frame_5">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>190</y>
-         <width>391</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-      </widget>
-      <widget class="QFrame" name="frame_4">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>150</y>
-         <width>391</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-      </widget>
-      <widget class="QFrame" name="frame_3">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>110</y>
-         <width>391</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-      </widget>
-      <widget class="QFrame" name="frame_6">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>230</y>
-         <width>391</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <zorder>display_dataset_6</zorder>
-      </widget>
-      <widget class="QFrame" name="frame_8">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>340</y>
-         <width>391</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-      </widget>
-      <widget class="QFrame" name="frame_9">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>410</y>
-         <width>391</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_choose_dataset">
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>500</y>
+         <y>358</y>
          <width>141</width>
          <height>18</height>
         </rect>
@@ -746,44 +342,22 @@
        <property name="geometry">
         <rect>
          <x>150</x>
-         <y>500</y>
+         <y>358</y>
          <width>251</width>
          <height>21</height>
         </rect>
        </property>
       </widget>
-      <zorder>label_edit_dataset</zorder>
-      <zorder>editDatasetButton</zorder>
-      <zorder>frame</zorder>
-      <zorder>display_dataset_1</zorder>
-      <zorder>label_dataset_1</zorder>
-      <zorder>frame_2</zorder>
-      <zorder>frame_7</zorder>
-      <zorder>frame_5</zorder>
-      <zorder>frame_4</zorder>
-      <zorder>frame_3</zorder>
-      <zorder>frame_6</zorder>
-      <zorder>display_dataset_4</zorder>
-      <zorder>display_dataset_3</zorder>
-      <zorder>display_dataset_2</zorder>
-      <zorder>label_dataset_5</zorder>
-      <zorder>display_dataset_5</zorder>
-      <zorder>display_dataset_7</zorder>
-      <zorder>label_dataset_4</zorder>
-      <zorder>label_dataset_2</zorder>
-      <zorder>label_dataset_3</zorder>
-      <zorder>label_dataset_6</zorder>
-      <zorder>display_dataset_6</zorder>
-      <zorder>label_dataset_7</zorder>
-      <zorder>frame_8</zorder>
-      <zorder>frame_9</zorder>
-      <zorder>label_dataset_9</zorder>
-      <zorder>frame_9</zorder>
-      <zorder>display_dataset_9</zorder>
-      <zorder>display_dataset_8</zorder>
-      <zorder>label_dataset_8</zorder>
-      <zorder>label_choose_dataset</zorder>
-      <zorder>existingDataset</zorder>
+      <widget class="QListWidget" name="listview_dataset">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>391</width>
+         <height>341</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="toolBoxPage3">
       <property name="geometry">
@@ -791,17 +365,17 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>553</height>
+        <height>413</height>
        </rect>
       </property>
       <attribute name="label">
-       <string>Metadata - Project</string>
+       <string>Project - None</string>
       </attribute>
       <widget class="QPushButton" name="editProjectButton">
        <property name="geometry">
         <rect>
          <x>220</x>
-         <y>520</y>
+         <y>370</y>
          <width>151</width>
          <height>21</height>
         </rect>
@@ -814,7 +388,7 @@
        <property name="geometry">
         <rect>
          <x>60</x>
-         <y>520</y>
+         <y>370</y>
          <width>161</width>
          <height>21</height>
         </rect>
@@ -826,10 +400,10 @@
       <widget class="QListWidget" name="listview_project">
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>10</x>
          <y>10</y>
-         <width>371</width>
-         <height>451</height>
+         <width>391</width>
+         <height>321</height>
         </rect>
        </property>
       </widget>
@@ -837,7 +411,7 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>489</y>
+         <y>339</y>
          <width>121</width>
          <height>21</height>
         </rect>
@@ -853,7 +427,7 @@
        <property name="geometry">
         <rect>
          <x>150</x>
-         <y>490</y>
+         <y>340</y>
          <width>236</width>
          <height>18</height>
         </rect>
@@ -866,19 +440,19 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>553</height>
+        <height>413</height>
        </rect>
       </property>
       <attribute name="label">
-       <string>Metadata - Reference</string>
+       <string>Reference - None</string>
       </attribute>
       <widget class="QLabel" name="label_4">
        <property name="geometry">
         <rect>
-         <x>30</x>
-         <y>499</y>
+         <x>40</x>
+         <y>360</y>
          <width>181</width>
-         <height>31</height>
+         <height>21</height>
         </rect>
        </property>
        <property name="text">
@@ -888,14 +462,50 @@
       <widget class="QPushButton" name="editReferenceButton">
        <property name="geometry">
         <rect>
-         <x>220</x>
-         <y>500</y>
+         <x>230</x>
+         <y>360</y>
          <width>141</width>
-         <height>31</height>
+         <height>21</height>
         </rect>
        </property>
        <property name="text">
         <string>Edit Reference</string>
+       </property>
+      </widget>
+      <widget class="QListWidget" name="listview_reference">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>0</y>
+         <width>391</width>
+         <height>321</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_choose_project_2">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>330</y>
+         <width>121</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Choose existing project</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="existingReference">
+       <property name="geometry">
+        <rect>
+         <x>180</x>
+         <y>330</y>
+         <width>201</width>
+         <height>21</height>
+        </rect>
        </property>
       </widget>
      </widget>
@@ -906,7 +516,7 @@
        <x>420</x>
        <y>90</y>
        <width>231</width>
-       <height>661</height>
+       <height>521</height>
       </rect>
      </property>
      <property name="font">
@@ -928,7 +538,7 @@
         <x>10</x>
         <y>20</y>
         <width>211</width>
-        <height>631</height>
+        <height>491</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -950,7 +560,7 @@
        <x>660</x>
        <y>0</y>
        <width>421</width>
-       <height>741</height>
+       <height>551</height>
       </rect>
      </property>
      <property name="font">
@@ -972,7 +582,7 @@
         <x>10</x>
         <y>20</y>
         <width>401</width>
-        <height>511</height>
+        <height>521</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_8">
@@ -1155,10 +765,24 @@
       </layout>
      </widget>
     </widget>
+    <widget class="QPushButton" name="insert_button">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>560</y>
+       <width>421</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Insert to NOFA</string>
+     </property>
+    </widget>
     <zorder>location</zorder>
     <zorder>reference_6</zorder>
     <zorder>reference_4</zorder>
-    <zorder>toolBox</zorder>
+    <zorder>metadata</zorder>
+    <zorder>insert_button</zorder>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
@@ -1203,19 +827,6 @@
      </property>
     </widget>
    </widget>
-  </widget>
-  <widget class="QPushButton" name="insert_button">
-   <property name="geometry">
-    <rect>
-     <x>854</x>
-     <y>790</y>
-     <width>221</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Insert to NOFA</string>
-   </property>
   </widget>
  </widget>
  <resources/>
