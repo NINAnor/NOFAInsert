@@ -130,15 +130,15 @@ class NOFAInsert:
                         'financer': 'None',
                         'project_remarks': 'None'
                         }
-        self.reference = {'existing_reference':'None',
+        self.reference = {'reference_id': 'None',
                           'doi': 'None',
                           'authors': 'None',
                           'reference_type': 'None',
-                          'year': self.year,
+                          'year': str(self.year),
                           'title': 'None',
                           'journal': 'None',
                           'volume': 'None',
-                          'date': self.today,
+                          'date': str(self.today),
                           'issn': 'None',
                           'isbn': 'None',
                           'page': 'None'
@@ -228,6 +228,7 @@ class NOFAInsert:
 
         self.dlg.existingDataset.currentIndexChanged.connect(self.update_dataset)
         self.dlg.existingProject.currentIndexChanged.connect(self.update_project)
+        self.dlg.existingReference.currentIndexChanged.connect(self.update_reference)
 
         self.dlg.insert_button.clicked.connect(self.preview)
 
@@ -351,23 +352,6 @@ class NOFAInsert:
         self.rfrdlg = ReferenceDialog()
         self.rfrdlg.show()
 
-
-        # Get existingReferences from database
-        cur = self._db_cur()
-        cur.execute(u'SELECT "referenceID", "source", "titel" FROM nofa."m_reference";')
-        references = cur.fetchall()
-
-        # Create a python-list from query result
-        reference_list = [u'{0} {1}'.format(r[1], r[2]) for r in references]
-        referenceID_list = [r[0] for r in references]
-
-        # Inject sorted python-list for existingProjects into UI
-        reference_list.sort()
-        reference_list.insert(0, 'None')
-        self.rfrdlg.existingReference.clear()
-        self.rfrdlg.existingReference.addItems(reference_list)
-        self.rfrdlg.existingReference.setCurrentIndex(reference_list.index("None"))
-
         ###########################################################################
 
 
@@ -424,14 +408,22 @@ class NOFAInsert:
             self.dataset['information'] = dataset_list[7]
             self.dataset['generalizations'] = dataset_list[8]
 
+            #QMessageBox.information(None, "DEBUG:", str(self.dataset))
+
             self.dlg.listview_dataset.clear()
             for key, value in self.dataset.iteritems():
                 if value is not None:
                     dstitem = QListWidgetItem(key + ':    ' + value)
+                else:
+                    dstitem = QListWidgetItem(key + ':    None')
 
-                    self.dlg.listview_dataset.addItem(dstitem)
+                self.dlg.listview_dataset.addItem(dstitem)
 
             self.dlg.metadata.setItemText(1, 'Dataset - ' + self.dataset['dataset_name'])
+
+        elif currentdataset == 'None':
+            self.dlg.listview_dataset.clear()
+            self.dlg.metadata.setItemText(1, 'Dataset - None')
 
             '''
             self.dlg.display_dataset_1.setText(self.dataset['dataset_name'])
@@ -491,6 +483,60 @@ class NOFAInsert:
 
             self.dlg.metadata.setItemText(2, 'Project - ' + self.project['project_name'])
 
+        elif currentproject == 'None':
+            self.dlg.listview_project.clear()
+            self.dlg.metadata.setItemText(2, 'Project - None')
+
+    def update_reference(self):
+
+        currentref= self.dlg.existingReference.currentText()
+        #QMessageBox.information(None, "DEBUG:", str(currentref))
+
+        currentref_number = currentref.split(':')[0]
+        #QMessageBox.information(None, "DEBUG:", str(currentproject_number))
+
+        if currentref_number != 'None' and currentref_number != '' and currentref_number != None:
+            cur = self._db_cur()
+            cur.execute(
+                u'SELECT "referenceID", "doi", "author", "referenceType", "year", '
+                u'"titel", "journalName", "volume", "date", "issn", "isbn", "page" '
+                u'FROM nofa."m_reference" WHERE "referenceID" = (%s);', (currentref_number,))
+            ref = cur.fetchone()
+            #QMessageBox.information(None, "DEBUG:", str(project))
+
+
+            # Create a python-list from query result
+
+            self.reference['reference_id'] = str(ref[0])
+            self.reference['doi'] = str(ref[1])
+            self.reference['authors'] = str(ref[2])
+            self.reference['reference_type'] = str(ref[3])
+            self.reference['year'] = str(ref[4])
+            self.reference['title'] = str(ref[5])
+            self.reference['journal'] = str(ref[6])
+            self.reference['volume'] = str(ref[7])
+            self.reference['date'] = str(ref[8])
+            self.reference['issn'] = str(ref[9])
+            self.reference['isbn'] = str(ref[10])
+            self.reference['page'] = str(ref[11])
+
+            self.dlg.listview_reference.clear()
+            for key, value in self.reference.iteritems():
+                if value is not None:
+                    refitem = QListWidgetItem(key + ':    ' + value)
+                else:
+                    refitem = QListWidgetItem(key + ':    None')
+
+                self.dlg.listview_reference.addItem(refitem)
+
+            # Title should have constraint NOT NULL. Or, we should choose another option for visualizing
+            if self.reference['title'] is not None and self.reference['title'] != 'None':
+                self.dlg.metadata.setItemText(3, 'Reference - ' + self.reference['title'])
+            else:
+                self.dlg.metadata.setItemText(3, 'Reference - title not available')
+        elif currentref == 'None':
+            self.dlg.listview_reference.clear()
+            self.dlg.metadata.setItemText(3, 'Reference - None')
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -593,6 +639,26 @@ class NOFAInsert:
         self.dlg.existingProject.addItems(self.project_list)
         if self.project['project_name'] == 'None':
             self.dlg.existingProject.setCurrentIndex(self.project_list.index("None"))
+
+        #########################################
+
+        # Get existingReference from database
+        cur = self._db_cur()
+
+        cur.execute(u'SELECT "referenceID", "source", "titel" FROM nofa."m_reference";')
+        references = cur.fetchall()
+
+        # Create a python-list from query result
+
+        reference_list = [u'{0}: {1}'.format(r[0], r[1]) for r in references]
+        referenceID_list = [r[0] for r in references]
+
+        # Inject sorted python-list for existingProjects into UI
+        reference_list.sort()
+        reference_list.insert(0, 'None')
+        self.dlg.existingReference.clear()
+        self.dlg.existingReference.addItems(reference_list)
+        self.dlg.existingReference.setCurrentIndex(reference_list.index("None"))
 
         #########################################
 
