@@ -232,6 +232,9 @@ class NOFAInsert:
 
         self.dlg.insert_button.clicked.connect(self.preview)
 
+        # set the occurrenceStatus checkbox to True, as a default initial status
+        self.dlg.occurrenceStatus.setChecked(True)
+
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
@@ -311,6 +314,40 @@ class NOFAInsert:
 
 
     def preview(self):
+
+        # Get occurrence information
+        self.occurrence['taxon'] = self.dlg.taxonID.currentText()
+        self.occurrence['ecotype'] = self.dlg.ecotypeID.currentText()
+        self.occurrence['quantity'] = self.dlg.organismQuantityID.currentText()
+        if self.dlg.occurrenceStatus.isChecked():
+            self.occurrence['status'] = True
+        else:
+            self.occurrence['status'] = False
+
+        self.occurrence['oc_remarks'] = self.dlg.occurrenceRemarks.text()
+        self.occurrence['est_means'] = self.dlg.establishmentMeans.currentText()
+        self.occurrence['est_remarks'] = self.dlg.establishmentRemarks.text()
+        self.occurrence['spawn_con'] = self.dlg.spawningCondition.currentText()
+        self.occurrence['spawn_loc'] = self.dlg.spawningLocation.currentText()
+        self.occurrence['verified_by'] = self.dlg.verifiedBy.text()
+        self.occurrence['verified_date'] = str(self.dlg.verifiedDate.date())
+        self.occurrence['yearprecision_remarks'] = self.dlg.yearPrecisionRemarks.text()
+
+        #Get Event Data
+
+        self.event['protocol'] = self.dlg.samplingProtocol.currentText()
+        self.event['size_value'] = self.dlg.sampleSizeValue.text()
+        self.event['size_unit'] = self.dlg.sampleSizeUnit.currentText()
+        self.event['effort'] = self.dlg.samplingEffort.text()
+        self.event['protocol_remarks'] = self.dlg.samplingProtocolRemarks.text()
+        self.event['date_start'] = str(self.dlg.dateStart.date())
+        self.event['date_end'] = str(self.dlg.dateEnd.date())
+        self.event['recorded_by'] = self.dlg.recordedBy_e.text()
+        self.event['event_remarks'] = self.dlg.eventRemarks.text()
+        self.event['reliability'] = self.dlg.reliability.currentText()
+
+
+        #QMessageBox.information(None, "DEBUG:", str(self.event))
         self.prwdlg = PreviewDialog()
         self.prwdlg.show()
 
