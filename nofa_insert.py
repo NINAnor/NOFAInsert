@@ -143,7 +143,7 @@ class NOFAInsert:
                           'isbn': 'None',
                           'page': 'None'
                           }
-
+        '''
         # collect the multiple data and metadata containers into a single object, a dictionary of dictionaries/lists.
         self.container = {'locations': self.locations,
                           'occurrence': self.occurrence,
@@ -152,7 +152,7 @@ class NOFAInsert:
                           'dataset': self.dataset,
                           'project': self.project,
                           'reference': self.reference}
-
+        '''
         # noinspection PyMethodMayBeStatic
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -330,7 +330,7 @@ class NOFAInsert:
         self.occurrence['spawn_con'] = self.dlg.spawningCondition.currentText()
         self.occurrence['spawn_loc'] = self.dlg.spawningLocation.currentText()
         self.occurrence['verified_by'] = self.dlg.verifiedBy.text()
-        self.occurrence['verified_date'] = str(self.dlg.verifiedDate.date())
+        self.occurrence['verified_date'] = self.dlg.verifiedDate.date().toString()
         self.occurrence['yearprecision_remarks'] = self.dlg.yearPrecisionRemarks.text()
 
         #Get Event Data
@@ -340,16 +340,45 @@ class NOFAInsert:
         self.event['size_unit'] = self.dlg.sampleSizeUnit.currentText()
         self.event['effort'] = self.dlg.samplingEffort.text()
         self.event['protocol_remarks'] = self.dlg.samplingProtocolRemarks.text()
-        self.event['date_start'] = str(self.dlg.dateStart.date())
-        self.event['date_end'] = str(self.dlg.dateEnd.date())
+        self.event['date_start'] = self.dlg.dateStart.date().toString()
+        self.event['date_end'] = self.dlg.dateEnd.date().toString()
         self.event['recorded_by'] = self.dlg.recordedBy_e.text()
         self.event['event_remarks'] = self.dlg.eventRemarks.text()
         self.event['reliability'] = self.dlg.reliability.currentText()
 
 
-        #QMessageBox.information(None, "DEBUG:", str(self.event))
+        QMessageBox.information(None, "DEBUG:", str(self.event))
         self.prwdlg = PreviewDialog()
         self.prwdlg.show()
+
+        self.container = [self.occurrence,
+                          self.event,
+                          self.dataset,
+                          self.project,
+                          self.reference]
+
+        listWidget_list = [
+                           self.prwdlg.listWidget_2,
+                           self.prwdlg.listWidget_4,
+                           self.prwdlg.listWidget_5,
+                           self.prwdlg.listWidget_6,
+                           self.prwdlg.listWidget_7]
+
+        for elem in self.locations['location']:
+            self.prwdlg.listWidget_1.addItem(QListWidgetItem(elem))
+
+
+        for i in range(5):
+
+            for key, value in self.container[i].iteritems():
+                if value is not None:
+                    prwitem = QListWidgetItem(key + ':    ' + str(value))
+                else:
+                    prwitem = QListWidgetItem(key + ':    None')
+
+                listWidget_list[i].addItem(prwitem)
+
+
 
 
     def _dataset_button(self):
