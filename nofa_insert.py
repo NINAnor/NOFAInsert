@@ -21,7 +21,7 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
-from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem
+from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QColor
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
@@ -371,15 +371,14 @@ class NOFAInsert:
         for i in range(5):
 
             for key, value in self.container[i].iteritems():
-                if value is not None:
-                    prwitem = QListWidgetItem(key + ':    ' + str(value))
-                else:
+                if value == u'' or value == u'unknown' or value == u'None':
                     prwitem = QListWidgetItem(key + ':    None')
+                    prwitem.setTextColor(QColor("red"))
+                else:
+                    prwitem = QListWidgetItem(key + ':    ' + str(value))
+                    prwitem.setTextColor(QColor("green"))
 
                 listWidget_list[i].addItem(prwitem)
-
-
-
 
     def _dataset_button(self):
         pass
