@@ -21,7 +21,7 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
-from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QColor
+from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidgetItem, QColor
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
@@ -83,20 +83,23 @@ class NOFAInsert:
 
         # initialise data and metadata containers:
         self.locations = {'location': [], 'loc_type': 'Select'}
-        self.occurrence = {'taxon': 'Select',
-                           'ecotype': 'Select',
-                           'quantity': 'Select',
-                           'status': 'False',
-                           'oc_remarks': 'None',
-                           'est_means': 'Select',
-                           'est_remarks': 'None',
-                           'spawn_con': 'unknown',
-                           'spawn_loc': 'unknown',
-                           'verified_by': '',
-                           'verified_date': self.today,
-                           'yearprecision_remarks': 'None'
+
+        self.occurrence = {'taxon': ['Select', ],
+                           'ecotype': ['Select', ],
+                           'quantity': ['Select', ],
+                           'status': ['False', ],
+                           'oc_remarks': ['None', ],
+                           'est_means': ['Select', ],
+                           'est_remarks': ['None', ],
+                           'spawn_con': ['unknown', ],
+                           'spawn_loc': ['unknown', ],
+                           'verified_by': ['Nobody', ],
+                           'verified_date': [str(self.today), ],
+                           'yearprecision_remarks': ['None', ]
                            }
+
         self.taxonomicc = []
+
         self.event = {'protocol': 'unknown',
                       'size_value': 'unknown',
                       'size_unit': 'None',
@@ -108,6 +111,7 @@ class NOFAInsert:
                       'event_remarks': 'None',
                       'reliability': 'Select'
                       }
+
         self.dataset = {'dataset_id': 'None',
                         'rightsholder': 'None',
                         'dataset_name': 'None',
@@ -119,6 +123,7 @@ class NOFAInsert:
                         'information': 'None',
                         'generalizations': 'None'
                         }
+
         self.project = {'project_id': 'None',
                         'project_name': 'None',
                         'project_number': 'None',
@@ -130,6 +135,7 @@ class NOFAInsert:
                         'financer': 'None',
                         'project_remarks': 'None'
                         }
+
         self.reference = {'reference_id': 'None',
                           'doi': 'None',
                           'authors': 'None',
@@ -368,10 +374,10 @@ class NOFAInsert:
         for elem in self.locations['location']:
             self.prwdlg.listWidget_1.addItem(QListWidgetItem(elem))
 
-        # Get taxconomic coverage items
+        # Get taxonomic coverage items
         root = self.dlg.taxonomicCoverage.invisibleRootItem()
         get_taxa = root.childCount()
-        QMessageBox.information(None, "DEBUG:", str(get_taxa))
+        #QMessageBox.information(None, "DEBUG:", str(get_taxa))
         for index in range(get_taxa):
             taxon = root.child(index)
             if taxon.checkState(0) == Qt.Checked:
@@ -985,12 +991,33 @@ class NOFAInsert:
         self.populate_project()
         self.populate_reference()
 
+    def create_occurrence_table(self):
+        #currentrow = self.dlg.tableWidget.rowCount()
+        #self.dlg.tableWidget.insertRow(currentrow)
+
+        #set rows and columns for tableWidget
+        self.dlg.tableWidget.setRowCount(1)
+        self.dlg.tableWidget.setColumnCount(12)
+
+        #  populate tableWidget
+        headers = []
+        for n, key in enumerate(sorted(self.occurrence.keys())):
+            headers.append(key)
+            for m, item in enumerate(self.occurrence[key]):
+                newitem = QTableWidgetItem(item)
+                # setItem(row, column, QTableWidgetItem)
+                self.dlg.tableWidget.setItem(m, n, newitem)
+            self.dlg.tableWidget.setHorizontalHeaderLabels(headers)
+        #QMessageBox.information(None, "DEBUG:", str(headers))
+
+
 
     def run(self):
         """Run method that performs all the real work"""
 
         self.fetch_db()
         self.populate_information()
+        self.create_occurrence_table()
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop

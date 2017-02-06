@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1094</width>
-    <height>640</height>
+    <height>656</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>1091</width>
-     <height>681</height>
+     <height>651</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -34,7 +34,7 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>651</width>
+       <width>411</width>
        <height>81</height>
       </rect>
      </property>
@@ -56,7 +56,7 @@
        <rect>
         <x>10</x>
         <y>20</y>
-        <width>621</width>
+        <width>391</width>
         <height>51</height>
        </rect>
       </property>
@@ -90,7 +90,7 @@
        <x>0</x>
        <y>90</y>
        <width>411</width>
-       <height>521</height>
+       <height>531</height>
       </rect>
      </property>
      <widget class="QWidget" name="toolBoxPage1">
@@ -99,7 +99,7 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>413</height>
+        <height>423</height>
        </rect>
       </property>
       <attribute name="label">
@@ -136,7 +136,7 @@
           <x>10</x>
           <y>20</y>
           <width>361</width>
-          <height>381</height>
+          <height>391</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout">
@@ -290,7 +290,7 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>413</height>
+        <height>423</height>
        </rect>
       </property>
       <attribute name="label">
@@ -365,7 +365,7 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>413</height>
+        <height>423</height>
        </rect>
       </property>
       <attribute name="label">
@@ -440,7 +440,7 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>413</height>
+        <height>423</height>
        </rect>
       </property>
       <attribute name="label">
@@ -514,9 +514,9 @@
      <property name="geometry">
       <rect>
        <x>420</x>
-       <y>90</y>
+       <y>120</y>
        <width>231</width>
-       <height>521</height>
+       <height>501</height>
       </rect>
      </property>
      <property name="font">
@@ -538,7 +538,7 @@
         <x>10</x>
         <y>20</y>
         <width>211</width>
-        <height>491</height>
+        <height>471</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -558,9 +558,9 @@
      <property name="geometry">
       <rect>
        <x>660</x>
-       <y>0</y>
+       <y>120</y>
        <width>421</width>
-       <height>551</height>
+       <height>461</height>
       </rect>
      </property>
      <property name="font">
@@ -582,7 +582,7 @@
         <x>10</x>
         <y>20</y>
         <width>401</width>
-        <height>521</height>
+        <height>432</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_8">
@@ -769,13 +769,23 @@
      <property name="geometry">
       <rect>
        <x>660</x>
-       <y>560</y>
+       <y>580</y>
        <width>421</width>
-       <height>51</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="text">
       <string>Insert to NOFA</string>
+     </property>
+    </widget>
+    <widget class="QTableWidget" name="tableWidget">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>0</y>
+       <width>661</width>
+       <height>111</height>
+      </rect>
      </property>
     </widget>
     <zorder>location</zorder>
@@ -783,11 +793,7 @@
     <zorder>reference_4</zorder>
     <zorder>metadata</zorder>
     <zorder>insert_button</zorder>
-   </widget>
-   <widget class="QWidget" name="tab_2">
-    <attribute name="title">
-     <string>Preview</string>
-    </attribute>
+    <zorder>tableWidget</zorder>
    </widget>
    <widget class="QWidget" name="tab_3">
     <attribute name="title">
