@@ -82,8 +82,8 @@ class NOFAInsert:
 
 
         # initialise data and metadata containers:
-        self.locations = {'location':[], 'loc_type':'Select'}
-        self.occurrence = {'taxon':'Select',
+        self.locations = {'location': [], 'loc_type': 'Select'}
+        self.occurrence = {'taxon': 'Select',
                            'ecotype': 'Select',
                            'quantity': 'Select',
                            'status': 'False',
@@ -97,7 +97,7 @@ class NOFAInsert:
                            'yearprecision_remarks': 'None'
                            }
         self.taxonomicc = []
-        self.event = {'protocol':'unknown',
+        self.event = {'protocol': 'unknown',
                       'size_value': 'unknown',
                       'size_unit': 'None',
                       'effort': 'unknown',
@@ -119,7 +119,7 @@ class NOFAInsert:
                         'information': 'None',
                         'generalizations': 'None'
                         }
-        self.project = {'project_id':'None',
+        self.project = {'project_id': 'None',
                         'project_name': 'None',
                         'project_number': 'None',
                         'start_year': str(self.year),
@@ -347,7 +347,7 @@ class NOFAInsert:
         self.event['reliability'] = self.dlg.reliability.currentText()
 
 
-        QMessageBox.information(None, "DEBUG:", str(self.event))
+        #QMessageBox.information(None, "DEBUG:", str(self.event))
         self.prwdlg = PreviewDialog()
         self.prwdlg.show()
 
@@ -364,10 +364,21 @@ class NOFAInsert:
                            self.prwdlg.listWidget_6,
                            self.prwdlg.listWidget_7]
 
+        # Get the locations
         for elem in self.locations['location']:
             self.prwdlg.listWidget_1.addItem(QListWidgetItem(elem))
 
+        # Get taxconomic coverage items
+        root = self.dlg.taxonomicCoverage.invisibleRootItem()
+        get_taxa = root.childCount()
+        QMessageBox.information(None, "DEBUG:", str(get_taxa))
+        for index in range(get_taxa):
+            taxon = root.child(index)
+            if taxon.checkState(0) == Qt.Checked:
+                self.prwdlg.listWidget_3.addItem(QListWidgetItem(taxon.text(0)))
 
+
+        # populate the preview list widgets with info from previous forms
         for i in range(5):
 
             for key, value in self.container[i].iteritems():
