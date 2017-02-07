@@ -1041,6 +1041,10 @@ class NOFAInsert:
 
         self.dlg.yearPrecisionRemarks.setText(self.occurrence['yearprecision_remarks'][self.row_position])
 
+        self.dlg.occurrence_number.setText(str(self.row_position + 1))
+        self.dlg.occurrence_number.setStyleSheet('color: black')
+        self.dlg.frame.setStyleSheet('color: white')
+
 
         '''
         self.dlg.verifiedDate = self.occurrence['verified_date'][self.row_position]
