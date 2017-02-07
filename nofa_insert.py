@@ -743,7 +743,7 @@ class NOFAInsert:
         self.dlg.existingReference.setCurrentIndex(reference_list.index("None"))
 
         #########################################
-
+        # Get taxon list
         cur = self._db_cur()
 
         cur.execute(u'SELECT "{0}" FROM nofa.l_taxon GROUP BY "{0}";'.format(species_names[language]))
@@ -754,6 +754,7 @@ class NOFAInsert:
 
         # Inject sorted python-list for species into UI
         species_list.sort()
+        species_list.insert(0, self.occurrence['taxon'][0])
         self.dlg.taxonID.clear()
         self.dlg.taxonID.addItems(species_list)
         #QMessageBox.information(None, "DEBUG:", str(species_list))
