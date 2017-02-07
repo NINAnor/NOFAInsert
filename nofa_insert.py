@@ -378,23 +378,8 @@ class NOFAInsert:
 
     def preview(self):
 
-        # Get occurrence information
-        self.occurrence['taxon'] = self.dlg.taxonID.currentText()
-        self.occurrence['ecotype'] = self.dlg.ecotypeID.currentText()
-        self.occurrence['quantity'] = self.dlg.organismQuantityID.currentText()
-        if self.dlg.occurrenceStatus.isChecked():
-            self.occurrence['status'] = True
-        else:
-            self.occurrence['status'] = False
+        #QMessageBox.information(None, "DEBUG:", str(self.occurrence))
 
-        self.occurrence['oc_remarks'] = self.dlg.occurrenceRemarks.text()
-        self.occurrence['est_means'] = self.dlg.establishmentMeans.currentText()
-        self.occurrence['est_remarks'] = self.dlg.establishmentRemarks.text()
-        self.occurrence['spawn_con'] = self.dlg.spawningCondition.currentText()
-        self.occurrence['spawn_loc'] = self.dlg.spawningLocation.currentText()
-        self.occurrence['verified_by'] = self.dlg.verifiedBy.text()
-        self.occurrence['verified_date'] = self.dlg.verifiedDate.date().toString()
-        self.occurrence['yearprecision_remarks'] = self.dlg.yearPrecisionRemarks.text()
 
         #Get Event Data
 
@@ -414,14 +399,13 @@ class NOFAInsert:
         self.prwdlg = PreviewDialog()
         self.prwdlg.show()
 
-        self.container = [self.occurrence,
+        self.container = [
                           self.event,
                           self.dataset,
                           self.project,
                           self.reference]
 
         listWidget_list = [
-                           self.prwdlg.listWidget_2,
                            self.prwdlg.listWidget_4,
                            self.prwdlg.listWidget_5,
                            self.prwdlg.listWidget_6,
@@ -442,7 +426,7 @@ class NOFAInsert:
 
 
         # populate the preview list widgets with info from previous forms
-        for i in range(5):
+        for i in range(4):
 
             for key, value in self.container[i].iteritems():
                 if value == u'' or value == u'unknown' or value == u'None':
@@ -453,6 +437,33 @@ class NOFAInsert:
                     prwitem.setTextColor(QColor("green"))
 
                 listWidget_list[i].addItem(prwitem)
+
+        ## Create the preview occurrence table
+
+
+        self.prwdlg.table.setColumnCount(12)
+
+        m = len(self.occurrence['taxon'])
+        self.prwdlg.table.setRowCount(m)
+
+
+        self.prwdlg.table.setSelectionBehavior(QTableWidget.SelectRows);
+        #QMessageBox.information(None, "DEBUG:", str(self.occurrence))
+        #  populate tableWidget
+        headers = []
+        for n, key in enumerate(self.occurrence.keys()):
+            if key != 'yearprecision_remarks':
+                self.prwdlg.table.setColumnWidth(n, 88)
+            else:
+                self.prwdlg.table.setColumnWidth(n, 94)
+            headers.append(key)
+            #QMessageBox.information(None, "DEBUG:", str(headers))
+            for m, item in enumerate(self.occurrence[key]):
+
+                newitem = QTableWidgetItem(str(item))
+                # setItem(row, column, QTableWidgetItem)
+                self.prwdlg.table.setItem(m, n, newitem)
+        self.prwdlg.table.setHorizontalHeaderLabels(headers)
 
     def _dataset_button(self):
         pass
@@ -1159,8 +1170,6 @@ class NOFAInsert:
             self.row_position = self.row_position + 1
         self.dlg.tableWidget.selectRow(self.row_position)
         self.update_occurrence_form()
-
-
 
 
     def run(self):
