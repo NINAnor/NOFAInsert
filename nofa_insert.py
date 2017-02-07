@@ -21,7 +21,7 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
-from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidgetItem, QColor
+from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget, QTableWidgetItem, QColor
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
@@ -255,6 +255,13 @@ class NOFAInsert:
 
         self.dlg.addOccurrence.clicked.connect(self.add_occurrence)
 
+        # Up and Down buttons to move selection of the occurrence table
+        self.dlg.upButton.clicked.connect(self.row_up)
+        self.dlg.downButton.clicked.connect(self.row_down)
+
+        # Table clicked events
+        self.dlg.tableWidget.itemClicked.connect(self.update_row)
+        self.dlg.tableWidget.verticalHeader().sectionClicked.connect(self.update_header)
         # set the occurrenceStatus checkbox to True, as a default initial status
         self.dlg.occurrenceStatus.setChecked(True)
 
@@ -1016,6 +1023,9 @@ class NOFAInsert:
         #set rows and columns for tableWidget
         self.dlg.tableWidget.setRowCount(1)
         self.dlg.tableWidget.setColumnCount(12)
+        self.row_position = 0
+
+        self.dlg.tableWidget.setSelectionBehavior(QTableWidget.SelectRows);
 
         #  populate tableWidget
         headers = []
@@ -1026,12 +1036,14 @@ class NOFAInsert:
                 # setItem(row, column, QTableWidgetItem)
                 self.dlg.tableWidget.setItem(m, n, newitem)
             self.dlg.tableWidget.setHorizontalHeaderLabels(headers)
+
+        self.update_occurrence_form()
         #QMessageBox.information(None, "DEBUG:", str(headers))
 
     def add_occurrence(self):
         # adds a new occurrence row in occurrence table
-        row_position = self.dlg.tableWidget.rowCount()
-        self.dlg.tableWidget.insertRow(row_position)
+        self.row_position = self.dlg.tableWidget.rowCount()
+        self.dlg.tableWidget.insertRow(self.row_position)
 
 
         # add a new occurrence record in self.occurrence dictionary and table
@@ -1040,10 +1052,42 @@ class NOFAInsert:
             self.occurrence[key].append(item)
             # add it to table
             newitem = QTableWidgetItem(item)
-            self.dlg.tableWidget.setItem(row_position, n, newitem)
-        QMessageBox.information(None, "DEBUG:", str(self.occurrence))
+            self.dlg.tableWidget.setItem(self.row_position, n, newitem)
 
+        self.dlg.tableWidget.selectRow(self.row_position)
+        self.update_occurrence_form()
 
+       #QMessageBox.information(None, "DEBUG:", str(self.row_position))
+
+    def update_occurrence_form(self):
+        #QMessageBox.information(None, "DEBUG:", str("Occurrence - " + str(self.row_position)))
+        # update values in occurrence form based on current row selection in table widget
+        self.dlg.reference_4.setTitle("Occurrence - " + str(self.row_position + 1))
+
+    def update_row(self, widget_object):
+        self.row_position = widget_object.row()
+        self.update_occurrence_form()
+        #QMessageBox.information(None, "DEBUG:", str(widget_object.row()))
+
+    def update_header(self, header_index):
+
+        #QMessageBox.information(None, "DEBUG:", str(header_index))
+        self.row_position = header_index
+        self.update_occurrence_form()
+
+    def row_up(self):
+        # moving selection one row up in occurrence table
+        if self.row_position > 0:
+            self.row_position = self.row_position - 1
+        self.dlg.tableWidget.selectRow(self.row_position)
+        self.update_occurrence_form()
+
+    def row_down(self):
+        # moving selection one row down in occurrence table
+        if self.row_position < (self.dlg.tableWidget.rowCount() - 1):
+            self.row_position = self.row_position + 1
+        self.dlg.tableWidget.selectRow(self.row_position)
+        self.update_occurrence_form()
 
 
 
