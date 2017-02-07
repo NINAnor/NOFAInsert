@@ -20,7 +20,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
+from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt, QObject
 from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget, QTableWidgetItem, QColor
 # Initialize Qt resources from file resources.py
 import resources
@@ -240,6 +240,8 @@ class NOFAInsert:
         :rtype: QAction
         """
 
+        self.row_position = 0
+
         # Create the dialog (after translation) and keep reference
         self.dlg = NOFAInsertDialog()
 
@@ -265,6 +267,10 @@ class NOFAInsert:
         # set the occurrenceStatus checkbox to True, as a default initial status
         self.dlg.occurrenceStatus.setChecked(True)
 
+        #connect the occurrence input widgets to table content
+        self.dlg.update_row_button.clicked.connect(self.update_occurrence_row)
+
+
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
@@ -287,6 +293,33 @@ class NOFAInsert:
         self.actions.append(action)
 
         return action
+
+    def update_occurrence_row(self):
+
+
+        self.occurrence['taxon'][self.row_position] = self.dlg.taxonID.currentText()
+        self.occurrence['ecotype'][self.row_position] = self.dlg.ecotypeID.currentText()
+        self.occurrence['quantity'][self.row_position] = self.dlg.organismQuantityID.currentText()
+        if self.dlg.occurrenceStatus.isChecked():
+            self.occurrence['status'][self.row_position] = 'True'
+        else:
+            self.occurrence['status'][self.row_position] = 'False'
+
+        self.occurrence['oc_remarks'][self.row_position] = self.dlg.occurrenceRemarks.text()
+        self.occurrence['est_means'][self.row_position] = self.dlg.establishmentMeans.currentText()
+        self.occurrence['est_remarks'][self.row_position] = self.dlg.establishmentRemarks.text()
+        self.occurrence['spawn_con'][self.row_position] = self.dlg.spawningCondition.currentText()
+        self.occurrence['spawn_loc'][self.row_position] = self.dlg.spawningLocation.currentText()
+        self.occurrence['verified_by'][self.row_position] = self.dlg.verifiedBy.text()
+        self.occurrence['verified_date'][self.row_position] = self.dlg.verifiedDate.date().toString()
+        self.occurrence['yearprecision_remarks'][self.row_position] = self.dlg.yearPrecisionRemarks.text()
+
+
+        for m, key in enumerate(sorted(self.occurrence.keys())):
+            item = self.occurrence[key][self.row_position]
+            newitem = QTableWidgetItem(item)
+            # setItem(row, column, QTableWidgetItem)
+            self.dlg.tableWidget.setItem(self.row_position, m, newitem)
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
@@ -963,7 +996,44 @@ class NOFAInsert:
 
         self.dlg.taxonomicCoverage.addTopLevelItems(taxa)
 
+    def update_occurrence(self):
 
+        # set current taxon value
+        taxon_index = self.dlg.taxonID.findText(self.occurrence['taxon'][self.row_position], Qt.MatchFixedString)
+        self.dlg.taxonID.setCurrentIndex(taxon_index)
+
+        ecotype_index = self.dlg.ecotypeID.findText(self.occurrence['ecotype'][self.row_position], Qt.MatchFixedString)
+        self.dlg.ecotypeID.setCurrentIndex(ecotype_index)
+
+        quantity_index = self.dlg.organismQuantityID.findText(self.occurrence['quantity'][self.row_position], Qt.MatchFixedString)
+        self.dlg.organismQuantityID.setCurrentIndex(quantity_index)
+
+        if self.occurrence['status'][self.row_position] == 'True':
+            self.dlg.occurrenceStatus.setChecked(True)
+        else:
+            self.dlg.occurrenceStatus.setChecked(False)
+
+        self.dlg.occurrenceRemarks.setText(self.occurrence['oc_remarks'][self.row_position])
+
+        est_means_index = self.dlg.establishmentMeans.findText(self.occurrence['est_means'][self.row_position], Qt.MatchFixedString)
+        self.dlg.establishmentMeans.setCurrentIndex(est_means_index)
+
+        spawn_con_index = self.dlg.spawningCondition.findText(self.occurrence['spawn_con'][self.row_position], Qt.MatchFixedString)
+        self.dlg.spawningCondition.setCurrentIndex(spawn_con_index)
+
+        spawn_loc_index = self.dlg.spawningLocation.findText(self.occurrence['spawn_loc'][self.row_position], Qt.MatchFixedString)
+        self.dlg.spawningLocation.setCurrentIndex(spawn_loc_index)
+
+        self.dlg.establishmentRemarks.setText(self.occurrence['est_remarks'][self.row_position])
+
+        self.dlg.verifiedBy.setText(self.occurrence['verified_by'][self.row_position])
+
+        self.dlg.yearPrecisionRemarks.setText(self.occurrence['yearprecision_remarks'][self.row_position])
+
+
+        '''
+        self.dlg.verifiedDate = self.occurrence['verified_date'][self.row_position]
+        '''
 
     def populate_dataset(self):
 
@@ -1063,6 +1133,7 @@ class NOFAInsert:
         #QMessageBox.information(None, "DEBUG:", str("Occurrence - " + str(self.row_position)))
         # update values in occurrence form based on current row selection in table widget
         self.dlg.reference_4.setTitle("Occurrence - " + str(self.row_position + 1))
+        self.update_occurrence()
 
     def update_row(self, widget_object):
         self.row_position = widget_object.row()
