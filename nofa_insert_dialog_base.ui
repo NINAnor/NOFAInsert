@@ -943,9 +943,9 @@
     <widget class="QPushButton" name="deleteOccurrence">
      <property name="geometry">
       <rect>
-       <x>450</x>
+       <x>410</x>
        <y>130</y>
-       <width>301</width>
+       <width>341</width>
        <height>31</height>
       </rect>
      </property>

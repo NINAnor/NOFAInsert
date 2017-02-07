@@ -84,10 +84,25 @@ class NOFAInsert:
         # initialise data and metadata containers:
         self.locations = {'location': [], 'loc_type': 'Select'}
 
+        self.occurrence_base = {'taxon': 'Select',
+                           'ecotype': 'Select',
+                           'quantity': 'Select',
+                           'status': 'True',
+                           'oc_remarks': 'None',
+                           'est_means': 'Select',
+                           'est_remarks': 'None',
+                           'spawn_con': 'unknown',
+                           'spawn_loc': 'unknown',
+                           'verified_by': 'Nobody',
+                           'verified_date': str(self.today),
+                           'yearprecision_remarks': 'None'
+
+                            }
+
         self.occurrence = {'taxon': ['Select', ],
                            'ecotype': ['Select', ],
                            'quantity': ['Select', ],
-                           'status': ['False', ],
+                           'status': ['True', ],
                            'oc_remarks': ['None', ],
                            'est_means': ['Select', ],
                            'est_remarks': ['None', ],
@@ -237,6 +252,8 @@ class NOFAInsert:
         self.dlg.existingReference.currentIndexChanged.connect(self.update_reference)
 
         self.dlg.insert_button.clicked.connect(self.preview)
+
+        self.dlg.addOccurrence.clicked.connect(self.add_occurrence)
 
         # set the occurrenceStatus checkbox to True, as a default initial status
         self.dlg.occurrenceStatus.setChecked(True)
@@ -1010,6 +1027,24 @@ class NOFAInsert:
                 self.dlg.tableWidget.setItem(m, n, newitem)
             self.dlg.tableWidget.setHorizontalHeaderLabels(headers)
         #QMessageBox.information(None, "DEBUG:", str(headers))
+
+    def add_occurrence(self):
+        # adds a new occurrence row in occurrence table
+        row_position = self.dlg.tableWidget.rowCount()
+        self.dlg.tableWidget.insertRow(row_position)
+
+
+        # add a new occurrence record in self.occurrence dictionary and table
+        for n, key in enumerate(sorted(self.occurrence.keys())):
+            item = self.occurrence_base[key]
+            self.occurrence[key].append(item)
+            # add it to table
+            newitem = QTableWidgetItem(item)
+            self.dlg.tableWidget.setItem(row_position, n, newitem)
+        QMessageBox.information(None, "DEBUG:", str(self.occurrence))
+
+
+
 
 
 
