@@ -375,10 +375,43 @@ class NOFAInsert:
         ################################################################
         self.datadlg.dataset_dialog_button.clicked.connect(self._dataset_button)
 
+    def get_location(self):
+        '''
+        Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
+        'coordinates UTM33':    '196098.1000	6572796.0100	Dam Grønnerød,194572.6100	6575712.0100	Dam Løberg'
+                                '194572.6100	6575712.0100	løberg dam, 136210.9600	6497277.7500	Springvannsdamm, 149719.5000	6506063.2800	DamKilsund'
+
+
+        '''
+
+
+        locations = self.dlg.locations.text()
+        location_type = self.dlg.locIDType.currentText()
+        #QMessageBox.information(None, "DEBUG:", locations)
+        #QMessageBox.information(None, "DEBUG:", location_type)
+
+        if location_type == 'Norwegian VatnLnr':
+            self.locations['location'] = locations.split(',')
+        elif location_type == 'coordinates UTM33':
+            frags = locations.split(',')
+            coords = []
+            for elem in frags:
+                #QMessageBox.information(None, "DEBUG:", str(elem))
+                elems = elem.split()
+                coordinates = elems[0] + ' ' + elems[1]
+                coords.append(coordinates)
+                #QMessageBox.information(None, "DEBUG:", str(elems[0]))
+
+
+            self.locations['location'] = coords
+
 
     def preview(self):
 
         #QMessageBox.information(None, "DEBUG:", str(self.occurrence))
+        # Get the locations:
+        self.get_location()
+        #self.locations['location'] =
 
 
         #Get Event Data
@@ -411,7 +444,7 @@ class NOFAInsert:
                            self.prwdlg.listWidget_6,
                            self.prwdlg.listWidget_7]
 
-        # Get the locations
+        # Set the locations
         for elem in self.locations['location']:
             self.prwdlg.listWidget_1.addItem(QListWidgetItem(elem))
 
@@ -975,13 +1008,13 @@ class NOFAInsert:
         self.dlg.dateEnd.setDate(self.today)
         self.dlg.verifiedDate.setDate(self.nextWeek)
 
-        locIDType_dict = {'Norwegian VatnLnr': 'no_vatn_lnr',
+        locIDType_dict = {'coordinates lon/lat': 4326,
+                          'Norwegian VatnLnr': 'no_vatn_lnr',
                           'Swedish SjoID': 'se_sjoid',
                           'Finish nro': 'fi_nro',
                           'coordinates UTM32': 25832,
                           'coordinates UTM33': 25833,
                           'coordinates UTM35': 25835,
-                          'coordinates lon/lat': 4326,
                           'waterBody register name': '"waterBody"'}
 
         # Add more location match options (e.g. coordinates)
