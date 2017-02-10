@@ -79,6 +79,14 @@ class NOFAInsert:
 
         self.dataset_name = "none"
 
+        self.locIDType_dict = {'Norwegian VatnLnr': 'no_vatn_lnr',
+                              'Swedish SjoID': 'se_sjoid',
+                              'Finish nro': 'fi_nro',
+                              'coordinates UTM32': 25832,
+                              'coordinates UTM33': 25833,
+                              'coordinates UTM35': 25835,
+                              'coordinates lon/lat': 4326,
+                              'waterBody register name': '"waterBody"'}
 
 
         # initialise data and metadata containers:
@@ -86,8 +94,8 @@ class NOFAInsert:
                           'location': [],
                           'loc_type': 'Select',
                           'loc_names': [],
-                          'x': 'None',
-                          'y': 'None'
+                          'x': [],
+                          'y': []
                           }
 
         self.occurrence_base = {'taxon': 'Select',
@@ -391,32 +399,77 @@ class NOFAInsert:
         '''
 
 
-        locations = self.dlg.locations.text()
+        locs = self.dlg.locations.text()
         location_type = self.dlg.locIDType.currentText()
         #QMessageBox.information(None, "DEBUG:", locations)
         #QMessageBox.information(None, "DEBUG:", location_type)
 
+        #Manage the case of Norwegian VatLnr coordinates input
         if location_type == 'Norwegian VatnLnr':
-            self.locations['location'] = locations.split(',')
-        elif location_type == 'coordinates UTM33':
-            frags = locations.split(',')
+            locations = locs.split(',')
+            col = self.locIDType_dict[location_type]
+
+            # Fetch locationIDs (From Stefan's code)
+            cur = self._db_cur()
+            try:
+                cur.execute(
+                u'SELECT DISTINCT ON ({0}) "locationID", {0}, "waterBody", "decimalLongitude", "decimalLatitude" FROM nofa.location WHERE {0} IN ({1}) ORDER BY {0}, "locationType";'.format(
+                    col, u','.join(str(l) for l in locations)))
+            except:
+                QMessageBox.information(None, "DEBUG:", str("WARNING - DB ERROR. Did you select the correct type of location identifier?"))
+            fetched_locs = cur.fetchall()
+            # Create a python-list from query result
+            loc_list = [l[1] for l in fetched_locs]
+            locID_list = [l[0] for l in fetched_locs]
+            loc_names = [l[2] for l in fetched_locs]
+            longitudes = [l[3] for l in fetched_locs]
+            latitudes = [l[4] for l in fetched_locs]
+            #QMessageBox.information(None, "DEBUG:", str(loc_list))
+            #QMessageBox.information(None, "DEBUG:", str(locID_list))
+            #QMessageBox.information(None, "DEBUG:", str(loc_names))
+
             coords = []
-            for elem in frags:
+            if len(loc_list) == len(locations):
+                for i, loc in enumerate(loc_list):
+                    if loc_names[i] is None:
+                        loc_names[i] = 'None'
+
+                    self.locations['loc_names'].append(loc_names[i])
+                    self.locations['x'].append(longitudes[i])
+                    self.locations['y'].append(latitudes[i])
+
+                    coords.append(loc_names[i] + ' (' + str(longitudes[i]) + ', ' + str(latitudes[i]) + ')')
+
+                self.locations['location'] = coords
+
+            else:
+                QMessageBox.information(None, "DEBUG:", str("WARNING, DB FETCHING ISSUE!"))
+
+        # manage the case of UTM33 coordinates
+        elif location_type == 'coordinates UTM33':
+            frags = locs.split(',')
+            coords = []
+            for i, elem in enumerate(frags):
                 #QMessageBox.information(None, "DEBUG:", str(elem))
                 elems = elem.split()
                 #coordinates = elems[0] + ' ' + elems[1]
-                easting = elems[0]
-                northing = elems[1]
+                try:
+                    easting = elems[0]
+                    northing = elems[1]
+                except:
+                    QMessageBox.information(None, "DEBUG:", str("WARNIG - location parsing ERROR - Did you select the correct locatioin identifyer?"))
 
-                self.locations['x'] = easting
-                self.locations['y'] = northing
+                self.locations['x'].append(easting)
+                self.locations['y'].append(northing)
 
                 name = elems[2:]
                 loc_name = ' '.join(name)
+
+                self.locations['loc_names'].append(loc_name)
                 #coords.append(coordinates)
 
-                coords.append(loc_name + ' (' + easting + ',' + northing + ')')
-                QMessageBox.information(None, "DEBUG:", str(loc_name))
+                coords.append(loc_name + ' (' + easting + ', ' + northing + ')')
+                #QMessageBox.information(None, "DEBUG:", str(self.locations['x'][i]))
 
 
             self.locations['location'] = coords
@@ -513,6 +566,9 @@ class NOFAInsert:
                 # setItem(row, column, QTableWidgetItem)
                 self.prwdlg.table.setItem(m, n, newitem)
         self.prwdlg.table.setHorizontalHeaderLabels(headers)
+
+
+
 
     def _dataset_button(self):
         pass
