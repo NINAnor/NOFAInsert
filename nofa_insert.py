@@ -21,7 +21,7 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt, QObject
-from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget, QTableWidgetItem, QColor
+from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget, QTableWidgetItem, QColor, QFont
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
@@ -82,7 +82,13 @@ class NOFAInsert:
 
 
         # initialise data and metadata containers:
-        self.locations = {'location': [], 'loc_type': 'Select'}
+        self.locations = {'source': [],
+                          'location': [],
+                          'loc_type': 'Select',
+                          'loc_names': [],
+                          'x': 'None',
+                          'y': 'None'
+                          }
 
         self.occurrence_base = {'taxon': 'Select',
                            'ecotype': 'Select',
@@ -398,9 +404,19 @@ class NOFAInsert:
             for elem in frags:
                 #QMessageBox.information(None, "DEBUG:", str(elem))
                 elems = elem.split()
-                coordinates = elems[0] + ' ' + elems[1]
-                coords.append(coordinates)
-                #QMessageBox.information(None, "DEBUG:", str(elems[0]))
+                #coordinates = elems[0] + ' ' + elems[1]
+                easting = elems[0]
+                northing = elems[1]
+
+                self.locations['x'] = easting
+                self.locations['y'] = northing
+
+                name = elems[2:]
+                loc_name = ' '.join(name)
+                #coords.append(coordinates)
+
+                coords.append(loc_name + ' (' + easting + ',' + northing + ')')
+                QMessageBox.information(None, "DEBUG:", str(loc_name))
 
 
             self.locations['location'] = coords
