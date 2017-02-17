@@ -76,7 +76,7 @@
     <string>Pressing the &quot;Confirm&quot; button, you will send to NOFA DB the following infomation:</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="confirmButton">
    <property name="geometry">
     <rect>
      <x>940</x>

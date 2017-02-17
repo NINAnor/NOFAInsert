@@ -34,6 +34,7 @@ import os.path
 import psycopg2
 import logging
 import datetime
+import uuid
 
 
 class NOFAInsert:
@@ -79,6 +80,9 @@ class NOFAInsert:
 
         self.dataset_name = "none"
 
+        self.insert_location = """INSERT INTO nofa.location ("locationID", "locationType", geom, "waterBody") VALUES (%s,%s,ST_Transform(ST_GeomFromText(%s, %s), %s), %s);"""
+
+
         self.locIDType_dict = {'Norwegian VatnLnr': 'no_vatn_lnr',
                               'Swedish SjoID': 'se_sjoid',
                               'Finish nro': 'fi_nro',
@@ -90,13 +94,14 @@ class NOFAInsert:
 
 
         # initialise data and metadata containers:
-        self.locations = {'source': [],
+        self.locations = {'location_ID': [],
                           'location': [],
                           'loc_type': 'Select',
                           'loc_names': [],
                           'x': [],
                           'y': []
                           }
+
 
         self.occurrence_base = {'taxon': 'Select',
                            'ecotype': 'Select',
@@ -433,7 +438,7 @@ class NOFAInsert:
                 for i, loc in enumerate(loc_list):
                     if loc_names[i] is None:
                         loc_names[i] = 'None'
-
+                    self.locations['location_ID'].append(locID_list[i])
                     self.locations['loc_names'].append(loc_names[i])
                     self.locations['x'].append(longitudes[i])
                     self.locations['y'].append(latitudes[i])
@@ -446,9 +451,21 @@ class NOFAInsert:
                 QMessageBox.information(None, "DEBUG:", str("WARNING, DB FETCHING ISSUE!"))
 
         # manage the case of UTM33 coordinates
-        elif location_type == 'coordinates UTM33':
+        elif location_type.startswith('coordinates'):
+            type = self.locIDType_dict[location_type]
+            #QMessageBox.information(None, "DEBUG:", str(type))
             frags = locs.split(',')
             coords = []
+            # storing the ID of the locations which are exact matches of existing ones
+            self.places = []
+
+
+
+            # initialize the container of new locations
+            self.new_locs = []
+
+
+            #walk through all the locations
             for i, elem in enumerate(frags):
                 #QMessageBox.information(None, "DEBUG:", str(elem))
                 elems = elem.split()
@@ -456,11 +473,16 @@ class NOFAInsert:
                 try:
                     easting = elems[0]
                     northing = elems[1]
-                except:
-                    QMessageBox.information(None, "DEBUG:", str("WARNIG - location parsing ERROR - Did you select the correct locatioin identifyer?"))
 
-                self.locations['x'].append(easting)
-                self.locations['y'].append(northing)
+                    self.locations['x'].append(easting)
+                    self.locations['y'].append(northing)
+
+                    x = float(easting)
+                    y = float(northing)
+                except:
+                    QMessageBox.information(None, "DEBUG:", str("WARNIG - location parsing ERROR - Did you select the correct location identifyer?"))
+
+
 
                 name = elems[2:]
                 loc_name = ' '.join(name)
@@ -471,9 +493,94 @@ class NOFAInsert:
                 coords.append(loc_name + ' (' + easting + ', ' + northing + ')')
                 #QMessageBox.information(None, "DEBUG:", str(self.locations['x'][i]))
 
+                cur = self._db_cur()
+                srid = type
+
+                '''
+                if isinstance(SRID, str):
+                    QMessageBox.information(None, "DEBUG:", str("SRID is a string"))
+                elif isinstance(SRID, int):
+                    QMessageBox.information(None, "DEBUG:", str("SRID is an int"))
+
+                if isinstance(x, str):
+                    QMessageBox.information(None, "DEBUG:", str("x is a string"))
+                elif isinstance(x, int):
+                    QMessageBox.information(None, "DEBUG:", str("x is an int"))
+                elif isinstance(x, float):
+                    QMessageBox.information(None, "DEBUG:", str("x is a float"))
+                    #QMessageBox.information(None, "DEBUG:", str(x))
+                elif isinstance(x, list):
+                    QMessageBox.information(None, "DEBUG:", str("x is a list"))
+
+                if isinstance(easting, str):
+                    QMessageBox.information(None, "DEBUG:", str("easting is a string"))
+                elif isinstance(easting, int):
+                    QMessageBox.information(None, "DEBUG:", str("easting is an int"))
+                elif isinstance(easting, float):
+                    QMessageBox.information(None, "DEBUG:", str("easting is a float"))
+                elif isinstance(easting, list):
+                    QMessageBox.information(None, "DEBUG:", str("easting is a list"))
+                '''
+
+                cur.execute("""SELECT x, y, distance, cat, "locationID" FROM
+                (SELECT %s AS x,  %s  AS y,
+                ST_Distance(geom, 'SRID=%s;POINT(%s %s)'::geometry) AS distance,
+                * FROM temporary.lakes_nosefi
+                WHERE ST_DWithin(geom, 'SRID=%s;POINT(%s %s)'::geometry, 0)
+                ORDER BY
+                geom <-> 'SRID=%s;POINT(%s %s)'::geometry
+                LIMIT 1) AS a,
+                nofa.location AS b
+                WHERE cat = b."waterBodyID"
+                ORDER BY b.geom <-> 'SRID=%s;POINT(%s %s)'::geometry
+                ;""",  (x, y, srid, x, y, srid, x, y, srid, x, y, srid, x, y,))
+
+                loc = cur.fetchone()
+
+                '''
+
+                        Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
+                        'coordinates UTM33':    196098.1000	6572796.0100	Dam Grønnerød,194572.6100	6575712.0100	Dam Løberg
+                                                194572.6100	6575712.0100	løberg dam, 136210.9600	6497277.7500	Springvannsdamm, 149719.5000	6506063.2800	DamKilsund
+                                                -43893.189 6620749.358 Vågavatnet, 194572.6100	6575712.0100	Dam Løberg
+                                                262491.48	6651383.97	Akerselva,272567.61	6651129.3	nuggerudbk,342561.74	6792178.06	Våråna,379904.34	6791377.43	Storbekken,377548.06	6791361.56	Nesvollbekken
+
+                        'coordinates UTM32':    601404.85	6644928.24	Hovinbk;580033.012	6633807.99	Drengsrudbk;580322.6	6632959.64	Askerleva;658472.23	6842698.72	Engeråa;652499.37	6802699.72	Bruråsbk;
+                                                634422.28	6788379.28	Flåtestøbk;633855.79	6792859.46	Rødsbakkbk;630580.08	6785079.49	Ygla;628663.92	6785056.12	Svarttjernbk;629047.03	6785047.57	Vesl Ygla;
+                                                634687.42	6814177.67	Pottbekken;630348.1	6801364.63	Ullsettbk;
+                                                627139.64	6803681.51	Grønvollbk;530415.53	6722441.27	Åslielva;549629.28	6642631.88	Overnbek;
+                '''
+
+
+
+                if loc and loc[2] <= 10 and loc[4]:
+                    QMessageBox.information(None, "DEBUG:", str(loc[4]))
+                    self.locations['location_ID'].append(str(loc[4]))
+                    self.places.append(loc)
+                    placesID = loc[4]
+                    QMessageBox.information(None, "DEBUG:", str(placesID))
+
+
+
+                else:
+
+                    locationID = uuid.uuid4()
+                    self.locations['location_ID'].append(str(loc[4]))
+                    location_type = 'samplingPoint'
+                    self.locations['loc_type'].append(location_type)
+
+                    geom = 'MULTIPOINT({0} {1})'.format(x, y)
+                    waterbody = loc_name
+
+
+                    self.new_locs.append([locationID, geom, waterbody, srid])
+
+                    #QMessageBox.information(None, "DEBUG:", str(loc[4]))
+                    QMessageBox.information(None, "DEBUG:", str("loc not found"))
+
+
 
             self.locations['location'] = coords
-
 
     def preview(self):
 
@@ -566,7 +673,21 @@ class NOFAInsert:
                 # setItem(row, column, QTableWidgetItem)
                 self.prwdlg.table.setItem(m, n, newitem)
         self.prwdlg.table.setHorizontalHeaderLabels(headers)
+        self.prwdlg.confirmButton.clicked.connect(self.confirmed)
 
+
+    def confirmed(self):
+        QMessageBox.information(None, "DEBUG:", str(self.new_locs))
+
+        #insert the new location points to the db in nofa.location
+        for i, loc in enumerate(self.new_locs):
+            #cur = self._db_cur()
+            location_type = 'samplingPoint'
+            #cur.execute(self.insert_location, (loc[0], location_type,loc[1], loc[2], loc[3]))
+            QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, loc[1], loc[3], loc[2]))))
+
+        # generate an UUID for the event
+        event
 
 
 
