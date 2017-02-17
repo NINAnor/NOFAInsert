@@ -82,6 +82,19 @@ class NOFAInsert:
 
         self.insert_location = """INSERT INTO nofa.location ("locationID", "locationType", geom, "waterBody") VALUES (%s,%s,ST_Transform(ST_GeomFromText(%s, %s), %s), %s);"""
 
+        self.insert_event = u"""INSERT INTO nofa.event ("locationID", "eventID", "fieldNotes",
+                            "sampleSizeValue", "fieldNumber", "samplingProtocolRemarks", "recordedBy",
+                            "samplingProtocol", "reliability", "dateStart", "dateEnd", "eventRemarks",
+                            "sampleSizeUnit", "samplingEffort", "datasetID", "referenceID", "projectID")
+                            VALUES\n"""
+
+        self.insert_occurrence = u"""INSERT INTO nofa.occurrence ("occurrenceID",
+                                    "ecotypeID", "establishmentMeans", "verifiedBy", "verifiedDate", "taxonID",
+                                    "spawningLocation", "spawningCondition", "occurrenceStatus",
+                                    "yearPrecisionRemarks", "organismQuantityID",
+                                    "occurrenceRemarks", "modified", "establishmentRemarks", "eventID")
+                                    VALUES\n"""
+
 
         self.locIDType_dict = {'Norwegian VatnLnr': 'no_vatn_lnr',
                               'Swedish SjoID': 'se_sjoid',
@@ -453,7 +466,9 @@ class NOFAInsert:
         # manage the case of UTM33 coordinates
         elif location_type.startswith('coordinates'):
             type = self.locIDType_dict[location_type]
+            self.locations['loc_type'] = type
             #QMessageBox.information(None, "DEBUG:", str(type))
+
             frags = locs.split(',')
             coords = []
             # storing the ID of the locations which are exact matches of existing ones
@@ -552,10 +567,10 @@ class NOFAInsert:
                 '''
 
 
-
+                # Check if a location is already registered in the db. If it is, just get the location ID, and append it to ad-hoc variable, and the locations dict.
                 if loc and loc[2] <= 10 and loc[4]:
                     QMessageBox.information(None, "DEBUG:", str(loc[4]))
-                    self.locations['location_ID'].append(str(loc[4]))
+                    self.locations['location_ID'].append(loc[4])
                     self.places.append(loc)
                     placesID = loc[4]
                     QMessageBox.information(None, "DEBUG:", str(placesID))
@@ -565,9 +580,10 @@ class NOFAInsert:
                 else:
 
                     locationID = uuid.uuid4()
-                    self.locations['location_ID'].append(str(loc[4]))
-                    location_type = 'samplingPoint'
-                    self.locations['loc_type'].append(location_type)
+                    # location ID added to the locations dict, after conversion to string
+                    self.locations['location_ID'].append(str(locationID))
+
+
 
                     geom = 'MULTIPOINT({0} {1})'.format(x, y)
                     waterbody = loc_name
@@ -677,6 +693,10 @@ class NOFAInsert:
 
 
     def confirmed(self):
+        """
+        This method sends the information to NOFA DB
+        """
+
         QMessageBox.information(None, "DEBUG:", str(self.new_locs))
 
         #insert the new location points to the db in nofa.location
@@ -686,10 +706,36 @@ class NOFAInsert:
             #cur.execute(self.insert_location, (loc[0], location_type,loc[1], loc[2], loc[3]))
             QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, loc[1], loc[3], loc[2]))))
 
-        # generate an UUID for the event
-        event
+        # add a new event to nofa. fore each location
+        for i, loc in enumerate(self.locations['location_ID']):
+            QMessageBox.information(None, "DEBUG:", str(self.locations))
+            # generate an UUID for the event
+            event_id = uuid.uuid4()
+
+            cur = self._db_cur()
+            '''
+            insert_event += cur.mogrify(event_values,
+                                                  (locationID, eventID, fieldNotes_e, sampleSizeValue, fieldNumber_e,
+                                                   samplingProtocolRemarks, recordedBy_e, samplingProtocol,
+                                                   reliability, dateStart, dateEnd, eventRemarks, sampleSizeUnit,
+                                                   samplingEffort, datasetID, referenceID, projectID))
+            '''
 
 
+
+            '''
+
+                                    Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
+                                    'coordinates UTM33':    196098.1000	6572796.0100	Dam Grønnerød,194572.6100	6575712.0100	Dam Løberg
+                                                            194572.6100	6575712.0100	løberg dam, 136210.9600	6497277.7500	Springvannsdamm, 149719.5000	6506063.2800	DamKilsund
+                                                            -43893.189 6620749.358 Vågavatnet, 194572.6100	6575712.0100	Dam Løberg
+                                                            262491.48	6651383.97	Akerselva,272567.61	6651129.3	nuggerudbk,342561.74	6792178.06	Våråna,379904.34	6791377.43	Storbekken,377548.06	6791361.56	Nesvollbekken
+
+                                    'coordinates UTM32':    601404.85	6644928.24	Hovinbk;580033.012	6633807.99	Drengsrudbk;580322.6	6632959.64	Askerleva;658472.23	6842698.72	Engeråa;652499.37	6802699.72	Bruråsbk;
+                                                            634422.28	6788379.28	Flåtestøbk;633855.79	6792859.46	Rødsbakkbk;630580.08	6785079.49	Ygla;628663.92	6785056.12	Svarttjernbk;629047.03	6785047.57	Vesl Ygla;
+                                                            634687.42	6814177.67	Pottbekken;630348.1	6801364.63	Ullsettbk;
+                                                            627139.64	6803681.51	Grønvollbk;530415.53	6722441.27	Åslielva;549629.28	6642631.88	Overnbek;
+                            '''
 
     def _dataset_button(self):
         pass
