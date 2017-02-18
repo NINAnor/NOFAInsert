@@ -88,6 +88,9 @@ class NOFAInsert:
                             "sampleSizeUnit", "samplingEffort", "datasetID", "referenceID", "projectID")
                             VALUES\n"""
 
+        # 17 event values, placeholders
+        self.event_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+
         self.insert_occurrence = u"""INSERT INTO nofa.occurrence ("occurrenceID",
                                     "ecotypeID", "establishmentMeans", "verifiedBy", "verifiedDate", "taxonID",
                                     "spawningLocation", "spawningCondition", "occurrenceStatus",
@@ -713,17 +716,42 @@ class NOFAInsert:
             event_id = uuid.uuid4()
 
             cur = self._db_cur()
-            '''
-            insert_event += cur.mogrify(event_values,
-                                                  (locationID, eventID, fieldNotes_e, sampleSizeValue, fieldNumber_e,
-                                                   samplingProtocolRemarks, recordedBy_e, samplingProtocol,
-                                                   reliability, dateStart, dateEnd, eventRemarks, sampleSizeUnit,
-                                                   samplingEffort, datasetID, referenceID, projectID))
-            '''
+            QMessageBox.information(None, "DEBUG:", str(self.dataset['dataset_id'] + self.reference['reference_id'] +
+                                                        self.project['project_id']))
+
+            self.insert_event += cur.mogrify(self.event_values,
+                                                  (loc, str(event_id), self.event['size_value'], self.event['protocol_remarks']
+                                                   , self.event['recorded_by'], self.event['protocol'],
+                                                   self.event['reliability'], self.event['date_start'], self.event['date_end'], self.event['event_remarks'], self.event['size_unit'],
+                                                   self.event['effort'], self.dataset['dataset_id'], self.reference['reference_id'], self.project['project_id']))
+
+            QMessageBox.information(None, "DEBUG:", str(self.insert_event))
 
 
 
             '''
+
+
+                        self.insert_event = u"""INSERT INTO nofa.event ("locationID", "eventID", "fieldNotes",
+                            "sampleSizeValue", "fieldNumber", "samplingProtocolRemarks", "recordedBy",
+                            "samplingProtocol", "reliability", "dateStart", "dateEnd", "eventRemarks",
+                            "sampleSizeUnit", "samplingEffort", "datasetID", "referenceID", "projectID")
+                            VALUES\n"""
+
+        # 17 event values, placeholders
+        self.event_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+
+         self.event = {'protocol': 'unknown',
+                      'size_value': 'unknown',
+                      'size_unit': 'None',
+                      'effort': 'unknown',
+                      'protocol_remarks': 'None',
+                      'date_start': self.today,
+                      'date_end': self.today,
+                      'recorded_by': 'unknown',
+                      'event_remarks': 'None',
+                      'reliability': 'Select'
+                      }
 
                                     Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
                                     'coordinates UTM33':    196098.1000	6572796.0100	Dam Grønnerød,194572.6100	6575712.0100	Dam Løberg
@@ -877,7 +905,7 @@ class NOFAInsert:
             cur = self._db_cur()
             cur.execute(
                 u'SELECT "projectNumber", "projectName", "startYear", "endYear", "projectLeader", '
-                u'"projectMembers", "organisation", "financer", "remarks" '
+                u'"projectMembers", "organisation", "financer", "remarks", "projectID" '
                 u'FROM nofa."m_project" WHERE "projectNumber" = (%s);', (currentproject_number,))
             project = cur.fetchone()
             #QMessageBox.information(None, "DEBUG:", str(project))
@@ -893,6 +921,7 @@ class NOFAInsert:
             self.project['organisation'] = project[6]
             self.project['financer'] = project[7]
             self.project['project_remarks'] = project[8]
+            self.project['project_id'] = project[9]
 
             self.dlg.listview_project.clear()
             for key, value in self.project.iteritems():
