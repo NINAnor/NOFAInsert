@@ -81,21 +81,24 @@ class NOFAInsert:
         self.dataset_name = "none"
 
         self.insert_location = """INSERT INTO nofa.location ("locationID", "locationType", geom, "waterBody") VALUES (%s,%s,ST_Transform(ST_GeomFromText(%s, %s), %s), %s);"""
-
-        self.insert_event = u"""INSERT INTO nofa.event ("locationID", "eventID", "fieldNotes",
-                            "sampleSizeValue", "fieldNumber", "samplingProtocolRemarks", "recordedBy",
+        # creating the string for event data insertion to nofa.event table. fieldNotes is used just for testing purposes
+        self.insert_event = u"""INSERT INTO nofa.event ("locationID", "eventID",
+                            "sampleSizeValue", "samplingProtocolRemarks", "recordedBy",
                             "samplingProtocol", "reliability", "dateStart", "dateEnd", "eventRemarks",
-                            "sampleSizeUnit", "samplingEffort", "datasetID", "referenceID", "projectID")
+                            "sampleSizeUnit", "samplingEffort", "datasetID", "referenceID", "projectID", "fieldNotes")
                             VALUES\n"""
 
-        # 17 event values, placeholders
-        self.event_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+
+        # 16 event values, placeholders
+        self.event_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        # 16 occurrence values, placeholders
+        self.occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
         self.insert_occurrence = u"""INSERT INTO nofa.occurrence ("occurrenceID",
                                     "ecotypeID", "establishmentMeans", "verifiedBy", "verifiedDate", "taxonID",
                                     "spawningLocation", "spawningCondition", "occurrenceStatus",
                                     "yearPrecisionRemarks", "organismQuantityID",
-                                    "occurrenceRemarks", "modified", "establishmentRemarks", "eventID")
+                                    "occurrenceRemarks", "modified", "establishmentRemarks", "eventID", "fieldNumber")
                                     VALUES\n"""
 
 
@@ -331,8 +334,10 @@ class NOFAInsert:
 
     def update_occurrence_row(self):
 
-
-        self.occurrence['taxon'][self.row_position] = self.dlg.taxonID.currentText()
+        if self.dlg.taxonID.currentText():
+            self.occurrence['taxon'][self.row_position] = self.dlg.taxonID.currentText()
+        else:
+            self.occurrence['taxon'][self.row_position] = 'None'
         self.occurrence['ecotype'][self.row_position] = self.dlg.ecotypeID.currentText()
         self.occurrence['quantity'][self.row_position] = self.dlg.organismQuantityID.currentText()
         if self.dlg.occurrenceStatus.isChecked():
@@ -715,21 +720,54 @@ class NOFAInsert:
             # generate an UUID for the event
             event_id = uuid.uuid4()
 
-            cur = self._db_cur()
+
             QMessageBox.information(None, "DEBUG:", str(self.dataset['dataset_id'] + self.reference['reference_id'] +
                                                         self.project['project_id']))
+            insert_event = self.insert_event
+            cur = self._db_cur()
 
-            self.insert_event += cur.mogrify(self.event_values,
+            ## NB - last entry, 'test', going to fieldNotes, is just for testing purposes
+            insert_event += cur.mogrify(self.event_values,
                                                   (loc, str(event_id), self.event['size_value'], self.event['protocol_remarks']
                                                    , self.event['recorded_by'], self.event['protocol'],
                                                    self.event['reliability'], self.event['date_start'], self.event['date_end'], self.event['event_remarks'], self.event['size_unit'],
-                                                   self.event['effort'], self.dataset['dataset_id'], self.reference['reference_id'], self.project['project_id']))
+                                                   self.event['effort'], self.dataset['dataset_id'], self.reference['reference_id'], self.project['project_id'], 'test'))
 
-            QMessageBox.information(None, "DEBUG:", str(self.insert_event))
+            QMessageBox.information(None, "DEBUG:", str(insert_event))
 
+            cur = self._db_cur()
+            # insert the new event record to nofa.event
+            #cur.execute(insert_event)
+
+            for m, occ in enumerate(self.occurrence['taxon']):
+                QMessageBox.information(None, "DEBUG:", str(self.occurrence))
+                occurrence_id = uuid.uuid4()
+
+                insert_occurrence = self.insert_occurrence
+                cur = self._db_cur()
+                insert_occurrence += cur.mogrify(self.occurrence_values,
+                                                 (occurrence_id, self.occurrence['ecotype'][m], self.occurrence['est_means'][m], self.occurrence['verified_by'][m],
+                                                  self.occurrence['verified_date'][m], self.occurrence['taxon'][m], self.occurrence['spawn_loc'][m], self.occurrence['spawn_con'][m],
+                                                  self.occurrence['status'][m], self.occurrence['yearprecision_remarks'][m], self.occurrence['quantity'][m],
+                                                  self.occurrence['oc_remarks'][m], self.today, self.occurrence['est_remarks'][m],
+                                                  str(event_id), 'test'))
+
+                QMessageBox.information(None, "DEBUG:", str(insert_occurrence))
+
+                cur = self._db_cur()
+                # insert the new occurrence record to nofa.occurrence
+                # cur.execute(insert_occurrence)
+
+                # storing memory of insertion to db to log tables
 
 
             '''
+            self.insert_occurrence = u"""INSERT INTO nofa.occurrence ("occurrenceID",
+                                    "ecotypeID", "establishmentMeans", "verifiedBy", "verifiedDate", "taxonID",
+                                    "spawningLocation", "spawningCondition", "occurrenceStatus",
+                                    "yearPrecisionRemarks", "organismQuantityID",
+                                    "occurrenceRemarks", "modified", "establishmentRemarks", "eventID", "fieldNumber")
+                                    VALUES\n"""
 
 
                         self.insert_event = u"""INSERT INTO nofa.event ("locationID", "eventID", "fieldNotes",
@@ -740,6 +778,20 @@ class NOFAInsert:
 
         # 17 event values, placeholders
         self.event_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+
+        self.occurrence = {'taxon': ['Select', ],
+                           'ecotype': ['Select', ],
+                           'quantity': ['Select', ],
+                           'status': ['True', ],
+                           'oc_remarks': ['None', ],
+                           'est_means': ['Select', ],
+                           'est_remarks': ['None', ],
+                           'spawn_con': ['unknown', ],
+                           'spawn_loc': ['unknown', ],
+                           'verified_by': ['Nobody', ],
+                           'verified_date': [str(self.today), ],
+                           'yearprecision_remarks': ['None', ]
+                           }
 
          self.event = {'protocol': 'unknown',
                       'size_value': 'unknown',
