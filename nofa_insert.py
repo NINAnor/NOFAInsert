@@ -80,7 +80,7 @@ class NOFAInsert:
 
         self.dataset_name = "none"
 
-        self.insert_location = """INSERT INTO nofa.location ("locationID", "locationType", geom, "waterBody", "locationRemarks") VALUES (%s,%s,ST_Transform(ST_GeomFromText(%s, %s), %s), %s, %s);"""
+        self.insert_location = """INSERT INTO nofa.location ("locationID", "locationType", geom, "waterBody", "locationRemarks") VALUES (%s,%s,ST_PointFromText(%s, %s), %s, %s);"""
 
         self.insert_taxonomic_coverage = """INSERT INTO nofa.taxonomicCoverage("taxonID_l_taxon", "eventID_observationEvent") VALUES (%s,%s);"""
         # creating the string for event data insertion to nofa.event table. fieldNotes is used just for testing purposes
@@ -602,11 +602,12 @@ class NOFAInsert:
 
 
 
-                    geom = 'MULTIPOINT({0} {1})'.format(x, y)
+                    #geom = 'MULTIPOINT({0} {1})'.format(x, y)
+                    #geom = u"""ST_Transform(ST_GeomFromText('MULTIPOINT({0} {1})', {2}), 25833)""".format(x, y, srid)
                     waterbody = loc_name
 
 
-                    self.new_locs.append([locationID, geom, waterbody, srid])
+                    self.new_locs.append([str(locationID), x, y, srid, waterbody])
 
                     #QMessageBox.information(None, "DEBUG:", str(loc[4]))
                     QMessageBox.information(None, "DEBUG:", str("loc not found"))
@@ -720,8 +721,15 @@ class NOFAInsert:
         for i, loc in enumerate(self.new_locs):
             cur = self._db_cur()
             location_type = 'samplingPoint'
-            cur.execute(self.insert_location, (loc[0], location_type,loc[1], loc[2], loc[3], 'test'))
-            #QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, loc[1], loc[3], loc[2]))))
+
+            point = "POINT( " + str(loc[1]) + " " + str(loc[2]) + ")"
+            QMessageBox.information(None, "DEBUG:", point)
+
+
+            QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, point, loc[3], loc[4], 'test'))))
+
+            cur.execute(self.insert_location, (loc[0], location_type, point, loc[3], loc[4], 'test'))
+
 
         # add a new event to nofa. fore each location
         for i, loc in enumerate(self.locations['location_ID']):
@@ -1003,7 +1011,7 @@ class NOFAInsert:
             self.dlg.listview_project.clear()
             for key, value in self.project.iteritems():
                 if value is not None:
-                    prjitem = QListWidgetItem(key + ':    ' + value)
+                    prjitem = QListWidgetItem(key + ':    ' + str(value))
                 else:
                     prjitem = QListWidgetItem(key + ':    None')
 
