@@ -101,6 +101,13 @@ class NOFAInsert:
                                     "occurrenceRemarks", "modified", "establishmentRemarks", "eventID", "fieldNumber")
                                     VALUES\n"""
 
+        self.insert_log_occurrence = u"""INSERT INTO nofa.plugin_occurrence_log ("occurrence_id",
+                                    "event_id", "dataset_id", "project_id", "reference_id", "location_id",
+                                    "test", "username")
+                                    VALUES\n"""
+
+        self.log_occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s)'
+
 
         self.locIDType_dict = {'Norwegian VatnLnr': 'no_vatn_lnr',
                               'Swedish SjoID': 'se_sjoid',
@@ -746,7 +753,7 @@ class NOFAInsert:
                 insert_occurrence = self.insert_occurrence
                 cur = self._db_cur()
                 insert_occurrence += cur.mogrify(self.occurrence_values,
-                                                 (occurrence_id, self.occurrence['ecotype'][m], self.occurrence['est_means'][m], self.occurrence['verified_by'][m],
+                                                 (str(occurrence_id), self.occurrence['ecotype'][m], self.occurrence['est_means'][m], self.occurrence['verified_by'][m],
                                                   self.occurrence['verified_date'][m], self.occurrence['taxon'][m], self.occurrence['spawn_loc'][m], self.occurrence['spawn_con'][m],
                                                   self.occurrence['status'][m], self.occurrence['yearprecision_remarks'][m], self.occurrence['quantity'][m],
                                                   self.occurrence['oc_remarks'][m], self.today, self.occurrence['est_remarks'][m],
@@ -754,12 +761,18 @@ class NOFAInsert:
 
                 QMessageBox.information(None, "DEBUG:", str(insert_occurrence))
 
-                cur = self._db_cur()
+
                 # insert the new occurrence record to nofa.occurrence
                 # cur.execute(insert_occurrence)
 
                 # storing memory of insertion to db to log tables
-
+                cur = self._db_cur()
+                insert_log_occurrence = self.insert_log_occurrence
+                insert_log_occurrence += cur.mogrify(self.log_occurrence_values,
+                                                 (str(occurrence_id), str(event_id), self.dataset['dataset_id'], self.project['project_id'],
+                                                  self.reference['reference_id'], loc, True, self.username,
+                                                  ))
+                cur.execute(insert_log_occurrence)
 
             '''
             self.insert_occurrence = u"""INSERT INTO nofa.occurrence ("occurrenceID",
@@ -1072,10 +1085,10 @@ class NOFAInsert:
         conn_info["host"] = settings.value("host", "", type=str)
         conn_info["port"] = settings.value("port", 432, type=int)
         conn_info["database"] = settings.value("database", "", type=str)
-        username = settings.value("username", "", type=str)
+        self.username = settings.value("username", "", type=str)
         password = settings.value("password", "", type=str)
-        if len(username) != 0:
-            conn_info["user"] = username
+        if len(self.username) != 0:
+            conn_info["user"] = self.username
             conn_info["password"] = password
 
         #QMessageBox.information(None, "DEBUG:", str(conn_info))
