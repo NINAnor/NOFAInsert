@@ -81,6 +81,8 @@ class NOFAInsert:
         self.dataset_name = "none"
 
         self.insert_location = """INSERT INTO nofa.location ("locationID", "locationType", geom, "waterBody", "locationRemarks") VALUES (%s,%s,ST_Transform(ST_GeomFromText(%s, %s), %s), %s, %s);"""
+
+        self.insert_taxonomic_coverage = """INSERT INTO nofa.taxonomicCoverage("taxonID_l_taxon", "eventID_observationEvent") VALUES (%s,%s);"""
         # creating the string for event data insertion to nofa.event table. fieldNotes is used just for testing purposes
         self.insert_event = u"""INSERT INTO nofa.event ("locationID", "eventID",
                             "sampleSizeValue", "samplingProtocolRemarks", "recordedBy",
@@ -728,8 +730,8 @@ class NOFAInsert:
             event_id = uuid.uuid4()
 
 
-            QMessageBox.information(None, "DEBUG:", str(self.dataset['dataset_id'] + self.reference['reference_id'] +
-                                                        self.project['project_id']))
+            #QMessageBox.information(None, "DEBUG:", str(self.dataset['dataset_id'] + self.reference['reference_id'] +
+                                                        #self.project['project_id']))
             insert_event = self.insert_event
             cur = self._db_cur()
 
@@ -741,6 +743,16 @@ class NOFAInsert:
                                                    self.event['effort'], self.dataset['dataset_id'], self.reference['reference_id'], self.project['project_id'], 'test'))
 
             QMessageBox.information(None, "DEBUG:", str(insert_event))
+
+            # Adding taxonomic coverage for a given event
+
+            for tax in self.taxonomicc:
+                cur.execute(u'SELECT "taxonID" FROM nofa."l_taxon" WHERE "{0}" = "{1}";'.format(self.species_name[self.language], tax))
+                taxon = cur.fetchone()
+                QMessageBox.information(None, "DEBUG:", 'taxon is: ' + str(taxon[0]))
+                cur = self._db_cur()
+                cur.execute(self.insert_taxonomic_coverage, (taxon, event_id))
+
 
             cur = self._db_cur()
             # insert the new event record to nofa.event
@@ -1109,9 +1121,9 @@ class NOFAInsert:
 
     def fetch_db(self):
 
-        language = 'Norwegian'
+        self.language = 'Norwegian'
 
-        species_names = {'Latin': 'scientificName',
+        self.species_names = {'Latin': 'scientificName',
                          'English': 'vernacularName',
                          'Norwegian': 'vernacularName_NO',
                          'Swedish': 'vernacularName_SE',
@@ -1180,7 +1192,7 @@ class NOFAInsert:
         # Get taxon list
         cur = self._db_cur()
 
-        cur.execute(u'SELECT "{0}" FROM nofa.l_taxon GROUP BY "{0}";'.format(species_names[language]))
+        cur.execute(u'SELECT "{0}" FROM nofa.l_taxon GROUP BY "{0}";'.format(self.species_names[self.language]))
         species = cur.fetchall()
 
         # Create a python-list from query result
