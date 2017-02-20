@@ -80,7 +80,7 @@ class NOFAInsert:
 
         self.dataset_name = "none"
 
-        self.insert_location = """INSERT INTO nofa.location ("locationID", "locationType", geom, "waterBody") VALUES (%s,%s,ST_Transform(ST_GeomFromText(%s, %s), %s), %s);"""
+        self.insert_location = """INSERT INTO nofa.location ("locationID", "locationType", geom, "waterBody", "locationRemarks") VALUES (%s,%s,ST_Transform(ST_GeomFromText(%s, %s), %s), %s, %s);"""
         # creating the string for event data insertion to nofa.event table. fieldNotes is used just for testing purposes
         self.insert_event = u"""INSERT INTO nofa.event ("locationID", "eventID",
                             "sampleSizeValue", "samplingProtocolRemarks", "recordedBy",
@@ -716,10 +716,10 @@ class NOFAInsert:
 
         #insert the new location points to the db in nofa.location
         for i, loc in enumerate(self.new_locs):
-            #cur = self._db_cur()
+            cur = self._db_cur()
             location_type = 'samplingPoint'
-            #cur.execute(self.insert_location, (loc[0], location_type,loc[1], loc[2], loc[3]))
-            QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, loc[1], loc[3], loc[2]))))
+            cur.execute(self.insert_location, (loc[0], location_type,loc[1], loc[2], loc[3], 'test'))
+            #QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, loc[1], loc[3], loc[2]))))
 
         # add a new event to nofa. fore each location
         for i, loc in enumerate(self.locations['location_ID']):
@@ -744,7 +744,7 @@ class NOFAInsert:
 
             cur = self._db_cur()
             # insert the new event record to nofa.event
-            #cur.execute(insert_event)
+            cur.execute(insert_event)
 
             for m, occ in enumerate(self.occurrence['taxon']):
                 QMessageBox.information(None, "DEBUG:", str(self.occurrence))
@@ -763,7 +763,7 @@ class NOFAInsert:
 
 
                 # insert the new occurrence record to nofa.occurrence
-                # cur.execute(insert_occurrence)
+                cur.execute(insert_occurrence)
 
                 # storing memory of insertion to db to log tables
                 cur = self._db_cur()
