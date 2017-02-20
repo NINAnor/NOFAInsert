@@ -80,7 +80,7 @@ class NOFAInsert:
 
         self.dataset_name = "none"
 
-        self.insert_location = """INSERT INTO nofa.location ("locationID", "locationType", geom, "waterBody", "locationRemarks") VALUES (%s,%s,ST_PointFromText(%s, %s), %s, %s);"""
+        self.insert_location = """INSERT INTO nofa.location ("locationID", "locationType", geom, "waterBody", "locationRemarks") VALUES (%s, %s, %s, %s, %s);"""
 
         self.insert_taxonomic_coverage = """INSERT INTO nofa.taxonomicCoverage("taxonID_l_taxon", "eventID_observationEvent") VALUES (%s,%s);"""
         # creating the string for event data insertion to nofa.event table. fieldNotes is used just for testing purposes
@@ -723,17 +723,23 @@ class NOFAInsert:
             location_type = 'samplingPoint'
 
             point = "POINT( " + str(loc[1]) + " " + str(loc[2]) + ")"
+            geom = "ST_GeomFromText('" + point + ", "+ str(loc[3]) + ")"
             QMessageBox.information(None, "DEBUG:", point)
 
 
-            QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, point, loc[3], loc[4], 'test'))))
+            QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, geom, loc[4], 'test'))))
 
-            cur.execute(self.insert_location, (loc[0], location_type, point, loc[3], loc[4], 'test'))
+            try:
+                cur.execute(self.insert_location, (loc[0], location_type, point, loc[3], loc[4], 'test'))
+            except:
+                QMessageBox.information(None, "DEBUG:", str('problem inserting the new locations to db'))
 
 
         # add a new event to nofa. fore each location
         for i, loc in enumerate(self.locations['location_ID']):
+            QMessageBox.information(None, "DEBUG:", str('in the event loop'))
             QMessageBox.information(None, "DEBUG:", str(self.locations))
+            QMessageBox.information(None, "DEBUG:", str(type(loc)))
             # generate an UUID for the event
             event_id = uuid.uuid4()
 
@@ -742,10 +748,11 @@ class NOFAInsert:
                                                         #self.project['project_id']))
             insert_event = self.insert_event
             cur = self._db_cur()
+            loc_uuid = uuid.UUID(loc).hex
 
             ## NB - last entry, 'test', going to fieldNotes, is just for testing purposes
             insert_event += cur.mogrify(self.event_values,
-                                                  (loc, str(event_id), self.event['size_value'], self.event['protocol_remarks']
+                                                  (loc_uuid, event_id, self.event['size_value'], self.event['protocol_remarks']
                                                    , self.event['recorded_by'], self.event['protocol'],
                                                    self.event['reliability'], self.event['date_start'], self.event['date_end'], self.event['event_remarks'], self.event['size_unit'],
                                                    self.event['effort'], self.dataset['dataset_id'], self.reference['reference_id'], self.project['project_id'], 'test'))
