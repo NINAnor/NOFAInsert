@@ -32,9 +32,12 @@ from reference_dialog import ReferenceDialog
 from preview_dialog import PreviewDialog
 import os.path
 import psycopg2
+from psycopg2 import extras
 import logging
 import datetime
 import uuid
+
+# register uuid data type for psycopg2
 
 
 class NOFAInsert:
@@ -48,6 +51,8 @@ class NOFAInsert:
             application at run time.
         :type iface: QgsInterface
         """
+        extras.register_uuid()
+
         # Save reference to the QGIS interface
         self.iface = iface
         # initialize plugin directory
@@ -163,7 +168,7 @@ class NOFAInsert:
         self.taxonomicc = []
 
         self.event = {'protocol': 'unknown',
-                      'size_value': 'unknown',
+                      'size_value': None,
                       'size_unit': 'None',
                       'effort': 'unknown',
                       'protocol_remarks': 'None',
@@ -464,6 +469,7 @@ class NOFAInsert:
             #QMessageBox.information(None, "DEBUG:", str(loc_names))
 
             coords = []
+            QMessageBox.information(None, "DEBUG:", str("this is loc_list: " + loc_list))
             if len(loc_list) == len(locations):
                 for i, loc in enumerate(loc_list):
                     if loc_names[i] is None:
@@ -597,8 +603,8 @@ class NOFAInsert:
                 else:
 
                     locationID = uuid.uuid4()
-                    # location ID added to the locations dict, after conversion to string
-                    self.locations['location_ID'].append(str(locationID))
+                    # location ID added to the locations dict
+                    self.locations['location_ID'].append(locationID)
 
 
 
@@ -607,7 +613,7 @@ class NOFAInsert:
                     waterbody = loc_name
 
 
-                    self.new_locs.append([str(locationID), x, y, srid, waterbody])
+                    self.new_locs.append([locationID, x, y, srid, waterbody])
 
                     #QMessageBox.information(None, "DEBUG:", str(loc[4]))
                     QMessageBox.information(None, "DEBUG:", str("loc not found"))
@@ -631,8 +637,10 @@ class NOFAInsert:
         self.event['size_unit'] = self.dlg.sampleSizeUnit.currentText()
         self.event['effort'] = self.dlg.samplingEffort.text()
         self.event['protocol_remarks'] = self.dlg.samplingProtocolRemarks.text()
-        self.event['date_start'] = self.dlg.dateStart.date().toString()
-        self.event['date_end'] = self.dlg.dateEnd.date().toString()
+        #self.event['date_start'] = self.dlg.dateStart.date().toString()
+        self.event['date_start'] = self.dlg.dateStart.date()
+        #self.event['date_end'] = self.dlg.dateEnd.date().toString()
+        self.event['date_end'] = self.dlg.dateEnd.date()
         self.event['recorded_by'] = self.dlg.recordedBy_e.text()
         self.event['event_remarks'] = self.dlg.eventRemarks.text()
         self.event['reliability'] = self.dlg.reliability.currentText()
@@ -739,7 +747,7 @@ class NOFAInsert:
         for i, loc in enumerate(self.locations['location_ID']):
             QMessageBox.information(None, "DEBUG:", str('in the event loop'))
             QMessageBox.information(None, "DEBUG:", str(self.locations))
-            QMessageBox.information(None, "DEBUG:", str(type(loc)))
+            QMessageBox.information(None, "DEBUG:", str(type(self.locations['location_ID'][i])))
             # generate an UUID for the event
             event_id = uuid.uuid4()
 
@@ -747,17 +755,133 @@ class NOFAInsert:
             #QMessageBox.information(None, "DEBUG:", str(self.dataset['dataset_id'] + self.reference['reference_id'] +
                                                         #self.project['project_id']))
             insert_event = self.insert_event
-            cur = self._db_cur()
-            loc_uuid = uuid.UUID(loc).hex
 
+            #loc_uuid = uuid.UUID(loc)
+            #event_uuid = uuid.UUID(str(event_id)).urn
+            #QMessageBox.information(None, "DEBUG:", str(type(loc_uuid)))
+            QMessageBox.information(None, "DEBUG:", 'before ' + str((loc, event_id, self.event['size_value'], self.event['protocol_remarks'], self.event['recorded_by'], self.event['protocol'], self.event['reliability'], self.event['date_start'], self.event['date_end'], self.event['event_remarks'], self.event['size_unit'], self.event['effort'], self.dataset['dataset_id'], self.reference['reference_id'], self.project['project_id'], 'test')))
             ## NB - last entry, 'test', going to fieldNotes, is just for testing purposes
-            insert_event += cur.mogrify(self.event_values,
-                                                  (loc_uuid, event_id, self.event['size_value'], self.event['protocol_remarks']
-                                                   , self.event['recorded_by'], self.event['protocol'],
-                                                   self.event['reliability'], self.event['date_start'], self.event['date_end'], self.event['event_remarks'], self.event['size_unit'],
-                                                   self.event['effort'], self.dataset['dataset_id'], self.reference['reference_id'], self.project['project_id'], 'test'))
+
+
+            if self.event['protocol_remarks'] is None:
+                QMessageBox.information(None, "DEBUG:", "protocol remarks is empty")
+                self.event['protocol_remarks'] = 'None'
+
+            if self.event['size_value'] is None:
+                self.event['size_value'] = 0
+                size_value = 0
+            elif isinstance(self.event['size_value'], unicode):
+                if self.event['size_value'] == '':
+                    self.event['size_value'] = 0
+                    size_value = 0
+                else:
+                    size_value = int(self.event['size_value'])
+
+            if self.event['recorded_by'] is None:
+                self.event['recorded_by'] = 'None'
+
+            if self.event['protocol'] is None:
+                self.event['protocol'] = 'None'
+
+            if self.event['event_remarks'] is None:
+                self.event['event_remarks'] = 'None'
+
+            if self.event['size_unit'] is None:
+                self.event['size_unit'] = 'metre'
+            elif self.event['size_unit'] == 'None':
+                self.event['size_unit'] = 'metre'
+
+            start_date = self.event['date_start'].toPyDate()
+            end_date = self.event['date_end'].toPyDate()
+            #QMessageBox.information(None, "DEBUG:", 'effort type is: ' + str(type(self.event['effort'])))
+
+            if self.event['effort'] is None:
+                self.event['effort'] = 0
+                effort = self.event['effort']
+            elif isinstance(self.event['effort'], str):
+                try:
+                    effort = int(self.event['effort'])
+                except:
+                    self.event['effort'] = 0
+                    effort = self.event['effort']
+            elif isinstance(self.event['effort'], unicode):
+                try:
+                    effort = int(self.event['effort'])
+                except:
+                    self.event['effort'] = 0
+                    effort = self.event['effort']
+
+            if isinstance(self.dataset['dataset_id'], str):
+                if self.dataset['dataset_id'] == 'None':
+                    QMessageBox.information(None, "DEBUG:", 'Please select a dataset')
+                    return
+                else:
+                    try:
+                        dataset = int(self.dataset['dataset_id'])
+                    except:
+                        QMessageBox.information(None, "DEBUG:",
+                                                'The type of datasetid is wrong. Should be integer')
+                        return
+            elif self.dataset['dataset_id'] is None:
+                QMessageBox.information(None, "DEBUG:", 'Please select a dataset')
+                return
+
+            if isinstance(self.reference['reference_id'], str):
+                if self.reference['reference_id'] == 'None':
+                    QMessageBox.information(None, "DEBUG:", 'Please select a reference')
+                    return
+                else:
+                    try:
+                        reference = int(self.reference['reference_id'])
+                    except:
+                        QMessageBox.information(None, "DEBUG:",
+                                                'The type of referenceid is wrong. Should be integer')
+                        return
+            elif self.reference['reference_id'] is None:
+                QMessageBox.information(None, "DEBUG:", 'Please select a reference')
+                return
+
+            # check project ID type, and convert to int
+            if isinstance(self.project['project_id'], int):
+                project = self.project['project_id']
+            elif isinstance(self.project['project_id'], str):
+                if self.project['project_id'] == 'None':
+                    QMessageBox.information(None, "DEBUG:", 'Please select a project')
+                    return
+                else:
+                    try:
+                        project = int(self.project['project_id'])
+                    except:
+                        QMessageBox.information(None, "DEBUG:",
+                                                'The type of project id is wrong. Should be integer')
+                        return
+            elif isinstance(self.project['project_id'], unicode):
+                try:
+                    project = int(self.project['project_id'])
+                except:
+                    QMessageBox.information(None, "DEBUG:", 'Problem with project id')
+                    # self.project['project_id'] = 0
+                    #project = int(self.project['project_id'])
+            elif self.project['project_id'] is None:
+                QMessageBox.information(None, "DEBUG:", 'Please select a project')
+                return
+
+            # get the reliability index from reliability text
+            # cur = self._db_cur()
+            # cur.execute(u'SELECT "reliabilityID" FROM nofa."l_reliability" WHERE "reliability" = %s;',  (self.event['reliability'],))
+            # rel = cur.fetchone()
+            # QMessageBox.information(None, "DEBUG:", 'reliability index is: ' + str(rel))
+
+
+            cur = self._db_cur()
+            insert_event += cur.mogrify(self.event_values, (loc, event_id, size_value, self.event['protocol_remarks'],
+                                                            self.event['recorded_by'], self.event['protocol'], self.event['reliability'],
+                                                            start_date, end_date, self.event['event_remarks'],
+                                                            self.event['size_unit'], effort, dataset,
+                                                            reference, project, 'test',))
 
             QMessageBox.information(None, "DEBUG:", str(insert_event))
+            QMessageBox.information(None, "DEBUG:", str(type(loc)) + str(type(event_id))+ str(type(self.event['size_value']))+ str(type(self.event['protocol_remarks']))+ str(type(self.event['recorded_by']))+ str(type(self.event['protocol']))+ str(type(self.event['reliability'])) + str(type(self.event['date_start']))+ str(type(self.event['date_end']))+str(type( self.event['event_remarks']))+ str(type(self.event['size_unit'])) + str(type(effort)) + str(type(dataset)) + str(type(reference)) + str(type(project)) + str(type('text')))
 
             # Adding taxonomic coverage for a given event
 
@@ -767,6 +891,7 @@ class NOFAInsert:
                 QMessageBox.information(None, "DEBUG:", 'taxon is: ' + str(taxon[0]))
                 cur = self._db_cur()
                 cur.execute(self.insert_taxonomic_coverage, (taxon, event_id))
+
 
 
             cur = self._db_cur()
