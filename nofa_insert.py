@@ -146,7 +146,7 @@ class NOFAInsert:
                            'spawn_con': 'unknown',
                            'spawn_loc': 'unknown',
                            'verified_by': 'Nobody',
-                           'verified_date': str(self.today),
+                           'verified_date': self.today,
                            'yearprecision_remarks': 'None'
 
                             }
@@ -161,7 +161,7 @@ class NOFAInsert:
                            'spawn_con': ['unknown', ],
                            'spawn_loc': ['unknown', ],
                            'verified_by': ['Nobody', ],
-                           'verified_date': [str(self.today), ],
+                           'verified_date': [self.today, ],
                            'yearprecision_remarks': ['None', ]
                            }
 
@@ -592,11 +592,11 @@ class NOFAInsert:
 
                 # Check if a location is already registered in the db. If it is, just get the location ID, and append it to ad-hoc variable, and the locations dict.
                 if loc and loc[2] <= 10 and loc[4]:
-                    QMessageBox.information(None, "DEBUG:", str(loc[4]))
+                    #QMessageBox.information(None, "DEBUG:", str(loc[4]))
                     self.locations['location_ID'].append(loc[4])
                     self.places.append(loc)
                     placesID = loc[4]
-                    QMessageBox.information(None, "DEBUG:", str(placesID))
+                    #QMessageBox.information(None, "DEBUG:", str(placesID))
 
 
 
@@ -616,7 +616,7 @@ class NOFAInsert:
                     self.new_locs.append([locationID, x, y, srid, waterbody])
 
                     #QMessageBox.information(None, "DEBUG:", str(loc[4]))
-                    QMessageBox.information(None, "DEBUG:", str("loc not found"))
+                    #QMessageBox.information(None, "DEBUG:", str("loc not found"))
 
 
 
@@ -735,7 +735,7 @@ class NOFAInsert:
             QMessageBox.information(None, "DEBUG:", point)
 
 
-            QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, geom, loc[4], 'test'))))
+            #QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, geom, loc[4], 'test'))))
 
             try:
                 cur.execute(self.insert_location, (loc[0], location_type, point, loc[3], loc[4], 'test'))
@@ -746,8 +746,8 @@ class NOFAInsert:
         # add a new event to nofa. fore each location
         for i, loc in enumerate(self.locations['location_ID']):
             QMessageBox.information(None, "DEBUG:", str('in the event loop'))
-            QMessageBox.information(None, "DEBUG:", str(self.locations))
-            QMessageBox.information(None, "DEBUG:", str(type(self.locations['location_ID'][i])))
+            #QMessageBox.information(None, "DEBUG:", str(self.locations))
+            #QMessageBox.information(None, "DEBUG:", str(type(self.locations['location_ID'][i])))
             # generate an UUID for the event
             event_id = uuid.uuid4()
 
@@ -759,7 +759,8 @@ class NOFAInsert:
             #loc_uuid = uuid.UUID(loc)
             #event_uuid = uuid.UUID(str(event_id)).urn
             #QMessageBox.information(None, "DEBUG:", str(type(loc_uuid)))
-            QMessageBox.information(None, "DEBUG:", 'before ' + str((loc, event_id, self.event['size_value'], self.event['protocol_remarks'], self.event['recorded_by'], self.event['protocol'], self.event['reliability'], self.event['date_start'], self.event['date_end'], self.event['event_remarks'], self.event['size_unit'], self.event['effort'], self.dataset['dataset_id'], self.reference['reference_id'], self.project['project_id'], 'test')))
+
+           # QMessageBox.information(None, "DEBUG:", 'before ' + str((loc, event_id, self.event['size_value'], self.event['protocol_remarks'], self.event['recorded_by'], self.event['protocol'], self.event['reliability'], self.event['date_start'], self.event['date_end'], self.event['event_remarks'], self.event['size_unit'], self.event['effort'], self.dataset['dataset_id'], self.reference['reference_id'], self.project['project_id'], 'test')))
             ## NB - last entry, 'test', going to fieldNotes, is just for testing purposes
 
 
@@ -776,6 +777,8 @@ class NOFAInsert:
                     size_value = 0
                 else:
                     size_value = int(self.event['size_value'])
+            else:
+                size_value = 0
 
             if self.event['recorded_by'] is None:
                 self.event['recorded_by'] = 'None'
@@ -886,7 +889,8 @@ class NOFAInsert:
             # Adding taxonomic coverage for a given event
 
             for tax in self.taxonomicc:
-                cur.execute(u'SELECT "taxonID" FROM nofa."l_taxon" WHERE "{0}" = "{1}";'.format(self.species_name[self.language], tax))
+                cur.execute(u"""SELECT "taxonID" FROM nofa."l_taxon" WHERE "%s" = '%s';""",
+                            (self.species_names[self.language], tax,))
                 taxon = cur.fetchone()
                 QMessageBox.information(None, "DEBUG:", 'taxon is: ' + str(taxon[0]))
                 cur = self._db_cur()
@@ -902,14 +906,37 @@ class NOFAInsert:
                 QMessageBox.information(None, "DEBUG:", str(self.occurrence))
                 occurrence_id = uuid.uuid4()
 
+                # WARNING -  temporary solution until a new ecotype table is available
+                ecotype_id = 0
+
+                # change type of date in a uitable one for postgres
+                #verified_date = self.occurrence['verified_date'][m].toPyDate()
+                verified_date = self.occurrence['verified_date'][m]
+
+                if self.occurrence['taxon'][m] == 'Select':
+                    QMessageBox.information(None, "DEBUG:", 'Please select a a taxon ID for your occurrence entry')
+                    return
+                else:
+                    cur = self._db_cur()
+                    QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(self.occurrence['taxon'][m]))
+                    query = """SELECT "taxonID" FROM nofa."l_taxon" WHERE "%s" = '%s';"""
+                    #query_string = cur.mogrify(query, (self.species_names[self.language], self.occurrence['taxon'][m].encode('utf8')))
+                    query_string = cur.mogrify(query, (self.species_names[self.language], self.occurrence['taxon'][m].encode('iso-8859-1')))
+                    QMessageBox.information(None, "DEBUG:", 'query string is: ' + query_string)
+                    cur.execute(query_string)
+                    #cur.execute("""SELECT "taxonID" FROM nofa."l_taxon" WHERE "%s" = '%s';""",
+                    #            (self.species_names[self.language], self.occurrence['taxon'][m].decode('iso-8859-1'),))
+                    taxon = cur.fetchone()
+                    QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(taxon))
+
                 insert_occurrence = self.insert_occurrence
                 cur = self._db_cur()
                 insert_occurrence += cur.mogrify(self.occurrence_values,
-                                                 (str(occurrence_id), self.occurrence['ecotype'][m], self.occurrence['est_means'][m], self.occurrence['verified_by'][m],
-                                                  self.occurrence['verified_date'][m], self.occurrence['taxon'][m], self.occurrence['spawn_loc'][m], self.occurrence['spawn_con'][m],
+                                                 (occurrence_id, ecotype_id, self.occurrence['est_means'][m], self.occurrence['verified_by'][m],
+                                                  verified_date, taxon[0], self.occurrence['spawn_loc'][m], self.occurrence['spawn_con'][m],
                                                   self.occurrence['status'][m], self.occurrence['yearprecision_remarks'][m], self.occurrence['quantity'][m],
                                                   self.occurrence['oc_remarks'][m], self.today, self.occurrence['est_remarks'][m],
-                                                  str(event_id), 'test'))
+                                                  event_id, 'test'))
 
                 QMessageBox.information(None, "DEBUG:", str(insert_occurrence))
 
@@ -1635,7 +1662,10 @@ class NOFAInsert:
         for n, key in enumerate(sorted(self.occurrence.keys())):
             headers.append(key)
             for m, item in enumerate(self.occurrence[key]):
-                newitem = QTableWidgetItem(item)
+                try:
+                    newitem = QTableWidgetItem(item)
+                except:
+                    newitem = QTableWidgetItem(str(item))
                 # setItem(row, column, QTableWidgetItem)
                 self.dlg.tableWidget.setItem(m, n, newitem)
             self.dlg.tableWidget.setHorizontalHeaderLabels(headers)
