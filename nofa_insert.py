@@ -732,7 +732,7 @@ class NOFAInsert:
 
             point = "POINT( " + str(loc[1]) + " " + str(loc[2]) + ")"
             geom = "ST_GeomFromText('" + point + ", "+ str(loc[3]) + ")"
-            QMessageBox.information(None, "DEBUG:", point)
+            #QMessageBox.information(None, "DEBUG:", point)
 
 
             #QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, geom, loc[4], 'test'))))
@@ -745,7 +745,7 @@ class NOFAInsert:
 
         # add a new event to nofa. fore each location
         for i, loc in enumerate(self.locations['location_ID']):
-            QMessageBox.information(None, "DEBUG:", str('in the event loop'))
+            #QMessageBox.information(None, "DEBUG:", str('in the event loop'))
             #QMessageBox.information(None, "DEBUG:", str(self.locations))
             #QMessageBox.information(None, "DEBUG:", str(type(self.locations['location_ID'][i])))
             # generate an UUID for the event
@@ -813,6 +813,9 @@ class NOFAInsert:
                 except:
                     self.event['effort'] = 0
                     effort = self.event['effort']
+            else:
+                self.event['effort'] = 0
+                effort = 0
 
             if isinstance(self.dataset['dataset_id'], str):
                 if self.dataset['dataset_id'] == 'None':
@@ -883,8 +886,8 @@ class NOFAInsert:
                                                             self.event['size_unit'], effort, dataset,
                                                             reference, project, 'test',))
 
-            QMessageBox.information(None, "DEBUG:", str(insert_event))
-            QMessageBox.information(None, "DEBUG:", str(type(loc)) + str(type(event_id))+ str(type(self.event['size_value']))+ str(type(self.event['protocol_remarks']))+ str(type(self.event['recorded_by']))+ str(type(self.event['protocol']))+ str(type(self.event['reliability'])) + str(type(self.event['date_start']))+ str(type(self.event['date_end']))+str(type( self.event['event_remarks']))+ str(type(self.event['size_unit'])) + str(type(effort)) + str(type(dataset)) + str(type(reference)) + str(type(project)) + str(type('text')))
+            #QMessageBox.information(None, "DEBUG:", str(insert_event))
+            #QMessageBox.information(None, "DEBUG:", str(type(loc)) + str(type(event_id))+ str(type(self.event['size_value']))+ str(type(self.event['protocol_remarks']))+ str(type(self.event['recorded_by']))+ str(type(self.event['protocol']))+ str(type(self.event['reliability'])) + str(type(self.event['date_start']))+ str(type(self.event['date_end']))+str(type( self.event['event_remarks']))+ str(type(self.event['size_unit'])) + str(type(effort)) + str(type(dataset)) + str(type(reference)) + str(type(project)) + str(type('text')))
 
             # Adding taxonomic coverage for a given event
 
@@ -892,7 +895,7 @@ class NOFAInsert:
                 cur.execute(u"""SELECT "taxonID" FROM nofa."l_taxon" WHERE "%s" = '%s';""",
                             (self.species_names[self.language], tax,))
                 taxon = cur.fetchone()
-                QMessageBox.information(None, "DEBUG:", 'taxon is: ' + str(taxon[0]))
+                #QMessageBox.information(None, "DEBUG:", 'taxon is: ' + str(taxon[0]))
                 cur = self._db_cur()
                 cur.execute(self.insert_taxonomic_coverage, (taxon, event_id))
 
@@ -903,7 +906,7 @@ class NOFAInsert:
             cur.execute(insert_event)
 
             for m, occ in enumerate(self.occurrence['taxon']):
-                QMessageBox.information(None, "DEBUG:", str(self.occurrence))
+                #QMessageBox.information(None, "DEBUG:", str(self.occurrence))
                 occurrence_id = uuid.uuid4()
 
                 # WARNING -  temporary solution until a new ecotype table is available
@@ -918,11 +921,19 @@ class NOFAInsert:
                     return
                 else:
                     cur = self._db_cur()
-                    QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(self.occurrence['taxon'][m]))
-                    query = """SELECT "taxonID" FROM nofa."l_taxon" WHERE "%s" = '%s';"""
+                    QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(type(str(self.occurrence['taxon'][m]))))
+                    query = """SELECT "taxonID" FROM nofa."l_taxon" WHERE "%s" = %s;"""
+                    # the postgres server_sncoding is UTF8
+                    #  set client_encoding to 'latin1'
+                    #  set client_encoding to 'UNICODE'
+                    # SHOW SERVER_ENCODING;
+                    # SHOW CLIENT_ENCODING;
                     #query_string = cur.mogrify(query, (self.species_names[self.language], self.occurrence['taxon'][m].encode('utf8')))
-                    query_string = cur.mogrify(query, (self.species_names[self.language], self.occurrence['taxon'][m].encode('iso-8859-1')))
+                    #query_string = cur.mogrify(query, (self.species_names[self.language], self.occurrence['taxon'][m].encode('iso-8859-1').decode('utf8', 'ignore')))
+                    #query_string = cur.mogrify(query, (self.species_names[self.language], self.occurrence['taxon'][m],))
+                    query_string = cur.mogrify(query, (self.species_names[self.language], str(self.occurrence['taxon'][m]),))
                     QMessageBox.information(None, "DEBUG:", 'query string is: ' + query_string)
+                    QMessageBox.information(None, "DEBUG:", 'query string is: ' + str(type(query_string)))
                     cur.execute(query_string)
                     #cur.execute("""SELECT "taxonID" FROM nofa."l_taxon" WHERE "%s" = '%s';""",
                     #            (self.species_names[self.language], self.occurrence['taxon'][m].decode('iso-8859-1'),))
