@@ -100,13 +100,13 @@ class NOFAInsert:
         # 16 event values, placeholders
         self.event_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
         # 16 occurrence values, placeholders
-        self.occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        self.occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
         self.insert_occurrence = u"""INSERT INTO nofa.occurrence ("occurrenceID",
                                     "ecotypeID", "establishmentMeans", "verifiedBy", "verifiedDate", "taxonID",
                                     "spawningLocation", "spawningCondition", "occurrenceStatus",
                                     "yearPrecisionRemarks", "organismQuantityID",
-                                    "occurrenceRemarks", "modified", "establishmentRemarks", "eventID", "fieldNumber")
+                                    "occurrenceRemarks", "modified", "establishmentRemarks", "eventID", "organismQuantityMetric", "fieldNumber")
                                     VALUES\n"""
 
         self.insert_log_occurrence = u"""INSERT INTO nofa.plugin_occurrence_log ("occurrence_id",
@@ -353,6 +353,7 @@ class NOFAInsert:
             self.occurrence['taxon'][self.row_position] = self.dlg.taxonID.currentText()
         else:
             self.occurrence['taxon'][self.row_position] = 'None'
+
         self.occurrence['ecotype'][self.row_position] = self.dlg.ecotypeID.currentText()
         self.occurrence['quantity'][self.row_position] = self.dlg.organismQuantityID.currentText()
         if self.dlg.occurrenceStatus.isChecked():
@@ -366,13 +367,16 @@ class NOFAInsert:
         self.occurrence['spawn_con'][self.row_position] = self.dlg.spawningCondition.currentText()
         self.occurrence['spawn_loc'][self.row_position] = self.dlg.spawningLocation.currentText()
         self.occurrence['verified_by'][self.row_position] = self.dlg.verifiedBy.text()
-        self.occurrence['verified_date'][self.row_position] = self.dlg.verifiedDate.date().toString()
+        self.occurrence['verified_date'][self.row_position] = self.dlg.verifiedDate.date()
         self.occurrence['yearprecision_remarks'][self.row_position] = self.dlg.yearPrecisionRemarks.text()
 
 
         for m, key in enumerate(sorted(self.occurrence.keys())):
             item = self.occurrence[key][self.row_position]
-            newitem = QTableWidgetItem(item)
+            try:
+                newitem = QTableWidgetItem(item)
+            except:
+                newitem = QTableWidgetItem(str(item))
             # setItem(row, column, QTableWidgetItem)
             self.dlg.tableWidget.setItem(self.row_position, m, newitem)
 
@@ -911,71 +915,45 @@ class NOFAInsert:
                 occurrence_id = uuid.uuid4()
 
                 # WARNING -  temporary solution until a new ecotype table is available
-                ecotype_id = 0
+                ecotype_id = 2405
 
                 # change type of date in a uitable one for postgres
                 #verified_date = self.occurrence['verified_date'][m].toPyDate()
-                verified_date = self.occurrence['verified_date'][m]
+
 
                 if self.occurrence['taxon'][m] == 'Select':
                     QMessageBox.information(None, "DEBUG:", 'Please select a a taxon ID for your occurrence entry')
                     return
                 else:
-                    cur = self._db_cur()
-                    QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(type(str(self.occurrence['taxon'][m]))))
+                    #QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(type(str(self.occurrence['taxon'][m]))))
                     try:
-                        query = """SELECT "taxonID" FROM nofa."l_taxon" WHERE "vernacularName_NO" = %s;"""
-                        query_string = cur.mogrify(query, (str(self.occurrence['taxon'][m]),))
-                        cur.execute(query_string)
-                        QMessageBox.information(None, "DEBUG:", 'query string is: ' + query_string)
-                        QMessageBox.information(None, "DEBUG:", 'query string is: ' + str(type(query_string)))
+                        #QMessageBox.information(None, "DEBUG:", self.occurrence['taxon'][m])
+                        cur = self._db_cur()
+                        query = u"""SELECT "taxonID" FROM nofa."l_taxon" WHERE "{}" = %s;""".format(
+                            self.species_names[self.language])
+                        cur.execute(query, (self.occurrence['taxon'][m],))
                     except:
                         e = sys.exc_info()[1]
-
                         QMessageBox.information(None, "DEBUG:", "<p>Error: %s</p>" % e)
-                        try:
 
-                            cur = self._db_cur()
-                            query = """SELECT "taxonID" FROM nofa."l_taxon" WHERE "vernacularName_NO" = %s;"""
-                            cur.execute(query, (self.occurrence['taxon'][m],))
-                        except:
-                            QMessageBox.information(None, "DEBUG:", 'not the good way')
-                            e = sys.exc_info()[1]
 
-                            QMessageBox.information(None, "DEBUG:", "<p>Error: %s</p>" % e)
-                            try:
-                                QMessageBox.information(None, "DEBUG:", self.occurrence['taxon'][m])
-                                cur = self._db_cur()
-                                pre_query = """SELECT "taxonID" FROM nofa."l_taxon" WHERE """ + str(self.species_names[self.language])
-                                query = pre_query + """ = %s;"""
-                                cur.execute(query, (self.occurrence['taxon'][m],))
-                            except:
-                                e = sys.exc_info()[1]
-
-                                QMessageBox.information(None, "DEBUG:", "<p>Error: %s</p>" % e)
-
-                    # the postgres server_encoding is UTF8
-                    #  set client_encoding to 'latin1'
-                    #  set client_encoding to 'UNICODE'
-                    # SHOW SERVER_ENCODING;
-                    # SHOW CLIENT_ENCODING;
-                    #query_string = cur.mogrify(query, (self.species_names[self.language], self.occurrence['taxon'][m].encode('utf8')))
-                    #query_string = cur.mogrify(query, (self.species_names[self.language], self.occurrence['taxon'][m].encode('iso-8859-1').decode('utf8', 'ignore')))
-                    #query_string = cur.mogrify(query, (self.species_names[self.language], self.occurrence['taxon'][m],))
-
-                    #cur.execute("""SELECT "taxonID" FROM nofa."l_taxon" WHERE "%s" = '%s';""",
-                    #            (self.species_names[self.language], self.occurrence['taxon'][m].decode('iso-8859-1'),))
-                    taxon = cur.fetchone()
+                    taxon = cur.fetchone()[0]
                     QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(taxon))
+
+                verified_date = self.occurrence['verified_date'][m].toPyDate()
+
+                # WARNING - this is a temporary placeholder value. It should be sniffed from the occurrence form (to be developed)
+                organismquantity_metric = 1
+                QMessageBox.information(None, "DEBUG:", str(self.occurrence['quantity'][m]))
 
                 insert_occurrence = self.insert_occurrence
                 cur = self._db_cur()
                 insert_occurrence += cur.mogrify(self.occurrence_values,
                                                  (occurrence_id, ecotype_id, self.occurrence['est_means'][m], self.occurrence['verified_by'][m],
-                                                  verified_date, taxon[0], self.occurrence['spawn_loc'][m], self.occurrence['spawn_con'][m],
+                                                  verified_date, taxon, self.occurrence['spawn_loc'][m], self.occurrence['spawn_con'][m],
                                                   self.occurrence['status'][m], self.occurrence['yearprecision_remarks'][m], self.occurrence['quantity'][m],
                                                   self.occurrence['oc_remarks'][m], self.today, self.occurrence['est_remarks'][m],
-                                                  event_id, 'test'))
+                                                  event_id, organismquantity_metric, 'test'))
 
                 QMessageBox.information(None, "DEBUG:", str(insert_occurrence))
 
@@ -991,6 +969,8 @@ class NOFAInsert:
                                                   self.reference['reference_id'], loc, True, self.username,
                                                   ))
                 cur.execute(insert_log_occurrence)
+
+                QMessageBox.information(None, "DEBUG:", "occurrence correctly stored in NOFA db")
 
             '''
             self.insert_occurrence = u"""INSERT INTO nofa.occurrence ("occurrenceID",
