@@ -36,6 +36,7 @@ from psycopg2 import extras
 import logging
 import datetime
 import uuid
+import sys
 
 # register uuid data type for psycopg2
 
@@ -922,8 +923,38 @@ class NOFAInsert:
                 else:
                     cur = self._db_cur()
                     QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(type(str(self.occurrence['taxon'][m]))))
-                    query = """SELECT "taxonID" FROM nofa."l_taxon" WHERE "%s" = %s;"""
-                    # the postgres server_sncoding is UTF8
+                    try:
+                        query = """SELECT "taxonID" FROM nofa."l_taxon" WHERE "vernacularName_NO" = %s;"""
+                        query_string = cur.mogrify(query, (str(self.occurrence['taxon'][m]),))
+                        cur.execute(query_string)
+                        QMessageBox.information(None, "DEBUG:", 'query string is: ' + query_string)
+                        QMessageBox.information(None, "DEBUG:", 'query string is: ' + str(type(query_string)))
+                    except:
+                        e = sys.exc_info()[1]
+
+                        QMessageBox.information(None, "DEBUG:", "<p>Error: %s</p>" % e)
+                        try:
+
+                            cur = self._db_cur()
+                            query = """SELECT "taxonID" FROM nofa."l_taxon" WHERE "vernacularName_NO" = %s;"""
+                            cur.execute(query, (self.occurrence['taxon'][m],))
+                        except:
+                            QMessageBox.information(None, "DEBUG:", 'not the good way')
+                            e = sys.exc_info()[1]
+
+                            QMessageBox.information(None, "DEBUG:", "<p>Error: %s</p>" % e)
+                            try:
+                                QMessageBox.information(None, "DEBUG:", self.occurrence['taxon'][m])
+                                cur = self._db_cur()
+                                pre_query = """SELECT "taxonID" FROM nofa."l_taxon" WHERE """ + str(self.species_names[self.language])
+                                query = pre_query + """ = %s;"""
+                                cur.execute(query, (self.occurrence['taxon'][m],))
+                            except:
+                                e = sys.exc_info()[1]
+
+                                QMessageBox.information(None, "DEBUG:", "<p>Error: %s</p>" % e)
+
+                    # the postgres server_encoding is UTF8
                     #  set client_encoding to 'latin1'
                     #  set client_encoding to 'UNICODE'
                     # SHOW SERVER_ENCODING;
@@ -931,10 +962,7 @@ class NOFAInsert:
                     #query_string = cur.mogrify(query, (self.species_names[self.language], self.occurrence['taxon'][m].encode('utf8')))
                     #query_string = cur.mogrify(query, (self.species_names[self.language], self.occurrence['taxon'][m].encode('iso-8859-1').decode('utf8', 'ignore')))
                     #query_string = cur.mogrify(query, (self.species_names[self.language], self.occurrence['taxon'][m],))
-                    query_string = cur.mogrify(query, (self.species_names[self.language], str(self.occurrence['taxon'][m]),))
-                    QMessageBox.information(None, "DEBUG:", 'query string is: ' + query_string)
-                    QMessageBox.information(None, "DEBUG:", 'query string is: ' + str(type(query_string)))
-                    cur.execute(query_string)
+
                     #cur.execute("""SELECT "taxonID" FROM nofa."l_taxon" WHERE "%s" = '%s';""",
                     #            (self.species_names[self.language], self.occurrence['taxon'][m].decode('iso-8859-1'),))
                     taxon = cur.fetchone()
@@ -1235,7 +1263,7 @@ class NOFAInsert:
 
                 self.dlg.listview_reference.addItem(refitem)
 
-            # Title should have constraint NOT NULL. Or, we should choose another option for visualizing
+            # Title should have constraint UNIQUE. Or, we should choose another option for visualizing
             if self.reference['title'] is not None and self.reference['title'] != 'None':
                 self.dlg.metadata.setItemText(3, 'Reference - ' + self.reference['title'])
             else:
