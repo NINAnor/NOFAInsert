@@ -1040,42 +1040,120 @@
     <zorder>upButton</zorder>
     <zorder>downButton</zorder>
    </widget>
-   <widget class="QWidget" name="tab_3">
+   <widget class="QWidget" name="tab_history">
     <attribute name="title">
      <string>History</string>
     </attribute>
-    <widget class="QListView" name="listView">
+    <widget class="QTabWidget" name="tabWidget_history">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>10</y>
-       <width>691</width>
-       <height>491</height>
+       <y>0</y>
+       <width>1071</width>
+       <height>621</height>
       </rect>
      </property>
-    </widget>
-    <widget class="QLineEdit" name="lineEdit">
-     <property name="geometry">
-      <rect>
-       <x>740</x>
-       <y>30</y>
-       <width>113</width>
-       <height>20</height>
-      </rect>
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-    </widget>
-    <widget class="QLabel" name="label">
-     <property name="geometry">
-      <rect>
-       <x>880</x>
-       <y>30</y>
-       <width>161</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Filter</string>
-     </property>
+     <widget class="QWidget" name="occurrences_tab">
+      <attribute name="title">
+       <string>Occurrences</string>
+      </attribute>
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>480</y>
+         <width>131</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>510</y>
+         <width>61</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Filter</string>
+       </property>
+      </widget>
+      <widget class="QTableWidget" name="tableWidget_occurrences">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>20</y>
+         <width>931</width>
+         <height>441</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="locations_tab">
+      <attribute name="title">
+       <string>Locations</string>
+      </attribute>
+      <widget class="QTableWidget" name="tableWidget_locations">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>491</width>
+         <height>581</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="datasets_tab">
+      <attribute name="title">
+       <string>Datasets</string>
+      </attribute>
+      <widget class="QTableWidget" name="tableWidget_datasets">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>491</width>
+         <height>581</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="projects_tab">
+      <attribute name="title">
+       <string>Projects</string>
+      </attribute>
+      <widget class="QTableWidget" name="tableWidget_projects">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>491</width>
+         <height>581</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="references_tab">
+      <attribute name="title">
+       <string>References</string>
+      </attribute>
+      <widget class="QTableWidget" name="tableWidget_references">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>491</width>
+         <height>581</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
     </widget>
    </widget>
   </widget>

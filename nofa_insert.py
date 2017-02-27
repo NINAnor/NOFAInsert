@@ -20,7 +20,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt, QObject
+from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt, QObject, QDate
 from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget, QTableWidgetItem, QColor, QFont
 # Initialize Qt resources from file resources.py
 import resources
@@ -323,6 +323,10 @@ class NOFAInsert:
         #connect the occurrence input widgets to table content
         self.dlg.update_row_button.clicked.connect(self.update_occurrence_row)
 
+        # trigger action when history tabs are clicked
+        self.dlg.tabWidget.currentChanged.connect(self.history_tab_clicked)
+
+
 
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
@@ -389,6 +393,55 @@ class NOFAInsert:
             text=self.tr(u'NOFAInsert'),
             callback=self.run,
             parent=self.iface.mainWindow())
+
+    def history_tab_clicked(self):
+        #QMessageBox.information(None, "DEBUG:",  str(self.dlg.tabWidget.currentIndex()))
+        if self.dlg.tabWidget.currentIndex() == 1:
+            #QMessageBox.information(None, "DEBUG:", str(self.dlg.tabWidget.currentIndex()))
+
+
+
+            self.row_position = 0
+
+            self.dlg.tableWidget_occurrences.setSelectionBehavior(QTableWidget.SelectRows)
+
+            #  populate tableWidget
+
+            cur = self._db_cur()
+            try:
+                cur.execute(u'SELECT  "occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_occurrence_log')
+            except:
+                QMessageBox.information(None, "DEBUG:", str(
+                    "WARNING - DB ERROR. occurrences not fetched from db"))
+
+            fetched_occ = cur.fetchall()
+
+            lim = len(fetched_occ)
+
+            self.dlg.tableWidget_occurrences.setRowCount(lim)
+            self.dlg.tableWidget_occurrences.setColumnCount(9)
+
+            headers = ["occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id",
+                       "username", "insert_time", "update_time"]
+            self.dlg.tableWidget_occurrences.setHorizontalHeaderLabels(headers)
+
+            for l in range(lim):
+                occurrence = fetched_occ[l]
+                for n, item in enumerate(occurrence):
+
+                    if isinstance(occurrence[n], datetime.datetime):
+                        newitem = QTableWidgetItem(str(occurrence[n]))
+                    else:
+                        newitem = QTableWidgetItem(occurrence[n])
+
+                        # setItem(row, column, QTableWidgetItem)
+                    self.dlg.tableWidget_occurrences.setItem(l, n, newitem)
+
+
+
+
+
+
 
     def _open_dataset_dialog(self):
         """On button click opens the Dataset Metadata Editing Dialog"""
