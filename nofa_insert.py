@@ -116,6 +116,8 @@ class NOFAInsert:
 
         self.log_occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s)'
 
+        self.new_locs = []
+
 
         self.locIDType_dict = {'Norwegian VatnLnr': 'no_vatn_lnr',
                               'Swedish SjoID': 'se_sjoid',
@@ -140,6 +142,7 @@ class NOFAInsert:
         self.occurrence_base = {'taxon': 'Select',
                            'ecotype': 'Select',
                            'quantity': 'Select',
+                           'metric': 0,
                            'status': 'True',
                            'oc_remarks': 'None',
                            'est_means': 'Select',
@@ -155,6 +158,7 @@ class NOFAInsert:
         self.occurrence = {'taxon': ['Select', ],
                            'ecotype': ['Select', ],
                            'quantity': ['Select', ],
+                           'metric': [0, ],
                            'status': ['True', ],
                            'oc_remarks': ['None', ],
                            'est_means': ['Select', ],
@@ -360,6 +364,7 @@ class NOFAInsert:
 
         self.occurrence['ecotype'][self.row_position] = self.dlg.ecotypeID.currentText()
         self.occurrence['quantity'][self.row_position] = self.dlg.organismQuantityID.currentText()
+        self.occurrence['metric'][self.row_position] = self.dlg.oq_metric.text()
         if self.dlg.occurrenceStatus.isChecked():
             self.occurrence['status'][self.row_position] = 'True'
         else:
@@ -527,7 +532,7 @@ class NOFAInsert:
             #QMessageBox.information(None, "DEBUG:", str(loc_names))
 
             coords = []
-            QMessageBox.information(None, "DEBUG:", str("this is loc_list: " + loc_list))
+            QMessageBox.information(None, "DEBUG:", str("this is loc_list: " + str(loc_list)))
             if len(loc_list) == len(locations):
                 for i, loc in enumerate(loc_list):
                     if loc_names[i] is None:
@@ -554,11 +559,6 @@ class NOFAInsert:
             coords = []
             # storing the ID of the locations which are exact matches of existing ones
             self.places = []
-
-
-
-            # initialize the container of new locations
-            self.new_locs = []
 
 
             #walk through all the locations
@@ -641,7 +641,7 @@ class NOFAInsert:
                                                 -43893.189 6620749.358 Vågavatnet, 194572.6100	6575712.0100	Dam Løberg
                                                 262491.48	6651383.97	Akerselva,272567.61	6651129.3	nuggerudbk,342561.74	6792178.06	Våråna,379904.34	6791377.43	Storbekken,377548.06	6791361.56	Nesvollbekken
 
-                        'coordinates UTM32':    601404.85	6644928.24	Hovinbk;580033.012	6633807.99	Drengsrudbk;580322.6	6632959.64	Askerleva;658472.23	6842698.72	Engeråa;652499.37	6802699.72	Bruråsbk;
+                        'coordinates UTM32':    601404.85	6644928.24	Hovinbk; 580033.012	6633807.99	Drengsrudbk;580322.6	6632959.64	Askerleva;658472.23	6842698.72	Engeråa;652499.37	6802699.72	Bruråsbk;
                                                 634422.28	6788379.28	Flåtestøbk;633855.79	6792859.46	Rødsbakkbk;630580.08	6785079.49	Ygla;628663.92	6785056.12	Svarttjernbk;629047.03	6785047.57	Vesl Ygla;
                                                 634687.42	6814177.67	Pottbekken;630348.1	6801364.63	Ullsettbk;
                                                 627139.64	6803681.51	Grønvollbk;530415.53	6722441.27	Åslielva;549629.28	6642631.88	Overnbek;
@@ -781,24 +781,25 @@ class NOFAInsert:
         This method sends the information to NOFA DB
         """
 
-        QMessageBox.information(None, "DEBUG:", str(self.new_locs))
+        #QMessageBox.information(None, "DEBUG:", str(self.new_locs))
 
         #insert the new location points to the db in nofa.location
-        for i, loc in enumerate(self.new_locs):
-            cur = self._db_cur()
-            location_type = 'samplingPoint'
+        if self.new_locs:
+            for i, loc in enumerate(self.new_locs):
+                cur = self._db_cur()
+                location_type = 'samplingPoint'
 
-            point = "POINT( " + str(loc[1]) + " " + str(loc[2]) + ")"
-            geom = "ST_GeomFromText('" + point + ", "+ str(loc[3]) + ")"
-            #QMessageBox.information(None, "DEBUG:", point)
+                point = "POINT( " + str(loc[1]) + " " + str(loc[2]) + ")"
+                geom = "ST_GeomFromText('" + point + ", "+ str(loc[3]) + ")"
+                #QMessageBox.information(None, "DEBUG:", point)
 
 
-            #QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, geom, loc[4], 'test'))))
+                #QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, geom, loc[4], 'test'))))
 
-            try:
-                cur.execute(self.insert_location, (loc[0], location_type, point, loc[3], loc[4], 'test'))
-            except:
-                QMessageBox.information(None, "DEBUG:", str('problem inserting the new locations to db'))
+                try:
+                    cur.execute(self.insert_location, (loc[0], location_type, point, loc[3], loc[4], 'test'))
+                except:
+                    QMessageBox.information(None, "DEBUG:", str('problem inserting the new locations to db'))
 
 
         # add a new event to nofa. fore each location
@@ -996,7 +997,7 @@ class NOFAInsert:
                 verified_date = self.occurrence['verified_date'][m].toPyDate()
 
                 # WARNING - this is a temporary placeholder value. It should be sniffed from the occurrence form (to be developed)
-                organismquantity_metric = 1
+                organismquantity_metric = self.occurrence['metric'][m]
                 QMessageBox.information(None, "DEBUG:", str(self.occurrence['quantity'][m]))
 
                 insert_occurrence = self.insert_occurrence
@@ -1636,6 +1637,8 @@ class NOFAInsert:
         quantity_index = self.dlg.organismQuantityID.findText(self.occurrence['quantity'][self.row_position], Qt.MatchFixedString)
         self.dlg.organismQuantityID.setCurrentIndex(quantity_index)
 
+        self.dlg.oq_metric.setText(str(self.occurrence['metric'][self.row_position]))
+
         if self.occurrence['status'][self.row_position] == 'True':
             self.dlg.occurrenceStatus.setChecked(True)
         else:
@@ -1756,6 +1759,8 @@ class NOFAInsert:
             item = self.occurrence_base[key]
             self.occurrence[key].append(item)
             # add it to table
+            if isinstance(item, datetime.date):
+                item = str(item)
             newitem = QTableWidgetItem(item)
             self.dlg.tableWidget.setItem(self.row_position, n, newitem)
 

@@ -579,9 +579,9 @@
      <widget class="QPushButton" name="update_row_button">
       <property name="geometry">
        <rect>
-        <x>124</x>
-        <y>372</y>
-        <width>271</width>
+        <x>120</x>
+        <y>380</y>
+        <width>281</width>
         <height>31</height>
        </rect>
       </property>
@@ -593,9 +593,9 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>350</y>
-        <width>81</width>
-        <height>61</height>
+        <y>360</y>
+        <width>71</width>
+        <height>51</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -610,7 +610,7 @@
          <x>30</x>
          <y>10</y>
          <width>31</width>
-         <height>41</height>
+         <height>31</height>
         </rect>
        </property>
        <property name="font">
@@ -646,7 +646,7 @@
       <property name="geometry">
        <rect>
         <x>240</x>
-        <y>270</y>
+        <y>290</y>
         <width>59</width>
         <height>16</height>
        </rect>
@@ -662,7 +662,7 @@
       <property name="geometry">
        <rect>
         <x>310</x>
-        <y>240</y>
+        <y>260</y>
         <width>91</width>
         <height>20</height>
        </rect>
@@ -671,10 +671,10 @@
      <widget class="QComboBox" name="spawningCondition">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>240</y>
-        <width>101</width>
-        <height>18</height>
+        <x>120</x>
+        <y>260</y>
+        <width>91</width>
+        <height>20</height>
        </rect>
       </property>
      </widget>
@@ -692,7 +692,7 @@
       <property name="geometry">
        <rect>
         <x>220</x>
-        <y>240</y>
+        <y>260</y>
         <width>85</width>
         <height>16</height>
        </rect>
@@ -708,7 +708,7 @@
       <property name="geometry">
        <rect>
         <x>250</x>
-        <y>50</y>
+        <y>80</y>
         <width>84</width>
         <height>16</height>
        </rect>
@@ -723,8 +723,8 @@
      <widget class="QDateEdit" name="verifiedDate">
       <property name="geometry">
        <rect>
-        <x>308</x>
-        <y>270</y>
+        <x>310</x>
+        <y>290</y>
         <width>91</width>
         <height>20</height>
        </rect>
@@ -737,7 +737,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>270</y>
+        <y>290</y>
         <width>48</width>
         <height>16</height>
        </rect>
@@ -753,7 +753,7 @@
       <property name="geometry">
        <rect>
         <x>70</x>
-        <y>270</y>
+        <y>290</y>
         <width>141</width>
         <height>20</height>
        </rect>
@@ -762,9 +762,9 @@
      <widget class="QComboBox" name="organismQuantityID">
       <property name="geometry">
        <rect>
-        <x>110</x>
+        <x>120</x>
         <y>50</y>
-        <width>131</width>
+        <width>281</width>
         <height>20</height>
        </rect>
       </property>
@@ -773,7 +773,7 @@
       <property name="geometry">
        <rect>
         <x>340</x>
-        <y>50</y>
+        <y>80</y>
         <width>60</width>
         <height>17</height>
        </rect>
@@ -786,7 +786,7 @@
       <property name="geometry">
        <rect>
         <x>120</x>
-        <y>300</y>
+        <y>320</y>
         <width>281</width>
         <height>48</height>
        </rect>
@@ -801,9 +801,9 @@
      <widget class="QLineEdit" name="occurrenceRemarks">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>80</y>
-        <width>291</width>
+        <x>120</x>
+        <y>110</y>
+        <width>281</width>
         <height>48</height>
        </rect>
       </property>
@@ -818,7 +818,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>240</y>
+        <y>260</y>
         <width>90</width>
         <height>16</height>
        </rect>
@@ -834,7 +834,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>170</y>
+        <y>200</y>
         <width>107</width>
         <height>51</height>
        </rect>
@@ -847,7 +847,7 @@
       <property name="geometry">
        <rect>
         <x>120</x>
-        <y>170</y>
+        <y>200</y>
         <width>281</width>
         <height>51</height>
        </rect>
@@ -863,7 +863,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>80</y>
+        <y>110</y>
         <width>94</width>
         <height>41</height>
        </rect>
@@ -876,7 +876,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>305</y>
+        <y>320</y>
         <width>105</width>
         <height>41</height>
        </rect>
@@ -915,7 +915,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>140</y>
+        <y>170</y>
         <width>97</width>
         <height>16</height>
        </rect>
@@ -930,10 +930,10 @@
      <widget class="QComboBox" name="establishmentMeans">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>140</y>
-        <width>291</width>
-        <height>18</height>
+        <x>120</x>
+        <y>170</y>
+        <width>281</width>
+        <height>20</height>
        </rect>
       </property>
      </widget>
@@ -951,6 +951,32 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_103">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>121</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>organismQuantity_metric</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="oq_metric">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>80</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
       </property>
      </widget>
     </widget>
