@@ -325,6 +325,8 @@ class NOFAInsert:
         self.dlg.upButton.clicked.connect(self.row_up)
         self.dlg.downButton.clicked.connect(self.row_down)
 
+        self.dlg.deleteOccurrence.clicked.connect(self.delete_occurrence_row)
+
         # Table clicked events
         self.dlg.tableWidget.itemClicked.connect(self.update_row)
         self.dlg.tableWidget.verticalHeader().sectionClicked.connect(self.update_header)
@@ -405,6 +407,16 @@ class NOFAInsert:
                 newitem = QTableWidgetItem(str(item))
             # setItem(row, column, QTableWidgetItem)
             self.dlg.tableWidget.setItem(self.row_position, m, newitem)
+
+    def delete_occurrence_row(self):
+        for i, key in enumerate(self.occurrence.keys()):
+            del self.occurrence[key][self.row_position]
+
+        self.dlg.tableWidget.removeRow(self.row_position)
+
+        self.row_position = 0
+        self.dlg.tableWidget.selectRow(self.row_position)
+        self.dlg.occurrence_number.setText(str(self.row_position + 1))
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
