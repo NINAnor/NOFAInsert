@@ -681,9 +681,9 @@
      <widget class="QComboBox" name="taxonID">
       <property name="geometry">
        <rect>
-        <x>54</x>
+        <x>44</x>
         <y>21</y>
-        <width>161</width>
+        <width>141</width>
         <height>20</height>
        </rect>
       </property>
@@ -888,10 +888,10 @@
      <widget class="QLabel" name="label_94">
       <property name="geometry">
        <rect>
-        <x>220</x>
+        <x>190</x>
         <y>20</y>
-        <width>39</width>
-        <height>16</height>
+        <width>41</width>
+        <height>21</height>
        </rect>
       </property>
       <property name="text">
@@ -904,9 +904,9 @@
      <widget class="QComboBox" name="ecotypeID">
       <property name="geometry">
        <rect>
-        <x>272</x>
+        <x>232</x>
         <y>20</y>
-        <width>131</width>
+        <width>171</width>
         <height>20</height>
        </rect>
       </property>

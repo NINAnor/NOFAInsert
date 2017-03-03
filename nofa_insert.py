@@ -126,7 +126,15 @@ class NOFAInsert:
                               'coordinates UTM33': 25833,
                               'coordinates UTM35': 25835,
                               'coordinates lon/lat': 4326,
-                              'waterBody register name': '"waterBody"'}
+                              'waterBody register name': '"waterBody"'
+                               }
+
+        self.ecotypes = {26164: ['Salmon', 'Landlocked Salmon', 'Relict Salmon'],
+                         26165: ['Brown trout', 'Anadromous Brown Trout', 'Big Piscivorous Brown Trout', 'Fine-spotted Brown Trout', 'Danish River Trout'],
+                         26167: ['Arctic Charr', 'Anadromous Arctic Charr', 'Arctic Charr Dwarf', 'Saimaa Arctic Charr'],
+                         26175: ['Vendace', 'Spring Spawning Vendace'],
+                         26176: ['Whitefish', 'Plankton Whitefish']
+                        }
 
 
         # initialise data and metadata containers:
@@ -152,7 +160,6 @@ class NOFAInsert:
                            'verified_by': 'Nobody',
                            'verified_date': self.today,
                            'yearprecision_remarks': 'None'
-
                             }
 
         self.occurrence = {'taxon': ['Select', ],
@@ -330,6 +337,8 @@ class NOFAInsert:
         # trigger action when history tabs are clicked
         self.dlg.tabWidget.currentChanged.connect(self.history_tab_clicked)
 
+        self.dlg.taxonID.currentIndexChanged.connect(self.look_for_ecotype)
+
 
 
         icon = QIcon(icon_path)
@@ -363,8 +372,16 @@ class NOFAInsert:
             self.occurrence['taxon'][self.row_position] = 'None'
 
         self.occurrence['ecotype'][self.row_position] = self.dlg.ecotypeID.currentText()
+        QMessageBox.information(None, "DEBUG:", str(self.occurrence['ecotype'][self.row_position]))
+
+
         self.occurrence['quantity'][self.row_position] = self.dlg.organismQuantityID.currentText()
-        self.occurrence['metric'][self.row_position] = self.dlg.oq_metric.text()
+
+        if self.dlg.organismQuantityID.currentText().startswith('NOFA stock'):
+            self.occurrence['metric'][self.row_position] = 'None'
+        else:
+            self.occurrence['metric'][self.row_position] = self.dlg.oq_metric.text()
+
         if self.dlg.occurrenceStatus.isChecked():
             self.occurrence['status'][self.row_position] = 'True'
         else:
@@ -443,8 +460,28 @@ class NOFAInsert:
                     self.dlg.tableWidget_occurrences.setItem(l, n, newitem)
 
 
+    def look_for_ecotype(self):
+        taxon_name = self.dlg.taxonID.currentText()
+        if taxon_name != "Select":
+            cur = self._db_cur()
 
 
+            string = u"""SELECT "taxonID" FROM nofa."l_taxon" WHERE "{0}" = '{1}';""".format(self.species_names[self.language], taxon_name)
+            cur.execute(string)
+            taxon = cur.fetchone()[0]
+
+            if taxon in self.ecotypes:
+                ecotypes_list = [e for e in self.ecotypes[taxon]]
+
+            # QMessageBox.information(None, "DEBUG:", str(ecotypes_list))
+            # Inject sorted python-list for ecotypes into UI
+                ecotypes_list.sort()
+                ecotypes_list.insert(0, 'None')
+                self.dlg.ecotypeID.clear()
+                self.dlg.ecotypeID.addItems(ecotypes_list)
+            else:
+                self.dlg.ecotypeID.clear()
+                self.dlg.ecotypeID.addItems(['None',])
 
 
 
@@ -647,7 +684,6 @@ class NOFAInsert:
                                                 627139.64	6803681.51	Grønvollbk;530415.53	6722441.27	Åslielva;549629.28	6642631.88	Overnbek;
                 '''
 
-
                 # Check if a location is already registered in the db. If it is, just get the location ID, and append it to ad-hoc variable, and the locations dict.
                 if loc and loc[2] <= 10 and loc[4]:
                     #QMessageBox.information(None, "DEBUG:", str(loc[4]))
@@ -656,27 +692,20 @@ class NOFAInsert:
                     placesID = loc[4]
                     #QMessageBox.information(None, "DEBUG:", str(placesID))
 
-
-
                 else:
 
                     locationID = uuid.uuid4()
                     # location ID added to the locations dict
                     self.locations['location_ID'].append(locationID)
 
-
-
                     #geom = 'MULTIPOINT({0} {1})'.format(x, y)
                     #geom = u"""ST_Transform(ST_GeomFromText('MULTIPOINT({0} {1})', {2}), 25833)""".format(x, y, srid)
                     waterbody = loc_name
-
 
                     self.new_locs.append([locationID, x, y, srid, waterbody])
 
                     #QMessageBox.information(None, "DEBUG:", str(loc[4]))
                     #QMessageBox.information(None, "DEBUG:", str("loc not found"))
-
-
 
             self.locations['location'] = coords
 
@@ -702,7 +731,6 @@ class NOFAInsert:
         self.event['recorded_by'] = self.dlg.recordedBy_e.text()
         self.event['event_remarks'] = self.dlg.eventRemarks.text()
         self.event['reliability'] = self.dlg.reliability.currentText()
-
 
         #QMessageBox.information(None, "DEBUG:", str(self.event))
         self.prwdlg = PreviewDialog()
@@ -959,7 +987,6 @@ class NOFAInsert:
                 cur.execute(self.insert_taxonomic_coverage, (taxon, event_id))
 
 
-
             cur = self._db_cur()
             # insert the new event record to nofa.event
             cur.execute(insert_event)
@@ -968,8 +995,18 @@ class NOFAInsert:
                 #QMessageBox.information(None, "DEBUG:", str(self.occurrence))
                 occurrence_id = uuid.uuid4()
 
-                # WARNING -  temporary solution until a new ecotype table is available
-                ecotype_id = 2405
+
+                if self.occurrence['ecotype'][m] == 'None':
+                    ecotype_id = None
+                else:
+                    cur = self._db_cur()
+                    query = u"""SELECT "ecotypeID" FROM nofa."l_ecotype" WHERE "vernacularName" = '{}';""".format(
+                        self.occurrence['ecotype'][m])
+                    QMessageBox.information(None, "DEBUG:", str(query))
+                    cur.execute(query)
+
+                    ecotype_id = cur.fetchone()[0]
+
 
                 # change type of date in a uitable one for postgres
                 #verified_date = self.occurrence['verified_date'][m].toPyDate()
@@ -997,7 +1034,10 @@ class NOFAInsert:
                 verified_date = self.occurrence['verified_date'][m].toPyDate()
 
                 # WARNING - this is a temporary placeholder value. It should be sniffed from the occurrence form (to be developed)
-                organismquantity_metric = self.occurrence['metric'][m]
+                if self.occurrence['metric'][m] == 'None':
+                    organismquantity_metric = None
+                else:
+                    organismquantity_metric = self.occurrence['metric'][m]
                 QMessageBox.information(None, "DEBUG:", str(self.occurrence['quantity'][m]))
 
                 insert_occurrence = self.insert_occurrence
@@ -1446,7 +1486,7 @@ class NOFAInsert:
         #QMessageBox.information(None, "DEBUG:", str(species_list))
 
         #################################
-
+        '''
         # Get ecotypes from database
         cur = self._db_cur()
         cur.execute(u'SELECT "vernacularName_NO" FROM nofa."l_ecotype" GROUP BY "vernacularName_NO";')
@@ -1459,7 +1499,7 @@ class NOFAInsert:
         ecotypes_list.sort()
         self.dlg.ecotypeID.clear()
         self.dlg.ecotypeID.addItems(ecotypes_list)
-
+        '''
         ##########################################
 
         # Get organismQuantity from database - excluding 'Total mass' entries
@@ -1468,7 +1508,8 @@ class NOFAInsert:
         orgQuantID = cur.fetchall()
 
         # Create a python-list from query result
-        orgQuantID_list = [o[0] for o in orgQuantID if not o[0].startswith("Total")]
+        #orgQuantID_list = [o[0] for o in orgQuantID if not o[0].startswith("Total")]
+        orgQuantID_list = [o[0] for o in orgQuantID]
 
         # Inject sorted python-list for organismQuantity into UI
         orgQuantID_list.sort()
