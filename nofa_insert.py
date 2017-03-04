@@ -114,6 +114,13 @@ class NOFAInsert:
                                     "test", "username")
                                     VALUES\n"""
 
+        self.insert_dataset = u"""INSERT INTO nofa.m_dataset ("rightsHolder", "ownerInstitutionCode",
+                                    "datasetName", "accessRights, "license", "bibliographicCitation", "datasetComment",
+                                    "informationWithheld", "dataGeneralization")
+                                    VALUES\n"""
+
+        self.dataset_values =  u'(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+
         self.log_occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s)'
 
         self.new_locs = []
@@ -540,6 +547,43 @@ class NOFAInsert:
 
         ################################################################
         self.datadlg.dataset_dialog_button.clicked.connect(self._dataset_button)
+
+    def _dataset_button(self):
+        #QMessageBox.information(None, "DEBUG:", str("dataset button pressed"))
+
+        rights_holder = self.datadlg.rightsHolder.currentText()
+        owner_institution = self.datadlg.ownerInstitutionCode.currentText()
+        dataset_name = self.datadlg.datasetName.text()
+        access_rights = self.datadlg.accessRights.text()
+        license = self.datadlg.license.currentText()
+        bibliographic_citation = self.datadlg.bibliographicCitation.toPlainText()
+        dataset_comment = self.datadlg.datasetComment.toPlainText()
+        information_withheld = self.datadlg.informationWithheld.toPlainText()
+        data_generalizations = self.datadlg.dataGeneralizations.toPlainText()
+
+        QMessageBox.information(None, "DEBUG:", str(rights_holder + owner_institution + dataset_name + access_rights +
+                                                    bibliographic_citation + dataset_comment + information_withheld +
+                                                    data_generalizations))
+
+        insert_dataset = self.insert_dataset
+
+        cur = self._db_cur()
+        insert_dataset += cur.mogrify(self.insert_dataset, (rights_holder, owner_institution, dataset_name, access_rights,
+                                           license, bibliographic_citation, dataset_comment, information_withheld,
+                                           data_generalizations,))
+
+        cur.execute(insert_dataset)
+        '''
+        cur = self._db_cur()
+        insert_log_occurrence = self.insert_log_occurrence
+        insert_log_occurrence += cur.mogrify(self.log_occurrence_values,
+                                             (str(occurrence_id), str(event_id), self.dataset['dataset_id'],
+                                              self.project['project_id'],
+                                              self.reference['reference_id'], loc, True, self.username,
+                                              ))
+        cur.execute(insert_log_occurrence)
+
+        '''
 
     def get_location(self):
         '''
@@ -1134,8 +1178,8 @@ class NOFAInsert:
                                                             627139.64	6803681.51	Grønvollbk;530415.53	6722441.27	Åslielva;549629.28	6642631.88	Overnbek;
                             '''
 
-    def _dataset_button(self):
-        pass
+
+
 
 
     def _open_project_dialog(self):
