@@ -573,6 +573,9 @@ class NOFAInsert:
                                            data_generalizations,))
 
         cur.execute(insert_dataset)
+
+
+
         '''
         cur = self._db_cur()
         insert_log_occurrence = self.insert_log_occurrence
@@ -582,6 +585,8 @@ class NOFAInsert:
                                               self.reference['reference_id'], loc, True, self.username,
                                               ))
         cur.execute(insert_log_occurrence)
+
+        sql_string = "INSERT INTO domes_hundred (name,name_slug,status) VALUES (%s,%s,%s) RETURNING id;"
 
         '''
 
