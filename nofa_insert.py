@@ -33,6 +33,7 @@ from preview_dialog import PreviewDialog
 import os.path
 import psycopg2
 from psycopg2 import extras
+from psycopg2.extensions import AsIs
 import logging
 import datetime
 import uuid
@@ -115,13 +116,21 @@ class NOFAInsert:
                                     VALUES\n"""
 
         self.insert_dataset = u"""INSERT INTO nofa.m_dataset ("rightsHolder", "ownerInstitutionCode",
-                                    "datasetName", "accessRights, "license", "bibliographicCitation", "datasetComment",
+                                    "datasetName", "accessRights", "license", "bibliographicCitation", "datasetComment",
                                     "informationWithheld", "dataGeneralization")
                                     VALUES\n"""
 
-        self.dataset_values =  u'(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        self.insert_dataset_columns = u""" "rightsHolder", "ownerInstitutionCode",
+        "datasetName", "accessRights", "license", "bibliographicCitation", "datasetComment",
+        "informationWithheld", "dataGeneralizations" """
+
+        self.insert_log_dataset_columns = u""" "dataset_id", "test", "username" """
+
+        self.dataset_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
         self.log_occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s)'
+
+        self.log_dataset_values = u'(%s,%s,%s)'
 
         self.new_locs = []
 
@@ -345,6 +354,7 @@ class NOFAInsert:
 
         # trigger action when history tabs are clicked
         self.dlg.tabWidget.currentChanged.connect(self.history_tab_clicked)
+        self.dlg.tabWidget_history.currentChanged.connect(self.history_tab_clicked)
 
         self.dlg.taxonID.currentIndexChanged.connect(self.look_for_ecotype)
 
@@ -437,7 +447,8 @@ class NOFAInsert:
 
     def history_tab_clicked(self):
         #QMessageBox.information(None, "DEBUG:",  str(self.dlg.tabWidget.currentIndex()))
-        if self.dlg.tabWidget.currentIndex() == 1:
+
+        if self.dlg.tabWidget_history.currentIndex() == 0:
             #QMessageBox.information(None, "DEBUG:", str(self.dlg.tabWidget.currentIndex()))
 
 
@@ -470,14 +481,41 @@ class NOFAInsert:
                 occurrence = fetched_occ[l]
                 for n, item in enumerate(occurrence):
 
-                    if isinstance(occurrence[n], datetime.datetime):
-                        newitem = QTableWidgetItem(str(occurrence[n]))
-                    else:
-                        newitem = QTableWidgetItem(occurrence[n])
+
+                    newitem = QTableWidgetItem(str(occurrence[n]))
 
                         # setItem(row, column, QTableWidgetItem)
                     self.dlg.tableWidget_occurrences.setItem(l, n, newitem)
 
+        elif self.dlg.tabWidget_history.currentIndex() == 2:
+            self.dlg.tableWidget_datasets.setSelectionBehavior(QTableWidget.SelectRows)
+
+            cur = self._db_cur()
+            try:
+                cur.execute(
+                    u'SELECT  "dataset_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_dataset_log')
+            except:
+                QMessageBox.information(None, "DEBUG:", str(
+                    "WARNING - DB ERROR. datasets not fetched from db"))
+
+            fetched_datasets = cur.fetchall()
+
+            lim = len(fetched_datasets)
+
+            self.dlg.tableWidget_datasets.setRowCount(lim)
+            self.dlg.tableWidget_datasets.setColumnCount(4)
+
+            headers = ["dataset_id", "username", "insert_time", "update_time"]
+            self.dlg.tableWidget_datasets.setHorizontalHeaderLabels(headers)
+
+            for l in range(lim):
+                dataset = fetched_datasets[l]
+                for n, item in enumerate(dataset):
+
+                    newitem = QTableWidgetItem(str(dataset[n]))
+
+                        # setItem(row, column, QTableWidgetItem)
+                    self.dlg.tableWidget_datasets.setItem(l, n, newitem)
 
     def look_for_ecotype(self):
         taxon_name = self.dlg.taxonID.currentText()
@@ -561,25 +599,72 @@ class NOFAInsert:
         information_withheld = self.datadlg.informationWithheld.toPlainText()
         data_generalizations = self.datadlg.dataGeneralizations.toPlainText()
 
-        QMessageBox.information(None, "DEBUG:", str(rights_holder + owner_institution + dataset_name + access_rights +
-                                                    bibliographic_citation + dataset_comment + information_withheld +
+        QMessageBox.information(None, "DEBUG:", str(rights_holder + ' ' + owner_institution + ' ' +  dataset_name + ' ' +  access_rights + ' ' +
+                                                    bibliographic_citation + ' ' +  dataset_comment + ' ' +  information_withheld + ' ' +
                                                     data_generalizations))
 
-        insert_dataset = self.insert_dataset
 
         cur = self._db_cur()
-        insert_dataset += cur.mogrify(self.insert_dataset, (rights_holder, owner_institution, dataset_name, access_rights,
+
+        insert_dataset = cur.mogrify("""INSERT INTO nofa.m_dataset({}) VALUES {} RETURNING dataset_id""".format(
+            self.insert_dataset_columns,
+            self.dataset_values
+        ), (rights_holder, owner_institution, dataset_name, access_rights, license, bibliographic_citation,
+            dataset_comment, information_withheld, data_generalizations,))
+
+        """insert_dataset += cur.mogrify(self.dataset_values, (rights_holder, owner_institution, dataset_name, access_rights,
                                            license, bibliographic_citation, dataset_comment, information_withheld,
                                            data_generalizations,))
+        """
+
+
+
+        QMessageBox.information(None, "DEBUG:", insert_dataset)
 
         cur.execute(insert_dataset)
 
+        returned = cur.fetchone()[0]
+        QMessageBox.information(None, "DEBUG:", str(returned))
+
+        ##################
+        # Insert a dataset log entry
+
+        cur = self._db_cur()
+
+        insert_dataset_log = cur.mogrify("INSERT INTO nofa.plugin_dataset_log({}) VALUES {}".format(
+            self.insert_log_dataset_columns,
+            self.log_dataset_values,
+        ), (returned, True, self.username,))
+
+        QMessageBox.information(None, "DEBUG:", insert_dataset_log)
+
+        cur.execute(insert_dataset_log)
 
 
         '''
+
+        self.insert_dataset = u"""INSERT INTO nofa.m_dataset ("rightsHolder", "ownerInstitutionCode",
+                                    "datasetName", "accessRights", "license", "bibliographicCitation", "datasetComment",
+                                    "informationWithheld", "dataGeneralization")
+                                    VALUES\n"""
+
+        self.insert_log_dataset_columns = u""""dataset_id", "test",
+                                    "username", "insert_timestamp", "update_timestamp""""
+
+         query = cursor.mogrify("INSERT INTO {} ({}) VALUES {} RETURNING {}".format(
+            table,
+            ', '.join(keys),
+            ', '.join(['%s'] * len(values)),
+            id_column
+        ), [tuple(v.values()) for v in values])
+
+        self.insert_log_dataset = u"""INSERT INTO nofa.plugin_dataset_log ("dataset_id", "test",
+                                    "username", "insert_timestamp", "update_timestamp")
+                                    VALUES\n"""
+
         cur = self._db_cur()
-        insert_log_occurrence = self.insert_log_occurrence
-        insert_log_occurrence += cur.mogrify(self.log_occurrence_values,
+        insert_log_dataset = self.insert_log_dataset
+        insert_log_dataset += cur.mogrify(self.log_occurrence_values,
                                              (str(occurrence_id), str(event_id), self.dataset['dataset_id'],
                                               self.project['project_id'],
                                               self.reference['reference_id'], loc, True, self.username,
@@ -1424,7 +1509,7 @@ class NOFAInsert:
         import qgis
         from PyQt4.QtCore import QSettings
 
-        settings = Qsettings()
+        settings = QSettings()
         settings.setValue(u"PostgreSQL/connections/NOFA/host", "your_server_address")
         settings.setValue(u"PostgreSQL/connections/NOFA/port", "5432")
         settings.setValue(u"PostgreSQL/connections/NOFA/database", "your_db_name)
