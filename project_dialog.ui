@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox">
+  <widget class="QDialogButtonBox" name="project_dialog_button">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -88,16 +88,16 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="projectLeader"/>
-     </item>
      <item row="1" column="1">
       <widget class="QLineEdit" name="projectNumber"/>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_103">
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="projectLeader"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_137">
        <property name="text">
-        <string>projectNumber</string>
+        <string>endYear</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -117,10 +117,10 @@
      <item row="0" column="1">
       <widget class="QLineEdit" name="projectName"/>
      </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_137">
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_103">
        <property name="text">
-        <string>endYear</string>
+        <string>projectNumber</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -161,26 +161,6 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
-      <widget class="QLineEdit" name="projectMembers">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>120</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0" colspan="2">
-      <widget class="QLineEdit" name="remarks">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>96</height>
-        </size>
-       </property>
-      </widget>
-     </item>
      <item row="6" column="0">
       <widget class="QLabel" name="label_97">
        <property name="text">
@@ -190,9 +170,6 @@
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QLineEdit" name="financer"/>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_136">
@@ -207,6 +184,9 @@
      <item row="6" column="1">
       <widget class="QComboBox" name="organisation"/>
      </item>
+     <item row="7" column="1">
+      <widget class="QLineEdit" name="financer"/>
+     </item>
      <item row="7" column="0">
       <widget class="QLabel" name="label_104">
        <property name="text">
@@ -217,6 +197,19 @@
        </property>
       </widget>
      </item>
+     <item row="5" column="1">
+      <widget class="QPlainTextEdit" name="project_members"/>
+     </item>
+     <item row="9" column="0" colspan="2">
+      <widget class="QLineEdit" name="remarks">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>96</height>
+        </size>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>
@@ -224,7 +217,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>project_dialog_button</sender>
    <signal>accepted()</signal>
    <receiver>Dialog</receiver>
    <slot>accept()</slot>
@@ -240,7 +233,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>project_dialog_button</sender>
    <signal>rejected()</signal>
    <receiver>Dialog</receiver>
    <slot>reject()</slot>

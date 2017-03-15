@@ -124,13 +124,23 @@ class NOFAInsert:
         "datasetName", "accessRights", "license", "bibliographicCitation", "datasetComment",
         "informationWithheld", "dataGeneralizations" """
 
+        self.insert_project_columns = u""" "projectName", "projectNumber", "startYear", "endYear", "projectLeader",
+        "projectMembers", "organisation", "financer", "remarks"
+        """
+
         self.insert_log_dataset_columns = u""" "dataset_id", "test", "username" """
 
+        self.insert_log_project_columns = u""" "project_id", "test", "username" """
+
         self.dataset_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+
+        self.project_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
         self.log_occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s)'
 
         self.log_dataset_values = u'(%s,%s,%s)'
+
+        self.log_project_values = u'(%s,%s,%s)'
 
         self.new_locs = []
 
@@ -326,7 +336,7 @@ class NOFAInsert:
         self.dlg = NOFAInsertDialog()
 
         self.dlg.editDatasetButton.clicked.connect(self._open_dataset_dialog)
-        self.dlg.editProjectButton.clicked.connect(self._open_project_dialog)
+        self.dlg.editProjectButton.clicked.connect(self.open_project_dialog)
         self.dlg.editReferenceButton.clicked.connect(self._open_reference_dialog)
 
         self.dlg.existingDataset.currentIndexChanged.connect(self.update_dataset)
@@ -584,6 +594,7 @@ class NOFAInsert:
 
 
         ################################################################
+        # connect the Ok button in dataset dialog to the insert dataset function
         self.datadlg.dataset_dialog_button.clicked.connect(self._dataset_button)
 
     def _dataset_button(self):
@@ -1272,7 +1283,7 @@ class NOFAInsert:
 
 
 
-    def _open_project_dialog(self):
+    def open_project_dialog(self):
         """On button click opens the Project Metadata Editing Dialog"""
         self.prjdlg = ProjectDialog()
         self.prjdlg.show()
@@ -1299,6 +1310,65 @@ class NOFAInsert:
 
         self.prjdlg.organisation.clear()
         self.prjdlg.organisation.addItems(self.institution_list)
+
+        #############################################
+        # Connect the Ok button to the project insert function
+
+        self.prjdlg.project_dialog_button.clicked.connect(self.project_button)
+
+    def project_button(self):
+        """
+        method inserting new project entries to m_project table
+        and log entries in plugin_project_log
+        """
+
+        project_name = self.prjdlg.projectName.text()
+        project_number = self.prjdlg.projectNumber.text()
+        start_year = self.prjdlg.p_startYear.date()
+        end_year = self.prjdlg.p_endYear.date()
+        project_leader = self.prjdlg.projectLeader.text()
+        project_members = self.prjdlg.project_members.toPlainText()
+        organisation = self.prjdlg.organisation.currentText()
+        financer = self.prjdlg.financer.text()
+        remarks = self.prjdlg.remarks.text()
+
+        QMessageBox.information(None, "DEBUG:", str(
+            project_name + ' ' + project_number + ' ' + str(start_year.year()) + ' ' + str(end_year.year()) + ' ' +
+            project_leader + ' ' + project_members + ' ' + organisation + ' ' +
+            financer + ' ' + remarks))
+
+        cur = self._db_cur()
+
+        insert_project = cur.mogrify("""INSERT INTO nofa.m_project({}) VALUES {} RETURNING project_id""".format(
+            self.insert_project_columns,
+            self.project_values
+        ), (project_name, project_number, start_year.year(), end_year.year(), project_leader, project_members,
+            organisation, financer, remarks,))
+
+        QMessageBox.information(None, "DEBUG:", insert_project)
+
+        cur.execute(insert_project)
+
+        returned = cur.fetchone()[0]
+        QMessageBox.information(None, "DEBUG:", str(returned))
+
+        ##################
+        # Insert a dataset log entry
+
+        cur = self._db_cur()
+
+        insert_project_log = cur.mogrify("INSERT INTO nofa.plugin_project_log({}) VALUES {}".format(
+            self.insert_log_project_columns,
+            self.log_project_values,
+        ), (returned, True, self.username,))
+
+        QMessageBox.information(None, "DEBUG:", insert_project_log)
+
+        cur.execute(insert_project_log)
+
+        self.get_existing_projects()
+
+
 
     def _open_reference_dialog(self):
         """On button click opens the Project Metadata Editing Dialog"""
@@ -1577,24 +1647,10 @@ class NOFAInsert:
         self.dlg.existingDataset.setCurrentIndex(dataset_list.index("None"))
 
         #####################################
+        # get existing projects from db
+        self.get_existing_projects()
 
-        # Get existingProjects from database
-        cur = self._db_cur()
-        cur.execute(u'SELECT "projectID", "projectNumber", "projectName" FROM nofa."m_project";')
-        projects = cur.fetchall()
-
-        # Create a python-list from query result
-        self.project_list = [u'{0}: {1}'.format(p[1], p[2]) for p in projects]
-
-        # Inject sorted python-list for existingProjects into UI
-        self.project_list.sort()
-        self.project_list.insert(0, 'None')
-        self.dlg.existingProject.clear()
-        self.dlg.existingProject.addItems(self.project_list)
-        if self.project['project_name'] == 'None':
-            self.dlg.existingProject.setCurrentIndex(self.project_list.index("None"))
-
-        #########################################
+        #####################################
 
         # Get existingReference from database
         cur = self._db_cur()
@@ -1811,6 +1867,26 @@ class NOFAInsert:
             #QMessageBox.information(None, "DEBUG:", str(species))
 
         self.dlg.taxonomicCoverage.addTopLevelItems(taxa)
+
+    def get_existing_projects(self):
+
+        # Get existingProjects from database
+        cur = self._db_cur()
+        cur.execute(u'SELECT "projectID", "projectNumber", "projectName" FROM nofa."m_project";')
+        projects = cur.fetchall()
+
+        # Create a python-list from query result
+        self.project_list = [u'{0}: {1}'.format(p[1], p[2]) for p in projects]
+
+        # Inject sorted python-list for existingProjects into UI
+        self.project_list.sort()
+        self.project_list.insert(0, 'None')
+        self.dlg.existingProject.clear()
+        self.dlg.existingProject.addItems(self.project_list)
+        if self.project['project_name'] == 'None':
+            self.dlg.existingProject.setCurrentIndex(self.project_list.index("None"))
+
+        #########################################
 
     def update_occurrence(self):
 
