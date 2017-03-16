@@ -299,14 +299,14 @@
       <widget class="QLabel" name="label_edit_dataset">
        <property name="geometry">
         <rect>
-         <x>130</x>
+         <x>70</x>
          <y>388</y>
-         <width>101</width>
+         <width>161</width>
          <height>21</height>
         </rect>
        </property>
        <property name="text">
-        <string>Add a new dataset</string>
+        <string>Insert a new dataset</string>
        </property>
       </widget>
       <widget class="QPushButton" name="editDatasetButton">
@@ -394,7 +394,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Add e new project to NOFA db</string>
+        <string>Insert a new project</string>
        </property>
       </widget>
       <widget class="QListWidget" name="listview_project">
@@ -456,10 +456,10 @@
         </rect>
        </property>
        <property name="text">
-        <string>Modify Reference Metadata</string>
+        <string>Insert a new reference</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="editReferenceButton">
+      <widget class="QPushButton" name="edit_reference_button">
        <property name="geometry">
         <rect>
          <x>230</x>
@@ -469,7 +469,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Edit Reference</string>
+        <string>Add a Reference</string>
        </property>
       </widget>
       <widget class="QListWidget" name="listview_reference">
@@ -492,7 +492,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Choose existing project</string>
+        <string>Choose existing reference</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

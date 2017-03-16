@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox">
+  <widget class="QDialogButtonBox" name="reference_dialog_button">
    <property name="geometry">
     <rect>
      <x>400</x>
@@ -61,20 +61,33 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_3">
-     <item row="5" column="1">
-      <widget class="QLineEdit" name="issn"/>
+     <item row="1" column="1" colspan="3">
+      <widget class="QComboBox" name="referenceType"/>
      </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_25">
+     <item row="0" column="2">
+      <widget class="QLabel" name="label_18">
        <property name="text">
-        <string>issn</string>
+        <string>author(s)</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="1" column="4">
+      <widget class="QLabel" name="label_21">
+       <property name="text">
+        <string>year</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="issn"/>
+     </item>
+     <item row="3" column="0">
       <widget class="QLabel" name="label_26">
        <property name="text">
         <string>journalName</string>
@@ -84,7 +97,17 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_25">
+       <property name="text">
+        <string>issn</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
       <widget class="QLabel" name="label_19">
        <property name="text">
         <string>Title</string>
@@ -95,16 +118,6 @@
       </widget>
      </item>
      <item row="4" column="4">
-      <widget class="QLabel" name="label_41">
-       <property name="text">
-        <string>date</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="4">
       <widget class="QLabel" name="label_39">
        <property name="text">
         <string>page</string>
@@ -114,7 +127,20 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="2">
+     <item row="3" column="4">
+      <widget class="QLabel" name="label_41">
+       <property name="text">
+        <string>date</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="journalName"/>
+     </item>
+     <item row="3" column="2">
       <widget class="QLabel" name="label_38">
        <property name="text">
         <string>volume</string>
@@ -124,7 +150,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="2">
+     <item row="4" column="2">
       <widget class="QLabel" name="label_24">
        <property name="text">
         <string>isbn</string>
@@ -134,19 +160,10 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="journalName"/>
-     </item>
-     <item row="5" column="3">
+     <item row="4" column="3">
       <widget class="QLineEdit" name="isbn"/>
      </item>
-     <item row="4" column="3">
-      <widget class="QLineEdit" name="volume"/>
-     </item>
-     <item row="5" column="5">
-      <widget class="QLineEdit" name="page"/>
-     </item>
-     <item row="4" column="5">
+     <item row="3" column="5">
       <widget class="QDateEdit" name="date">
        <property name="time">
         <time>
@@ -163,20 +180,16 @@
        </property>
       </widget>
      </item>
+     <item row="4" column="5">
+      <widget class="QLineEdit" name="page"/>
+     </item>
+     <item row="3" column="3">
+      <widget class="QLineEdit" name="volume"/>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="doi"/>
+     </item>
      <item row="0" column="0">
-      <widget class="QLabel" name="label_20">
-       <property name="text">
-        <string>existingReference</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1" colspan="5">
-      <widget class="QComboBox" name="existingReference"/>
-     </item>
-     <item row="1" column="0">
       <widget class="QLabel" name="label_40">
        <property name="text">
         <string>doi</string>
@@ -186,20 +199,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="doi"/>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_37">
-       <property name="text">
-        <string>referenceType</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="5">
+     <item row="1" column="5">
       <widget class="QDateEdit" name="year">
        <property name="displayFormat">
         <string>yyyy</string>
@@ -213,45 +213,32 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="4">
-      <widget class="QLabel" name="label_21">
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_37">
        <property name="text">
-        <string>year</string>
+        <string>referenceType</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="2" column="1" colspan="3">
-      <widget class="QComboBox" name="referenceType"/>
-     </item>
-     <item row="1" column="2">
-      <widget class="QLabel" name="label_18">
-       <property name="text">
-        <string>author(s)</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="3" colspan="3">
+     <item row="0" column="3" colspan="3">
       <widget class="QLineEdit" name="author"/>
      </item>
-     <item row="3" column="1" colspan="5">
+     <item row="2" column="1" colspan="5">
       <widget class="QPlainTextEdit" name="title"/>
      </item>
     </layout>
    </widget>
   </widget>
   <zorder>reference</zorder>
-  <zorder>buttonBox</zorder>
+  <zorder>reference_dialog_button</zorder>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>reference_dialog_button</sender>
    <signal>accepted()</signal>
    <receiver>Dialog</receiver>
    <slot>accept()</slot>
@@ -267,7 +254,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>reference_dialog_button</sender>
    <signal>rejected()</signal>
    <receiver>Dialog</receiver>
    <slot>reject()</slot>

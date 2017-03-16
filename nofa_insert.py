@@ -128,13 +128,20 @@ class NOFAInsert:
         "projectMembers", "organisation", "financer", "remarks"
         """
 
+        self.insert_reference_columns = u""" "doi", "author", "referenceType", "year", "titel",
+        "journalName", "volume", "date", "issn", "isbn", "page" """
+
         self.insert_log_dataset_columns = u""" "dataset_id", "test", "username" """
 
         self.insert_log_project_columns = u""" "project_id", "test", "username" """
 
+        self.insert_log_reference_columns = u""" "reference_id", "test", "username" """
+
         self.dataset_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
         self.project_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+
+        self.reference_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
         self.log_occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s)'
 
@@ -142,8 +149,24 @@ class NOFAInsert:
 
         self.log_project_values = u'(%s,%s,%s)'
 
+        self.log_reference_values = u'(%s,%s,%s)'
+
         self.new_locs = []
 
+        self.language = 'Norwegian'
+
+        self.species_names = {'Latin': 'scientificName',
+                              'English': 'vernacularName',
+                              'Norwegian': 'vernacularName_NO',
+                              'Swedish': 'vernacularName_SE',
+                              'Finish': 'vernacularName_FI'}
+
+        ## Country codes not used for the moment
+        '''countryCodes = {'Latin': None,
+                        'English': None,
+                        'Norwegian': 'NO',
+                        'Swedish': 'SE',
+                        'Finish': 'FI'}'''
 
         self.locIDType_dict = {'Norwegian VatnLnr': 'no_vatn_lnr',
                               'Swedish SjoID': 'se_sjoid',
@@ -337,7 +360,8 @@ class NOFAInsert:
 
         self.dlg.editDatasetButton.clicked.connect(self._open_dataset_dialog)
         self.dlg.editProjectButton.clicked.connect(self.open_project_dialog)
-        self.dlg.editReferenceButton.clicked.connect(self._open_reference_dialog)
+        self.dlg.edit_reference_button.clicked.connect(self.open_reference_dialog)
+
 
         self.dlg.existingDataset.currentIndexChanged.connect(self.update_dataset)
         self.dlg.existingProject.currentIndexChanged.connect(self.update_project)
@@ -529,7 +553,9 @@ class NOFAInsert:
 
     def look_for_ecotype(self):
         taxon_name = self.dlg.taxonID.currentText()
-        if taxon_name != "Select":
+        QMessageBox.information(None, "DEBUG:", taxon_name)
+
+        if taxon_name != "Select" and taxon_name is not None:
             cur = self._db_cur()
 
 
@@ -1370,7 +1396,7 @@ class NOFAInsert:
 
 
 
-    def _open_reference_dialog(self):
+    def open_reference_dialog(self):
         """On button click opens the Project Metadata Editing Dialog"""
         self.rfrdlg = ReferenceDialog()
         self.rfrdlg.show()
@@ -1399,6 +1425,63 @@ class NOFAInsert:
 
         self.rfrdlg.year.setDate(self.today)
         # self.dlg.o_modified.setDate(nextWeek)
+
+        self.rfrdlg.reference_dialog_button.clicked.connect(self.reference_button)
+
+    def reference_button(self):
+        """
+                method inserting new reference entries to m_reference table
+                and log entries in plugin_project_log
+                """
+
+        doi = self.rfrdlg.doi.text()
+        author = self.rfrdlg.author.text()
+        reference_type = self.rfrdlg.referenceType.currentText()
+        year = self.rfrdlg.year.date()
+        title = self.rfrdlg.title.toPlainText()
+        journal_name = self.rfrdlg.journalName.text()
+        volume = self.rfrdlg.volume.text()
+        date = self.rfrdlg.date.date()
+        issn = self.rfrdlg.issn.text()
+        isbn = self.rfrdlg.isbn.text()
+        page = self.rfrdlg.page.text()
+
+        QMessageBox.information(None, "DEBUG:", str(
+            doi + ' ' + author + ' ' + str(year.year()) + ' ' + str(date) + ' ' +
+            reference_type + ' ' + title + ' ' + journal_name + ' ' +
+            volume + ' ' + issn + ' ' + isbn + ' ' + page))
+
+        cur = self._db_cur()
+
+        insert_reference = cur.mogrify("""INSERT INTO nofa.m_reference({}) VALUES {} RETURNING reference_id""".format(
+            self.insert_reference_columns,
+            self.reference_values
+        ), (doi, author, reference_type, int(year.year()), title, journal_name,
+            volume, date.toPyDate(), issn, isbn, page,))
+
+        QMessageBox.information(None, "DEBUG:", insert_reference)
+
+        cur.execute(insert_reference)
+
+        returned = cur.fetchone()[0]
+        QMessageBox.information(None, "DEBUG:", str(returned))
+
+        ##################
+        # Insert a reference log entry
+
+        cur = self._db_cur()
+
+        insert_reference_log = cur.mogrify("INSERT INTO nofa.plugin_project_log({}) VALUES {}".format(
+            self.insert_log_reference_columns,
+            self.log_reference_values,
+        ), (returned, True, self.username,))
+
+        QMessageBox.information(None, "DEBUG:", insert_reference_log)
+
+        cur.execute(insert_reference_log)
+
+        self.get_existing_references()
+
 
     def update_dataset(self):
         currentdataset = self.dlg.existingDataset.currentText()
@@ -1617,26 +1700,13 @@ class NOFAInsert:
 
     def fetch_db(self):
 
-        self.language = 'Norwegian'
-
-        self.species_names = {'Latin': 'scientificName',
-                         'English': 'vernacularName',
-                         'Norwegian': 'vernacularName_NO',
-                         'Swedish': 'vernacularName_SE',
-                         'Finish': 'vernacularName_FI'}
-
-        countryCodes = {'Latin': None,
-                        'English': None,
-                        'Norwegian': 'NO',
-                        'Swedish': 'SE',
-                        'Finish': 'FI'}
 
         cur = self._db_cur()
         cur.execute(u'SELECT "datasetID", "datasetName" FROM nofa."m_dataset";')
         datasets = cur.fetchall()
 
         # Create a python-list from query result
-        datasetID_list = [d[0] for d in datasets]
+        #datasetID_list = [d[0] for d in datasets]
         dataset_list = [d[1] for d in datasets]
 
         # Inject sorted python-list for existingDatasets into UI
@@ -1652,23 +1722,7 @@ class NOFAInsert:
 
         #####################################
 
-        # Get existingReference from database
-        cur = self._db_cur()
-
-        cur.execute(u'SELECT "referenceID", "source", "titel" FROM nofa."m_reference";')
-        references = cur.fetchall()
-
-        # Create a python-list from query result
-
-        reference_list = [u'{0}: {1}'.format(r[0], r[1]) for r in references]
-        referenceID_list = [r[0] for r in references]
-
-        # Inject sorted python-list for existingProjects into UI
-        reference_list.sort()
-        reference_list.insert(0, 'None')
-        self.dlg.existingReference.clear()
-        self.dlg.existingReference.addItems(reference_list)
-        self.dlg.existingReference.setCurrentIndex(reference_list.index("None"))
+        self.get_existing_references()
 
         #########################################
         # Get taxon list
@@ -1682,7 +1736,7 @@ class NOFAInsert:
 
         # Inject sorted python-list for species into UI
         species_list.sort()
-        species_list.insert(0, self.occurrence['taxon'][0])
+        species_list.insert(0, 'Select')
         self.dlg.taxonID.clear()
         self.dlg.taxonID.addItems(species_list)
         #QMessageBox.information(None, "DEBUG:", str(species_list))
@@ -1887,6 +1941,26 @@ class NOFAInsert:
             self.dlg.existingProject.setCurrentIndex(self.project_list.index("None"))
 
         #########################################
+
+    def get_existing_references(self):
+
+        # Get existingReference from database
+        cur = self._db_cur()
+
+        cur.execute(u'SELECT "referenceID", "source", "titel" FROM nofa."m_reference";')
+        references = cur.fetchall()
+
+        # Create a python-list from query result
+
+        reference_list = [u'{0}: {1}'.format(r[0], r[1]) for r in references]
+        referenceID_list = [r[0] for r in references]
+
+        # Inject sorted python-list for existingProjects into UI
+        reference_list.sort()
+        reference_list.insert(0, 'None')
+        self.dlg.existingReference.clear()
+        self.dlg.existingReference.addItems(reference_list)
+        self.dlg.existingReference.setCurrentIndex(reference_list.index("None"))
 
     def update_occurrence(self):
 
