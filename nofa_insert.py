@@ -120,6 +120,8 @@ class NOFAInsert:
                                     "informationWithheld", "dataGeneralization")
                                     VALUES\n"""
 
+
+
         self.insert_dataset_columns = u""" "rightsHolder", "ownerInstitutionCode",
         "datasetName", "accessRights", "license", "bibliographicCitation", "datasetComment",
         "informationWithheld", "dataGeneralizations" """
@@ -137,6 +139,8 @@ class NOFAInsert:
 
         self.insert_log_reference_columns = u""" "reference_id", "test", "username" """
 
+        self.insert_log_location_columns = u""" "location_id", "test", "username", "location_name" """
+
         self.dataset_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
         self.project_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
@@ -150,6 +154,8 @@ class NOFAInsert:
         self.log_project_values = u'(%s,%s,%s)'
 
         self.log_reference_values = u'(%s,%s,%s)'
+
+        self.log_location_values = u'(%s,%s,%s,%s)'
 
         self.new_locs = []
 
@@ -521,6 +527,37 @@ class NOFAInsert:
                         # setItem(row, column, QTableWidgetItem)
                     self.dlg.tableWidget_occurrences.setItem(l, n, newitem)
 
+        elif self.dlg.tabWidget_history.currentIndex() == 1:
+            # add locations log entries to history -> locations
+            self.dlg.tableWidget_datasets.setSelectionBehavior(QTableWidget.SelectRows)
+
+            cur = self._db_cur()
+            try:
+                cur.execute(
+                    u'SELECT  "location_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_dataset_log')
+            except:
+                QMessageBox.information(None, "DEBUG:", str(
+                    "WARNING - DB ERROR. datasets not fetched from db"))
+
+            fetched_datasets = cur.fetchall()
+
+            lim = len(fetched_datasets)
+
+            self.dlg.tableWidget_datasets.setRowCount(lim)
+            self.dlg.tableWidget_datasets.setColumnCount(4)
+
+            headers = ["dataset_id", "username", "insert_time", "update_time"]
+            self.dlg.tableWidget_datasets.setHorizontalHeaderLabels(headers)
+
+            for l in range(lim):
+                dataset = fetched_datasets[l]
+                for n, item in enumerate(dataset):
+
+                    newitem = QTableWidgetItem(str(dataset[n]))
+
+                        # setItem(row, column, QTableWidgetItem)
+                    self.dlg.tableWidget_datasets.setItem(l, n, newitem)
+
         elif self.dlg.tabWidget_history.currentIndex() == 2:
             self.dlg.tableWidget_datasets.setSelectionBehavior(QTableWidget.SelectRows)
 
@@ -550,6 +587,66 @@ class NOFAInsert:
 
                         # setItem(row, column, QTableWidgetItem)
                     self.dlg.tableWidget_datasets.setItem(l, n, newitem)
+
+        elif self.dlg.tabWidget_history.currentIndex() == 3:
+
+            self.dlg.tableWidget_projects.setSelectionBehavior(QTableWidget.SelectRows)
+
+            cur = self._db_cur()
+            try:
+                cur.execute(
+                    u'SELECT  "project_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_project_log')
+            except:
+                QMessageBox.information(None, "DEBUG:", str(
+                    "WARNING - DB ERROR. projects not fetched from db"))
+
+            fetched_projects = cur.fetchall()
+
+            lim = len(fetched_projects)
+
+            self.dlg.tableWidget_projects.setRowCount(lim)
+            self.dlg.tableWidget_projects.setColumnCount(4)
+
+            headers = ["project_id", "username", "insert_time", "update_time"]
+            self.dlg.tableWidget_projects.setHorizontalHeaderLabels(headers)
+
+            for l in range(lim):
+                projects = fetched_projects[l]
+                for n, item in enumerate(projects):
+                    newitem = QTableWidgetItem(str(projects[n]))
+
+                    # setItem(row, column, QTableWidgetItem)
+                    self.dlg.tableWidget_projects.setItem(l, n, newitem)
+
+        elif self.dlg.tabWidget_history.currentIndex() == 4:
+
+            self.dlg.tableWidget_references.setSelectionBehavior(QTableWidget.SelectRows)
+
+            cur = self._db_cur()
+            try:
+                cur.execute(
+                    u'SELECT  "reference_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_reference_log')
+            except:
+                pass
+
+            fetched_references = cur.fetchall()
+
+            lim = len(fetched_references)
+
+            self.dlg.tableWidget_references.setRowCount(lim)
+            self.dlg.tableWidget_references.setColumnCount(4)
+
+            headers = ["reference_id", "username", "insert_time", "update_time"]
+            self.dlg.tableWidget_references.setHorizontalHeaderLabels(headers)
+
+            for l in range(lim):
+                references = fetched_references[l]
+                for n, item in enumerate(references):
+                    newitem = QTableWidgetItem(str(references[n]))
+
+                    # setItem(row, column, QTableWidgetItem)
+                    self.dlg.tableWidget_references.setItem(l, n, newitem)
+
 
     def look_for_ecotype(self):
         taxon_name = self.dlg.taxonID.currentText()
@@ -989,7 +1086,7 @@ class NOFAInsert:
 
     def confirmed(self):
         """
-        This method sends the information to NOFA DB
+        This method sends the occurrences, events and locations information to NOFA DB
         """
 
         #QMessageBox.information(None, "DEBUG:", str(self.new_locs))
@@ -1001,19 +1098,34 @@ class NOFAInsert:
                 location_type = 'samplingPoint'
 
                 point = "POINT( " + str(loc[1]) + " " + str(loc[2]) + ")"
-                geom = "ST_GeomFromText('" + point + ", "+ str(loc[3]) + ")"
+                #geom = "ST_GeomFromText('" + point + ", "+ str(loc[3]) + ")"
                 #QMessageBox.information(None, "DEBUG:", point)
 
 
                 #QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, geom, loc[4], 'test'))))
 
                 try:
-                    cur.execute(self.insert_location, (loc[0], location_type, point, loc[3], loc[4], 'test'))
+                    cur.execute(self.insert_location, (loc[0], location_type, point, loc[4], 'test'))
+
+                    try:
+                        cur = self._db_cur()
+                        insert_location_log = cur.mogrify("INSERT INTO nofa.plugin_location_log({}) VALUES {}".format(
+                            self.insert_log_location_columns,
+                            self.log_location_values,
+                        ), (loc[0], True, self.username, loc[4]))
+
+                        cur.execute(insert_location_log)
+
+                        QMessageBox.information(None, "DEBUG:", "occurrence correctly stored in NOFA db")
+                    except:
+                        QMessageBox.information(None, "DEBUG:", str('problem inserting the new locations to location log db'))
+
+
                 except:
                     QMessageBox.information(None, "DEBUG:", str('problem inserting the new locations to db'))
 
 
-        # add a new event to nofa. fore each location
+        # add a new event to nofa.events fore each location
         for i, loc in enumerate(self.locations['location_ID']):
             #QMessageBox.information(None, "DEBUG:", str('in the event loop'))
             #QMessageBox.information(None, "DEBUG:", str(self.locations))
@@ -1471,7 +1583,7 @@ class NOFAInsert:
 
         cur = self._db_cur()
 
-        insert_reference_log = cur.mogrify("INSERT INTO nofa.plugin_project_log({}) VALUES {}".format(
+        insert_reference_log = cur.mogrify("INSERT INTO nofa.plugin_reference_log({}) VALUES {}".format(
             self.insert_log_reference_columns,
             self.log_reference_values,
         ), (returned, True, self.username,))
@@ -2036,7 +2148,7 @@ class NOFAInsert:
     def populate_project(self):
 
         #QMessageBox.information(None, "DEBUG:", str(type(self.project)))
-        self.project['organisation'] = "Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text"
+        #self.project['organisation'] = "Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text"
         self.dlg.listview_project.clear()
         self.dlg.listview_project.setWordWrap(True)
         self.dlg.listview_project.setTextElideMode(Qt.ElideNone)
@@ -2044,7 +2156,7 @@ class NOFAInsert:
 
         for key, value in self.project.iteritems():
             if value is not None:
-                prjitem = QListWidgetItem(key + ':    ' + value)
+                prjitem = QListWidgetItem(key + ':    ' + str(value))
 
                 self.dlg.listview_project.addItem(prjitem)
 
