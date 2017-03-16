@@ -553,9 +553,9 @@ class NOFAInsert:
 
     def look_for_ecotype(self):
         taxon_name = self.dlg.taxonID.currentText()
-        QMessageBox.information(None, "DEBUG:", taxon_name)
+        #QMessageBox.information(None, "DEBUG:", taxon_name)
 
-        if taxon_name != "Select" and taxon_name is not None:
+        if taxon_name is not None and taxon_name not in ("Select"):
             cur = self._db_cur()
 
 
@@ -1701,20 +1701,7 @@ class NOFAInsert:
     def fetch_db(self):
 
 
-        cur = self._db_cur()
-        cur.execute(u'SELECT "datasetID", "datasetName" FROM nofa."m_dataset";')
-        datasets = cur.fetchall()
-
-        # Create a python-list from query result
-        #datasetID_list = [d[0] for d in datasets]
-        dataset_list = [d[1] for d in datasets]
-
-        # Inject sorted python-list for existingDatasets into UI
-        dataset_list.sort()
-        dataset_list.insert(0, 'None')
-        self.dlg.existingDataset.clear()
-        self.dlg.existingDataset.addItems(dataset_list)
-        self.dlg.existingDataset.setCurrentIndex(dataset_list.index("None"))
+        self.get_existing_datasets()
 
         #####################################
         # get existing projects from db
@@ -1921,6 +1908,23 @@ class NOFAInsert:
             #QMessageBox.information(None, "DEBUG:", str(species))
 
         self.dlg.taxonomicCoverage.addTopLevelItems(taxa)
+
+    def get_existing_datasets(self):
+
+        cur = self._db_cur()
+        cur.execute(u'SELECT "datasetID", "datasetName" FROM nofa."m_dataset";')
+        datasets = cur.fetchall()
+
+        # Create a python-list from query result
+        # datasetID_list = [d[0] for d in datasets]
+        dataset_list = [d[1] for d in datasets]
+
+        # Inject sorted python-list for existingDatasets into UI
+        dataset_list.sort()
+        dataset_list.insert(0, 'None')
+        self.dlg.existingDataset.clear()
+        self.dlg.existingDataset.addItems(dataset_list)
+        self.dlg.existingDataset.setCurrentIndex(dataset_list.index("None"))
 
     def get_existing_projects(self):
 
