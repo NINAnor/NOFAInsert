@@ -529,34 +529,34 @@ class NOFAInsert:
 
         elif self.dlg.tabWidget_history.currentIndex() == 1:
             # add locations log entries to history -> locations
-            self.dlg.tableWidget_datasets.setSelectionBehavior(QTableWidget.SelectRows)
+            self.dlg.tableWidget_locations.setSelectionBehavior(QTableWidget.SelectRows)
 
             cur = self._db_cur()
             try:
                 cur.execute(
-                    u'SELECT  "location_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_dataset_log')
+                    u'SELECT  "location_id", "username", "location_name", "insert_timestamp", "update_timestamp" FROM nofa.plugin_location_log')
             except:
                 QMessageBox.information(None, "DEBUG:", str(
-                    "WARNING - DB ERROR. datasets not fetched from db"))
+                    "WARNING - DB ERROR. location logs not fetched from db"))
 
-            fetched_datasets = cur.fetchall()
+            fetched_location_logs = cur.fetchall()
 
-            lim = len(fetched_datasets)
+            lim = len(fetched_location_logs)
 
-            self.dlg.tableWidget_datasets.setRowCount(lim)
-            self.dlg.tableWidget_datasets.setColumnCount(4)
+            self.dlg.tableWidget_locations.setRowCount(lim)
+            self.dlg.tableWidget_locations.setColumnCount(5)
 
-            headers = ["dataset_id", "username", "insert_time", "update_time"]
-            self.dlg.tableWidget_datasets.setHorizontalHeaderLabels(headers)
+            headers = ["dataset_id", "username", "location_name" "insert_time", "update_time"]
+            self.dlg.tableWidget_locations.setHorizontalHeaderLabels(headers)
 
             for l in range(lim):
-                dataset = fetched_datasets[l]
-                for n, item in enumerate(dataset):
+                locations = fetched_location_logs[l]
+                for n, item in enumerate(locations):
 
-                    newitem = QTableWidgetItem(str(dataset[n]))
+                    newitem = QTableWidgetItem(str(locations[n]))
 
                         # setItem(row, column, QTableWidgetItem)
-                    self.dlg.tableWidget_datasets.setItem(l, n, newitem)
+                    self.dlg.tableWidget_locations.setItem(l, n, newitem)
 
         elif self.dlg.tabWidget_history.currentIndex() == 2:
             self.dlg.tableWidget_datasets.setSelectionBehavior(QTableWidget.SelectRows)
