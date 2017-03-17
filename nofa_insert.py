@@ -30,6 +30,7 @@ from dataset_dialog import DatasetDialog
 from project_dialog import ProjectDialog
 from reference_dialog import ReferenceDialog
 from preview_dialog import PreviewDialog
+from collections import defaultdict
 import os.path
 import psycopg2
 from psycopg2 import extras
@@ -546,7 +547,7 @@ class NOFAInsert:
             self.dlg.tableWidget_locations.setRowCount(lim)
             self.dlg.tableWidget_locations.setColumnCount(5)
 
-            headers = ["dataset_id", "username", "location_name" "insert_time", "update_time"]
+            headers = ["dataset_id", "username", "location_name", "insert_time", "update_time"]
             self.dlg.tableWidget_locations.setHorizontalHeaderLabels(headers)
 
             for l in range(lim):
@@ -1035,7 +1036,7 @@ class NOFAInsert:
         # Get taxonomic coverage items
         root = self.dlg.taxonomicCoverage.invisibleRootItem()
         get_taxa = root.childCount()
-        #QMessageBox.information(None, "DEBUG:", str(get_taxa))
+        QMessageBox.information(None, "DEBUG:", str(get_taxa))
         for index in range(get_taxa):
             taxon = root.child(index)
             if taxon.checkState(0) == Qt.Checked:
@@ -2007,6 +2008,55 @@ class NOFAInsert:
 
         ###################################################################
         # Create the Taxonomic Coverage list of taxa
+
+        cur = self._db_cur()
+
+        cur.execute(u'SELECT "{0}", "{1}" FROM nofa.l_taxon GROUP BY "{0}", "{1}";'.format(self.species_names[self.language], "family"))
+        species = cur.fetchall()
+
+        taxa = defaultdict(list)
+
+        for s in species:
+            if s[1] is not None:
+                taxa[s[1]].append(s[0])
+
+        #QMessageBox.information(None, "DEBUG:", str(taxa))
+
+        self.dlg.taxonomicCoverage.clear()
+
+        families = []
+        root = QTreeWidgetItem(self.dlg.taxonomicCoverage, ["All"])
+        root.setCheckState(0, Qt.Unchecked)
+        root.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+
+        for family in taxa.keys():
+            #families.append(family)
+
+            if family not in (""):
+                item = QTreeWidgetItem(root, [family])
+
+                item.setCheckState(0, Qt.Unchecked)
+                item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+
+                families.append(item)
+
+                taxa_list = []
+                for taxon in taxa[family]:
+                    if taxon is not None:
+                        child = QTreeWidgetItem(item, [taxon])
+
+                        child.setCheckState(0, Qt.Unchecked)
+                        child.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+
+                        taxa_list.append(child)
+
+        self.dlg.taxonomicCoverage.expandToDepth(0)
+
+        #QMessageBox.information(None, "DEBUG:", str(type(families)))
+
+        #self.dlg.taxonomicCoverage.topLevelItem(root)
+
+        '''
         taxa = []
         self.dlg.taxonomicCoverage.clear()
         for species in species_list:
@@ -2017,9 +2067,12 @@ class NOFAInsert:
 
                 taxa.append(item)
 
+        #QMessageBox.information(None, "DEBUG:", str(type(taxa)))
+        self.dlg.taxonomicCoverage.addTopLevelItems(taxa)
+
             #QMessageBox.information(None, "DEBUG:", str(species))
 
-        self.dlg.taxonomicCoverage.addTopLevelItems(taxa)
+        '''
 
     def get_existing_datasets(self):
 
