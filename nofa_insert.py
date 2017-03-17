@@ -1035,12 +1035,28 @@ class NOFAInsert:
 
         # Get taxonomic coverage items
         root = self.dlg.taxonomicCoverage.invisibleRootItem()
-        get_taxa = root.childCount()
-        QMessageBox.information(None, "DEBUG:", str(get_taxa))
-        for index in range(get_taxa):
-            taxon = root.child(index)
-            if taxon.checkState(0) == Qt.Checked:
-                self.prwdlg.listWidget_3.addItem(QListWidgetItem(taxon.text(0)))
+        counted = root.childCount()
+        #QMessageBox.information(None, "DEBUG:", str(counted))
+
+        taxon_list = []
+
+        for index in range(counted):
+            base = root.child(index)
+            new_counted = base.childCount()
+            QMessageBox.information(None, "DEBUG:", str(new_counted))
+            for t in range(new_counted):
+                family = base.child(t)
+
+                very_new_count = family.childCount()
+                for n in range(very_new_count):
+                    taxon = family.child(n)
+                    taxon_list.append(taxon.text(0))
+
+                    if taxon.checkState(0) == Qt.Checked:
+                        self.prwdlg.listWidget_3.addItem(QListWidgetItem(taxon.text(0)))
+
+        #QMessageBox.information(None, "DEBUG:", str(taxon_list))
+        # 5616, 5627, 10688
 
 
         # populate the preview list widgets with info from previous forms
