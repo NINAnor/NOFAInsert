@@ -399,6 +399,10 @@ class NOFAInsert:
 
         self.dlg.taxonID.currentIndexChanged.connect(self.look_for_ecotype)
 
+        # taxonomic coverage treewidget parent item changed
+        self.dlg.taxonomicCoverage.itemChanged.connect(self.checked_tree)
+
+
 
 
         icon = QIcon(icon_path)
@@ -674,7 +678,35 @@ class NOFAInsert:
                 self.dlg.ecotypeID.clear()
                 self.dlg.ecotypeID.addItems(['None',])
 
+    def checked_tree(self, item):
+        """Checking/Unchecking taxa based on hierarchical groups.
+        Triggered by items checked/unchecked in TaxonomicCoverage QWidgetTree"""
+        counted = item.childCount()
+        if counted != 0:
 
+            if item.checkState(0) == Qt.Checked:
+                for i in range(counted):
+                    child = item.child(i)
+                    child.setCheckState(0, Qt.Checked)
+
+                    newcounted = child.childCount()
+                    if newcounted != 0:
+                        for n in range(newcounted):
+                            newchild = child.child(n)
+                            newchild.setCheckState(0, Qt.Checked)
+
+                    #QMessageBox.information(None, "DEBUG:", str(item.childCount()))
+            elif item.checkState(0) == Qt.Unchecked:
+                #QMessageBox.information(None, "DEBUG:", "item unchecked")
+                for i in range(counted):
+                    child = item.child(i)
+                    child.setCheckState(0, Qt.Unchecked)
+
+                    newcounted = child.childCount()
+                    if newcounted != 0:
+                        for n in range(newcounted):
+                            newchild = child.child(n)
+                            newchild.setCheckState(0, Qt.Unchecked)
 
     def _open_dataset_dialog(self):
         """On button click opens the Dataset Metadata Editing Dialog"""
