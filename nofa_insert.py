@@ -2331,7 +2331,7 @@ class NOFAInsert:
         #self.dlg.tableWidget.insertRow(currentrow)
 
         #set rows and columns for tableWidget
-        self.dlg.tableWidget.setRowCount(1)
+        self.dlg.tableWidget.setRowCount(len(self.occurrence['taxon']))
         self.dlg.tableWidget.setColumnCount(12)
         self.row_position = 0
 
