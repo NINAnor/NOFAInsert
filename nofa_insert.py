@@ -75,6 +75,8 @@ class NOFAInsert:
                 QCoreApplication.installTranslator(self.translator)
 
 
+
+
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&NOFAInsert')
@@ -159,6 +161,11 @@ class NOFAInsert:
         self.log_location_values = u'(%s,%s,%s,%s)'
 
         self.new_locs = []
+
+        self.preview_conditions = {"dataset_selected": False,
+                                   'project_selected': False,
+                                   'taxon_selected': False
+                                  }
 
         self.language = 'Norwegian'
 
@@ -365,6 +372,8 @@ class NOFAInsert:
         # Create the dialog (after translation) and keep reference
         self.dlg = NOFAInsertDialog()
 
+        self.dlg.insert_button.setStyleSheet("background-color: #F6CECE")
+
         self.dlg.editDatasetButton.clicked.connect(self._open_dataset_dialog)
         self.dlg.editProjectButton.clicked.connect(self.open_project_dialog)
         self.dlg.edit_reference_button.clicked.connect(self.open_reference_dialog)
@@ -432,11 +441,21 @@ class NOFAInsert:
 
         if self.dlg.taxonID.currentText():
             self.occurrence['taxon'][self.row_position] = self.dlg.taxonID.currentText()
+
+            # update the preview conditions for taxon presence
+            if self.dlg.taxonID.currentText() != 'Select':
+                #QMessageBox.information(None, "DEBUG:", str(self.occurrence['taxon']))
+                if 'Select' not in self.occurrence['taxon']:
+                    self.preview_conditions['taxon_selected'] = True
+                    self.check_preview_conditions()
+            elif self.dlg.taxonID.currentText() == 'Select':
+                self.preview_conditions['taxon_selected'] = False
+                self.check_preview_conditions()
         else:
             self.occurrence['taxon'][self.row_position] = 'None'
 
         self.occurrence['ecotype'][self.row_position] = self.dlg.ecotypeID.currentText()
-        QMessageBox.information(None, "DEBUG:", str(self.occurrence['ecotype'][self.row_position]))
+        #QMessageBox.information(None, "DEBUG:", str(self.occurrence['ecotype'][self.row_position]))
 
 
         self.occurrence['quantity'][self.row_position] = self.dlg.organismQuantityID.currentText()
@@ -471,6 +490,7 @@ class NOFAInsert:
             self.dlg.tableWidget.setItem(self.row_position, m, newitem)
 
     def delete_occurrence_row(self):
+        """Delete a row from occurrence table on button click."""
         for i, key in enumerate(self.occurrence.keys()):
             del self.occurrence[key][self.row_position]
 
@@ -479,6 +499,14 @@ class NOFAInsert:
         self.row_position = 0
         self.dlg.tableWidget.selectRow(self.row_position)
         self.dlg.occurrence_number.setText(str(self.row_position + 1))
+
+        # Check if some row with taxon remains:
+        if 'Select' in self.occurrence['taxon']:
+            self.preview_conditions['taxon_selected'] = False
+            self.check_preview_conditions()
+        elif 'Select' not in self.occurrence['taxon']:
+            self.preview_conditions['taxon_selected'] = True
+            self.check_preview_conditions()
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
@@ -658,6 +686,7 @@ class NOFAInsert:
         #QMessageBox.information(None, "DEBUG:", taxon_name)
 
         if taxon_name is not None and taxon_name not in ("Select"):
+
             cur = self._db_cur()
 
 
@@ -1022,9 +1051,25 @@ class NOFAInsert:
 
             self.locations['location'] = coords
 
+
+    def check_preview_conditions(self):
+
+        if False not in self.preview_conditions.values():
+            self.dlg.insert_button.setStyleSheet("background-color: #E0F8EC")
+        elif False in self.preview_conditions.values():
+            self.dlg.insert_button.setStyleSheet("background-color: #F6CECE")
+
+
     def preview(self):
 
         #QMessageBox.information(None, "DEBUG:", str(self.occurrence))
+
+        # Check if all required info is available before going to preview
+        if False in self.preview_conditions.values():
+            QMessageBox.information(None, "DEBUG:", "Please check if all required information is provided")
+            return
+
+
         # Get the locations:
         self.get_location()
         #self.locations['location'] =
@@ -1648,6 +1693,9 @@ class NOFAInsert:
         currentdataset = self.dlg.existingDataset.currentText()
         if currentdataset != 'None' and  currentdataset !='' and currentdataset!= None:
 
+            self.preview_conditions['dataset_selected'] = True
+            self.check_preview_conditions()
+
             # Get dataset record from NOFA db:
             cur = self._db_cur()
             cur.execute(
@@ -1718,6 +1766,9 @@ class NOFAInsert:
         currentproject_number = currentproject.split(':')[0]
         if currentproject_number != 'None' and currentproject_number != '':
             #QMessageBox.information(None, "DEBUG:", str(currentproject_number))
+
+            self.preview_conditions['project_selected'] = True
+            self.check_preview_conditions()
 
             cur = self._db_cur()
             cur.execute(
@@ -2307,7 +2358,6 @@ class NOFAInsert:
         self.row_position = self.dlg.tableWidget.rowCount()
         self.dlg.tableWidget.insertRow(self.row_position)
 
-
         # add a new occurrence record in self.occurrence dictionary and table
         for n, key in enumerate(sorted(self.occurrence.keys())):
             item = self.occurrence_base[key]
@@ -2320,6 +2370,9 @@ class NOFAInsert:
 
         self.dlg.tableWidget.selectRow(self.row_position)
         self.update_occurrence_form()
+
+        self.preview_conditions['taxon_selected'] = False
+        self.check_preview_conditions()
 
        #QMessageBox.information(None, "DEBUG:", str(self.row_position))
 
