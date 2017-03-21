@@ -411,6 +411,12 @@ class NOFAInsert:
         # taxonomic coverage treewidget parent item changed
         self.dlg.taxonomicCoverage.itemChanged.connect(self.checked_tree)
 
+        # filter occurrences by username and time interval
+        self.dlg.username_filter_button.clicked.connect(self.filter_occurrences_by_username)
+        self.dlg.time_filter_button.clicked.connect(self.filter_occurrence_by_time)
+        self.dlg.combined_filter_button.clicked.connect(self.filter_by_user_and_time)
+
+
 
 
 
@@ -523,6 +529,26 @@ class NOFAInsert:
 
         if self.dlg.tabWidget_history.currentIndex() == 0:
             #QMessageBox.information(None, "DEBUG:", str(self.dlg.tabWidget.currentIndex()))
+
+            self.dlg.date_from.setDate(self.today)
+            self.dlg.date_to.setDate(self.today)
+
+            cur = self._db_cur()
+            try:
+                cur.execute(
+                    u'SELECT  DISTINCT "username" FROM nofa.plugin_occurrence_log')
+            except:
+                QMessageBox.information(None, "DEBUG:", str(
+                    "WARNING - DB ERROR. occurrences not fetched from db"))
+
+            usernames_fetched = cur.fetchall()
+
+            username_list = [s[0] for s in usernames_fetched]
+
+            # Inject sorted python-list for spawningCondition into UI
+            username_list.sort()
+            self.dlg.usernames.clear()
+            self.dlg.usernames.addItems(username_list)
 
 
 
@@ -680,6 +706,109 @@ class NOFAInsert:
                     # setItem(row, column, QTableWidgetItem)
                     self.dlg.tableWidget_references.setItem(l, n, newitem)
 
+    def filter_occurrences_by_username(self):
+
+        username = self.dlg.usernames.currentText()
+
+        cur = self._db_cur()
+
+        try:
+            cur.execute(
+                u'SELECT  "occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id", "username", "insert_timestamp", "update_timestamp" '
+                u'FROM nofa.plugin_occurrence_log WHERE "username" = %s', (username,))
+        except:
+            QMessageBox.information(None, "DEBUG:", str(
+                "WARNING - DB ERROR. occurrences not fetched from db"))
+
+        fetched_occ = cur.fetchall()
+
+        lim = len(fetched_occ)
+
+        self.dlg.tableWidget_occurrences.setRowCount(lim)
+        self.dlg.tableWidget_occurrences.setColumnCount(9)
+
+        headers = ["occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id",
+                   "username", "insert_time", "update_time"]
+        self.dlg.tableWidget_occurrences.setHorizontalHeaderLabels(headers)
+
+        for l in range(lim):
+            occurrence = fetched_occ[l]
+            for n, item in enumerate(occurrence):
+                newitem = QTableWidgetItem(str(occurrence[n]))
+
+                # setItem(row, column, QTableWidgetItem)
+                self.dlg.tableWidget_occurrences.setItem(l, n, newitem)
+
+    def filter_occurrence_by_time(self):
+
+        time_from = self.dlg.date_from.date()
+        time_to = self.dlg.date_to.date()
+
+        cur = self._db_cur()
+
+        try:
+            cur.execute(
+                u'SELECT  "occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id", "username", "insert_timestamp", "update_timestamp" '
+                u'FROM nofa.plugin_occurrence_log WHERE "insert_timestamp" BETWEEN %s AND %s', (time_from.toPyDate(), time_to.toPyDate(),))
+        except:
+            QMessageBox.information(None, "DEBUG:", str(
+                "WARNING - DB ERROR. occurrences not fetched from db"))
+
+        fetched_occ = cur.fetchall()
+
+        lim = len(fetched_occ)
+
+        self.dlg.tableWidget_occurrences.setRowCount(lim)
+        self.dlg.tableWidget_occurrences.setColumnCount(9)
+
+        headers = ["occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id",
+                   "username", "insert_time", "update_time"]
+        self.dlg.tableWidget_occurrences.setHorizontalHeaderLabels(headers)
+
+        for l in range(lim):
+            occurrence = fetched_occ[l]
+            for n, item in enumerate(occurrence):
+                newitem = QTableWidgetItem(str(occurrence[n]))
+
+                # setItem(row, column, QTableWidgetItem)
+                self.dlg.tableWidget_occurrences.setItem(l, n, newitem)
+
+    def filter_by_user_and_time(self):
+
+        username = self.dlg.usernames.currentText()
+
+        time_from = self.dlg.date_from.date()
+        time_to = self.dlg.date_to.date()
+
+        cur = self._db_cur()
+
+        try:
+            cur.execute(
+                u'SELECT  "occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id", "username", "insert_timestamp", "update_timestamp" '
+                u'FROM nofa.plugin_occurrence_log WHERE "username" = %s AND "insert_timestamp" BETWEEN %s AND %s',
+                (username, time_from.toPyDate(), time_to.toPyDate(),))
+        except:
+            QMessageBox.information(None, "DEBUG:", str(
+                "WARNING - DB ERROR. occurrences not fetched from db"))
+
+        fetched_occ = cur.fetchall()
+
+        lim = len(fetched_occ)
+
+        self.dlg.tableWidget_occurrences.setRowCount(lim)
+        self.dlg.tableWidget_occurrences.setColumnCount(9)
+
+        headers = ["occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id",
+                   "username", "insert_time", "update_time"]
+        self.dlg.tableWidget_occurrences.setHorizontalHeaderLabels(headers)
+
+        for l in range(lim):
+            occurrence = fetched_occ[l]
+            for n, item in enumerate(occurrence):
+                newitem = QTableWidgetItem(str(occurrence[n]))
+
+                # setItem(row, column, QTableWidgetItem)
+                self.dlg.tableWidget_occurrences.setItem(l, n, newitem)
 
     def look_for_ecotype(self):
         taxon_name = self.dlg.taxonID.currentText()
