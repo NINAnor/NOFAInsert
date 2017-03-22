@@ -21,7 +21,7 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt, QObject, QDate
-from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget, QTableWidgetItem, QColor, QFont
+from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget, QTableWidgetItem, QColor, QFont, QCompleter
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
@@ -1940,7 +1940,7 @@ class NOFAInsert:
         currentref= self.dlg.existingReference.currentText()
         #QMessageBox.information(None, "DEBUG:", str(currentref))
 
-        currentref_number = currentref.split(':')[0]
+        currentref_number = currentref.split('@')[1]
         #QMessageBox.information(None, "DEBUG:", str(currentproject_number))
 
         if currentref_number != 'None' and currentref_number != '' and currentref_number != None:
@@ -2349,7 +2349,7 @@ class NOFAInsert:
 
         # Create a python-list from query result
 
-        reference_list = [u'{0}: {1}'.format(r[0], r[1]) for r in references]
+        reference_list = [u'{0}: {1} @{2}'.format(r[1], r[2], r[0]) for r in references]
         referenceID_list = [r[0] for r in references]
 
         # Inject sorted python-list for existingProjects into UI
@@ -2357,6 +2357,8 @@ class NOFAInsert:
         reference_list.insert(0, 'None')
         self.dlg.existingReference.clear()
         self.dlg.existingReference.addItems(reference_list)
+        self.dlg.existingReference.setEditable(True)
+        self.dlg.existingReference.completer().setCompletionMode(QCompleter.PopupCompletion)
         self.dlg.existingReference.setCurrentIndex(reference_list.index("None"))
 
     def update_occurrence(self):
