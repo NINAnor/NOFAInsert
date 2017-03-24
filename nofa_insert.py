@@ -125,15 +125,15 @@ class NOFAInsert:
 
 
 
-        self.insert_dataset_columns = u""" "rightsHolder", "ownerInstitutionCode",
+        self.insert_dataset_columns = u""" "datasetID", "rightsHolder", "ownerInstitutionCode",
         "datasetName", "accessRights", "license", "bibliographicCitation", "datasetComment",
         "informationWithheld", "dataGeneralizations" """
 
-        self.insert_project_columns = u""" "projectName", "projectNumber", "startYear", "endYear", "projectLeader",
+        self.insert_project_columns = u""" "projectID", "projectName", "projectNumber", "startYear", "endYear", "projectLeader",
         "projectMembers", "organisation", "financer", "remarks"
         """
 
-        self.insert_reference_columns = u""" "doi", "author", "referenceType", "year", "titel",
+        self.insert_reference_columns = u""" "referenceID", "doi", "author", "referenceType", "year", "titel",
         "journalName", "volume", "date", "issn", "isbn", "page" """
 
         self.insert_log_dataset_columns = u""" "dataset_id", "test", "username" """
@@ -144,11 +144,11 @@ class NOFAInsert:
 
         self.insert_log_location_columns = u""" "location_id", "test", "username", "location_name" """
 
-        self.dataset_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        self.dataset_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
-        self.project_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        self.project_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
-        self.reference_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        self.reference_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
         self.log_occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s)'
 
@@ -909,9 +909,9 @@ class NOFAInsert:
 
         ################################################################
         # connect the Ok button in dataset dialog to the insert dataset function
-        self.datadlg.dataset_dialog_button.clicked.connect(self._dataset_button)
+        self.datadlg.dataset_dialog_button.clicked.connect(self.dataset_button)
 
-    def _dataset_button(self):
+    def dataset_button(self):
         #QMessageBox.information(None, "DEBUG:", str("dataset button pressed"))
 
         rights_holder = self.datadlg.rightsHolder.currentText()
@@ -928,13 +928,19 @@ class NOFAInsert:
                                                     bibliographic_citation + ' ' +  dataset_comment + ' ' +  information_withheld + ' ' +
                                                     data_generalizations))
 
+        cur = self._db_cur()
+        cur.execute(u'SELECT max("datasetID") FROM nofa.m_dataset;')
+        max_dataset_id = cur.fetchone()[0]
+        QMessageBox.information(None, "DEBUG:", str(max_dataset_id))
+        new_d_id = max_dataset_id + 1
+
 
         cur = self._db_cur()
 
-        insert_dataset = cur.mogrify("""INSERT INTO nofa.m_dataset({}) VALUES {} RETURNING dataset_id""".format(
+        insert_dataset = cur.mogrify("""INSERT INTO nofa.m_dataset({}) VALUES {} RETURNING "datasetID" """.format(
             self.insert_dataset_columns,
             self.dataset_values
-        ), (rights_holder, owner_institution, dataset_name, access_rights, license, bibliographic_citation,
+        ), (new_d_id, rights_holder, owner_institution, dataset_name, access_rights, license, bibliographic_citation,
             dataset_comment, information_withheld, data_generalizations,))
 
         """insert_dataset += cur.mogrify(self.dataset_values, (rights_holder, owner_institution, dataset_name, access_rights,
@@ -1699,11 +1705,18 @@ class NOFAInsert:
             financer + ' ' + remarks))
 
         cur = self._db_cur()
+        cur.execute(u'SELECT max("projectID") FROM nofa.m_project;')
+        max_proj_id = cur.fetchone()[0]
+        QMessageBox.information(None, "DEBUG:", str(max_proj_id))
+        new_id = max_proj_id + 1
 
-        insert_project = cur.mogrify("""INSERT INTO nofa.m_project({}) VALUES {} RETURNING project_id""".format(
+
+        cur = self._db_cur()
+
+        insert_project = cur.mogrify("""INSERT INTO nofa.m_project({}) VALUES {} RETURNING "projectID" """.format(
             self.insert_project_columns,
             self.project_values
-        ), (project_name, project_number, start_year.year(), end_year.year(), project_leader, project_members,
+        ), (new_id, project_name, project_number, start_year.year(), end_year.year(), project_leader, project_members,
             organisation, financer, remarks,))
 
         QMessageBox.information(None, "DEBUG:", insert_project)
@@ -1787,11 +1800,17 @@ class NOFAInsert:
             volume + ' ' + issn + ' ' + isbn + ' ' + page))
 
         cur = self._db_cur()
+        cur.execute(u'SELECT max("referenceID") FROM nofa.m_reference;')
+        max_rfr_id = cur.fetchone()[0]
+        QMessageBox.information(None, "DEBUG:", str(max_rfr_id))
+        new_r_id = max_rfr_id + 1
 
-        insert_reference = cur.mogrify("""INSERT INTO nofa.m_reference({}) VALUES {} RETURNING reference_id""".format(
+        cur = self._db_cur()
+
+        insert_reference = cur.mogrify("""INSERT INTO nofa.m_reference({}) VALUES {} RETURNING "referenceID" """.format(
             self.insert_reference_columns,
             self.reference_values
-        ), (doi, author, reference_type, int(year.year()), title, journal_name,
+        ), (new_r_id, doi, author, reference_type, int(year.year()), title, journal_name,
             volume, date.toPyDate(), issn, isbn, page,))
 
         QMessageBox.information(None, "DEBUG:", insert_reference)
@@ -1940,10 +1959,10 @@ class NOFAInsert:
         currentref= self.dlg.existingReference.currentText()
         #QMessageBox.information(None, "DEBUG:", str(currentref))
 
-        currentref_number = currentref.split('@')[1]
         #QMessageBox.information(None, "DEBUG:", str(currentproject_number))
 
-        if currentref_number != 'None' and currentref_number != '' and currentref_number != None:
+        if currentref != 'None' and currentref != '' and currentref != None:
+            currentref_number = currentref.split('@')[1]
             cur = self._db_cur()
             cur.execute(
                 u'SELECT "referenceID", "doi", "author", "referenceType", "year", '
@@ -2344,7 +2363,7 @@ class NOFAInsert:
         # Get existingReference from database
         cur = self._db_cur()
 
-        cur.execute(u'SELECT "referenceID", "source", "titel" FROM nofa."m_reference";')
+        cur.execute(u'SELECT "referenceID", "author", "titel" FROM nofa."m_reference";')
         references = cur.fetchall()
 
         # Create a python-list from query result
