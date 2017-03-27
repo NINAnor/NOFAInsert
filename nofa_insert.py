@@ -90,7 +90,7 @@ class NOFAInsert:
 
         self.dataset_name = "none"
 
-        self.insert_location = """INSERT INTO nofa.location ("locationID", "locationType", geom, "waterBody", "locationRemarks") VALUES (%s, %s, %s, %s, %s);"""
+        self.insert_location = """INSERT INTO nofa.location (locationID, "locationType", geom, "waterBody", "locationRemarks") VALUES (%s, %s, %s, %s, %s);"""
 
         self.insert_taxonomic_coverage = """INSERT INTO nofa.taxonomicCoverage("taxonID_l_taxon", "eventID_observationEvent") VALUES (%s,%s);"""
         # creating the string for event data insertion to nofa.event table. fieldNotes is used just for testing purposes
@@ -199,15 +199,6 @@ class NOFAInsert:
                          26176: ['Whitefish', 'Plankton Whitefish']
                         }
 
-
-        # initialise data and metadata containers:
-        self.locations = {'location_ID': [],
-                          'location': [],
-                          'loc_type': 'Select',
-                          'loc_names': [],
-                          'x': [],
-                          'y': []
-                          }
 
 
         self.occurrence_base = {'taxon': 'Select',
@@ -1015,6 +1006,15 @@ class NOFAInsert:
 
         '''
 
+        # initialise data and metadata containers:
+        self.locations = {'location_ID': [],
+                          'location': [],
+                          'loc_type': 'Select',
+                          'loc_names': [],
+                          'x': [],
+                          'y': []
+                          }
+
 
         locs = self.dlg.locations.text()
         location_type = self.dlg.locIDType.currentText()
@@ -1046,7 +1046,7 @@ class NOFAInsert:
             #QMessageBox.information(None, "DEBUG:", str(loc_names))
 
             coords = []
-            QMessageBox.information(None, "DEBUG:", str("this is loc_list: " + str(loc_list)))
+            #QMessageBox.information(None, "DEBUG:", str("this is loc_list: " + str(loc_list)))
             if len(loc_list) == len(locations):
                 for i, loc in enumerate(loc_list):
                     if loc_names[i] is None:
@@ -1069,120 +1069,102 @@ class NOFAInsert:
             self.locations['loc_type'] = type
             #QMessageBox.information(None, "DEBUG:", str(type))
 
-            frags = locs.split(',')
+            if ';' in locs:
+                frags = locs.split(';')
+                QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(frags))
+            elif ',' in locs:
+                frags = locs.split(',')
+                QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(frags))
             coords = []
             # storing the ID of the locations which are exact matches of existing ones
             self.places = []
 
-
+            #QMessageBox.information(None, "DEBUG:", 'frags = ' + str(frags))
             #walk through all the locations
             for i, elem in enumerate(frags):
-                #QMessageBox.information(None, "DEBUG:", str(elem))
-                elems = elem.split()
-                #coordinates = elems[0] + ' ' + elems[1]
-                try:
-                    easting = elems[0]
-                    northing = elems[1]
+                if elem not in (None, ""):
+                    QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(elem))
+                    elems = elem.split()
+                    #coordinates = elems[0] + ' ' + elems[1]
+                    try:
+                        easting = elems[0]
+                        northing = elems[1]
 
-                    self.locations['x'].append(easting)
-                    self.locations['y'].append(northing)
+                        self.locations['x'].append(easting)
+                        self.locations['y'].append(northing)
 
-                    x = float(easting)
-                    y = float(northing)
-                except:
-                    QMessageBox.information(None, "DEBUG:", str("WARNIG - location parsing ERROR - Did you select the correct location identifyer?"))
+                        x = float(easting)
+                        y = float(northing)
+                    except:
+                        QMessageBox.information(None, "DEBUG:", str("WARNIG - problem with easting and northing?"))
 
 
 
-                name = elems[2:]
-                loc_name = ' '.join(name)
+                    name = elems[2:]
+                    loc_name = ' '.join(name)
 
-                self.locations['loc_names'].append(loc_name)
-                #coords.append(coordinates)
+                    self.locations['loc_names'].append(loc_name)
+                    #coords.append(coordinates)
 
-                coords.append(loc_name + ' (' + easting + ', ' + northing + ')')
-                #QMessageBox.information(None, "DEBUG:", str(self.locations['x'][i]))
+                    coords.append(loc_name + ' (' + easting + ', ' + northing + ')')
+                    #QMessageBox.information(None, "DEBUG:", str(self.locations['x'][i]))
 
-                cur = self._db_cur()
-                srid = type
+                    cur = self._db_cur()
+                    srid = type
 
-                '''
-                if isinstance(SRID, str):
-                    QMessageBox.information(None, "DEBUG:", str("SRID is a string"))
-                elif isinstance(SRID, int):
-                    QMessageBox.information(None, "DEBUG:", str("SRID is an int"))
 
-                if isinstance(x, str):
-                    QMessageBox.information(None, "DEBUG:", str("x is a string"))
-                elif isinstance(x, int):
-                    QMessageBox.information(None, "DEBUG:", str("x is an int"))
-                elif isinstance(x, float):
-                    QMessageBox.information(None, "DEBUG:", str("x is a float"))
-                    #QMessageBox.information(None, "DEBUG:", str(x))
-                elif isinstance(x, list):
-                    QMessageBox.information(None, "DEBUG:", str("x is a list"))
+                    point = "ST_Transform(ST_GeomFromText('POINT({0} {1})', {2}), 25833)".format(x, y, srid)
 
-                if isinstance(easting, str):
-                    QMessageBox.information(None, "DEBUG:", str("easting is a string"))
-                elif isinstance(easting, int):
-                    QMessageBox.information(None, "DEBUG:", str("easting is an int"))
-                elif isinstance(easting, float):
-                    QMessageBox.information(None, "DEBUG:", str("easting is a float"))
-                elif isinstance(easting, list):
-                    QMessageBox.information(None, "DEBUG:", str("easting is a list"))
-                '''
+                    cur.execute("""SELECT x, y, distance, cat, "locationID" FROM
+                    (SELECT {0} AS x,  {1}  AS y,
+                    ST_Distance(geom, {2}) AS distance,
+                    * FROM temporary.lakes_nosefi
+                    WHERE ST_DWithin(geom, {2}, 0)
+                    ORDER BY
+                    geom <-> {2}
+                    LIMIT 1) AS a,
+                    nofa.location AS b
+                    WHERE cat = b."waterBodyID"
+                    ORDER BY b.geom <-> {2};""".format(x, y, point))
 
-                cur.execute("""SELECT x, y, distance, cat, "locationID" FROM
-                (SELECT %s AS x,  %s  AS y,
-                ST_Distance(geom, 'SRID=%s;POINT(%s %s)'::geometry) AS distance,
-                * FROM temporary.lakes_nosefi
-                WHERE ST_DWithin(geom, 'SRID=%s;POINT(%s %s)'::geometry, 0)
-                ORDER BY
-                geom <-> 'SRID=%s;POINT(%s %s)'::geometry
-                LIMIT 1) AS a,
-                nofa.location AS b
-                WHERE cat = b."waterBodyID"
-                ORDER BY b.geom <-> 'SRID=%s;POINT(%s %s)'::geometry
-                ;""",  (x, y, srid, x, y, srid, x, y, srid, x, y, srid, x, y,))
+                    loc = cur.fetchone()
 
-                loc = cur.fetchone()
+                    '''
 
-                '''
+                            Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
+                            'coordinates UTM33':    196098.1000	6572796.0100	Dam Grønnerød,194572.6100	6575712.0100	Dam Løberg
+                                                    194572.6100	6575712.0100	løberg dam, 136210.9600	6497277.7500	Springvannsdamm, 149719.5000	6506063.2800	DamKilsund
+                                                    -43893.189 6620749.358 Vågavatnet, 194572.6100	6575712.0100	Dam Løberg
+                                                    262491.48	6651383.97	Akerselva,272567.61	6651129.3	nuggerudbk,342561.74	6792178.06	Våråna,379904.34	6791377.43	Storbekken,377548.06	6791361.56	Nesvollbekken
 
-                        Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
-                        'coordinates UTM33':    196098.1000	6572796.0100	Dam Grønnerød,194572.6100	6575712.0100	Dam Løberg
-                                                194572.6100	6575712.0100	løberg dam, 136210.9600	6497277.7500	Springvannsdamm, 149719.5000	6506063.2800	DamKilsund
-                                                -43893.189 6620749.358 Vågavatnet, 194572.6100	6575712.0100	Dam Løberg
-                                                262491.48	6651383.97	Akerselva,272567.61	6651129.3	nuggerudbk,342561.74	6792178.06	Våråna,379904.34	6791377.43	Storbekken,377548.06	6791361.56	Nesvollbekken
+                            'coordinates UTM32':    601404.85	6644928.24	Hovinbk; 580033.012	6633807.99	Drengsrudbk;580322.6	6632959.64	Askerleva;658472.23	6842698.72	Engeråa;652499.37	6802699.72	Bruråsbk;
+                                                    634422.28	6788379.28	Flåtestøbk;633855.79	6792859.46	Rødsbakkbk;630580.08	6785079.49	Ygla;628663.92	6785056.12	Svarttjernbk;629047.03	6785047.57	Vesl Ygla;
+                                                    634687.42	6814177.67	Pottbekken;630348.1	6801364.63	Ullsettbk;
+                                                    627139.64	6803681.51	Grønvollbk;530415.53	6722441.27	Åslielva;549629.28	6642631.88	Overnbek;
+                    '''
 
-                        'coordinates UTM32':    601404.85	6644928.24	Hovinbk; 580033.012	6633807.99	Drengsrudbk;580322.6	6632959.64	Askerleva;658472.23	6842698.72	Engeråa;652499.37	6802699.72	Bruråsbk;
-                                                634422.28	6788379.28	Flåtestøbk;633855.79	6792859.46	Rødsbakkbk;630580.08	6785079.49	Ygla;628663.92	6785056.12	Svarttjernbk;629047.03	6785047.57	Vesl Ygla;
-                                                634687.42	6814177.67	Pottbekken;630348.1	6801364.63	Ullsettbk;
-                                                627139.64	6803681.51	Grønvollbk;530415.53	6722441.27	Åslielva;549629.28	6642631.88	Overnbek;
-                '''
+                    # Check if a location is already registered in the db. If it is, just get the location ID, and append it to ad-hoc variable, and the locations dict.
+                    if loc and loc[2] <= 10 and loc[4]:
+                        #QMessageBox.information(None, "DEBUG:", str(loc[4]))
+                        self.locations['location_ID'].append(loc[4])
+                        self.places.append(loc)
+                        placesID = loc[4]
+                        #QMessageBox.information(None, "DEBUG:", str(placesID))
 
-                # Check if a location is already registered in the db. If it is, just get the location ID, and append it to ad-hoc variable, and the locations dict.
-                if loc and loc[2] <= 10 and loc[4]:
-                    #QMessageBox.information(None, "DEBUG:", str(loc[4]))
-                    self.locations['location_ID'].append(loc[4])
-                    self.places.append(loc)
-                    placesID = loc[4]
-                    #QMessageBox.information(None, "DEBUG:", str(placesID))
+                    else:
 
-                else:
+                        locationID = uuid.uuid4()
+                        # location ID added to the locations dict
+                        self.locations['location_ID'].append(locationID)
 
-                    locationID = uuid.uuid4()
-                    # location ID added to the locations dict
-                    self.locations['location_ID'].append(locationID)
+                        #geom = 'MULTIPOINT({0} {1})'.format(x, y)
+                        #geom = u"""ST_Transform(ST_GeomFromText('MULTIPOINT({0} {1})', {2}), 25833)""".format(x, y, srid)
+                        waterbody = loc_name
 
-                    #geom = 'MULTIPOINT({0} {1})'.format(x, y)
-                    #geom = u"""ST_Transform(ST_GeomFromText('MULTIPOINT({0} {1})', {2}), 25833)""".format(x, y, srid)
-                    waterbody = loc_name
+                        self.new_locs.append([locationID, x, y, srid, waterbody])
 
-                    self.new_locs.append([locationID, x, y, srid, waterbody])
-
-                    #QMessageBox.information(None, "DEBUG:", str(loc[4]))
-                    #QMessageBox.information(None, "DEBUG:", str("loc not found"))
+                        #QMessageBox.information(None, "DEBUG:", str(loc[4]))
+                        #QMessageBox.information(None, "DEBUG:", str("loc not found"))
 
             self.locations['location'] = coords
 
@@ -1255,7 +1237,7 @@ class NOFAInsert:
         for index in range(counted):
             base = root.child(index)
             new_counted = base.childCount()
-            QMessageBox.information(None, "DEBUG:", str(new_counted))
+            #QMessageBox.information(None, "DEBUG:", str(new_counted))
             for t in range(new_counted):
                 family = base.child(t)
 
@@ -1320,22 +1302,69 @@ class NOFAInsert:
 
         #QMessageBox.information(None, "DEBUG:", str(self.new_locs))
 
-        #insert the new location points to the db in nofa.location
+        #insert the new location points, if any,  to the db in nofa.location
         if self.new_locs:
             for i, loc in enumerate(self.new_locs):
                 cur = self._db_cur()
                 location_type = 'samplingPoint'
 
-                point = "POINT( " + str(loc[1]) + " " + str(loc[2]) + ")"
-                #geom = "ST_GeomFromText('" + point + ", "+ str(loc[3]) + ")"
-                #QMessageBox.information(None, "DEBUG:", point)
+                point = "MULTIPOINT({0} {1})".format(loc[1], loc[2])
+                geom_orig = "ST_GeometryFromText('{0}', {1})".format(point, str(loc[3]))
+                geom = "ST_Transform({}, 25833)".format(geom_orig)
+                QMessageBox.information(None, "DEBUG:", geom)
 
 
-                #QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, geom, loc[4], 'test'))))
+                #QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, geom, loc[4], 'test',))))
+
+                # Insert any new location into the DB
+
+                QMessageBox.information(None, "DEBUG:", "insert_location is: " + self.insert_location)
+                QMessageBox.information(None, "DEBUG:", str(type(loc[0])))
+
+                location_columns = u""" "locationID", "locationType", geom, "waterBody", "locationRemarks" """
+                #location_values = '%s, %s, %s, %s, %s'
+
+                insert_location = cur.mogrify(u"""INSERT INTO nofa.location ({0}) VALUES ('{1}', '{2}', {3}::geometry, '{4}', '{5}');""".format(
+                    location_columns,
+                    loc[0],
+                    location_type,
+                    geom,
+                    str(loc[4]),
+                    'test'))
+
+                QMessageBox.information(None, "DEBUG:", insert_location)
+                cur.execute(insert_location)
 
                 try:
-                    cur.execute(self.insert_location, (loc[0], location_type, point, loc[4], 'test'))
+                    cur = self._db_cur()
+                    insert_location_log = cur.mogrify("INSERT INTO nofa.plugin_location_log({}) VALUES {}".format(
+                        self.insert_log_location_columns,
+                        self.log_location_values,
+                    ), (loc[0], True, self.username, loc[4]))
 
+                    cur.execute(insert_location_log)
+
+                    QMessageBox.information(None, "DEBUG:", "occurrence correctly stored in NOFA db")
+                except:
+                QMessageBox.information(None, "DEBUG:", str('problem inserting the new locations to location log db'))
+
+                '''
+
+                 insert_project = cur.mogrify("""INSERT INTO nofa.m_project({}) VALUES {} RETURNING "projectID" """.format(
+            self.insert_project_columns,
+            self.project_values
+        ), (new_id, project_name, project_number, start_year.year(), end_year.year(), project_leader, project_members,
+            organisation, financer, remarks,))
+
+                self.insert_location = """INSERT INTO nofa.location ("locationID", "locationType", geom, "waterBody", "locationRemarks") VALUES (%s, %s, %s, %s, %s);"""
+
+
+                try:
+                    QMessageBox.information(None, "DEBUG:", "insert_location is: " + self.insert_location)
+                    QMessageBox.information(None, "DEBUG:", loc[0])
+                    cur.execute(self.insert_location, (loc[0], location_type, geom, loc[4], 'test'))
+
+                    # Keep track of the insertion in the location log table
                     try:
                         cur = self._db_cur()
                         insert_location_log = cur.mogrify("INSERT INTO nofa.plugin_location_log({}) VALUES {}".format(
@@ -1352,7 +1381,7 @@ class NOFAInsert:
 
                 except:
                     QMessageBox.information(None, "DEBUG:", str('problem inserting the new locations to db'))
-
+                '''
 
         # add a new event to nofa.events fore each location
         for i, loc in enumerate(self.locations['location_ID']):
@@ -1443,20 +1472,13 @@ class NOFAInsert:
                 QMessageBox.information(None, "DEBUG:", 'Please select a dataset')
                 return
 
-            if isinstance(self.reference['reference_id'], str):
-                if self.reference['reference_id'] == 'None':
-                    QMessageBox.information(None, "DEBUG:", 'Please select a reference')
-                    return
-                else:
-                    try:
-                        reference = int(self.reference['reference_id'])
-                    except:
-                        QMessageBox.information(None, "DEBUG:",
-                                                'The type of referenceid is wrong. Should be integer')
-                        return
-            elif self.reference['reference_id'] is None:
-                QMessageBox.information(None, "DEBUG:", 'Please select a reference')
-                return
+            # reference is optional. If not existing, defaults to zero
+            try:
+                reference = int(self.reference['reference_id'])
+            except:
+                reference = 0
+
+
 
             # check project ID type, and convert to int
             if isinstance(self.project['project_id'], int):
@@ -1713,7 +1735,7 @@ class NOFAInsert:
 
         cur = self._db_cur()
 
-        insert_project = cur.mogrify("""INSERT INTO nofa.m_project({}) VALUES {} RETURNING "projectID" """.format(
+        insert_project = cur.mogrify("""INSERT INTO nofa.m_project({}) VALUES ({}) RETURNING "projectID" """.format(
             self.insert_project_columns,
             self.project_values
         ), (new_id, project_name, project_number, start_year.year(), end_year.year(), project_leader, project_members,
@@ -2388,6 +2410,8 @@ class NOFAInsert:
         #self.dlg.existingReference.setCurrentIndex(reference_list.index("None"))
 
         self.dlg.existingReference.setCurrentIndex(reference_title_list.index(self.reference['authors']))
+
+        #QMessageBox.information(None, "DEBUG:", str(reference_title_list.index(self.reference['authors'])))
 
     def update_occurrence(self):
 
