@@ -1911,8 +1911,8 @@ class NOFAInsert:
 
         currentproject = self.dlg.existingProject.currentText()
 
-        currentproject_number = currentproject.split(':')[0]
-        if currentproject_number != 'None' and currentproject_number != '':
+        currentproject_number = currentproject.split('@')[0]
+        if currentproject_number != 'None ' and currentproject_number != '':
             #QMessageBox.information(None, "DEBUG:", str(currentproject_number))
 
             self.preview_conditions['project_selected'] = True
@@ -1924,7 +1924,7 @@ class NOFAInsert:
                 u'"projectMembers", "organisation", "financer", "remarks", "projectID" '
                 u'FROM nofa."m_project" WHERE "projectNumber" = (%s);', (currentproject_number,))
             project = cur.fetchone()
-            #QMessageBox.information(None, "DEBUG:", str(project))
+            #QMessageBox.information(None, "DEBUG:", str(project[1]))
 
         # Create a python-list from query result
 
@@ -2336,7 +2336,7 @@ class NOFAInsert:
         dataset_list.insert(0, 'None')
         self.dlg.existingDataset.clear()
         self.dlg.existingDataset.addItems(dataset_list)
-        self.dlg.existingDataset.setCurrentIndex(dataset_list.index("None"))
+        self.dlg.existingDataset.setCurrentIndex(dataset_list.index(self.dataset['dataset_name']))
 
     def get_existing_projects(self):
 
@@ -2346,15 +2346,21 @@ class NOFAInsert:
         projects = cur.fetchall()
 
         # Create a python-list from query result
-        self.project_list = [u'{0}: {1}'.format(p[1], p[2]) for p in projects]
+        self.project_list = [u'{0} @ {1}'.format(p[1], p[2]) for p in projects]
 
         # Inject sorted python-list for existingProjects into UI
         self.project_list.sort()
-        self.project_list.insert(0, 'None')
+        self.project_list.insert(0, 'None @ None')
         self.dlg.existingProject.clear()
         self.dlg.existingProject.addItems(self.project_list)
-        if self.project['project_name'] == 'None':
-            self.dlg.existingProject.setCurrentIndex(self.project_list.index("None"))
+
+        splitted_proj_list = [element.split(' @ ')[1] for element in self.project_list]
+        #QMessageBox.information(None, "DEBUG:", str(splitted_proj_list))
+        try:
+            self.dlg.existingProject.setCurrentIndex(splitted_proj_list.index(self.project['project_name']))
+        except:
+            self.dlg.existingProject.setCurrentIndex(0)
+
 
         #########################################
 
@@ -2369,7 +2375,8 @@ class NOFAInsert:
         # Create a python-list from query result
 
         reference_list = [u'{0}: {1} @{2}'.format(r[1], r[2], r[0]) for r in references]
-        referenceID_list = [r[0] for r in references]
+        reference_title_list = [r[1] for r in references]
+        reference_title_list.insert(0, 'None')
 
         # Inject sorted python-list for existingProjects into UI
         reference_list.sort()
@@ -2378,7 +2385,9 @@ class NOFAInsert:
         self.dlg.existingReference.addItems(reference_list)
         self.dlg.existingReference.setEditable(True)
         self.dlg.existingReference.completer().setCompletionMode(QCompleter.PopupCompletion)
-        self.dlg.existingReference.setCurrentIndex(reference_list.index("None"))
+        #self.dlg.existingReference.setCurrentIndex(reference_list.index("None"))
+
+        self.dlg.existingReference.setCurrentIndex(reference_title_list.index(self.reference['authors']))
 
     def update_occurrence(self):
 
@@ -2426,7 +2435,7 @@ class NOFAInsert:
         '''
 
     def populate_dataset(self):
-
+        self.dlg.listview_dataset.clear()
         self.dlg.listview_dataset.setWordWrap(True)
 
         for key, value in self.dataset.iteritems():
@@ -2452,6 +2461,9 @@ class NOFAInsert:
                 self.dlg.listview_project.addItem(prjitem)
 
     def populate_reference(self):
+
+        self.dlg.listview_reference.clear()
+        self.dlg.listview_reference.setWordWrap(True)
 
         for key, value in self.reference.iteritems():
             if value is not None:
