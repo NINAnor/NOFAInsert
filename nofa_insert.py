@@ -2427,19 +2427,8 @@ class NOFAInsert:
 
     def populate_dataset(self):
 
-        self.dataset['dataset_name'] = "Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text"
-        '''
-        self.dlg.display_dataset_1.setText(self.dataset['dataset_name'])
-        self.dlg.display_dataset_1.setWordWrap(True)
-        self.dlg.display_dataset_2.setText(self.dataset['dataset_id'])
-        self.dlg.display_dataset_3.setText(self.dataset['rightsholder'])
-        self.dlg.display_dataset_4.setText(self.dataset['owner_institution'])
-        self.dlg.display_dataset_5.setText(self.dataset['license'])
-        self.dlg.display_dataset_6.setText(self.dataset['citation'])
-        self.dlg.display_dataset_7.setText(self.dataset['comment'])
-        self.dlg.display_dataset_8.setText(self.dataset['information'])
-        self.dlg.display_dataset_9.setText(self.dataset['generalizations'])
-        '''
+        self.dlg.listview_dataset.setWordWrap(True)
+
         for key, value in self.dataset.iteritems():
             if value is not None:
                 dstitem = QListWidgetItem(key + ':    ' + value)
