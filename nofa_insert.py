@@ -106,6 +106,7 @@ class NOFAInsert:
         # 16 occurrence values, placeholders
         self.occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
+        # TODO - remove "fieldNumber" column, used for testing purposes
         self.insert_occurrence = u"""INSERT INTO nofa.occurrence ("occurrenceID",
                                     "ecotypeID", "establishmentMeans", "verifiedBy", "verifiedDate", "taxonID",
                                     "spawningLocation", "spawningCondition", "occurrenceStatus",
@@ -160,7 +161,7 @@ class NOFAInsert:
 
         self.log_location_values = u'(%s,%s,%s,%s)'
 
-        self.new_locs = []
+
 
         self.preview_conditions = {"dataset_selected": False,
                                    'project_selected': False,
@@ -1015,6 +1016,8 @@ class NOFAInsert:
                           'y': []
                           }
 
+        self.new_locs = []
+
 
         locs = self.dlg.locations.text()
         location_type = self.dlg.locIDType.currentText()
@@ -1079,13 +1082,15 @@ class NOFAInsert:
             # storing the ID of the locations which are exact matches of existing ones
             self.places = []
 
+
             #QMessageBox.information(None, "DEBUG:", 'frags = ' + str(frags))
+
             #walk through all the locations
             for i, elem in enumerate(frags):
                 if elem not in (None, ""):
                     QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(elem))
                     elems = elem.split()
-                    #coordinates = elems[0] + ' ' + elems[1]
+                    #all the locations need to be as: "easting northing location_name"
                     try:
                         easting = elems[0]
                         northing = elems[1]
@@ -1300,7 +1305,7 @@ class NOFAInsert:
         This method sends the occurrences, events and locations information to NOFA DB
         """
 
-        #QMessageBox.information(None, "DEBUG:", str(self.new_locs))
+        #QMessageBox.information(None, "DEBUG:", str("new_locs = " + self.new_locs))
 
         #insert the new location points, if any,  to the db in nofa.location
         if self.new_locs:
@@ -1344,9 +1349,25 @@ class NOFAInsert:
 
                     cur.execute(insert_location_log)
 
-                    QMessageBox.information(None, "DEBUG:", "occurrence correctly stored in NOFA db")
+                    QMessageBox.information(None, "DEBUG:", "new location log record correctly stored in NOFA db")
                 except:
-                QMessageBox.information(None, "DEBUG:", str('problem inserting the new locations to location log db'))
+                    QMessageBox.information(None, "DEBUG:", str('problem inserting the new locations to location log db'))
+
+
+
+                    '''
+
+                            Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
+                            'coordinates UTM33':    196098.1000	6572796.0100	Dam Grønnerød,194572.6100	6575712.0100	Dam Løberg
+                                                    194572.6100	6575712.0100	løberg dam, 136210.9600	6497277.7500	Springvannsdamm, 149719.5000	6506063.2800	DamKilsund
+                                                    -43893.189 6620749.358 Vågavatnet, 194572.6100	6575712.0100	Dam Løberg
+                                                    262491.48	6651383.97	Akerselva,272567.61	6651129.3	nuggerudbk,342561.74	6792178.06	Våråna,379904.34	6791377.43	Storbekken,377548.06	6791361.56	Nesvollbekken
+
+                            'coordinates UTM32':    601404.85	6644928.24	Hovinbk; 580033.012	6633807.99	Drengsrudbk;580322.6	6632959.64	Askerleva;658472.23	6842698.72	Engeråa;652499.37	6802699.72	Bruråsbk;
+                                                    634422.28	6788379.28	Flåtestøbk;633855.79	6792859.46	Rødsbakkbk;630580.08	6785079.49	Ygla;628663.92	6785056.12	Svarttjernbk;629047.03	6785047.57	Vesl Ygla;
+                                                    634687.42	6814177.67	Pottbekken;630348.1	6801364.63	Ullsettbk;
+                                                    627139.64	6803681.51	Grønvollbk;530415.53	6722441.27	Åslielva;549629.28	6642631.88	Overnbek;
+                    '''
 
                 '''
 
