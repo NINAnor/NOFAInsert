@@ -185,6 +185,11 @@ class NOFAInsert:
                         'Finish': 'FI'}'''
 
         self.locIDType_dict = {'Norwegian VatnLnr': 'no_vatn_lnr',
+                               'coordinates UTM32': 25832,
+                               'coordinates UTM33': 25833,
+                               }
+
+        '''self.locIDType_dict = {'Norwegian VatnLnr': 'no_vatn_lnr',
                               'Swedish SjoID': 'se_sjoid',
                               'Finish nro': 'fi_nro',
                               'coordinates UTM32': 25832,
@@ -193,6 +198,7 @@ class NOFAInsert:
                               'coordinates lon/lat': 4326,
                               'waterBody register name': '"waterBody"'
                                }
+        '''
 
         self.ecotypes = {26164: ['Salmon', 'Landlocked Salmon', 'Relict Salmon'],
                          26165: ['Brown trout', 'Anadromous Brown Trout', 'Big Piscivorous Brown Trout', 'Fine-spotted Brown Trout', 'Danish River Trout'],
