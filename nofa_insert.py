@@ -104,12 +104,12 @@ class NOFAInsert:
         # 16 event values, placeholders
         self.event_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
         # 16 occurrence values, placeholders
-        self.occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        self.occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
         # TODO - remove "fieldNumber" column, used for testing purposes
         self.insert_occurrence = u"""INSERT INTO nofa.occurrence ("occurrenceID",
                                     "ecotypeID", "establishmentMeans", "verifiedBy", "verifiedDate", "taxonID",
-                                    "spawningLocation", "spawningCondition", "occurrenceStatus",
+                                    "spawningLocation", "spawningCondition", "occurrenceStatus", "populationTrend",
                                     "yearPrecisionRemarks", "organismQuantityID",
                                     "occurrenceRemarks", "modified", "establishmentRemarks", "eventID", "organismQuantityMetric", "fieldNumber")
                                     VALUES\n"""
@@ -165,7 +165,8 @@ class NOFAInsert:
 
         self.preview_conditions = {"dataset_selected": False,
                                    'project_selected': False,
-                                   'taxon_selected': False
+                                   'taxon_selected': False,
+                                   'est_means_selected': False
                                   }
 
         self.language = 'Norwegian'
@@ -206,7 +207,8 @@ class NOFAInsert:
                            'ecotype': 'Select',
                            'quantity': 'Select',
                            'metric': 0,
-                           'status': 'True',
+                           'status': 'unknown',
+                           'trend': 'unknown',
                            'oc_remarks': 'None',
                            'est_means': 'Select',
                            'est_remarks': 'None',
@@ -221,7 +223,8 @@ class NOFAInsert:
                            'ecotype': ['Select', ],
                            'quantity': ['Select', ],
                            'metric': [0, ],
-                           'status': ['True', ],
+                           'status': ['unknown', ],
+                           'trend': ['unknown', ],
                            'oc_remarks': ['None', ],
                            'est_means': ['Select', ],
                            'est_remarks': ['None', ],
@@ -283,6 +286,12 @@ class NOFAInsert:
                           'isbn': 'None',
                           'page': 'None'
                           }
+
+        # temporary list, to replace the currently empty table l_occurrenceStatus. Will be used in the occurrence status dropdown
+        self.occurrence_status = ['unknown', 'absent', 'common', 'doubtful', 'excluded', 'irregular', 'present', 'rare']
+
+        self.population_trend = ['unknown', 'increasing', 'decrasing', 'stable', 'extinction', 'introduction', 're-introduction']
+
         '''
         # collect the multiple data and metadata containers into a single object, a dictionary of dictionaries/lists.
         self.container = {'locations': self.locations,
@@ -389,7 +398,7 @@ class NOFAInsert:
         self.dlg.tableWidget.itemClicked.connect(self.update_row)
         self.dlg.tableWidget.verticalHeader().sectionClicked.connect(self.update_header)
         # set the occurrenceStatus checkbox to True, as a default initial status
-        self.dlg.occurrenceStatus.setChecked(True)
+        #self.dlg.occurrenceStatus.setChecked(True)
 
         #connect the occurrence input widgets to table content
         self.dlg.update_row_button.clicked.connect(self.update_occurrence_row)
@@ -452,24 +461,29 @@ class NOFAInsert:
         else:
             self.occurrence['taxon'][self.row_position] = 'None'
 
+        if self.dlg.establishmentMeans.currentText():
+            self.occurrence['est_means'][self.row_position] = self.dlg.establishmentMeans.currentText()
+
+            if self.dlg.establishmentMeans.currentText() != ' ' or self.dlg.establishmentMeans.currentText() != 'Select':
+                #QMessageBox.information(None, "DEBUG:", str(self.occurrence['taxon']))
+                if 'Select' not in self.occurrence['est_means']:
+                    self.preview_conditions['est_means_selected'] = True
+                    self.check_preview_conditions()
+            elif self.dlg.taxonID.currentText() == 'Select' or self.dlg.taxonID.currentText() == ' ':
+                self.preview_conditions['est_means_selected'] = False
+                self.check_preview_conditions()
+
+
         self.occurrence['ecotype'][self.row_position] = self.dlg.ecotypeID.currentText()
         #QMessageBox.information(None, "DEBUG:", str(self.occurrence['ecotype'][self.row_position]))
 
 
         self.occurrence['quantity'][self.row_position] = self.dlg.organismQuantityID.currentText()
-
-        if self.dlg.organismQuantityID.currentText().startswith('NOFA stock'):
-            self.occurrence['metric'][self.row_position] = 'None'
-        else:
-            self.occurrence['metric'][self.row_position] = self.dlg.oq_metric.text()
-
-        if self.dlg.occurrenceStatus.isChecked():
-            self.occurrence['status'][self.row_position] = 'True'
-        else:
-            self.occurrence['status'][self.row_position] = 'False'
-
+        self.occurrence['metric'][self.row_position] = self.dlg.oq_metric.text()
+        self.occurrence['status'][self.row_position] = self.dlg.status.currentText()
+        self.occurrence['trend'][self.row_position] = self.dlg.trend.currentText()
         self.occurrence['oc_remarks'][self.row_position] = self.dlg.occurrenceRemarks.text()
-        self.occurrence['est_means'][self.row_position] = self.dlg.establishmentMeans.currentText()
+
         self.occurrence['est_remarks'][self.row_position] = self.dlg.establishmentRemarks.text()
         self.occurrence['spawn_con'][self.row_position] = self.dlg.spawningCondition.currentText()
         self.occurrence['spawn_loc'][self.row_position] = self.dlg.spawningLocation.currentText()
@@ -1605,14 +1619,14 @@ class NOFAInsert:
                     organismquantity_metric = None
                 else:
                     organismquantity_metric = self.occurrence['metric'][m]
-                QMessageBox.information(None, "DEBUG:", str(self.occurrence['quantity'][m]))
+                #QMessageBox.information(None, "DEBUG:", str(self.occurrence['quantity'][m]))
 
                 insert_occurrence = self.insert_occurrence
                 cur = self._db_cur()
                 insert_occurrence += cur.mogrify(self.occurrence_values,
                                                  (occurrence_id, ecotype_id, self.occurrence['est_means'][m], self.occurrence['verified_by'][m],
                                                   verified_date, taxon, self.occurrence['spawn_loc'][m], self.occurrence['spawn_con'][m],
-                                                  self.occurrence['status'][m], self.occurrence['yearprecision_remarks'][m], self.occurrence['quantity'][m],
+                                                  self.occurrence['status'][m], self.occurrence['trend'][m], self.occurrence['yearprecision_remarks'][m], self.occurrence['quantity'][m],
                                                   self.occurrence['oc_remarks'][m], self.today, self.occurrence['est_remarks'][m],
                                                   event_id, organismquantity_metric, 'test'))
 
@@ -2148,21 +2162,33 @@ class NOFAInsert:
         '''
         ##########################################
 
-        # Get organismQuantity from database - excluding 'Total mass' entries
+        # Get organismQuantity from database - including only 'Total mass' entries
         cur = self._db_cur()
         cur.execute(u'SELECT "organismQuantityID" FROM nofa."l_organismQuantityType";')
         orgQuantID = cur.fetchall()
 
         # Create a python-list from query result
         #orgQuantID_list = [o[0] for o in orgQuantID if not o[0].startswith("Total")]
-        orgQuantID_list = [o[0] for o in orgQuantID]
+        orgQuantID_list = [o[0] for o in orgQuantID if o[0].startswith('Total')]
 
         # Inject sorted python-list for organismQuantity into UI
         orgQuantID_list.sort()
-        orgQuantID_list.insert(0, 'Unknown')
+        orgQuantID_list.insert(0, 'unknown')
         self.dlg.organismQuantityID.clear()
         self.dlg.organismQuantityID.addItems(orgQuantID_list)
-        self.dlg.organismQuantityID.setCurrentIndex(orgQuantID_list.index("Unknown"))
+        self.dlg.organismQuantityID.setCurrentIndex(orgQuantID_list.index("unknown"))
+
+        #############################################
+
+        # Get occurrence status
+        self.dlg.status.addItems(self.occurrence_status)
+        self.dlg.status.setCurrentIndex(self.occurrence_status.index("unknown"))
+
+        #############################################
+
+        # Get population trend
+        self.dlg.trend.addItems(self.population_trend)
+        self.dlg.trend.setCurrentIndex(self.population_trend.index("unknown"))
 
         #############################################
 
@@ -2448,11 +2474,16 @@ class NOFAInsert:
 
         self.dlg.oq_metric.setText(str(self.occurrence['metric'][self.row_position]))
 
-        if self.occurrence['status'][self.row_position] == 'True':
+        status_index = self.dlg.status.findText(self.occurrence['status'][self.row_position], Qt.MatchFixedString)
+        self.dlg.status.setCurrentIndex(status_index)
+
+        trend_index = self.dlg.trend.findText(self.occurrence['trend'][self.row_position], Qt.MatchFixedString)
+        self.dlg.trend.setCurrentIndex(trend_index)
+        '''if self.occurrence['status'][self.row_position] == 'True':
             self.dlg.occurrenceStatus.setChecked(True)
         else:
             self.dlg.occurrenceStatus.setChecked(False)
-
+        '''
         self.dlg.occurrenceRemarks.setText(self.occurrence['oc_remarks'][self.row_position])
 
         est_means_index = self.dlg.establishmentMeans.findText(self.occurrence['est_means'][self.row_position], Qt.MatchFixedString)
@@ -2568,6 +2599,7 @@ class NOFAInsert:
         self.update_occurrence_form()
 
         self.preview_conditions['taxon_selected'] = False
+        self.preview_conditions['est_means_selected'] = False
         self.check_preview_conditions()
 
        #QMessageBox.information(None, "DEBUG:", str(self.row_position))

@@ -631,12 +631,12 @@
        <rect>
         <x>10</x>
         <y>50</y>
-        <width>96</width>
-        <height>16</height>
+        <width>71</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>organismQuantityID</string>
+       <string>Quantity type</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -707,14 +707,14 @@
      <widget class="QLabel" name="label_105">
       <property name="geometry">
        <rect>
-        <x>250</x>
+        <x>210</x>
         <y>80</y>
         <width>84</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>occurrenceStatus</string>
+       <string>population trend</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -762,24 +762,11 @@
      <widget class="QComboBox" name="organismQuantityID">
       <property name="geometry">
        <rect>
-        <x>120</x>
+        <x>90</x>
         <y>50</y>
-        <width>281</width>
+        <width>141</width>
         <height>20</height>
        </rect>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="occurrenceStatus">
-      <property name="geometry">
-       <rect>
-        <x>340</x>
-        <y>80</y>
-        <width>60</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>present</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="yearPrecisionRemarks">
@@ -864,7 +851,7 @@
        <rect>
         <x>10</x>
         <y>110</y>
-        <width>94</width>
+        <width>101</width>
         <height>41</height>
        </rect>
       </property>
@@ -956,14 +943,14 @@
      <widget class="QLabel" name="label_103">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>80</y>
-        <width>121</width>
+        <x>240</x>
+        <y>50</y>
+        <width>61</width>
         <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>organismQuantity_metric</string>
+       <string>Quantity</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -972,9 +959,45 @@
      <widget class="QLineEdit" name="oq_metric">
       <property name="geometry">
        <rect>
-        <x>140</x>
+        <x>310</x>
+        <y>50</y>
+        <width>91</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_109">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>91</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>occurrenceStatus</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="status">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
         <y>80</y>
         <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="trend">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>80</y>
+        <width>91</width>
         <height>20</height>
        </rect>
       </property>
