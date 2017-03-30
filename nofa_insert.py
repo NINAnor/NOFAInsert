@@ -166,7 +166,8 @@ class NOFAInsert:
         self.preview_conditions = {"dataset_selected": False,
                                    'project_selected': False,
                                    'taxon_selected': False,
-                                   'est_means_selected': False
+                                   'est_means_selected': False,
+                                   'quantity': False
                                   }
 
         self.language = 'Norwegian'
@@ -475,16 +476,28 @@ class NOFAInsert:
                 if 'Select' not in self.occurrence['est_means']:
                     self.preview_conditions['est_means_selected'] = True
                     self.check_preview_conditions()
-            elif self.dlg.taxonID.currentText() == 'Select' or self.dlg.taxonID.currentText() == ' ':
+            elif self.dlg.establishmentMeans.currentText() == 'Select' or self.dlg.establishmentMeans.currentText() == ' ':
                 self.preview_conditions['est_means_selected'] = False
                 self.check_preview_conditions()
 
+
+        if self.dlg.organismQuantityID.currentText():
+            self.occurrence['quantity'][self.row_position] = self.dlg.organismQuantityID.currentText()
+
+            if self.dlg.organismQuantityID.currentText() != ' ' or self.dlg.organismQuantityID.currentText() != 'Select':
+                #QMessageBox.information(None, "DEBUG:", str(self.occurrence['taxon']))
+                if 'Select' not in self.occurrence['quantity']:
+                    self.preview_conditions['quantity'] = True
+                    self.check_preview_conditions()
+            elif self.dlg.organismQuantityID.currentText() == 'Select' or self.dlg.organismQuantityID.currentText() == ' ':
+                self.preview_conditions['quantity'] = False
+                self.check_preview_conditions()
 
         self.occurrence['ecotype'][self.row_position] = self.dlg.ecotypeID.currentText()
         #QMessageBox.information(None, "DEBUG:", str(self.occurrence['ecotype'][self.row_position]))
 
 
-        self.occurrence['quantity'][self.row_position] = self.dlg.organismQuantityID.currentText()
+        #self.occurrence['quantity'][self.row_position] = self.dlg.organismQuantityID.currentText()
         self.occurrence['metric'][self.row_position] = self.dlg.oq_metric.text()
         self.occurrence['status'][self.row_position] = self.dlg.status.currentText()
         self.occurrence['trend'][self.row_position] = self.dlg.trend.currentText()
@@ -936,14 +949,15 @@ class NOFAInsert:
         information_withheld = self.datadlg.informationWithheld.toPlainText()
         data_generalizations = self.datadlg.dataGeneralizations.toPlainText()
 
-        QMessageBox.information(None, "DEBUG:", str(rights_holder + ' ' + owner_institution + ' ' +  dataset_name + ' ' +  access_rights + ' ' +
+        '''QMessageBox.information(None, "DEBUG:", str(rights_holder + ' ' + owner_institution + ' ' +  dataset_name + ' ' +  access_rights + ' ' +
                                                     bibliographic_citation + ' ' +  dataset_comment + ' ' +  information_withheld + ' ' +
                                                     data_generalizations))
+        '''
 
         cur = self._db_cur()
         cur.execute(u'SELECT max("datasetID") FROM nofa.m_dataset;')
         max_dataset_id = cur.fetchone()[0]
-        QMessageBox.information(None, "DEBUG:", str(max_dataset_id))
+        #QMessageBox.information(None, "DEBUG:", str(max_dataset_id))
         new_d_id = max_dataset_id + 1
 
 
@@ -962,12 +976,12 @@ class NOFAInsert:
 
 
 
-        QMessageBox.information(None, "DEBUG:", insert_dataset)
+        #QMessageBox.information(None, "DEBUG:", insert_dataset)
 
         cur.execute(insert_dataset)
 
         returned = cur.fetchone()[0]
-        QMessageBox.information(None, "DEBUG:", str(returned))
+        #QMessageBox.information(None, "DEBUG:", str(returned))
 
         ##################
         # Insert a dataset log entry
@@ -979,7 +993,7 @@ class NOFAInsert:
             self.log_dataset_values,
         ), (returned, True, self.username,))
 
-        QMessageBox.information(None, "DEBUG:", insert_dataset_log)
+        #QMessageBox.information(None, "DEBUG:", insert_dataset_log)
 
         cur.execute(insert_dataset_log)
 
@@ -1094,10 +1108,10 @@ class NOFAInsert:
 
             if ';' in locs:
                 frags = locs.split(';')
-                QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(frags))
+                #QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(frags))
             elif ',' in locs:
                 frags = locs.split(',')
-                QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(frags))
+                #QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(frags))
             coords = []
             # storing the ID of the locations which are exact matches of existing ones
             self.places = []
@@ -1108,7 +1122,7 @@ class NOFAInsert:
             #walk through all the locations
             for i, elem in enumerate(frags):
                 if elem not in (None, ""):
-                    QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(elem))
+                    #QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(elem))
                     elems = elem.split()
                     #all the locations need to be as: "easting northing location_name"
                     try:
@@ -1336,15 +1350,15 @@ class NOFAInsert:
                 point = "MULTIPOINT({0} {1})".format(loc[1], loc[2])
                 geom_orig = "ST_GeometryFromText('{0}', {1})".format(point, str(loc[3]))
                 geom = "ST_Transform({}, 25833)".format(geom_orig)
-                QMessageBox.information(None, "DEBUG:", geom)
+                #QMessageBox.information(None, "DEBUG:", geom)
 
 
                 #QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, geom, loc[4], 'test',))))
 
                 # Insert any new location into the DB
 
-                QMessageBox.information(None, "DEBUG:", "insert_location is: " + self.insert_location)
-                QMessageBox.information(None, "DEBUG:", str(type(loc[0])))
+                #QMessageBox.information(None, "DEBUG:", "insert_location is: " + self.insert_location)
+                #QMessageBox.information(None, "DEBUG:", str(type(loc[0])))
 
                 location_columns = u""" "locationID", "locationType", geom, "waterBody", "locationRemarks" """
                 #location_values = '%s, %s, %s, %s, %s'
@@ -1357,7 +1371,7 @@ class NOFAInsert:
                     str(loc[4]),
                     'test'))
 
-                QMessageBox.information(None, "DEBUG:", insert_location)
+                #QMessageBox.information(None, "DEBUG:", insert_location)
                 cur.execute(insert_location)
 
                 try:
@@ -1369,7 +1383,7 @@ class NOFAInsert:
 
                     cur.execute(insert_location_log)
 
-                    QMessageBox.information(None, "DEBUG:", "new location log record correctly stored in NOFA db")
+                    #QMessageBox.information(None, "DEBUG:", "new location log record correctly stored in NOFA db")
                 except:
                     QMessageBox.information(None, "DEBUG:", str('problem inserting the new locations to location log db'))
 
@@ -1499,19 +1513,13 @@ class NOFAInsert:
                 effort = 0
 
             if isinstance(self.dataset['dataset_id'], str):
-                if self.dataset['dataset_id'] == 'None':
-                    QMessageBox.information(None, "DEBUG:", 'Please select a dataset')
-                    return
-                else:
-                    try:
-                        dataset = int(self.dataset['dataset_id'])
-                    except:
-                        QMessageBox.information(None, "DEBUG:",
+
+                try:
+                    dataset = int(self.dataset['dataset_id'])
+                except:
+                    QMessageBox.information(None, "DEBUG:",
                                                 'The type of datasetid is wrong. Should be integer')
-                        return
-            elif self.dataset['dataset_id'] is None:
-                QMessageBox.information(None, "DEBUG:", 'Please select a dataset')
-                return
+                    return
 
             # reference is optional. If not existing, defaults to zero
             try:
@@ -1525,16 +1533,14 @@ class NOFAInsert:
             if isinstance(self.project['project_id'], int):
                 project = self.project['project_id']
             elif isinstance(self.project['project_id'], str):
-                if self.project['project_id'] == 'None':
-                    QMessageBox.information(None, "DEBUG:", 'Please select a project')
-                    return
-                else:
-                    try:
-                        project = int(self.project['project_id'])
-                    except:
-                        QMessageBox.information(None, "DEBUG:",
+
+                try:
+                    project = int(self.project['project_id'])
+                except:
+                    QMessageBox.information(None, "DEBUG:",
                                                 'The type of project id is wrong. Should be integer')
-                        return
+                    return
+
             elif isinstance(self.project['project_id'], unicode):
                 try:
                     project = int(self.project['project_id'])
@@ -1542,9 +1548,9 @@ class NOFAInsert:
                     QMessageBox.information(None, "DEBUG:", 'Problem with project id')
                     # self.project['project_id'] = 0
                     #project = int(self.project['project_id'])
-            elif self.project['project_id'] is None:
-                QMessageBox.information(None, "DEBUG:", 'Please select a project')
-                return
+            #elif self.project['project_id'] is None:
+            #   QMessageBox.information(None, "DEBUG:", 'Please select a project')
+            #   return
 
             # get the reliability index from reliability text
             # cur = self._db_cur()
@@ -1589,7 +1595,7 @@ class NOFAInsert:
                     cur = self._db_cur()
                     query = u"""SELECT "ecotypeID" FROM nofa."l_ecotype" WHERE "vernacularName" = '{}';""".format(
                         self.occurrence['ecotype'][m])
-                    QMessageBox.information(None, "DEBUG:", str(query))
+                    #QMessageBox.information(None, "DEBUG:", str(query))
                     cur.execute(query)
 
                     ecotype_id = cur.fetchone()[0]
@@ -1600,7 +1606,7 @@ class NOFAInsert:
 
 
                 if self.occurrence['taxon'][m] == 'Select':
-                    QMessageBox.information(None, "DEBUG:", 'Please select a a taxon ID for your occurrence entry')
+                    #QMessageBox.information(None, "DEBUG:", 'Please select a a taxon ID for your occurrence entry')
                     return
                 else:
                     #QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(type(str(self.occurrence['taxon'][m]))))
@@ -1616,7 +1622,7 @@ class NOFAInsert:
 
 
                     taxon = cur.fetchone()[0]
-                    QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(taxon))
+                    #QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(taxon))
 
                 verified_date = self.occurrence['verified_date'][m].toPyDate()
 
@@ -1636,7 +1642,7 @@ class NOFAInsert:
                                                   self.occurrence['oc_remarks'][m], self.today, self.occurrence['est_remarks'][m],
                                                   event_id, organismquantity_metric, 'test'))
 
-                QMessageBox.information(None, "DEBUG:", str(insert_occurrence))
+                #QMessageBox.information(None, "DEBUG:", str(insert_occurrence))
 
 
                 # insert the new occurrence record to nofa.occurrence
@@ -1651,9 +1657,9 @@ class NOFAInsert:
                                                   ))
                 cur.execute(insert_log_occurrence)
 
-                QMessageBox.information(None, "DEBUG:", "occurrence correctly stored in NOFA db")
+        QMessageBox.information(None, "DEBUG:", "occurrences correctly stored in NOFA db")
 
-            '''
+        '''
             self.insert_occurrence = u"""INSERT INTO nofa.occurrence ("occurrenceID",
                                     "ecotypeID", "establishmentMeans", "verifiedBy", "verifiedDate", "taxonID",
                                     "spawningLocation", "spawningCondition", "occurrenceStatus",
@@ -2179,10 +2185,14 @@ class NOFAInsert:
 
         # Inject sorted python-list for organismQuantity into UI
         orgQuantID_list.sort()
-        orgQuantID_list.insert(0, 'unknown')
+        orgQuantID_list.insert(0, 'Select')
+
+        # removing unknown: violates foreign key contraint - not present in table l_organismQuantityType
+        #orgQuantID_list.insert(1, 'unknown')
+
         self.dlg.organismQuantityID.clear()
         self.dlg.organismQuantityID.addItems(orgQuantID_list)
-        self.dlg.organismQuantityID.setCurrentIndex(orgQuantID_list.index("unknown"))
+        self.dlg.organismQuantityID.setCurrentIndex(orgQuantID_list.index("Select"))
 
         #############################################
 
@@ -2208,6 +2218,7 @@ class NOFAInsert:
 
         # Inject sorted python-list for establishmentMeans into UI
         establishment_list.sort()
+        establishment_list.insert(0, 'Select')
         self.dlg.establishmentMeans.clear()
         self.dlg.establishmentMeans.addItems(establishment_list)
         self.dlg.establishmentMeans.setCurrentIndex(establishment_list.index("unknown"))
