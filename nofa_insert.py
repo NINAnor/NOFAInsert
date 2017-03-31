@@ -30,6 +30,7 @@ from dataset_dialog import DatasetDialog
 from project_dialog import ProjectDialog
 from reference_dialog import ReferenceDialog
 from preview_dialog import PreviewDialog
+from connection_dialog import ConnectionDialog
 from collections import defaultdict
 import os.path
 import psycopg2
@@ -83,6 +84,16 @@ class NOFAInsert:
         # TODO: We are going to let the user set this up in a future iteration
         self.toolbar = self.iface.addToolBar(u'NOFAInsert')
         self.toolbar.setObjectName(u'NOFAInsert')
+
+
+        #connect to the db. If no connection parameters in QSettings, open a popup window
+        try:
+            con_info = self.get_postgres_conn_info()
+            self.con = self.get_connection(con_info)
+        except:
+            self.set_postgres_conn_info()
+            con_info = self.get_postgres_conn_info()
+            self.con = self.get_connection(con_info)
 
         self.today = datetime.datetime.today().date()
         self.year = datetime.datetime.today().year
@@ -2088,6 +2099,31 @@ class NOFAInsert:
         # remove the toolbar
         del self.toolbar
 
+    def set_postgres_conn_info(self):
+
+        self.conn_dlg = ConnectionDialog()
+        self.conn_dlg.show()
+
+        self.conn_dlg.insert_connection.clicked.connect(self.insert_connection_params)
+
+    def insert_connection_params(self):
+
+        server = self.conn_dlg.server.text()
+        port = self.conn_dlg.port.text()
+        database = self.conn_dlg.database.text()
+        username = self.conn_dlg.username.text()
+        pwd = self.conn_dlg.passwrod.text()
+
+        settings = QSettings()
+        settings.setValue(u"PostgreSQL/connections/NOFA/host", server)
+        settings.setValue(u"PostgreSQL/connections/NOFA/port", port)
+        settings.setValue(u"PostgreSQL/connections/NOFA/database", database)
+        settings.setValue(u"PostgreSQL/connections/NOFA/username", username)
+        settings.setValue(u"PostgreSQL/connections/NOFA/password", pwd)
+
+        return
+
+
     def get_postgres_conn_info(self):
         """ Read PostgreSQL connection details from QSettings stored by QGIS.
         If connection parameters are not yet stored in Qsettings, use the following in python console:
@@ -2127,9 +2163,8 @@ class NOFAInsert:
         return conn
 
     def _db_cur(self):
-        con_info = self.get_postgres_conn_info()
-        con = self.get_connection(con_info)
-        return con.cursor()
+
+        return self.con.cursor()
 
     def fetch_db(self):
 
