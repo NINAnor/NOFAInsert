@@ -1342,7 +1342,10 @@ class NOFAInsert:
             #QMessageBox.information(None, "DEBUG:", str(headers))
             for m, item in enumerate(self.occurrence[key]):
 
-                newitem = QTableWidgetItem(str(item))
+                if key == 'verified_date':
+                    newitem = QTableWidgetItem(item.toString())
+                else:
+                    newitem = QTableWidgetItem(str(item))
                 # setItem(row, column, QTableWidgetItem)
                 self.prwdlg.table.setItem(m, n, newitem)
         self.prwdlg.table.setHorizontalHeaderLabels(headers)
