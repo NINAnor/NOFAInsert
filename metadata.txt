@@ -10,11 +10,11 @@
 name=NOFAInsert
 qgisMinimumVersion=2.18
 description=Insert fish occurrence data to NOFA DB
-version=0.1
+version=0.3
 author=NINA
 email=matteo.destefano@nina.no
 
-about=This plugin is based on the NOFABatchInsert plugin prototype. Work in progress
+about=This plugin is designed to simplify fish occurrence data insertion to the Norwegian Fish Atlas db.
 
 tracker=github.com
 repository=github.com
