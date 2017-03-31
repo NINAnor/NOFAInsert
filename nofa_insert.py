@@ -21,7 +21,7 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt, QObject, QDate
-from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget, QTableWidgetItem, QColor, QFont, QCompleter
+from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget, QTableWidgetItem, QColor, QFont, QCompleter, QLineEdit
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
@@ -2108,11 +2108,13 @@ class NOFAInsert:
 
     def insert_connection_params(self):
 
+        self.conn_dlg.password.setEchoMode(QLineEdit.Password)
+
         server = self.conn_dlg.server.text()
         port = self.conn_dlg.port.text()
         database = self.conn_dlg.database.text()
         username = self.conn_dlg.username.text()
-        pwd = self.conn_dlg.passwrod.text()
+        pwd = self.conn_dlg.password.text()
 
         settings = QSettings()
         settings.setValue(u"PostgreSQL/connections/NOFA/host", server)
