@@ -181,7 +181,7 @@ class NOFAInsert:
                                    'quantity': False
                                   }
 
-        self.language = 'Norwegian'
+        self.language = 'Latin'
 
         self.species_names = {'Latin': 'scientificName',
                               'English': 'vernacularName',
@@ -2188,7 +2188,7 @@ class NOFAInsert:
         # Get taxon list
         cur = self._db_cur()
 
-        cur.execute(u'SELECT "{0}" FROM nofa.l_taxon GROUP BY "{0}";'.format(self.species_names[self.language]))
+        cur.execute(u"""SELECT "{0}" FROM nofa.l_taxon WHERE "taxonRank" IN ('species', 'hybrid', 'genus')  GROUP BY "{0}" ;""".format(self.species_names[self.language]))
         species = cur.fetchall()
 
         # Create a python-list from query result
