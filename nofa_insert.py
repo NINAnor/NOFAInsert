@@ -1786,15 +1786,11 @@ class NOFAInsert:
         financer = self.prjdlg.financer.text()
         remarks = self.prjdlg.remarks.text()
 
-        QMessageBox.information(None, "DEBUG:", str(
-            project_name + ' ' + project_number + ' ' + str(start_year.year()) + ' ' + str(end_year.year()) + ' ' +
-            project_leader + ' ' + project_members + ' ' + organisation + ' ' +
-            financer + ' ' + remarks))
 
         cur = self._db_cur()
         cur.execute(u'SELECT max("projectID") FROM nofa.m_project;')
         max_proj_id = cur.fetchone()[0]
-        QMessageBox.information(None, "DEBUG:", str(max_proj_id))
+        #QMessageBox.information(None, "DEBUG:", str(max_proj_id))
         new_id = max_proj_id + 1
 
 
@@ -1806,12 +1802,12 @@ class NOFAInsert:
         ), (new_id, project_name, project_number, start_year.year(), end_year.year(), project_leader, project_members,
             organisation, financer, remarks,))
 
-        QMessageBox.information(None, "DEBUG:", insert_project)
+        #QMessageBox.information(None, "DEBUG:", insert_project)
 
         cur.execute(insert_project)
 
         returned = cur.fetchone()[0]
-        QMessageBox.information(None, "DEBUG:", str(returned))
+        #QMessageBox.information(None, "DEBUG:", str(returned))
 
         ##################
         # Insert a dataset log entry
@@ -1823,7 +1819,7 @@ class NOFAInsert:
             self.log_project_values,
         ), (returned, True, self.username,))
 
-        QMessageBox.information(None, "DEBUG:", insert_project_log)
+        #QMessageBox.information(None, "DEBUG:", insert_project_log)
 
         cur.execute(insert_project_log)
 
@@ -1881,15 +1877,10 @@ class NOFAInsert:
         isbn = self.rfrdlg.isbn.text()
         page = self.rfrdlg.page.text()
 
-        QMessageBox.information(None, "DEBUG:", str(
-            doi + ' ' + author + ' ' + str(year.year()) + ' ' + str(date) + ' ' +
-            reference_type + ' ' + title + ' ' + journal_name + ' ' +
-            volume + ' ' + issn + ' ' + isbn + ' ' + page))
-
         cur = self._db_cur()
         cur.execute(u'SELECT max("referenceID") FROM nofa.m_reference;')
         max_rfr_id = cur.fetchone()[0]
-        QMessageBox.information(None, "DEBUG:", str(max_rfr_id))
+        #QMessageBox.information(None, "DEBUG:", str(max_rfr_id))
         new_r_id = max_rfr_id + 1
 
         cur = self._db_cur()
@@ -1900,12 +1891,12 @@ class NOFAInsert:
         ), (new_r_id, doi, author, reference_type, int(year.year()), title, journal_name,
             volume, date.toPyDate(), issn, isbn, page,))
 
-        QMessageBox.information(None, "DEBUG:", insert_reference)
+        #QMessageBox.information(None, "DEBUG:", insert_reference)
 
         cur.execute(insert_reference)
 
         returned = cur.fetchone()[0]
-        QMessageBox.information(None, "DEBUG:", str(returned))
+        #QMessageBox.information(None, "DEBUG:", str(returned))
 
         ##################
         # Insert a reference log entry
@@ -1917,7 +1908,7 @@ class NOFAInsert:
             self.log_reference_values,
         ), (returned, True, self.username,))
 
-        QMessageBox.information(None, "DEBUG:", insert_reference_log)
+        #QMessageBox.information(None, "DEBUG:", insert_reference_log)
 
         cur.execute(insert_reference_log)
 
