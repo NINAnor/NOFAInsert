@@ -9,6 +9,7 @@
         git sha              : $Format:%H$
         copyright            : (C) 2017 by NINA
         email                : matteo.destefano@nina.no
+        contributors         : jakob.miksch@nina.no
  ***************************************************************************/
 
 /***************************************************************************
