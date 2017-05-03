@@ -99,7 +99,7 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>423</height>
+        <height>411</height>
        </rect>
       </property>
       <attribute name="label">
@@ -290,7 +290,7 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>423</height>
+        <height>411</height>
        </rect>
       </property>
       <attribute name="label">
@@ -365,7 +365,7 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>423</height>
+        <height>411</height>
        </rect>
       </property>
       <attribute name="label">
@@ -440,7 +440,7 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>423</height>
+        <height>411</height>
        </rect>
       </property>
       <attribute name="label">
@@ -1061,8 +1061,13 @@
        <height>71</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>20</pointsize>
+      </font>
+     </property>
      <property name="text">
-      <string>U</string>
+      <string>↑</string>
      </property>
     </widget>
     <widget class="QPushButton" name="downButton">
@@ -1074,8 +1079,13 @@
        <height>61</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>20</pointsize>
+      </font>
+     </property>
      <property name="text">
-      <string>D</string>
+      <string>↓</string>
      </property>
     </widget>
     <zorder>location</zorder>
