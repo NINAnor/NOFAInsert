@@ -99,7 +99,7 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>411</height>
+        <height>423</height>
        </rect>
       </property>
       <attribute name="label">
@@ -290,7 +290,7 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>411</height>
+        <height>423</height>
        </rect>
       </property>
       <attribute name="label">
@@ -365,7 +365,7 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>411</height>
+        <height>423</height>
        </rect>
       </property>
       <attribute name="label">
@@ -440,7 +440,7 @@
         <x>0</x>
         <y>0</y>
         <width>411</width>
-        <height>411</height>
+        <height>423</height>
        </rect>
       </property>
       <attribute name="label">
@@ -1022,34 +1022,51 @@
        <x>450</x>
        <y>0</y>
        <width>631</width>
-       <height>131</height>
+       <height>161</height>
       </rect>
      </property>
     </widget>
     <widget class="QPushButton" name="addOccurrence">
      <property name="geometry">
       <rect>
-       <x>750</x>
-       <y>130</y>
-       <width>331</width>
-       <height>31</height>
+       <x>410</x>
+       <y>120</y>
+       <width>41</width>
+       <height>41</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+      </font>
+     </property>
      <property name="text">
-      <string>Add a new Occurrence</string>
+      <string>+</string>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>15</width>
+       <height>15</height>
+      </size>
      </property>
     </widget>
     <widget class="QPushButton" name="deleteOccurrence">
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>130</y>
-       <width>341</width>
-       <height>31</height>
+       <y>80</y>
+       <width>41</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="text">
-      <string>Delete Current Occurrence</string>
+      <string>del</string>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>15</width>
+       <height>15</height>
+      </size>
      </property>
     </widget>
     <widget class="QPushButton" name="upButton">
@@ -1058,7 +1075,7 @@
        <x>410</x>
        <y>0</y>
        <width>41</width>
-       <height>71</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="font">
@@ -1067,16 +1084,16 @@
       </font>
      </property>
      <property name="text">
-      <string>↑</string>
+      <string>⇧</string>
      </property>
     </widget>
     <widget class="QPushButton" name="downButton">
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>70</y>
+       <y>40</y>
        <width>41</width>
-       <height>61</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="font">
@@ -1085,7 +1102,7 @@
       </font>
      </property>
      <property name="text">
-      <string>↓</string>
+      <string>⇩</string>
      </property>
     </widget>
     <zorder>location</zorder>
