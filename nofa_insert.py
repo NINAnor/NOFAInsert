@@ -1989,11 +1989,13 @@ class NOFAInsert:
     def update_project(self):
         #QMessageBox.information(None, "DEBUG:", str(self.project_list))
 
-        currentproject = self.dlg.existingProject.currentText()
+        currentproject  = self.dlg.existingProject.currentText()
 
-        currentproject_number = currentproject.split('@')[0]
-        if currentproject_number != 'None ' and currentproject_number != '':
-            #QMessageBox.information(None, "DEBUG:", str(currentproject_number))
+        current_index = self.dlg.existingProject.currentIndex()
+
+        currentproject_number = self.project_list[current_index][0]
+
+        if currentproject_number != 'None' and currentproject_number != '':
 
             self.preview_conditions['project_selected'] = True
             self.check_preview_conditions()
@@ -2004,7 +2006,6 @@ class NOFAInsert:
                 u'"projectMembers", "organisation", "financer", "remarks", "projectID" '
                 u'FROM nofa."m_project" WHERE "projectNumber" = (%s);', (currentproject_number,))
             project = cur.fetchone()
-            #QMessageBox.information(None, "DEBUG:", str(project[1]))
 
         # Create a python-list from query result
 
@@ -2468,24 +2469,37 @@ class NOFAInsert:
         cur.execute(u'SELECT "projectID", "projectNumber", "projectName" FROM nofa."m_project";')
         projects = cur.fetchall()
 
-        # Create a python-list from query result
-        self.project_list = [u'{0} @ {1}'.format(p[1], p[2]) for p in projects]
+        # Create a global list from query result (a list of lists)
+        self.project_list = [[p[1], p[2]] for p in projects]
 
         # Inject sorted python-list for existingProjects into UI
-        self.project_list.sort()
-        self.project_list.insert(0, 'None @ None')
-        self.dlg.existingProject.clear()
-        self.dlg.existingProject.addItems(self.project_list)
 
-        splitted_proj_list = [element.split(' @ ')[1] for element in self.project_list]
-        #QMessageBox.information(None, "DEBUG:", str(splitted_proj_list))
+        # sort by project_number
+        self.project_list = sorted(self.project_list, key= lambda p: p[0])
+
+        # add none entry at the beginning
+        self.project_list.insert(0, ['None','None'])
+
+        self.dlg.existingProject.clear()
+
+        # create list that shows project number and name
+        project_list_display = [u'{0} {1}'.format(p[0], p[1]) for p in self.project_list]
+
+        # add this list to the UI
+        self.dlg.existingProject.addItems(project_list_display)
+
         try:
-            self.dlg.existingProject.setCurrentIndex(splitted_proj_list.index(self.project['project_name']))
+            # convert project_number and project_name to a list like it is stored in self.project_list
+            current_project_nr_name = [self.project['project_number'] , self.project['project_name']]
+
+            # find index of current project
+            current_project_index = self.project_list.index(current_project_nr_name)
+
+            # set drop-down menu to current project
+            self.dlg.existingProject.setCurrentIndex(current_project_index)
         except:
             self.dlg.existingProject.setCurrentIndex(0)
 
-
-        #########################################
 
     def get_existing_references(self):
 
