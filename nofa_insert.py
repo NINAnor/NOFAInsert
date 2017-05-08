@@ -1989,13 +1989,13 @@ class NOFAInsert:
     def update_project(self):
         #QMessageBox.information(None, "DEBUG:", str(self.project_list))
 
-        currentproject  = self.dlg.existingProject.currentText()
+        current_project_display_name  = self.dlg.existingProject.currentText()
 
         current_index = self.dlg.existingProject.currentIndex()
 
-        currentproject_number = self.project_list[current_index][0]
+        current_project_number = self.project_list[current_index][0]
 
-        if currentproject_number != 'None' and currentproject_number != '':
+        if current_project_number != 'None' and current_project_number != '':
 
             self.preview_conditions['project_selected'] = True
             self.check_preview_conditions()
@@ -2004,7 +2004,7 @@ class NOFAInsert:
             cur.execute(
                 u'SELECT "projectNumber", "projectName", "startYear", "endYear", "projectLeader", '
                 u'"projectMembers", "organisation", "financer", "remarks", "projectID" '
-                u'FROM nofa."m_project" WHERE "projectNumber" = (%s);', (currentproject_number,))
+                u'FROM nofa."m_project" WHERE "projectNumber" = (%s);', (current_project_number,))
             project = cur.fetchone()
 
         # Create a python-list from query result
@@ -2031,7 +2031,7 @@ class NOFAInsert:
 
             self.dlg.metadata.setItemText(2, 'Project - ' + self.project['project_name'])
 
-        elif currentproject == 'None':
+        elif current_project_display_name == 'None':
             self.dlg.listview_project.clear()
             self.dlg.metadata.setItemText(2, 'Project - None')
 
@@ -2590,6 +2590,9 @@ class NOFAInsert:
 
 
     def populate_project(self):
+        """ 
+        Display the attributes of the chosen project in the UI
+        """
 
         #QMessageBox.information(None, "DEBUG:", str(type(self.project)))
         #self.project['organisation'] = "Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text"
