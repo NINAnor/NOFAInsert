@@ -1799,7 +1799,7 @@ class NOFAInsert:
 
         cur = self._db_cur()
 
-        insert_project = cur.mogrify("""INSERT INTO nofa.m_project({}) VALUES ({}) RETURNING "projectID" """.format(
+        insert_project = cur.mogrify("""INSERT INTO nofa.m_project({}) VALUES {} RETURNING "projectID" """.format(
             self.insert_project_columns,
             self.project_values
         ), (new_id, project_name, project_number, start_year.year(), end_year.year(), project_leader, project_members,
