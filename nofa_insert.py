@@ -1741,6 +1741,7 @@ class NOFAInsert:
 
     def open_project_dialog(self):
         """On button click opens the Project Metadata Editing Dialog"""
+
         self.prjdlg = ProjectDialog()
         self.prjdlg.show()
 
@@ -1987,12 +1988,12 @@ class NOFAInsert:
             #QMessageBox.information(None, "DEBUG:", str(dataset_list))
 
     def update_project(self):
-        #QMessageBox.information(None, "DEBUG:", str(self.project_list))
+        """
+        Fetches the project attributes from the database and stores them in the project list. 
+        """
 
-        current_project_display_name  = self.dlg.existingProject.currentText()
-
+        # get the current project number from the dropdown menu
         current_index = self.dlg.existingProject.currentIndex()
-
         current_project_number = self.project_list[current_index][0]
 
         if current_project_number != 'None' and current_project_number != '':
@@ -2031,7 +2032,7 @@ class NOFAInsert:
 
             self.dlg.metadata.setItemText(2, 'Project - ' + self.project['project_name'])
 
-        elif current_project_display_name == 'None':
+        elif self.dlg.existingProject.currentText() == 'None':
             self.dlg.listview_project.clear()
             self.dlg.metadata.setItemText(2, 'Project - None')
 
@@ -2473,11 +2474,9 @@ class NOFAInsert:
         self.project_list = [[p[1], p[2]] for p in projects]
 
         # Inject sorted python-list for existingProjects into UI
-
         # sort by project_number
         self.project_list = sorted(self.project_list, key= lambda p: p[0])
 
-        # add none entry at the beginning
         self.project_list.insert(0, ['None','None'])
 
         self.dlg.existingProject.clear()
@@ -2594,7 +2593,6 @@ class NOFAInsert:
         Display the attributes of the chosen project in the UI
         """
 
-        #QMessageBox.information(None, "DEBUG:", str(type(self.project)))
         #self.project['organisation'] = "Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text"
         self.dlg.listview_project.clear()
         self.dlg.listview_project.setWordWrap(True)
