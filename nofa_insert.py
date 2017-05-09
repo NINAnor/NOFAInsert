@@ -2660,6 +2660,18 @@ class NOFAInsert:
     def add_occurrence(self):
         """ adds a new occurrence row in occurrence table """
 
+        # check if Table has some entries
+        # check if last row is empty
+
+        if (self.dlg.tableWidget.rowCount() > 0 and self.is_last_row_empty()):
+            # do not add an occurrence
+            QMessageBox.information(None, "Information",
+                                    "The last occurrence is empty. " +
+                                    "You have to finish it before you can enter a new occurrence.")
+            return
+
+
+        # adds a new occurrence row in occurrence table
         self.row_position = self.dlg.tableWidget.rowCount()
         self.dlg.tableWidget.insertRow(self.row_position)
 
@@ -2681,6 +2693,25 @@ class NOFAInsert:
         self.check_preview_conditions()
 
        #QMessageBox.information(None, "DEBUG:", str(self.row_position))
+
+    def is_last_row_empty(self):
+        """Checks if last row is empty"""
+
+        # use last row number in case not the last occurrence is clicked
+        last_row_number = self.dlg.tableWidget.rowCount() - 1
+
+        # iterate trough values of last row
+        for key, value in self.occurrence.iteritems():
+
+            value_last_row = value[last_row_number]
+            value_default = self.occurrence_base[key]
+
+            # compare with default values
+            if value_last_row != value_default:
+                # if any of the occurrence's values differs from default
+                return False
+
+        return True
 
     def update_occurrence_form(self):
         """Adds occurrence title and syncs form with table"""
