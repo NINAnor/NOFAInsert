@@ -465,6 +465,10 @@ class NOFAInsert:
         return action
 
     def update_occurrence_row(self):
+        """
+        Inserts the data from the occurrence form into the occurrence table
+        :return: 
+        """
 
         if self.dlg.taxonID.currentText():
             self.occurrence['taxon'][self.row_position] = self.dlg.taxonID.currentText()
@@ -535,6 +539,7 @@ class NOFAInsert:
 
     def delete_occurrence_row(self):
         """Delete a row from occurrence table on button click."""
+
         for i, key in enumerate(self.occurrence.keys()):
             del self.occurrence[key][self.row_position]
 
@@ -2528,6 +2533,7 @@ class NOFAInsert:
         #QMessageBox.information(None, "DEBUG:", str(reference_title_list.index(self.reference['authors'])))
 
     def update_occurrence(self):
+        """syncs the occurrence form with the chosen row of the occurrence table"""
 
         # set current taxon value
         taxon_index = self.dlg.taxonID.findText(self.occurrence['taxon'][self.row_position], Qt.MatchFixedString)
@@ -2623,6 +2629,8 @@ class NOFAInsert:
         self.populate_reference()
 
     def create_occurrence_table(self):
+        """creates occurrence table and populates it one row of default values"""
+
         #currentrow = self.dlg.tableWidget.rowCount()
         #self.dlg.tableWidget.insertRow(currentrow)
 
@@ -2650,7 +2658,8 @@ class NOFAInsert:
         #QMessageBox.information(None, "DEBUG:", str(headers))
 
     def add_occurrence(self):
-        # adds a new occurrence row in occurrence table
+        """ adds a new occurrence row in occurrence table """
+
         self.row_position = self.dlg.tableWidget.rowCount()
         self.dlg.tableWidget.insertRow(self.row_position)
 
@@ -2661,8 +2670,8 @@ class NOFAInsert:
             # add it to table
             if isinstance(item, datetime.date):
                 item = str(item)
-            newitem = QTableWidgetItem(item)
-            self.dlg.tableWidget.setItem(self.row_position, n, newitem)
+            new_item = QTableWidgetItem(item)
+            self.dlg.tableWidget.setItem(self.row_position, n, new_item)
 
         self.dlg.tableWidget.selectRow(self.row_position)
         self.update_occurrence_form()
@@ -2674,6 +2683,8 @@ class NOFAInsert:
        #QMessageBox.information(None, "DEBUG:", str(self.row_position))
 
     def update_occurrence_form(self):
+        """Adds occurrence title and syncs form with table"""
+
         #QMessageBox.information(None, "DEBUG:", str("Occurrence - " + str(self.row_position)))
         # update values in occurrence form based on current row selection in table widget
         self.dlg.reference_4.setTitle("Occurrence - " + str(self.row_position + 1))
