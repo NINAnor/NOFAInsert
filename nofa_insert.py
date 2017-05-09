@@ -540,6 +540,10 @@ class NOFAInsert:
     def delete_occurrence_row(self):
         """Delete a row from occurrence table on button click."""
 
+        # checks if table contains occurrences
+        if self.dlg.tableWidget.rowCount()==0:
+            return
+
         for i, key in enumerate(self.occurrence.keys()):
             del self.occurrence[key][self.row_position]
 
