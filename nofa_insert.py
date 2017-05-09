@@ -110,7 +110,7 @@ class NOFAInsert:
         self.insert_event = u"""INSERT INTO nofa.event ("locationID", "eventID",
                             "sampleSizeValue", "samplingProtocolRemarks", "recordedBy",
                             "samplingProtocol", "reliability", "dateStart", "dateEnd", "eventRemarks",
-                            "sampleSizeUnit", "samplingEffort", "datasetID", "referenceID", "projectID", "fieldNotes")
+                            "sampleSizeUnit", "samplingEffort", "datasetID", "associatedReferences", "projectID", "fieldNotes")
                             VALUES\n"""
 
 
