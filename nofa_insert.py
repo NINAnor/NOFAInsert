@@ -275,8 +275,8 @@ class NOFAInsert:
         self.project = {'project_id': 'None',
                         'project_name': 'None',
                         'project_number': 'None',
-                        'start_year': str(self.year),
-                        'end_year': str(self.year),
+                        'start_year': unicode(self.year),
+                        'end_year': unicode(self.year),
                         'leader': 'None',
                         'members': 'None',
                         'organisation': 'None',
@@ -288,11 +288,11 @@ class NOFAInsert:
                           'doi': 'None',
                           'authors': 'None',
                           'reference_type': 'None',
-                          'year': str(self.year),
+                          'year': unicode(self.year),
                           'title': 'None',
                           'journal': 'None',
                           'volume': 'None',
-                          'date': str(self.today),
+                          'date': unicode(self.today),
                           'issn': 'None',
                           'isbn': 'None',
                           'page': 'None'
@@ -524,7 +524,7 @@ class NOFAInsert:
             try:
                 newitem = QTableWidgetItem(item)
             except:
-                newitem = QTableWidgetItem(str(item))
+                newitem = QTableWidgetItem(unicode(item))
             # setItem(row, column, QTableWidgetItem)
             self.dlg.tableWidget.setItem(self.row_position, m, newitem)
 
@@ -542,7 +542,7 @@ class NOFAInsert:
 
         self.row_position = 0
         self.dlg.tableWidget.selectRow(self.row_position)
-        self.dlg.occurrence_number.setText(str(self.row_position + 1))
+        self.dlg.occurrence_number.setText(unicode(self.row_position + 1))
 
         # Check if some row with taxon remains:
         if 'Select' in self.occurrence['taxon']:
@@ -576,7 +576,7 @@ class NOFAInsert:
                 cur.execute(
                     u'SELECT  DISTINCT "username" FROM nofa.plugin_occurrence_log')
             except:
-                QMessageBox.information(None, "DEBUG:", str(
+                QMessageBox.information(None, "DEBUG:", unicode(
                     "WARNING - DB ERROR. occurrences not fetched from db"))
 
             usernames_fetched = cur.fetchall()
@@ -600,7 +600,7 @@ class NOFAInsert:
             try:
                 cur.execute(u'SELECT  "occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_occurrence_log')
             except:
-                QMessageBox.information(None, "DEBUG:", str(
+                QMessageBox.information(None, "DEBUG:", unicode(
                     "WARNING - DB ERROR. occurrences not fetched from db"))
 
             fetched_occ = cur.fetchall()
@@ -619,7 +619,7 @@ class NOFAInsert:
                 for n, item in enumerate(occurrence):
 
 
-                    newitem = QTableWidgetItem(str(occurrence[n]))
+                    newitem = QTableWidgetItem(unicode(occurrence[n]))
 
                         # setItem(row, column, QTableWidgetItem)
                     self.dlg.tableWidget_occurrences.setItem(l, n, newitem)
@@ -633,7 +633,7 @@ class NOFAInsert:
                 cur.execute(
                     u'SELECT  "location_id", "username", "location_name", "insert_timestamp", "update_timestamp" FROM nofa.plugin_location_log')
             except:
-                QMessageBox.information(None, "DEBUG:", str(
+                QMessageBox.information(None, "DEBUG:", unicode(
                     "WARNING - DB ERROR. location logs not fetched from db"))
 
             fetched_location_logs = cur.fetchall()
@@ -650,7 +650,7 @@ class NOFAInsert:
                 locations = fetched_location_logs[l]
                 for n, item in enumerate(locations):
 
-                    newitem = QTableWidgetItem(str(locations[n]))
+                    newitem = QTableWidgetItem(unicode(locations[n]))
 
                         # setItem(row, column, QTableWidgetItem)
                     self.dlg.tableWidget_locations.setItem(l, n, newitem)
@@ -663,7 +663,7 @@ class NOFAInsert:
                 cur.execute(
                     u'SELECT  "dataset_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_dataset_log')
             except:
-                QMessageBox.information(None, "DEBUG:", str(
+                QMessageBox.information(None, "DEBUG:", unicode(
                     "WARNING - DB ERROR. datasets not fetched from db"))
 
             fetched_datasets = cur.fetchall()
@@ -680,7 +680,7 @@ class NOFAInsert:
                 dataset = fetched_datasets[l]
                 for n, item in enumerate(dataset):
 
-                    newitem = QTableWidgetItem(str(dataset[n]))
+                    newitem = QTableWidgetItem(unicode(dataset[n]))
 
                         # setItem(row, column, QTableWidgetItem)
                     self.dlg.tableWidget_datasets.setItem(l, n, newitem)
@@ -694,7 +694,7 @@ class NOFAInsert:
                 cur.execute(
                     u'SELECT  "project_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_project_log')
             except:
-                QMessageBox.information(None, "DEBUG:", str(
+                QMessageBox.information(None, "DEBUG:", unicode(
                     "WARNING - DB ERROR. projects not fetched from db"))
 
             fetched_projects = cur.fetchall()
@@ -710,7 +710,7 @@ class NOFAInsert:
             for l in range(lim):
                 projects = fetched_projects[l]
                 for n, item in enumerate(projects):
-                    newitem = QTableWidgetItem(str(projects[n]))
+                    newitem = QTableWidgetItem(unicode(projects[n]))
 
                     # setItem(row, column, QTableWidgetItem)
                     self.dlg.tableWidget_projects.setItem(l, n, newitem)
@@ -739,7 +739,7 @@ class NOFAInsert:
             for l in range(lim):
                 references = fetched_references[l]
                 for n, item in enumerate(references):
-                    newitem = QTableWidgetItem(str(references[n]))
+                    newitem = QTableWidgetItem(unicode(references[n]))
 
                     # setItem(row, column, QTableWidgetItem)
                     self.dlg.tableWidget_references.setItem(l, n, newitem)
@@ -755,7 +755,7 @@ class NOFAInsert:
                 u'SELECT  "occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id", "username", "insert_timestamp", "update_timestamp" '
                 u'FROM nofa.plugin_occurrence_log WHERE "username" = %s', (username,))
         except:
-            QMessageBox.information(None, "DEBUG:", str(
+            QMessageBox.information(None, "DEBUG:", unicode(
                 "WARNING - DB ERROR. occurrences not fetched from db"))
 
         fetched_occ = cur.fetchall()
@@ -772,7 +772,7 @@ class NOFAInsert:
         for l in range(lim):
             occurrence = fetched_occ[l]
             for n, item in enumerate(occurrence):
-                newitem = QTableWidgetItem(str(occurrence[n]))
+                newitem = QTableWidgetItem(unicode(occurrence[n]))
 
                 # setItem(row, column, QTableWidgetItem)
                 self.dlg.tableWidget_occurrences.setItem(l, n, newitem)
@@ -789,7 +789,7 @@ class NOFAInsert:
                 u'SELECT  "occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id", "username", "insert_timestamp", "update_timestamp" '
                 u'FROM nofa.plugin_occurrence_log WHERE "insert_timestamp" BETWEEN %s AND %s', (time_from.toPyDate(), time_to.toPyDate(),))
         except:
-            QMessageBox.information(None, "DEBUG:", str(
+            QMessageBox.information(None, "DEBUG:", unicode(
                 "WARNING - DB ERROR. occurrences not fetched from db"))
 
         fetched_occ = cur.fetchall()
@@ -806,7 +806,7 @@ class NOFAInsert:
         for l in range(lim):
             occurrence = fetched_occ[l]
             for n, item in enumerate(occurrence):
-                newitem = QTableWidgetItem(str(occurrence[n]))
+                newitem = QTableWidgetItem(unicode(occurrence[n]))
 
                 # setItem(row, column, QTableWidgetItem)
                 self.dlg.tableWidget_occurrences.setItem(l, n, newitem)
@@ -826,7 +826,7 @@ class NOFAInsert:
                 u'FROM nofa.plugin_occurrence_log WHERE "username" = %s AND "insert_timestamp" BETWEEN %s AND %s',
                 (username, time_from.toPyDate(), time_to.toPyDate(),))
         except:
-            QMessageBox.information(None, "DEBUG:", str(
+            QMessageBox.information(None, "DEBUG:", unicode(
                 "WARNING - DB ERROR. occurrences not fetched from db"))
 
         fetched_occ = cur.fetchall()
@@ -843,7 +843,7 @@ class NOFAInsert:
         for l in range(lim):
             occurrence = fetched_occ[l]
             for n, item in enumerate(occurrence):
-                newitem = QTableWidgetItem(str(occurrence[n]))
+                newitem = QTableWidgetItem(unicode(occurrence[n]))
 
                 # setItem(row, column, QTableWidgetItem)
                 self.dlg.tableWidget_occurrences.setItem(l, n, newitem)
@@ -962,7 +962,7 @@ class NOFAInsert:
         information_withheld = self.datadlg.informationWithheld.toPlainText()
         data_generalizations = self.datadlg.dataGeneralizations.toPlainText()
 
-        '''QMessageBox.information(None, "DEBUG:", str(rights_holder + ' ' + owner_institution + ' ' +  dataset_name + ' ' +  access_rights + ' ' +
+        '''QMessageBox.information(None, "DEBUG:", unicode(rights_holder + ' ' + owner_institution + ' ' +  dataset_name + ' ' +  access_rights + ' ' +
                                                     bibliographic_citation + ' ' +  dataset_comment + ' ' +  information_withheld + ' ' +
                                                     data_generalizations))
         '''
@@ -1035,7 +1035,7 @@ class NOFAInsert:
         cur = self._db_cur()
         insert_log_dataset = self.insert_log_dataset
         insert_log_dataset += cur.mogrify(self.log_occurrence_values,
-                                             (str(occurrence_id), str(event_id), self.dataset['dataset_id'],
+                                             (unicode(occurrence_id), unicode(event_id), self.dataset['dataset_id'],
                                               self.project['project_id'],
                                               self.reference['reference_id'], loc, True, self.username,
                                               ))
@@ -1081,9 +1081,9 @@ class NOFAInsert:
             try:
                 cur.execute(
                 u'SELECT DISTINCT ON ({0}) "locationID", {0}, "waterBody", "decimalLongitude", "decimalLatitude" FROM nofa.location WHERE {0} IN ({1}) ORDER BY {0}, "locationType";'.format(
-                    col, u','.join(str(l) for l in locations)))
+                    col, u','.join(unicode(l) for l in locations)))
             except:
-                QMessageBox.information(None, "DEBUG:", str("WARNING - DB ERROR. Did you select the correct type of location identifier?"))
+                QMessageBox.information(None, "DEBUG:", unicode("WARNING - DB ERROR. Did you select the correct type of location identifier?"))
             fetched_locs = cur.fetchall()
             # Create a python-list from query result
             loc_list = [l[1] for l in fetched_locs]
@@ -1106,12 +1106,12 @@ class NOFAInsert:
                     self.locations['x'].append(longitudes[i])
                     self.locations['y'].append(latitudes[i])
 
-                    coords.append(loc_names[i] + ' (' + str(longitudes[i]) + ', ' + str(latitudes[i]) + ')')
+                    coords.append(loc_names[i] + ' (' + unicode(longitudes[i]) + ', ' + unicode(latitudes[i]) + ')')
 
                 self.locations['location'] = coords
 
             else:
-                QMessageBox.information(None, "DEBUG:", str("WARNING, DB FETCHING ISSUE!"))
+                QMessageBox.information(None, "DEBUG:", unicode("WARNING, DB FETCHING ISSUE!"))
 
         # manage the case of UTM33 coordinates
         elif location_type.startswith('coordinates'):
@@ -1148,7 +1148,7 @@ class NOFAInsert:
                         x = float(easting)
                         y = float(northing)
                     except:
-                        QMessageBox.information(None, "DEBUG:", str("WARNIG - problem with easting and northing?"))
+                        QMessageBox.information(None, "DEBUG:", unicode("WARNIG - problem with easting and northing?"))
 
 
 
@@ -1317,7 +1317,7 @@ class NOFAInsert:
                     prwitem = QListWidgetItem(key + ':    None')
                     prwitem.setTextColor(QColor("red"))
                 else:
-                    prwitem = QListWidgetItem(key + ':    ' + str(value))
+                    prwitem = QListWidgetItem(key + ':    ' + unicode(value))
                     prwitem.setTextColor(QColor("green"))
 
                 listWidget_list[i].addItem(prwitem)
@@ -1347,7 +1347,7 @@ class NOFAInsert:
                 if key == 'verified_date':
                     newitem = QTableWidgetItem(item.toString())
                 else:
-                    newitem = QTableWidgetItem(str(item))
+                    newitem = QTableWidgetItem(unicode(item))
                 # setItem(row, column, QTableWidgetItem)
                 self.prwdlg.table.setItem(m, n, newitem)
         self.prwdlg.table.setHorizontalHeaderLabels(headers)
@@ -1368,7 +1368,7 @@ class NOFAInsert:
                 location_type = 'samplingPoint'
 
                 point = "MULTIPOINT({0} {1})".format(loc[1], loc[2])
-                geom_orig = "ST_GeometryFromText('{0}', {1})".format(point, str(loc[3]))
+                geom_orig = "ST_GeometryFromText('{0}', {1})".format(point, unicode(loc[3]))
                 geom = "ST_Transform({}, 25833)".format(geom_orig)
                 #QMessageBox.information(None, "DEBUG:", geom)
 
@@ -1388,7 +1388,7 @@ class NOFAInsert:
                     loc[0],
                     location_type,
                     geom,
-                    str(loc[4]),
+                    unicode(loc[4]),
                     'test'))
 
                 #QMessageBox.information(None, "DEBUG:", insert_location)
@@ -1405,7 +1405,7 @@ class NOFAInsert:
 
                     #QMessageBox.information(None, "DEBUG:", "new location log record correctly stored in NOFA db")
                 except:
-                    QMessageBox.information(None, "DEBUG:", str('problem inserting the new locations to location log db'))
+                    QMessageBox.information(None, "DEBUG:", unicode('problem inserting the new locations to location log db'))
 
 
 
@@ -1451,11 +1451,11 @@ class NOFAInsert:
 
                         QMessageBox.information(None, "DEBUG:", "occurrence correctly stored in NOFA db")
                     except:
-                        QMessageBox.information(None, "DEBUG:", str('problem inserting the new locations to location log db'))
+                        QMessageBox.information(None, "DEBUG:", unicode('problem inserting the new locations to location log db'))
 
 
                 except:
-                    QMessageBox.information(None, "DEBUG:", str('problem inserting the new locations to db'))
+                    QMessageBox.information(None, "DEBUG:", unicode('problem inserting the new locations to db'))
                 '''
 
         # add a new event to nofa.events fore each location
@@ -1516,7 +1516,7 @@ class NOFAInsert:
             if self.event['effort'] is None:
                 self.event['effort'] = 0
                 effort = self.event['effort']
-            elif isinstance(self.event['effort'], str):
+            elif isinstance(self.event['effort'], unicode):
                 try:
                     effort = int(self.event['effort'])
                 except:
@@ -1532,7 +1532,7 @@ class NOFAInsert:
                 self.event['effort'] = 0
                 effort = 0
 
-            if isinstance(self.dataset['dataset_id'], str):
+            if isinstance(self.dataset['dataset_id'], unicode):
 
                 try:
                     dataset = int(self.dataset['dataset_id'])
@@ -1552,7 +1552,7 @@ class NOFAInsert:
             # check project ID type, and convert to int
             if isinstance(self.project['project_id'], int):
                 project = self.project['project_id']
-            elif isinstance(self.project['project_id'], str):
+            elif isinstance(self.project['project_id'], unicode):
 
                 try:
                     project = int(self.project['project_id'])
@@ -1672,7 +1672,7 @@ class NOFAInsert:
                 cur = self._db_cur()
                 insert_log_occurrence = self.insert_log_occurrence
                 insert_log_occurrence += cur.mogrify(self.log_occurrence_values,
-                                                 (str(occurrence_id), str(event_id), self.dataset['dataset_id'], self.project['project_id'],
+                                                 (unicode(occurrence_id), unicode(event_id), self.dataset['dataset_id'], self.project['project_id'],
                                                   self.reference['reference_id'], loc, True, self.username,
                                                   ))
                 cur.execute(insert_log_occurrence)
@@ -1707,7 +1707,7 @@ class NOFAInsert:
                            'spawn_con': ['unknown', ],
                            'spawn_loc': ['unknown', ],
                            'verified_by': ['Nobody', ],
-                           'verified_date': [str(self.today), ],
+                           'verified_date': [unicode(self.today), ],
                            'yearprecision_remarks': ['None', ]
                            }
 
@@ -1942,7 +1942,7 @@ class NOFAInsert:
             #dataset_list.insert(0, 'None')
 
 
-            self.dataset['dataset_id'] = str(dataset_list[0])
+            self.dataset['dataset_id'] = unicode(dataset_list[0])
             self.dataset['dataset_name'] = dataset_list[1]
             self.dataset['rightsholder'] = dataset_list[2]
             self.dataset['owner_institution'] = dataset_list[3]
@@ -2010,10 +2010,10 @@ class NOFAInsert:
 
         # Create a python-list from query result
 
-            self.project['project_number'] = str(project[0])
+            self.project['project_number'] = unicode(project[0])
             self.project['project_name'] = project[1]
-            self.project['start_year'] = str(project[2])
-            self.project['end_year'] = str(project[3])
+            self.project['start_year'] = unicode(project[2])
+            self.project['end_year'] = unicode(project[3])
             self.project['project_leader'] = project[4]
             self.project['members'] = project[5]
             self.project['organisation'] = project[6]
@@ -2024,7 +2024,7 @@ class NOFAInsert:
             self.dlg.listview_project.clear()
             for key, value in self.project.iteritems():
                 if value is not None:
-                    prjitem = QListWidgetItem(key + ':    ' + str(value))
+                    prjitem = QListWidgetItem(key + ':    ' + unicode(value))
                 else:
                     prjitem = QListWidgetItem(key + ':    None')
 
@@ -2056,18 +2056,18 @@ class NOFAInsert:
 
             # Create a python-list from query result
 
-            self.reference['reference_id'] = str(ref[0])
-            self.reference['doi'] = str(ref[1])
-            self.reference['authors'] = str(ref[2])
-            self.reference['reference_type'] = str(ref[3])
-            self.reference['year'] = str(ref[4])
-            self.reference['title'] = str(ref[5])
-            self.reference['journal'] = str(ref[6])
-            self.reference['volume'] = str(ref[7])
-            self.reference['date'] = str(ref[8])
-            self.reference['issn'] = str(ref[9])
-            self.reference['isbn'] = str(ref[10])
-            self.reference['page'] = str(ref[11])
+            self.reference['reference_id'] = unicode(ref[0])
+            self.reference['doi'] = unicode(ref[1])
+            self.reference['authors'] = unicode(ref[2])
+            self.reference['reference_type'] = unicode(ref[3])
+            self.reference['year'] = unicode(ref[4])
+            self.reference['title'] = unicode(ref[5])
+            self.reference['journal'] = unicode(ref[6])
+            self.reference['volume'] = unicode(ref[7])
+            self.reference['date'] = unicode(ref[8])
+            self.reference['issn'] = unicode(ref[9])
+            self.reference['isbn'] = unicode(ref[10])
+            self.reference['page'] = unicode(ref[11])
 
             self.dlg.listview_reference.clear()
             for key, value in self.reference.iteritems():
@@ -2205,7 +2205,7 @@ class NOFAInsert:
 
         # Create a python-list from query result
         ecotypes_list = [e[0] for e in ecotypes]
-        #QMessageBox.information(None, "DEBUG:", str(ecotypes_list))
+        #QMessageBox.information(None, "DEBUG:", unicode(ecotypes_list))
         # Inject sorted python-list for ecotypes into UI
         ecotypes_list.sort()
         self.dlg.ecotypeID.clear()
@@ -2443,10 +2443,10 @@ class NOFAInsert:
 
                 taxa.append(item)
 
-        #QMessageBox.information(None, "DEBUG:", str(type(taxa)))
+        #QMessageBox.information(None, "DEBUG:", unicode(type(taxa)))
         self.dlg.taxonomicCoverage.addTopLevelItems(taxa)
 
-            #QMessageBox.information(None, "DEBUG:", str(species))
+            #QMessageBox.information(None, "DEBUG:", unicode(species))
 
         '''
 
@@ -2606,7 +2606,7 @@ class NOFAInsert:
 
         for key, value in self.project.iteritems():
             if value is not None:
-                prjitem = QListWidgetItem(key + ':    ' + str(value))
+                prjitem = QListWidgetItem(key + ':    ' + unicode(value))
 
                 self.dlg.listview_project.addItem(prjitem)
 
@@ -2617,7 +2617,7 @@ class NOFAInsert:
 
         for key, value in self.reference.iteritems():
             if value is not None:
-                rfritem = QListWidgetItem(key + ':    ' + str(value))
+                rfritem = QListWidgetItem(key + ':    ' + unicode(value))
 
                 self.dlg.listview_reference.addItem(rfritem)
 
@@ -2680,7 +2680,7 @@ class NOFAInsert:
             self.occurrence[key].append(item)
             # add it to table
             if isinstance(item, datetime.date):
-                item = str(item)
+                item = unicode(item)
             new_item = QTableWidgetItem(item)
             self.dlg.tableWidget.setItem(self.row_position, n, new_item)
 
@@ -2717,7 +2717,7 @@ class NOFAInsert:
 
         #QMessageBox.information(None, "DEBUG:", str("Occurrence - " + str(self.row_position)))
         # update values in occurrence form based on current row selection in table widget
-        self.dlg.reference_4.setTitle("Occurrence - " + str(self.row_position + 1))
+        self.dlg.reference_4.setTitle("Occurrence - " + unicode(self.row_position + 1))
         self.update_occurrence()
 
     def update_row(self, widget_object):
