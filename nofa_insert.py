@@ -1125,6 +1125,10 @@ class NOFAInsert:
             elif ',' in locs:
                 frags = locs.split(',')
                 #QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(frags))
+            else:
+                # make list out of single string in order to stick to the data structure
+                frags = [locs]
+
             coords = []
             # storing the ID of the locations which are exact matches of existing ones
             self.places = []
