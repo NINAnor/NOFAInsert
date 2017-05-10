@@ -198,6 +198,7 @@ class NOFAInsert:
                         'Swedish': 'SE',
                         'Finish': 'FI'}'''
 
+        #TODO the remaining location types should be added here
         self.locIDType_dict = {'Norwegian VatnLnr': 'no_vatn_lnr',
                           'coordinates UTM32': 25832,
                           'coordinates UTM33': 25833,
