@@ -2383,6 +2383,8 @@ class NOFAInsert:
 
         locIDType_list = self.locIDType_dict.keys()
         locIDType_list.sort()
+
+        self.dlg.locIDType.clear()
         self.dlg.locIDType.addItems(locIDType_list)
         self.dlg.locIDType.setCurrentIndex(locIDType_list.index("Norwegian VatnLnr"))
 
