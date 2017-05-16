@@ -2240,12 +2240,14 @@ class NOFAInsert:
         #############################################
 
         # Get occurrence status
+        self.dlg.status.clear()
         self.dlg.status.addItems(self.occurrence_status)
         self.dlg.status.setCurrentIndex(self.occurrence_status.index("unknown"))
 
         #############################################
 
         # Get population trend
+        self.dlg.trend.clear()
         self.dlg.trend.addItems(self.population_trend)
         self.dlg.trend.setCurrentIndex(self.population_trend.index("unknown"))
 
