@@ -571,6 +571,12 @@ class NOFAInsert:
             text=self.tr(u'NOFAInsert'),
             callback=self.run,
             parent=self.iface.mainWindow())
+        self.add_action(
+            os.path.join(self.plugin_dir, 'data', 'icons', 'options.png'),
+            text=self.tr(u'Connection Information'),
+            callback=self._open_con_dlg,
+            parent=self.iface.mainWindow(),
+            add_to_toolbar=False)
 
     def history_tab_clicked(self):
         #QMessageBox.information(None, "DEBUG:",  str(self.dlg.tabWidget.currentIndex()))
@@ -2173,13 +2179,16 @@ class NOFAInsert:
 
         return self.con.cursor()
 
-    def _open_con_dlg(self, con_info):
+    def _open_con_dlg(self, con_info=None):
         """
         Opens a connection dialog.
         
         :param con_info: A connection information dictionary.
         :type con_info: dict.
         """
+
+        if not con_info:
+            con_info = self._get_con_info()
 
         self.con_dlg = con_dlg.ConDlg(self, con_info, u'Set up connection.')
         self.con_dlg.exec_()
