@@ -86,7 +86,6 @@ class NOFAInsert:
 
         self.settings = QSettings(self.org, self.app_name)
 
-        self.svc_str = u'service'
         self.host_str = u'host'
         self.port_str = u'port'
         self.db_str = u'database'
@@ -94,7 +93,6 @@ class NOFAInsert:
         self.pwd_str = u'password'
 
         self.con_str_tpl = (
-            self.svc_str,
             self.host_str,
             self.port_str,
             self.db_str,
@@ -2123,10 +2121,7 @@ class NOFAInsert:
         con_info = {}
 
         for con_str in self.con_str_tpl:
-            if con_str == self.svc_str:
-                con_info[con_str] = self.settings.value(con_str, None)
-            else:
-                con_info[con_str] = self.settings.value(con_str, u'')
+            con_info[con_str] = self.settings.value(con_str, u'')
 
         self.username = con_info[self.usr_str]
 

@@ -82,63 +82,53 @@ class ConDlg(QDialog):
         :type stat_bar_msg: str.
         """
  
-        self.svc_lbl = QLabel(self)
-        self.svc_lbl.setObjectName(u'svc_lbl')
-        self.svc_lbl.setText(self.mw.svc_str.title())
-        self.grid_lyt.addWidget(self.svc_lbl, 0, 0, 1, 1)
- 
-        self.svc_le = QLineEdit(self)
-        self.svc_le.setObjectName(u'svc_le')
-        self.grid_lyt.addWidget(self.svc_le, 0, 1, 1, 1)
- 
         self.host_lbl = QLabel(self)
         self.host_lbl.setObjectName(u'host_lbl')
         self.host_lbl.setText(self.mw.host_str.title())
-        self.grid_lyt.addWidget(self.host_lbl, 1, 0, 1, 1)
+        self.grid_lyt.addWidget(self.host_lbl, 0, 0, 1, 1)
  
         self.host_le = QLineEdit(self)
         self.host_le.setObjectName(u'host_le')
-        self.grid_lyt.addWidget(self.host_le, 1, 1, 1, 1)
+        self.grid_lyt.addWidget(self.host_le, 0, 1, 1, 1)
  
         self.port_lbl = QLabel(self)
         self.port_lbl.setObjectName(u'port_lbl')
         self.port_lbl.setText(self.mw.port_str.title())
-        self.grid_lyt.addWidget(self.port_lbl, 2, 0, 1, 1)
+        self.grid_lyt.addWidget(self.port_lbl, 1, 0, 1, 1)
  
         self.port_le = QLineEdit(self)
         self.port_le.setObjectName(u'port_le')
-        self.grid_lyt.addWidget(self.port_le, 2, 1, 1, 1)
+        self.grid_lyt.addWidget(self.port_le, 1, 1, 1, 1)
  
         self.db_lbl = QLabel(self)
         self.db_lbl.setObjectName(u'db_lbl')
         self.db_lbl.setText(self.mw.db_str.title())
-        self.grid_lyt.addWidget(self.db_lbl, 3, 0, 1, 1)
+        self.grid_lyt.addWidget(self.db_lbl, 2, 0, 1, 1)
  
         self.db_le = QLineEdit(self)
         self.db_le.setObjectName(u'db_le')
-        self.grid_lyt.addWidget(self.db_le, 3, 1, 1, 1)
+        self.grid_lyt.addWidget(self.db_le, 2, 1, 1, 1)
  
         self.usr_lbl = QLabel(self)
         self.usr_lbl.setObjectName(u'usr_lbl')
         self.usr_lbl.setText(self.mw.usr_str.title())
-        self.grid_lyt.addWidget(self.usr_lbl, 4, 0, 1, 1)
+        self.grid_lyt.addWidget(self.usr_lbl, 3, 0, 1, 1)
  
         self.usr_le = QLineEdit(self)
         self.usr_le.setObjectName(u'usr_le')
-        self.grid_lyt.addWidget(self.usr_le, 4, 1, 1, 1)
+        self.grid_lyt.addWidget(self.usr_le, 3, 1, 1, 1)
  
         self.pwd_lbl = QLabel(self)
         self.pwd_lbl.setObjectName(u'pwd_lbl')
         self.pwd_lbl.setText(self.mw.pwd_str.title())
-        self.grid_lyt.addWidget(self.pwd_lbl, 5, 0, 1, 1)
+        self.grid_lyt.addWidget(self.pwd_lbl, 4, 0, 1, 1)
  
         self.pwd_le = QLineEdit(self)
         self.pwd_le.setObjectName(u'pwd_le')
         self.pwd_le.setEchoMode(QLineEdit.Password)
-        self.grid_lyt.addWidget(self.pwd_le, 5, 1, 1, 1)
+        self.grid_lyt.addWidget(self.pwd_le, 4, 1, 1, 1)
 
         self.con_dict = {}
-        self.con_dict[self.mw.svc_str] = self.svc_le
         self.con_dict[self.mw.host_str] = self.host_le
         self.con_dict[self.mw.port_str] = self.port_le
         self.con_dict[self.mw.db_str] = self.db_le
@@ -148,7 +138,7 @@ class ConDlg(QDialog):
         self._ins_con_info(con_info)
  
         self.btn_lyt = QHBoxLayout(self)
-        self.grid_lyt.addLayout(self.btn_lyt, 6, 0, 1, 2)
+        self.grid_lyt.addLayout(self.btn_lyt, 5, 0, 1, 2)
  
         self.test_btn = QPushButton(self)
         self.test_btn.setObjectName(u'test_btn')
@@ -167,7 +157,7 @@ class ConDlg(QDialog):
         self.stat_bar.setObjectName(u'stat_bar')
         self.stat_bar.setStyleSheet('border: none')
         self.stat_bar.showMessage(stat_bar_msg)
-        self.grid_lyt.addWidget(self.stat_bar, 7, 0, 1, 2)
+        self.grid_lyt.addWidget(self.stat_bar, 6, 0, 1, 2)
 
     def _ins_con_info(self, con_info):
         """Inserts a connection information into line edits.
@@ -211,11 +201,7 @@ class ConDlg(QDialog):
         con_info = {}
 
         for con_str, con_le in self.con_dict.iteritems():
-            con_le_text = con_le.text()
-            if con_str == self.mw.svc_str and con_le_text == '':
-                con_info[con_str] = None
-            else:
-                con_info[con_str] = con_le_text
+            con_info[con_str] = con_le.text()
 
         return con_info
 
