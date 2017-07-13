@@ -152,7 +152,7 @@ class ConDlg(QDialog):
  
         self.test_btn = QPushButton(self)
         self.test_btn.setObjectName(u'test_btn')
-        self.test_btn.setText(u'Test')
+        self.test_btn.setText(u'Test and Save')
         self.test_btn.clicked.connect(self._test_con)
         self.btn_lyt.addWidget(self.test_btn)
  
@@ -187,13 +187,18 @@ class ConDlg(QDialog):
 
         try:
             con_info = self._get_con_info_le()
+            self._save_con_info(con_info)
+
+            QgsApplication.processEvents()
 
             self.mw.con = self.mw._get_con(con_info)
 
             self.stat_bar.showMessage(u'Connection succeeded.', msg_dur)
-            self._save_con_info(con_info)
+
             self.ok_btn.setEnabled(True)
         except psycopg2.OperationalError:
+            self.mw.con = None
+            self.ok_btn.setDisabled(True)
             self.stat_bar.showMessage(u'Connection failed.', msg_dur)
 
     def _get_con_info_le(self):
