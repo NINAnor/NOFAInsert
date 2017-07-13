@@ -22,28 +22,32 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt, QObject, QDate
-from PyQt4.QtGui import QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget, QTableWidgetItem, QColor, QFont, QCompleter, QLineEdit
-# Initialize Qt resources from file resources.py
+
+from PyQt4.QtCore import (
+    QSettings, QTranslator, qVersion, QCoreApplication, Qt, QObject, QDate)
+from PyQt4.QtGui import (
+    QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget,
+    QTableWidgetItem, QColor, QFont, QCompleter, QLineEdit, QDialog)
+
+from qgis.core import *
+
 import resources
-# Import the code for the dialog
+
+from nofa import con_dlg
+
 from nofa_insert_dialog import NOFAInsertDialog
 from dataset_dialog import DatasetDialog
 from project_dialog import ProjectDialog
 from reference_dialog import ReferenceDialog
 from preview_dialog import PreviewDialog
-from connection_dialog import ConnectionDialog
+
 from collections import defaultdict
 import os.path
-import psycopg2
-from psycopg2 import extras
-from psycopg2.extensions import AsIs
+import psycopg2, psycopg2.extras
 import logging
 import datetime
 import uuid
 import sys
-
-# register uuid data type for psycopg2
 
 
 class NOFAInsert:
@@ -57,7 +61,7 @@ class NOFAInsert:
             application at run time.
         :type iface: QgsInterface
         """
-        extras.register_uuid()
+        psycopg2.extras.register_uuid()
 
         # Save reference to the QGIS interface
         self.iface = iface
@@ -76,26 +80,33 @@ class NOFAInsert:
 
             if qVersion() > '4.3.3':
                 QCoreApplication.installTranslator(self.translator)
+        
+        self.org = u'NINA'
+        self.app_name = u'NOFAInsert'
 
+        self.settings = QSettings(self.org, self.app_name)
 
+        self.svc_str = u'service'
+        self.host_str = u'host'
+        self.port_str = u'port'
+        self.db_str = u'database'
+        self.usr_str = u'user'
+        self.pwd_str = u'password'
 
+        self.con_str_tpl = (
+            self.svc_str,
+            self.host_str,
+            self.port_str,
+            self.db_str,
+            self.usr_str,
+            self.pwd_str)
 
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&NOFAInsert')
         # TODO: We are going to let the user set this up in a future iteration
-        self.toolbar = self.iface.addToolBar(u'NOFAInsert')
-        self.toolbar.setObjectName(u'NOFAInsert')
-
-
-        #connect to the db. If no connection parameters in QSettings, open a popup window
-        try:
-            con_info = self.get_postgres_conn_info()
-            self.con = self.get_connection(con_info)
-        except:
-            self.set_postgres_conn_info()
-            con_info = self.get_postgres_conn_info()
-            self.con = self.get_connection(con_info)
+        self.toolbar = self.iface.addToolBar(self.app_name)
+        self.toolbar.setObjectName(self.app_name)
 
         self.today = datetime.datetime.today().date()
         self.year = datetime.datetime.today().year
@@ -314,6 +325,7 @@ class NOFAInsert:
                           'reference': self.reference}
         '''
         # noinspection PyMethodMayBeStatic
+
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
 
@@ -2101,70 +2113,36 @@ class NOFAInsert:
         # remove the toolbar
         del self.toolbar
 
-    def set_postgres_conn_info(self):
+    def _get_con_info(self):
+        """Returns a connection information from QSettings.
 
-        self.conn_dlg = ConnectionDialog()
-        self.conn_dlg.show()
-
-        self.conn_dlg.insert_connection.clicked.connect(self.insert_connection_params)
-
-    def insert_connection_params(self):
-
-        self.conn_dlg.password.setEchoMode(QLineEdit.Password)
-
-        server = self.conn_dlg.server.text()
-        port = self.conn_dlg.port.text()
-        database = self.conn_dlg.database.text()
-        username = self.conn_dlg.username.text()
-        pwd = self.conn_dlg.password.text()
-
-        settings = QSettings()
-        settings.setValue(u"PostgreSQL/connections/NOFA/host", server)
-        settings.setValue(u"PostgreSQL/connections/NOFA/port", port)
-        settings.setValue(u"PostgreSQL/connections/NOFA/database", database)
-        settings.setValue(u"PostgreSQL/connections/NOFA/username", username)
-        settings.setValue(u"PostgreSQL/connections/NOFA/password", pwd)
-
-        return
-
-
-    def get_postgres_conn_info(self):
-        """ Read PostgreSQL connection details from QSettings stored by QGIS.
-        If connection parameters are not yet stored in Qsettings, use the following in python console:
-
-        import qgis
-        from PyQt4.QtCore import QSettings
-
-        settings = QSettings()
-        settings.setValue(u"PostgreSQL/connections/NOFA/host", "your_server_address")
-        settings.setValue(u"PostgreSQL/connections/NOFA/port", "5432")
-        settings.setValue(u"PostgreSQL/connections/NOFA/database", "your_db_name)
-        settings.setValue(u"PostgreSQL/connections/NOFA/username", "your_pg_username")
-        settings.setValue(u"PostgreSQL/connections/NOFA/password", "pwd")
+        :returns: A connection information dictionary.
+        :rtype: dict.
         """
-        settings = QSettings()
-        settings.beginGroup(u"/PostgreSQL/connections/NOFA")
 
-        conn_info = {}
-        conn_info["host"] = settings.value("host", "", type=str)
-        conn_info["port"] = settings.value("port", 432, type=int)
-        conn_info["database"] = settings.value("database", "", type=str)
-        self.username = settings.value("username", "", type=str)
-        password = settings.value("password", "", type=str)
-        if len(self.username) != 0:
-            conn_info["user"] = self.username
-            conn_info["password"] = password
+        con_info = {}
 
-        #QMessageBox.information(None, "DEBUG:", str(conn_info))
-        return conn_info
+        for con_str in self.con_str_tpl:
+            if con_str == self.svc_str:
+                con_info[con_str] = self.settings.value(con_str, None)
+            else:
+                con_info[con_str] = self.settings.value(con_str, u'')
 
-    def get_connection(self, conn_info):
-        """ Connect to the database using conn_info dict:
-         { 'host': ..., 'port': ..., 'database': ..., 'username': ..., 'password': ... }
+        self.username = con_info[self.usr_str]
+
+        return con_info
+
+    def _get_con(self, con_info):
+        """Returns a connection.
+
+        :returns: A connection.
+        :rtype: psycopg2.connection.
         """
-        conn = psycopg2.connect(**conn_info)
-        conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
-        return conn
+
+        con = psycopg2.connect(**con_info)
+        con.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+
+        return con
 
     def _db_cur(self):
 
@@ -2756,6 +2734,18 @@ class NOFAInsert:
 
     def run(self):
         """Run method that performs all the real work"""
+
+        self.con = None
+
+        try:
+            con_info = self._get_con_info()
+            self.con = self._get_con(con_info)
+        except psycopg2.OperationalError:
+            self.con_dlg = con_dlg.ConDlg(self, con_info, u'Set up connection.')
+            self.con_dlg.exec_()
+
+        if not self.con:
+            return
 
         self.fetch_db()
         self.populate_information()
