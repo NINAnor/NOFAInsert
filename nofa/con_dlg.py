@@ -176,6 +176,10 @@ class ConDlg(QDialog):
         msg_dur = 5000
 
         try:
+            self._enable_wdgs(False)
+
+            QgsApplication.processEvents()
+
             con_info = self._get_con_info_le()
             self._save_con_info(con_info)
 
@@ -190,6 +194,8 @@ class ConDlg(QDialog):
             self.mw.con = None
             self.ok_btn.setDisabled(True)
             self.stat_bar.showMessage(u'Connection failed.', msg_dur)
+        finally:
+            self._enable_wdgs(True)
 
     def _get_con_info_le(self):
         """Returns a connection information from line edits.
@@ -214,3 +220,17 @@ class ConDlg(QDialog):
 
         for con_str, con_val in con_info.iteritems():
             self.mw.settings.setValue(con_str, con_val)
+
+    def _enable_wdgs(self, bl):
+        """
+        Enables or disables line edits and push buttons.
+        
+        :param bl: True to enable widgets, False to disable widgets.
+        :type bl: bool.
+        """
+
+        for con_str, con_le in self.con_dict.iteritems():
+            con_le.setEnabled(bl)
+
+        self.test_btn.setEnabled(bl)
+
