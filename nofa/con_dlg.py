@@ -67,7 +67,7 @@ class ConDlg(QDialog):
 
         self.grid_lyt = QGridLayout(self)
         self.grid_lyt.setObjectName(u'grid_lyt')
-        self.grid_lyt.setColumnMinimumWidth(1, 200)
+        self.grid_lyt.setColumnMinimumWidth(1, 300)
 
         self.setWindowTitle(u'Connection Information')
 
@@ -177,6 +177,8 @@ class ConDlg(QDialog):
 
         try:
             self._enable_wdgs(False)
+            if self.ok_btn.isEnabled():
+                self.ok_btn.setEnabled(False)
 
             QgsApplication.processEvents()
 
@@ -185,14 +187,24 @@ class ConDlg(QDialog):
 
             QgsApplication.processEvents()
 
-            self.mw.con = self.mw._get_con(con_info)
+            self.mw.con = self.mw.get_con(con_info)
 
-            self.stat_bar.showMessage(u'Connection succeeded.', msg_dur)
+            if self.mw.check_nofa_tbls():
+                self.stat_bar.showMessage(
+                    u'Connection to NOFA database succeeded.',
+                    msg_dur)
+                self.ok_btn.setEnabled(True)
+            else:
+                self.stat_bar.showMessage(
+                    u'Connection succeeded but the database is not NOFA.',
+                    msg_dur)
+                self.ok_btn.setEnabled(False)
 
-            self.ok_btn.setEnabled(True)
+                self.mw.con.close()
+                self.mw.con = None
         except psycopg2.OperationalError:
             self.mw.con = None
-            self.ok_btn.setDisabled(True)
+            self.ok_btn.setEnabled(False)
             self.stat_bar.showMessage(u'Connection failed.', msg_dur)
         finally:
             self._enable_wdgs(True)
@@ -233,4 +245,3 @@ class ConDlg(QDialog):
             con_le.setEnabled(bl)
 
         self.test_btn.setEnabled(bl)
-

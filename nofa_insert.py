@@ -581,7 +581,7 @@ class NOFAInsert:
             self.dlg.date_from.setDate(self.today)
             self.dlg.date_to.setDate(self.today)
 
-            cur = self._db_cur()
+            cur = self._get_db_cur()
             try:
                 cur.execute(
                     u'SELECT  DISTINCT "username" FROM nofa.plugin_occurrence_log')
@@ -606,7 +606,7 @@ class NOFAInsert:
 
             #  populate tableWidget
 
-            cur = self._db_cur()
+            cur = self._get_db_cur()
             try:
                 cur.execute(u'SELECT  "occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_occurrence_log')
             except:
@@ -638,7 +638,7 @@ class NOFAInsert:
             # add locations log entries to history -> locations
             self.dlg.tableWidget_locations.setSelectionBehavior(QTableWidget.SelectRows)
 
-            cur = self._db_cur()
+            cur = self._get_db_cur()
             try:
                 cur.execute(
                     u'SELECT  "location_id", "username", "location_name", "insert_timestamp", "update_timestamp" FROM nofa.plugin_location_log')
@@ -668,7 +668,7 @@ class NOFAInsert:
         elif self.dlg.tabWidget_history.currentIndex() == 2:
             self.dlg.tableWidget_datasets.setSelectionBehavior(QTableWidget.SelectRows)
 
-            cur = self._db_cur()
+            cur = self._get_db_cur()
             try:
                 cur.execute(
                     u'SELECT  "dataset_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_dataset_log')
@@ -699,7 +699,7 @@ class NOFAInsert:
 
             self.dlg.tableWidget_projects.setSelectionBehavior(QTableWidget.SelectRows)
 
-            cur = self._db_cur()
+            cur = self._get_db_cur()
             try:
                 cur.execute(
                     u'SELECT  "project_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_project_log')
@@ -729,7 +729,7 @@ class NOFAInsert:
 
             self.dlg.tableWidget_references.setSelectionBehavior(QTableWidget.SelectRows)
 
-            cur = self._db_cur()
+            cur = self._get_db_cur()
             try:
                 cur.execute(
                     u'SELECT  "reference_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_reference_log')
@@ -758,7 +758,7 @@ class NOFAInsert:
 
         username = self.dlg.usernames.currentText()
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
 
         try:
             cur.execute(
@@ -792,7 +792,7 @@ class NOFAInsert:
         time_from = self.dlg.date_from.date()
         time_to = self.dlg.date_to.date()
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
 
         try:
             cur.execute(
@@ -828,7 +828,7 @@ class NOFAInsert:
         time_from = self.dlg.date_from.date()
         time_to = self.dlg.date_to.date()
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
 
         try:
             cur.execute(
@@ -864,7 +864,7 @@ class NOFAInsert:
 
         if taxon_name is not None and taxon_name not in ("Select"):
 
-            cur = self._db_cur()
+            cur = self._get_db_cur()
 
 
             string = u"""SELECT "taxonID" FROM nofa."l_taxon" WHERE "{0}" = '{1}';""".format(self.species_names[self.language], taxon_name)
@@ -921,7 +921,7 @@ class NOFAInsert:
 
         '''
         # Get existingDatasets from database
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "datasetID", "datasetName" FROM nofa."m_dataset";')
         datasets = cur.fetchall()
 
@@ -977,14 +977,14 @@ class NOFAInsert:
                                                     data_generalizations))
         '''
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT max("datasetID") FROM nofa.m_dataset;')
         max_dataset_id = cur.fetchone()[0]
         #QMessageBox.information(None, "DEBUG:", str(max_dataset_id))
         new_d_id = max_dataset_id + 1
 
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
 
         insert_dataset = cur.mogrify("""INSERT INTO nofa.m_dataset({}) VALUES {} RETURNING "datasetID" """.format(
             self.insert_dataset_columns,
@@ -1009,7 +1009,7 @@ class NOFAInsert:
         ##################
         # Insert a dataset log entry
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
 
         insert_dataset_log = cur.mogrify("INSERT INTO nofa.plugin_dataset_log({}) VALUES {}".format(
             self.insert_log_dataset_columns,
@@ -1042,7 +1042,7 @@ class NOFAInsert:
                                     "username", "insert_timestamp", "update_timestamp")
                                     VALUES\n"""
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         insert_log_dataset = self.insert_log_dataset
         insert_log_dataset += cur.mogrify(self.log_occurrence_values,
                                              (unicode(occurrence_id), unicode(event_id), self.dataset['dataset_id'],
@@ -1058,8 +1058,8 @@ class NOFAInsert:
     def get_location(self):
         '''
         Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
-        'coordinates UTM33':    '196098.1000	6572796.0100	Dam Grønnerød,194572.6100	6575712.0100	Dam Løberg'
-                                '194572.6100	6575712.0100	løberg dam, 136210.9600	6497277.7500	Springvannsdamm, 149719.5000	6506063.2800	DamKilsund'
+        'coordinates UTM33':    '196098.1000    6572796.0100    Dam Grønnerød,194572.6100    6575712.0100    Dam Løberg'
+                                '194572.6100    6575712.0100    løberg dam, 136210.9600    6497277.7500    Springvannsdamm, 149719.5000    6506063.2800    DamKilsund'
 
 
         '''
@@ -1087,7 +1087,7 @@ class NOFAInsert:
             col = self.locIDType_dict[location_type]
 
             # Fetch locationIDs (From Stefan's code)
-            cur = self._db_cur()
+            cur = self._get_db_cur()
             try:
                 cur.execute(
                 u'SELECT DISTINCT ON ({0}) "locationID", {0}, "waterBody", "decimalLongitude", "decimalLatitude" FROM nofa.location WHERE {0} IN ({1}) ORDER BY {0}, "locationType";'.format(
@@ -1175,21 +1175,21 @@ class NOFAInsert:
                     coords.append(loc_name + ' (' + easting + ', ' + northing + ')')
                     #QMessageBox.information(None, "DEBUG:", str(self.locations['x'][i]))
 
-                    cur = self._db_cur()
+                    cur = self._get_db_cur()
                     srid = type
 
                     '''
 
                                                Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
-                                               'coordinates UTM33':    196098.1000	6572796.0100	Dam Grønnerød,194572.6100	6575712.0100	Dam Løberg
-                                                                       194572.6100	6575712.0100	løberg dam, 136210.9600	6497277.7500	Springvannsdamm, 149719.5000	6506063.2800	DamKilsund
-                                                                       -43893.189 6620749.358 Vågavatnet, 194572.6100	6575712.0100	Dam Løberg
-                                                                       262491.48	6651383.97	Akerselva,272567.61	6651129.3	nuggerudbk,342561.74	6792178.06	Våråna,379904.34	6791377.43	Storbekken,377548.06	6791361.56	Nesvollbekken
+                                               'coordinates UTM33':    196098.1000    6572796.0100    Dam Grønnerød,194572.6100    6575712.0100    Dam Løberg
+                                                                       194572.6100    6575712.0100    løberg dam, 136210.9600    6497277.7500    Springvannsdamm, 149719.5000    6506063.2800    DamKilsund
+                                                                       -43893.189 6620749.358 Vågavatnet, 194572.6100    6575712.0100    Dam Løberg
+                                                                       262491.48    6651383.97    Akerselva,272567.61    6651129.3    nuggerudbk,342561.74    6792178.06    Våråna,379904.34    6791377.43    Storbekken,377548.06    6791361.56    Nesvollbekken
 
-                                               'coordinates UTM32':    601404.85	6644928.24	Hovinbk; 580033.012	6633807.99	Drengsrudbk;580322.6	6632959.64	Askerleva;658472.23	6842698.72	Engeråa;652499.37	6802699.72	Bruråsbk;
-                                                                       634422.28	6788379.28	Flåtestøbk;633855.79	6792859.46	Rødsbakkbk;630580.08	6785079.49	Ygla;628663.92	6785056.12	Svarttjernbk;629047.03	6785047.57	Vesl Ygla;
-                                                                       634687.42	6814177.67	Pottbekken;630348.1	6801364.63	Ullsettbk;
-                                                                       627139.64	6803681.51	Grønvollbk;530415.53	6722441.27	Åslielva;549629.28	6642631.88	Overnbek;
+                                               'coordinates UTM32':    601404.85    6644928.24    Hovinbk; 580033.012    6633807.99    Drengsrudbk;580322.6    6632959.64    Askerleva;658472.23    6842698.72    Engeråa;652499.37    6802699.72    Bruråsbk;
+                                                                       634422.28    6788379.28    Flåtestøbk;633855.79    6792859.46    Rødsbakkbk;630580.08    6785079.49    Ygla;628663.92    6785056.12    Svarttjernbk;629047.03    6785047.57    Vesl Ygla;
+                                                                       634687.42    6814177.67    Pottbekken;630348.1    6801364.63    Ullsettbk;
+                                                                       627139.64    6803681.51    Grønvollbk;530415.53    6722441.27    Åslielva;549629.28    6642631.88    Overnbek;
                                        '''
 
 
@@ -1378,7 +1378,7 @@ class NOFAInsert:
         #insert the new location points, if any,  to the db in nofa.location
         if self.new_locs:
             for i, loc in enumerate(self.new_locs):
-                cur = self._db_cur()
+                cur = self._get_db_cur()
                 location_type = 'samplingPoint'
 
                 point = "MULTIPOINT({0} {1})".format(loc[1], loc[2])
@@ -1409,7 +1409,7 @@ class NOFAInsert:
                 cur.execute(insert_location)
 
                 try:
-                    cur = self._db_cur()
+                    cur = self._get_db_cur()
                     insert_location_log = cur.mogrify("INSERT INTO nofa.plugin_location_log({}) VALUES {}".format(
                         self.insert_log_location_columns,
                         self.log_location_values,
@@ -1426,15 +1426,15 @@ class NOFAInsert:
                     '''
 
                             Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
-                            'coordinates UTM33':    196098.1000	6572796.0100	Dam Grønnerød,194572.6100	6575712.0100	Dam Løberg
-                                                    194572.6100	6575712.0100	løberg dam, 136210.9600	6497277.7500	Springvannsdamm, 149719.5000	6506063.2800	DamKilsund
-                                                    -43893.189 6620749.358 Vågavatnet, 194572.6100	6575712.0100	Dam Løberg
-                                                    262491.48	6651383.97	Akerselva,272567.61	6651129.3	nuggerudbk,342561.74	6792178.06	Våråna,379904.34	6791377.43	Storbekken,377548.06	6791361.56	Nesvollbekken
+                            'coordinates UTM33':    196098.1000    6572796.0100    Dam Grønnerød,194572.6100    6575712.0100    Dam Løberg
+                                                    194572.6100    6575712.0100    løberg dam, 136210.9600    6497277.7500    Springvannsdamm, 149719.5000    6506063.2800    DamKilsund
+                                                    -43893.189 6620749.358 Vågavatnet, 194572.6100    6575712.0100    Dam Løberg
+                                                    262491.48    6651383.97    Akerselva,272567.61    6651129.3    nuggerudbk,342561.74    6792178.06    Våråna,379904.34    6791377.43    Storbekken,377548.06    6791361.56    Nesvollbekken
 
-                            'coordinates UTM32':    601404.85	6644928.24	Hovinbk; 580033.012	6633807.99	Drengsrudbk;580322.6	6632959.64	Askerleva;658472.23	6842698.72	Engeråa;652499.37	6802699.72	Bruråsbk;
-                                                    634422.28	6788379.28	Flåtestøbk;633855.79	6792859.46	Rødsbakkbk;630580.08	6785079.49	Ygla;628663.92	6785056.12	Svarttjernbk;629047.03	6785047.57	Vesl Ygla;
-                                                    634687.42	6814177.67	Pottbekken;630348.1	6801364.63	Ullsettbk;
-                                                    627139.64	6803681.51	Grønvollbk;530415.53	6722441.27	Åslielva;549629.28	6642631.88	Overnbek;
+                            'coordinates UTM32':    601404.85    6644928.24    Hovinbk; 580033.012    6633807.99    Drengsrudbk;580322.6    6632959.64    Askerleva;658472.23    6842698.72    Engeråa;652499.37    6802699.72    Bruråsbk;
+                                                    634422.28    6788379.28    Flåtestøbk;633855.79    6792859.46    Rødsbakkbk;630580.08    6785079.49    Ygla;628663.92    6785056.12    Svarttjernbk;629047.03    6785047.57    Vesl Ygla;
+                                                    634687.42    6814177.67    Pottbekken;630348.1    6801364.63    Ullsettbk;
+                                                    627139.64    6803681.51    Grønvollbk;530415.53    6722441.27    Åslielva;549629.28    6642631.88    Overnbek;
                     '''
 
                 '''
@@ -1455,7 +1455,7 @@ class NOFAInsert:
 
                     # Keep track of the insertion in the location log table
                     try:
-                        cur = self._db_cur()
+                        cur = self._get_db_cur()
                         insert_location_log = cur.mogrify("INSERT INTO nofa.plugin_location_log({}) VALUES {}".format(
                             self.insert_log_location_columns,
                             self.log_location_values,
@@ -1587,13 +1587,13 @@ class NOFAInsert:
             #   return
 
             # get the reliability index from reliability text
-            # cur = self._db_cur()
+            # cur = self._get_db_cur()
             # cur.execute(u'SELECT "reliabilityID" FROM nofa."l_reliability" WHERE "reliability" = %s;',  (self.event['reliability'],))
             # rel = cur.fetchone()
             # QMessageBox.information(None, "DEBUG:", 'reliability index is: ' + str(rel))
 
 
-            cur = self._db_cur()
+            cur = self._get_db_cur()
             insert_event += cur.mogrify(self.event_values, (loc, event_id, size_value, self.event['protocol_remarks'],
                                                             self.event['recorded_by'], self.event['protocol'], self.event['reliability'],
                                                             start_date, end_date, self.event['event_remarks'],
@@ -1610,11 +1610,11 @@ class NOFAInsert:
                             (self.species_names[self.language], tax,))
                 taxon = cur.fetchone()
                 #QMessageBox.information(None, "DEBUG:", 'taxon is: ' + str(taxon[0]))
-                cur = self._db_cur()
+                cur = self._get_db_cur()
                 cur.execute(self.insert_taxonomic_coverage, (taxon, event_id))
 
 
-            cur = self._db_cur()
+            cur = self._get_db_cur()
             # insert the new event record to nofa.event
             cur.execute(insert_event)
 
@@ -1626,7 +1626,7 @@ class NOFAInsert:
                 if self.occurrence['ecotype'][m] == 'None':
                     ecotype_id = None
                 else:
-                    cur = self._db_cur()
+                    cur = self._get_db_cur()
                     query = u"""SELECT "ecotypeID" FROM nofa."l_ecotype" WHERE "vernacularName" = '{}';""".format(
                         self.occurrence['ecotype'][m])
                     #QMessageBox.information(None, "DEBUG:", str(query))
@@ -1646,7 +1646,7 @@ class NOFAInsert:
                     #QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(type(str(self.occurrence['taxon'][m]))))
                     try:
                         #QMessageBox.information(None, "DEBUG:", self.occurrence['taxon'][m])
-                        cur = self._db_cur()
+                        cur = self._get_db_cur()
                         query = u"""SELECT "taxonID" FROM nofa."l_taxon" WHERE "{}" = %s;""".format(
                             self.species_names[self.language])
                         cur.execute(query, (self.occurrence['taxon'][m],))
@@ -1668,7 +1668,7 @@ class NOFAInsert:
                 #QMessageBox.information(None, "DEBUG:", str(self.occurrence['quantity'][m]))
 
                 insert_occurrence = self.insert_occurrence
-                cur = self._db_cur()
+                cur = self._get_db_cur()
                 insert_occurrence += cur.mogrify(self.occurrence_values,
                                                  (occurrence_id, ecotype_id, self.occurrence['est_means'][m], self.occurrence['verified_by'][m],
                                                   verified_date, taxon, self.occurrence['spawn_loc'][m], self.occurrence['spawn_con'][m],
@@ -1683,7 +1683,7 @@ class NOFAInsert:
                 cur.execute(insert_occurrence)
 
                 # storing memory of insertion to db to log tables
-                cur = self._db_cur()
+                cur = self._get_db_cur()
                 insert_log_occurrence = self.insert_log_occurrence
                 insert_log_occurrence += cur.mogrify(self.log_occurrence_values,
                                                  (unicode(occurrence_id), unicode(event_id), self.dataset['dataset_id'], self.project['project_id'],
@@ -1738,15 +1738,15 @@ class NOFAInsert:
                       }
 
                                     Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
-                                    'coordinates UTM33':    196098.1000	6572796.0100	Dam Grønnerød,194572.6100	6575712.0100	Dam Løberg
-                                                            194572.6100	6575712.0100	løberg dam, 136210.9600	6497277.7500	Springvannsdamm, 149719.5000	6506063.2800	DamKilsund
-                                                            -43893.189 6620749.358 Vågavatnet, 194572.6100	6575712.0100	Dam Løberg
-                                                            262491.48	6651383.97	Akerselva,272567.61	6651129.3	nuggerudbk,342561.74	6792178.06	Våråna,379904.34	6791377.43	Storbekken,377548.06	6791361.56	Nesvollbekken
+                                    'coordinates UTM33':    196098.1000    6572796.0100    Dam Grønnerød,194572.6100    6575712.0100    Dam Løberg
+                                                            194572.6100    6575712.0100    løberg dam, 136210.9600    6497277.7500    Springvannsdamm, 149719.5000    6506063.2800    DamKilsund
+                                                            -43893.189 6620749.358 Vågavatnet, 194572.6100    6575712.0100    Dam Løberg
+                                                            262491.48    6651383.97    Akerselva,272567.61    6651129.3    nuggerudbk,342561.74    6792178.06    Våråna,379904.34    6791377.43    Storbekken,377548.06    6791361.56    Nesvollbekken
 
-                                    'coordinates UTM32':    601404.85	6644928.24	Hovinbk;580033.012	6633807.99	Drengsrudbk;580322.6	6632959.64	Askerleva;658472.23	6842698.72	Engeråa;652499.37	6802699.72	Bruråsbk;
-                                                            634422.28	6788379.28	Flåtestøbk;633855.79	6792859.46	Rødsbakkbk;630580.08	6785079.49	Ygla;628663.92	6785056.12	Svarttjernbk;629047.03	6785047.57	Vesl Ygla;
-                                                            634687.42	6814177.67	Pottbekken;630348.1	6801364.63	Ullsettbk;
-                                                            627139.64	6803681.51	Grønvollbk;530415.53	6722441.27	Åslielva;549629.28	6642631.88	Overnbek;
+                                    'coordinates UTM32':    601404.85    6644928.24    Hovinbk;580033.012    6633807.99    Drengsrudbk;580322.6    6632959.64    Askerleva;658472.23    6842698.72    Engeråa;652499.37    6802699.72    Bruråsbk;
+                                                            634422.28    6788379.28    Flåtestøbk;633855.79    6792859.46    Rødsbakkbk;630580.08    6785079.49    Ygla;628663.92    6785056.12    Svarttjernbk;629047.03    6785047.57    Vesl Ygla;
+                                                            634687.42    6814177.67    Pottbekken;630348.1    6801364.63    Ullsettbk;
+                                                            627139.64    6803681.51    Grønvollbk;530415.53    6722441.27    Åslielva;549629.28    6642631.88    Overnbek;
                             '''
 
 
@@ -1761,7 +1761,7 @@ class NOFAInsert:
 
         '''
         # Get existingProjects from database
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "projectID", "projectNumber", "projectName" FROM nofa."m_project";')
         projects = cur.fetchall()
 
@@ -1804,14 +1804,14 @@ class NOFAInsert:
         remarks = self.prjdlg.remarks.text()
 
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT max("projectID") FROM nofa.m_project;')
         max_proj_id = cur.fetchone()[0]
         #QMessageBox.information(None, "DEBUG:", str(max_proj_id))
         new_id = max_proj_id + 1
 
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
 
         insert_project = cur.mogrify("""INSERT INTO nofa.m_project({}) VALUES {} RETURNING "projectID" """.format(
             self.insert_project_columns,
@@ -1829,7 +1829,7 @@ class NOFAInsert:
         ##################
         # Insert a dataset log entry
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
 
         insert_project_log = cur.mogrify("INSERT INTO nofa.plugin_project_log({}) VALUES {}".format(
             self.insert_log_project_columns,
@@ -1853,7 +1853,7 @@ class NOFAInsert:
 
 
         # Get referenceType from database
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "referenceType" FROM nofa."l_referenceType";')
         refType = cur.fetchall()
 
@@ -1894,13 +1894,13 @@ class NOFAInsert:
         isbn = self.rfrdlg.isbn.text()
         page = self.rfrdlg.page.text()
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT max("referenceID") FROM nofa.m_reference;')
         max_rfr_id = cur.fetchone()[0]
         #QMessageBox.information(None, "DEBUG:", str(max_rfr_id))
         new_r_id = max_rfr_id + 1
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
 
         insert_reference = cur.mogrify("""INSERT INTO nofa.m_reference({}) VALUES {} RETURNING "referenceID" """.format(
             self.insert_reference_columns,
@@ -1918,7 +1918,7 @@ class NOFAInsert:
         ##################
         # Insert a reference log entry
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
 
         insert_reference_log = cur.mogrify("INSERT INTO nofa.plugin_reference_log({}) VALUES {}".format(
             self.insert_log_reference_columns,
@@ -1940,7 +1940,7 @@ class NOFAInsert:
             self.check_preview_conditions()
 
             # Get dataset record from NOFA db:
-            cur = self._db_cur()
+            cur = self._get_db_cur()
             cur.execute(
                 u'SELECT "datasetID", "datasetName", "rightsHolder", "institutionCode", "license", '
                 u'"bibliographicCitation", "datasetComment", "informationWithheld", "dataGeneralizations" '
@@ -2015,7 +2015,7 @@ class NOFAInsert:
             self.preview_conditions['project_selected'] = True
             self.check_preview_conditions()
 
-            cur = self._db_cur()
+            cur = self._get_db_cur()
             cur.execute(
                 u'SELECT "projectNumber", "projectName", "startYear", "endYear", "projectLeader", '
                 u'"projectMembers", "organisation", "financer", "remarks", "projectID" '
@@ -2059,7 +2059,7 @@ class NOFAInsert:
 
         if currentref != 'None' and currentref != '' and currentref != None:
             currentref_number = currentref.split('@')[1]
-            cur = self._db_cur()
+            cur = self._get_db_cur()
             cur.execute(
                 u'SELECT "referenceID", "doi", "author", "referenceType", "year", '
                 u'"titel", "journalName", "volume", "date", "issn", "isbn", "page" '
@@ -2127,7 +2127,7 @@ class NOFAInsert:
 
         return con_info
 
-    def _get_con(self, con_info):
+    def get_con(self, con_info):
         """Returns a connection.
 
         :returns: A connection.
@@ -2139,9 +2139,50 @@ class NOFAInsert:
 
         return con
 
-    def _db_cur(self):
+    def check_nofa_tbls(self):
+        """Checks if the database is NOFA.
+
+        :returns: True when database is NOFA, False otherwise.
+        :rtype: bool.
+        """
+
+        cur = self._get_db_cur()
+
+        cur.execute(
+            '''
+            SELECT    table_name
+            FROM      information_schema.tables
+            WHERE     table_schema = 'nofa'
+                      AND
+                      table_name IN ('location', 'event', 'occurrence')
+            ''')
+
+        if cur.rowcount == 3:
+            resp = True
+        else:
+            resp = False
+
+        return resp
+
+    def _get_db_cur(self):
+        """Returns a database cursor.
+        
+        :returns: A database cursor.
+        :rtype: psycopg2.cursor.
+        """
 
         return self.con.cursor()
+
+    def _open_con_dlg(self, con_info):
+        """
+        Opens a connection dialog.
+        
+        :param con_info: A connection information dictionary.
+        :type con_info: dict.
+        """
+
+        self.con_dlg = con_dlg.ConDlg(self, con_info, u'Set up connection.')
+        self.con_dlg.exec_()
 
     def fetch_db(self):
 
@@ -2158,7 +2199,7 @@ class NOFAInsert:
 
         #########################################
         # Get taxon list
-        cur = self._db_cur()
+        cur = self._get_db_cur()
 
         cur.execute(u"""SELECT "{0}" FROM nofa.l_taxon WHERE "taxonRank" IN ('species', 'hybrid', 'genus')  GROUP BY "{0}" ;""".format(self.species_names[self.language]))
         species = cur.fetchall()
@@ -2176,7 +2217,7 @@ class NOFAInsert:
         #################################
         '''
         # Get ecotypes from database
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "vernacularName_NO" FROM nofa."l_ecotype" GROUP BY "vernacularName_NO";')
         ecotypes = cur.fetchall()
 
@@ -2191,7 +2232,7 @@ class NOFAInsert:
         ##########################################
 
         # Get organismQuantity from database - including only 'Total mass' entries
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "organismQuantityID" FROM nofa."l_organismQuantityType";')
         orgQuantID = cur.fetchall()
 
@@ -2227,7 +2268,7 @@ class NOFAInsert:
         #############################################
 
         # Get establishmentMeans from database
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "establishmentMeans" FROM nofa."l_establishmentMeans";')
         establishment = cur.fetchall()
 
@@ -2244,7 +2285,7 @@ class NOFAInsert:
         ###################################################
 
         # Get samplingProtocols from database
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "samplingProtocol" FROM nofa."l_samplingProtocol";')
         samplingProt = cur.fetchall()
 
@@ -2260,7 +2301,7 @@ class NOFAInsert:
         ######################################################
 
         # Get reliability from database
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "reliability" FROM nofa."l_reliability";')
         reliab = cur.fetchall()
 
@@ -2275,7 +2316,7 @@ class NOFAInsert:
         #########################################################
 
         # Get sampleSizeUnit from database
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "sampleSizeUnit" FROM nofa."l_sampleSizeUnit";')
         sampUnit = cur.fetchall()
 
@@ -2292,7 +2333,7 @@ class NOFAInsert:
         ############################################################
 
         # Get spawningCondition from database
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "spawningCondition" FROM nofa."l_spawningCondition";')
         spawnCon = cur.fetchall()
 
@@ -2308,7 +2349,7 @@ class NOFAInsert:
         ###############################################################
 
         # Get spawningLocation from database
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "spawningLocation" FROM nofa."l_spawningLocation";')
         spawnLoc = cur.fetchall()
 
@@ -2325,7 +2366,7 @@ class NOFAInsert:
 
 
         # Get institutions from database
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "institutionCode" FROM nofa."l_institution";')
         institutions = cur.fetchall()
 
@@ -2366,7 +2407,7 @@ class NOFAInsert:
         ###################################################################
         # Create the Taxonomic Coverage list of taxa
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
 
         cur.execute(u'SELECT "{0}", "{1}" FROM nofa.l_taxon GROUP BY "{0}", "{1}";'.format(self.species_names[self.language], "family"))
         species = cur.fetchall()
@@ -2433,7 +2474,7 @@ class NOFAInsert:
 
     def get_existing_datasets(self):
 
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "datasetID", "datasetName" FROM nofa."m_dataset";')
         datasets = cur.fetchall()
 
@@ -2451,7 +2492,7 @@ class NOFAInsert:
     def get_existing_projects(self):
 
         # Get existingProjects from database
-        cur = self._db_cur()
+        cur = self._get_db_cur()
         cur.execute(u'SELECT "projectID", "projectNumber", "projectName" FROM nofa."m_project";')
         projects = cur.fetchall()
 
@@ -2488,7 +2529,7 @@ class NOFAInsert:
     def get_existing_references(self):
 
         # Get existingReference from database
-        cur = self._db_cur()
+        cur = self._get_db_cur()
 
         cur.execute(u'SELECT "referenceID", "author", "titel" FROM nofa."m_reference";')
         references = cur.fetchall()
@@ -2734,10 +2775,12 @@ class NOFAInsert:
 
         try:
             con_info = self._get_con_info()
-            self.con = self._get_con(con_info)
+            self.con = self.get_con(con_info)
+
+            if not self.check_nofa_tbls():
+                self._open_con_dlg(con_info)
         except psycopg2.OperationalError:
-            self.con_dlg = con_dlg.ConDlg(self, con_info, u'Set up connection.')
-            self.con_dlg.exec_()
+            self._open_con_dlg(con_info)
 
         if not self.con:
             return
