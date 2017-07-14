@@ -71,9 +71,9 @@ class ConDlg(QDialog):
 
         self.setWindowTitle(u'Connection Information')
 
-        self._build_widgets(con_info, stat_bar_msg)
+        self._build_wdgs(con_info, stat_bar_msg)
 
-    def _build_widgets(self, con_info, stat_bar_msg):
+    def _build_wdgs(self, con_info, stat_bar_msg):
         """Builds own widgets.
 
         :param con_info: A connection information.
