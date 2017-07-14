@@ -412,6 +412,11 @@ class NOFAInsert:
         self.dlg.tabWidget.currentChanged.connect(self.history_tab_clicked)
         self.dlg.tabWidget_history.currentChanged.connect(self.history_tab_clicked)
 
+        # OS.NINA
+        # there are not neccessary tables in the new db
+        # history tab is disabled
+        self.dlg.tabWidget.setTabEnabled(1, False)
+
         self.dlg.taxonID.currentIndexChanged.connect(self.look_for_ecotype)
 
         # taxonomic coverage treewidget parent item changed
