@@ -2704,7 +2704,7 @@ class NOFAInsert:
 
         self.dlg.occurrence_number.setText(str(self.row_position + 1))
         self.dlg.occurrence_number.setStyleSheet('color: black')
-        self.dlg.frame.setStyleSheet('color: white')
+        # self.dlg.frame.setStyleSheet('color: white')
 
 
         '''
