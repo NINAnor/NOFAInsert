@@ -116,25 +116,9 @@ class NOFAInsert:
 
         self.insert_taxonomic_coverage = """INSERT INTO nofa.taxonomicCoverage("taxonID_l_taxon", "eventID_observationEvent") VALUES (%s,%s);"""
         # creating the string for event data insertion to nofa.event table. fieldNotes is used just for testing purposes
-        self.insert_event = u"""INSERT INTO nofa.event ("locationID", "eventID",
-                            "sampleSizeValue", "samplingProtocolRemarks", "recordedBy",
-                            "samplingProtocol", "reliability", "dateStart", "dateEnd", "eventRemarks",
-                            "sampleSizeUnit", "samplingEffort", "datasetID", "associatedReferences", "projectID", "fieldNotes")
-                            VALUES\n"""
-
 
         # 16 event values, placeholders
         self.event_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-        # 16 occurrence values, placeholders
-        self.occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-
-        # TODO - remove "fieldNumber" column, used for testing purposes
-        self.insert_occurrence = u"""INSERT INTO nofa.occurrence ("occurrenceID",
-                                    "ecotypeID", "establishmentMeans", "verifiedBy", "verifiedDate", "taxonID",
-                                    "spawningLocation", "spawningCondition", "occurrenceStatus", "populationTrend",
-                                    "yearPrecisionRemarks", "organismQuantityID",
-                                    "occurrenceRemarks", "modified", "establishmentRemarks", "eventID", "organismQuantityMetric", "fieldNumber")
-                                    VALUES\n"""
 
         self.insert_log_occurrence = u"""INSERT INTO nofa.plugin_occurrence_log ("occurrence_id",
                                     "event_id", "dataset_id", "project_id", "reference_id", "location_id",
@@ -243,7 +227,7 @@ class NOFAInsert:
                            'ecotype': ['Select', ],
                            'quantity': ['Select', ],
                            'metric': [0, ],
-                           'status': ['unknown', ],
+                           'status': ['Select', ],
                            'trend': ['unknown', ],
                            'oc_remarks': ['None', ],
                            'est_means': ['Select', ],
@@ -1489,7 +1473,7 @@ class NOFAInsert:
 
             #QMessageBox.information(None, "DEBUG:", str(self.dataset['dataset_id'] + self.reference['reference_id'] +
                                                         #self.project['project_id']))
-            insert_event = self.insert_event
+            # insert_event = self.insert_event
 
             #loc_uuid = uuid.UUID(loc)
             #event_uuid = uuid.UUID(str(event_id)).urn
@@ -1552,14 +1536,7 @@ class NOFAInsert:
                 self.event['effort'] = 0
                 effort = 0
 
-            if isinstance(self.dataset['dataset_id'], unicode):
-
-                try:
-                    dataset = int(self.dataset['dataset_id'])
-                except:
-                    QMessageBox.information(None, "DEBUG:",
-                                                'The type of datasetid is wrong. Should be integer')
-                    return
+            dataset = self.dataset['dataset_id']
 
             # reference is optional. If not existing, defaults to zero
             try:
@@ -1598,13 +1575,62 @@ class NOFAInsert:
             # rel = cur.fetchone()
             # QMessageBox.information(None, "DEBUG:", 'reliability index is: ' + str(rel))
 
+            # OS.NINA
+            # deleted "samplingProtocolRemarks", associatedReferences"
+            insert_event_tmpl = (
+                '''
+                INSERT INTO    nofa.event (
+                                   "locationID",
+                                   "eventID",
+                                   "sampleSizeValue",
+                                   "recordedBy",
+                                   "samplingProtocol",
+                                   "reliability",
+                                   "dateStart",
+                                   "dateEnd",
+                                   "eventRemarks",
+                                   "sampleSizeUnit",
+                                   "samplingEffort",
+                                   "datasetID",
+                                   "projectID",
+                                   "fieldNotes")
+                VALUES         (   %(locationID)s,
+                                   %(eventID)s,
+                                   %(sampleSizeValue)s,
+                                   %(recordedBy)s,
+                                   %(samplingProtocol)s,
+                                   %(reliability)s,
+                                   %(dateStart)s,
+                                   %(dateEnd)s,
+                                   %(eventRemarks)s,
+                                   %(sampleSizeUnit)s,
+                                   %(samplingEffort)s,
+                                   %(datasetID)s,
+                                   %(projectID)s,
+                                   %(fieldNotes)s)
+                ''')
 
             cur = self._get_db_cur()
-            insert_event += cur.mogrify(self.event_values, (loc, event_id, size_value, self.event['protocol_remarks'],
-                                                            self.event['recorded_by'], self.event['protocol'], self.event['reliability'],
-                                                            start_date, end_date, self.event['event_remarks'],
-                                                            self.event['size_unit'], effort, dataset,
-                                                            reference, project, 'test',))
+            # OS.NINA
+            # unused values are commented
+            insert_event = cur.mogrify(
+                insert_event_tmpl,
+                {'locationID': loc,
+                 'eventID': event_id,
+                 'sampleSizeValue': size_value,
+                 # 'samplingProtocolRemarks': self.event['protocol_remarks'],
+                 'recordedBy': self.event['recorded_by'],
+                 'samplingProtocol': self.event['protocol'],
+                 'reliability': self.event['reliability'],
+                 'dateStart': start_date,
+                 'dateEnd': end_date,
+                 'eventRemarks': self.event['event_remarks'],
+                 'sampleSizeUnit': self.event['size_unit'],
+                 'samplingEffort': effort,
+                 'datasetID': dataset,
+                 # 'associatedReferences': reference,
+                 'projectID': project,
+                 'fieldNotes': 'test'})
 
             #QMessageBox.information(None, "DEBUG:", str(insert_event))
             #QMessageBox.information(None, "DEBUG:", str(type(loc)) + str(type(event_id))+ str(type(self.event['size_value']))+ str(type(self.event['protocol_remarks']))+ str(type(self.event['recorded_by']))+ str(type(self.event['protocol']))+ str(type(self.event['reliability'])) + str(type(self.event['date_start']))+ str(type(self.event['date_end']))+str(type( self.event['event_remarks']))+ str(type(self.event['size_unit'])) + str(type(effort)) + str(type(dataset)) + str(type(reference)) + str(type(project)) + str(type('text')))
@@ -1622,6 +1648,7 @@ class NOFAInsert:
 
             cur = self._get_db_cur()
             # insert the new event record to nofa.event
+
             cur.execute(insert_event)
 
             for m, occ in enumerate(self.occurrence['taxon']):
@@ -1673,14 +1700,68 @@ class NOFAInsert:
                     organismquantity_metric = self.occurrence['metric'][m]
                 #QMessageBox.information(None, "DEBUG:", str(self.occurrence['quantity'][m]))
 
-                insert_occurrence = self.insert_occurrence
+                # OS.NINA
+                # deleted "yearPrecisionRemarks"
+                insert_occurrence_tmpl = (
+                    '''
+                    INSERT INTO    nofa.occurrence (
+                                       "occurrenceID",
+                                       "ecotypeID",
+                                       "establishmentMeans",
+                                       "verifiedBy",
+                                       "verifiedDate",
+                                       "taxonID",
+                                       "spawningLocation",
+                                       "spawningCondition",
+                                       "occurrenceStatus",
+                                       "populationTrend",
+                                       "organismQuantityType",
+                                       "occurrenceRemarks",
+                                       "modified",
+                                       "establishmentRemarks",
+                                       "eventID",
+                                       "organismQuantity",
+                                       "fieldNumber")
+                    VALUES         (   %(occurrenceID)s,
+                                       %(ecotypeID)s,
+                                       %(establishmentMeans)s,
+                                       %(verifiedBy)s,
+                                       %(verifiedDate)s,
+                                       %(taxonID)s,
+                                       %(spawningLocation)s,
+                                       %(spawningCondition)s,
+                                       %(occurrenceStatus)s,
+                                       %(populationTrend)s,
+                                       %(organismQuantityID)s,
+                                       %(occurrenceRemarks)s,
+                                       %(modified)s,
+                                       %(establishmentRemarks)s,
+                                       %(eventID)s,
+                                       %(organismQuantityMetric)s,
+                                       %(fieldNumber)s)
+                    ''')
+
                 cur = self._get_db_cur()
-                insert_occurrence += cur.mogrify(self.occurrence_values,
-                                                 (occurrence_id, ecotype_id, self.occurrence['est_means'][m], self.occurrence['verified_by'][m],
-                                                  verified_date, taxon, self.occurrence['spawn_loc'][m], self.occurrence['spawn_con'][m],
-                                                  self.occurrence['status'][m], self.occurrence['trend'][m], self.occurrence['yearprecision_remarks'][m], self.occurrence['quantity'][m],
-                                                  self.occurrence['oc_remarks'][m], self.today, self.occurrence['est_remarks'][m],
-                                                  event_id, organismquantity_metric, 'test'))
+                insert_occurrence = cur.mogrify(
+                    insert_occurrence_tmpl,
+                    {'occurrenceID': occurrence_id,
+                     'ecotypeID': ecotype_id,
+                     'establishmentMeans': self.occurrence['est_means'][m],
+                     'verifiedBy': self.occurrence['verified_by'][m],
+                     'verifiedDate': verified_date,
+                     'taxonID': taxon,
+                     'spawningLocation': self.occurrence['spawn_loc'][m],
+                     'spawningCondition': self.occurrence['spawn_con'][m],
+                     'occurrenceStatus': self.occurrence['status'][m],
+                     'populationTrend': self.occurrence['trend'][m],
+                     'yearPrecisionRemarks': self.occurrence['yearprecision_remarks'][m],
+                     'organismQuantityID': self.occurrence['quantity'][m],
+                     'occurrenceRemarks': self.occurrence['oc_remarks'][m],
+                     'modified': self.today,
+                     'establishmentRemarks': self.occurrence['est_remarks'][m],
+                     'eventID': event_id,
+                     'organismQuantityMetric': organismquantity_metric,
+                     'fieldNumber': 'test'})
 
                 #QMessageBox.information(None, "DEBUG:", str(insert_occurrence))
 
@@ -1688,14 +1769,16 @@ class NOFAInsert:
                 # insert the new occurrence record to nofa.occurrence
                 cur.execute(insert_occurrence)
 
+                # OS.NINA
+                # commented inserting to log tables
                 # storing memory of insertion to db to log tables
-                cur = self._get_db_cur()
-                insert_log_occurrence = self.insert_log_occurrence
-                insert_log_occurrence += cur.mogrify(self.log_occurrence_values,
-                                                 (unicode(occurrence_id), unicode(event_id), self.dataset['dataset_id'], self.project['project_id'],
-                                                  self.reference['reference_id'], loc, True, self.username,
-                                                  ))
-                cur.execute(insert_log_occurrence)
+                # cur = self._get_db_cur()
+                # insert_log_occurrence = self.insert_log_occurrence
+                # insert_log_occurrence += cur.mogrify(self.log_occurrence_values,
+                #                                  (unicode(occurrence_id), unicode(event_id), self.dataset['dataset_id'], self.project['project_id'],
+                #                                   self.reference['reference_id'], loc, True, self.username,
+                #                                   ))
+                # cur.execute(insert_log_occurrence)
 
         QMessageBox.information(None, "DEBUG:", "occurrences correctly stored in NOFA db")
 
@@ -2240,32 +2323,37 @@ class NOFAInsert:
         '''
         ##########################################
 
-        # Get organismQuantity from database - including only 'Total mass' entries
+        # Get organismQuantity from database
         cur = self._get_db_cur()
-        cur.execute(u'SELECT "organismQuantityID" FROM nofa."l_organismQuantityType";')
-        orgQuantID = cur.fetchall()
-
-        # Create a python-list from query result
-        #orgQuantID_list = [o[0] for o in orgQuantID if not o[0].startswith("Total")]
-        orgQuantID_list = [o[0] for o in orgQuantID if o[0].startswith('Total')]
-
-        # Inject sorted python-list for organismQuantity into UI
-        orgQuantID_list.sort()
+        cur.execute(
+            '''
+            SELECT    "organismQuantityType" oqt
+            FROM      nofa."l_organismQuantityType"
+            ORDER BY  oqt
+            ''')
+        orgQuantID  = cur.fetchall()
+        orgQuantID_list = [o[0] for o in orgQuantID]
         orgQuantID_list.insert(0, 'Select')
-
-        # removing unknown: violates foreign key contraint - not present in table l_organismQuantityType
-        #orgQuantID_list.insert(1, 'unknown')
 
         self.dlg.organismQuantityID.clear()
         self.dlg.organismQuantityID.addItems(orgQuantID_list)
-        self.dlg.organismQuantityID.setCurrentIndex(orgQuantID_list.index("Select"))
 
         #############################################
 
         # Get occurrence status
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT    "occurrenceStatus" os
+            FROM      nofa."l_occurrenceStatus"
+            ORDER BY  os
+            ''')
+        occStat  = cur.fetchall()
+        occStat_list = [o[0] for o in occStat]
+        occStat_list.insert(0, 'Select')
+
         self.dlg.status.clear()
-        self.dlg.status.addItems(self.occurrence_status)
-        self.dlg.status.setCurrentIndex(self.occurrence_status.index("unknown"))
+        self.dlg.status.addItems(occStat_list)
 
         #############################################
 
@@ -2273,6 +2361,7 @@ class NOFAInsert:
         self.dlg.trend.clear()
         self.dlg.trend.addItems(self.population_trend)
         self.dlg.trend.setCurrentIndex(self.population_trend.index("unknown"))
+        
 
         #############################################
 
@@ -2376,7 +2465,11 @@ class NOFAInsert:
 
         # Get institutions from database
         cur = self._get_db_cur()
-        cur.execute(u'SELECT "institutionCode" FROM nofa."l_institution";')
+        cur.execute(
+            '''
+            SELECT    "institutionCode"
+            FROM      nofa."m_dataset"
+            ''')
         institutions = cur.fetchall()
 
         # Create a python-list from query result
