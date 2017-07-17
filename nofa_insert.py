@@ -113,23 +113,57 @@ class NOFAInsert:
 
         self.dataset_name = "none"
 
-        self.insert_location = """INSERT INTO nofa.location (locationID, "locationType", geom, "waterBody", "locationRemarks") VALUES (%s, %s, %s, %s, %s);"""
+        self.insert_location = \
+            """
+            INSERT INTO     nofa.location (
+                                locationID,
+                                "locationType",
+                                geom,
+                                "waterBody",
+                                "locationRemarks")
+            VALUES          (%s, %s, %s, %s, %s);
+            """
 
-        self.insert_taxonomic_coverage = """INSERT INTO nofa.taxonomicCoverage("taxonID_l_taxon", "eventID_observationEvent") VALUES (%s,%s);"""
+        self.insert_taxonomic_coverage = \
+            """
+            INSERT INTO     nofa.taxonomicCoverage(
+                                "taxonID_l_taxon",
+                                "eventID_observationEvent")
+            VALUES          (%s,%s);
+            """
         # creating the string for event data insertion to nofa.event table. fieldNotes is used just for testing purposes
 
         # 16 event values, placeholders
         self.event_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
-        self.insert_log_occurrence = u"""INSERT INTO nofa.plugin_occurrence_log ("occurrence_id",
-                                    "event_id", "dataset_id", "project_id", "reference_id", "location_id",
-                                    "test", "username")
-                                    VALUES\n"""
+        self.insert_log_occurrence = \
+            """
+            INSERT INTO     nofa.plugin_occurrence_log (
+                                "occurrence_id",
+                                "event_id",
+                                "dataset_id",
+                                "project_id",
+                                "reference_id",
+                                "location_id",
+                                "test",
+                                "username")
+            VALUES\n
+            """
 
-        self.insert_dataset = u"""INSERT INTO nofa.m_dataset ("rightsHolder", "ownerInstitutionCode",
-                                    "datasetName", "accessRights", "license", "bibliographicCitation", "datasetComment",
-                                    "informationWithheld", "dataGeneralization")
-                                    VALUES\n"""
+        self.insert_dataset = \
+            """
+            INSERT INTO     nofa.m_dataset (
+                                "rightsHolder",
+                                "ownerInstitutionCode",
+                                "datasetName",
+                                "accessRights",
+                                "license",
+                                "bibliographicCitation",
+                                "datasetComment",
+                                "informationWithheld",
+                                "dataGeneralization")
+            VALUES\n
+            """
 
 
 
@@ -187,11 +221,12 @@ class NOFAInsert:
             'Finish': 'vernacularName_FI'}
 
         ## Country codes not used for the moment
-        '''countryCodes = {'Latin': None,
-                        'English': None,
-                        'Norwegian': 'NO',
-                        'Swedish': 'SE',
-                        'Finish': 'FI'}'''
+        '''countryCodes = {
+            'Latin': None,
+            'English': None,
+            'Norwegian': 'NO',
+            'Swedish': 'SE',
+            'Finish': 'FI'}'''
 
         #TODO the remaining location types should be added here
         self.locIDType_dict = {
@@ -209,8 +244,6 @@ class NOFAInsert:
                     'Arctic Charr Dwarf', 'Saimaa Arctic Charr'],
             26175: ['Vendace', 'Spring Spawning Vendace'],
             26176: ['Whitefish', 'Plankton Whitefish']}
-
-
 
         self.occurrence_base = {
             'taxon': 'Select',
@@ -295,6 +328,42 @@ class NOFAInsert:
             'issn': 'None',
             'isbn': 'None',
             'page': 'None'}
+
+        self.occ_hdrs = [
+            "occurrence_id",
+            "event_id",
+            "dataset_id",
+            "project_id",
+            "reference_id",
+            "location_id",
+            "username",
+            "insert_time",
+            "update_time"]
+
+        self.loc_hdrs = [
+            "dataset_id",
+            "username",
+            "location_name",
+            "insert_time",
+            "update_time"]
+
+        self.dtst_hdrs = [
+            "dataset_id",
+            "username",
+            "insert_time",
+            "update_time"]
+
+        self.prj_hdrs = [
+            "project_id",
+            "username",
+            "insert_time",
+            "update_time"]
+
+        self.ref_hdrs = [
+            "reference_id",
+            "username",
+            "insert_time",
+            "update_time"]
 
         # temporary list, to replace the currently empty table l_occurrenceStatus. Will be used in the occurrence status dropdown
         self.occurrence_status = [
@@ -590,8 +659,10 @@ class NOFAInsert:
                 cur.execute(
                     u'SELECT  DISTINCT "username" FROM nofa.plugin_occurrence_log')
             except:
-                QMessageBox.information(None, "DEBUG:", unicode(
-                    "WARNING - DB ERROR. occurrences not fetched from db"))
+                QMessageBox.information(
+                    None, "DEBUG:",
+                    unicode(
+                        "WARNING - DB ERROR. occurrences not fetched from db"))
 
             usernames_fetched = cur.fetchall()
 
@@ -624,9 +695,8 @@ class NOFAInsert:
             self.dlg.tableWidget_occurrences.setRowCount(lim)
             self.dlg.tableWidget_occurrences.setColumnCount(9)
 
-            headers = ["occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id",
-                       "username", "insert_time", "update_time"]
-            self.dlg.tableWidget_occurrences.setHorizontalHeaderLabels(headers)
+            self.dlg.tableWidget_occurrences.setHorizontalHeaderLabels(
+                self.occ_hdrs)
 
             for l in range(lim):
                 occurrence = fetched_occ[l]
@@ -657,8 +727,8 @@ class NOFAInsert:
             self.dlg.tableWidget_locations.setRowCount(lim)
             self.dlg.tableWidget_locations.setColumnCount(5)
 
-            headers = ["dataset_id", "username", "location_name", "insert_time", "update_time"]
-            self.dlg.tableWidget_locations.setHorizontalHeaderLabels(headers)
+            self.dlg.tableWidget_locations.setHorizontalHeaderLabels(
+                self.loc_hdrs)
 
             for l in range(lim):
                 locations = fetched_location_logs[l]
@@ -687,8 +757,8 @@ class NOFAInsert:
             self.dlg.tableWidget_datasets.setRowCount(lim)
             self.dlg.tableWidget_datasets.setColumnCount(4)
 
-            headers = ["dataset_id", "username", "insert_time", "update_time"]
-            self.dlg.tableWidget_datasets.setHorizontalHeaderLabels(headers)
+            self.dlg.tableWidget_datasets.setHorizontalHeaderLabels(
+                self.dtst_hdrs)
 
             for l in range(lim):
                 dataset = fetched_datasets[l]
@@ -718,8 +788,8 @@ class NOFAInsert:
             self.dlg.tableWidget_projects.setRowCount(lim)
             self.dlg.tableWidget_projects.setColumnCount(4)
 
-            headers = ["project_id", "username", "insert_time", "update_time"]
-            self.dlg.tableWidget_projects.setHorizontalHeaderLabels(headers)
+            self.dlg.tableWidget_projects.setHorizontalHeaderLabels(
+                self.prj_hdrs)
 
             for l in range(lim):
                 projects = fetched_projects[l]
@@ -747,8 +817,8 @@ class NOFAInsert:
             self.dlg.tableWidget_references.setRowCount(lim)
             self.dlg.tableWidget_references.setColumnCount(4)
 
-            headers = ["reference_id", "username", "insert_time", "update_time"]
-            self.dlg.tableWidget_references.setHorizontalHeaderLabels(headers)
+            self.dlg.tableWidget_references.setHorizontalHeaderLabels(
+                self.ref_hdrs)
 
             for l in range(lim):
                 references = fetched_references[l]
@@ -766,11 +836,23 @@ class NOFAInsert:
 
         try:
             cur.execute(
-                u'SELECT  "occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id", "username", "insert_timestamp", "update_timestamp" '
-                u'FROM nofa.plugin_occurrence_log WHERE "username" = %s', (username,))
+                '''
+                SELECT      "occurrence_id",
+                            "event_id",
+                            "dataset_id",
+                            "project_id",
+                            "reference_id",
+                            "location_id",
+                            "username",
+                            "insert_timestamp",
+                            "update_timestamp"
+                FROM         nofa.plugin_occurrence_log
+                WHERE        "username" = %s''',
+                (username,))
         except:
-            QMessageBox.information(None, "DEBUG:", unicode(
-                "WARNING - DB ERROR. occurrences not fetched from db"))
+            QMessageBox.information(
+                None, "DEBUG:",
+                unicode("WARNING - DB ERROR. occurrences not fetched from db"))
 
         fetched_occ = cur.fetchall()
 
@@ -779,9 +861,8 @@ class NOFAInsert:
         self.dlg.tableWidget_occurrences.setRowCount(lim)
         self.dlg.tableWidget_occurrences.setColumnCount(9)
 
-        headers = ["occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id",
-                   "username", "insert_time", "update_time"]
-        self.dlg.tableWidget_occurrences.setHorizontalHeaderLabels(headers)
+        self.dlg.tableWidget_occurrences.setHorizontalHeaderLabels(
+            self.occ_hdrs)
 
         for l in range(lim):
             occurrence = fetched_occ[l]
@@ -800,11 +881,23 @@ class NOFAInsert:
 
         try:
             cur.execute(
-                u'SELECT  "occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id", "username", "insert_timestamp", "update_timestamp" '
-                u'FROM nofa.plugin_occurrence_log WHERE "insert_timestamp" BETWEEN %s AND %s', (time_from.toPyDate(), time_to.toPyDate(),))
+                '''
+                SELECT      "occurrence_id",
+                            "event_id",
+                            "dataset_id",
+                            "project_id",
+                            "reference_id",
+                            "location_id",
+                            "username",
+                            "insert_timestamp",
+                            "update_timestamp"
+                FROM        nofa.plugin_occurrence_log
+                WHERE       "insert_timestamp" BETWEEN %s AND %s''',
+                (time_from.toPyDate(), time_to.toPyDate(),))
         except:
-            QMessageBox.information(None, "DEBUG:", unicode(
-                "WARNING - DB ERROR. occurrences not fetched from db"))
+            QMessageBox.information(
+                None, "DEBUG:",
+                unicode("WARNING - DB ERROR. occurrences not fetched from db"))
 
         fetched_occ = cur.fetchall()
 
@@ -813,9 +906,8 @@ class NOFAInsert:
         self.dlg.tableWidget_occurrences.setRowCount(lim)
         self.dlg.tableWidget_occurrences.setColumnCount(9)
 
-        headers = ["occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id",
-                   "username", "insert_time", "update_time"]
-        self.dlg.tableWidget_occurrences.setHorizontalHeaderLabels(headers)
+        self.dlg.tableWidget_occurrences.setHorizontalHeaderLabels(
+            self.occ_hdrs)
 
         for l in range(lim):
             occurrence = fetched_occ[l]
@@ -836,12 +928,25 @@ class NOFAInsert:
 
         try:
             cur.execute(
-                u'SELECT  "occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id", "username", "insert_timestamp", "update_timestamp" '
-                u'FROM nofa.plugin_occurrence_log WHERE "username" = %s AND "insert_timestamp" BETWEEN %s AND %s',
+                '''
+                SELECT      "occurrence_id",
+                            "event_id",
+                            "dataset_id",
+                            "project_id",
+                            "reference_id",
+                            "location_id",
+                            "username",
+                            "insert_timestamp",
+                            "update_timestamp" '
+                FROM        nofa.plugin_occurrence_log
+                WHERE       "username" = %s AND "insert_timestamp"
+                                BETWEEN %s AND %s
+                ''',
                 (username, time_from.toPyDate(), time_to.toPyDate(),))
         except:
-            QMessageBox.information(None, "DEBUG:", unicode(
-                "WARNING - DB ERROR. occurrences not fetched from db"))
+            QMessageBox.information(
+                None, "DEBUG:",
+                unicode("WARNING - DB ERROR. occurrences not fetched from db"))
 
         fetched_occ = cur.fetchall()
 
@@ -850,9 +955,8 @@ class NOFAInsert:
         self.dlg.tableWidget_occurrences.setRowCount(lim)
         self.dlg.tableWidget_occurrences.setColumnCount(9)
 
-        headers = ["occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id",
-                   "username", "insert_time", "update_time"]
-        self.dlg.tableWidget_occurrences.setHorizontalHeaderLabels(headers)
+        self.dlg.tableWidget_occurrences.setHorizontalHeaderLabels(
+            self.occ_hdrs)
 
         for l in range(lim):
             occurrence = fetched_occ[l]
