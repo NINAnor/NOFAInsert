@@ -170,20 +170,21 @@ class NOFAInsert:
 
 
 
-        self.preview_conditions = {"dataset_selected": False,
-                                   'project_selected': False,
-                                   'taxon_selected': False,
-                                   'est_means_selected': False,
-                                   'quantity': False
-                                  }
+        self.preview_conditions = {
+            'dataset_selected': False,
+            'project_selected': False,
+            'taxon_selected': False,
+            'est_means_selected': False,
+            'quantity': False}
 
         self.language = 'Latin'
 
-        self.species_names = {'Latin': 'scientificName',
-                              'English': 'vernacularName',
-                              'Norwegian': 'vernacularName_NO',
-                              'Swedish': 'vernacularName_SE',
-                              'Finish': 'vernacularName_FI'}
+        self.species_names = {
+            'Latin': 'scientificName',
+            'English': 'vernacularName',
+            'Norwegian': 'vernacularName_NO',
+            'Swedish': 'vernacularName_SE',
+            'Finish': 'vernacularName_FI'}
 
         ## Country codes not used for the moment
         '''countryCodes = {'Latin': None,
@@ -193,109 +194,116 @@ class NOFAInsert:
                         'Finish': 'FI'}'''
 
         #TODO the remaining location types should be added here
-        self.locIDType_dict = {'Norwegian VatnLnr': 'no_vatn_lnr',
-                          'coordinates UTM32': 25832,
-                          'coordinates UTM33': 25833,
-                          }
+        self.locIDType_dict = {
+            'Norwegian VatnLnr': 'no_vatn_lnr',
+            'coordinates UTM32': 25832,
+            'coordinates UTM33': 25833,}
 
 
-        self.ecotypes = {26164: ['Salmon', 'Landlocked Salmon', 'Relict Salmon'],
-                         26165: ['Brown trout', 'Anadromous Brown Trout', 'Big Piscivorous Brown Trout', 'Fine-spotted Brown Trout', 'Danish River Trout'],
-                         26167: ['Arctic Charr', 'Anadromous Arctic Charr', 'Arctic Charr Dwarf', 'Saimaa Arctic Charr'],
-                         26175: ['Vendace', 'Spring Spawning Vendace'],
-                         26176: ['Whitefish', 'Plankton Whitefish']
-                        }
+        self.ecotypes = {
+            26164: ['Salmon', 'Landlocked Salmon', 'Relict Salmon'],
+            26165: ['Brown trout', 'Anadromous Brown Trout',
+                    'Big Piscivorous Brown Trout','Fine-spotted Brown Trout',
+                    'Danish River Trout'],
+            26167: ['Arctic Charr', 'Anadromous Arctic Charr',
+                    'Arctic Charr Dwarf', 'Saimaa Arctic Charr'],
+            26175: ['Vendace', 'Spring Spawning Vendace'],
+            26176: ['Whitefish', 'Plankton Whitefish']}
 
 
 
-        self.occurrence_base = {'taxon': 'Select',
-                           'ecotype': 'Select',
-                           'quantity': 'Select',
-                           'metric': 0,
-                           'status': 'unknown',
-                           'trend': 'unknown',
-                           'oc_remarks': 'None',
-                           'est_means': 'Select',
-                           'est_remarks': 'None',
-                           'spawn_con': 'unknown',
-                           'spawn_loc': 'unknown',
-                           'verified_by': 'Nobody',
-                           'verified_date': self.today,
-                           'yearprecision_remarks': 'None'
-                            }
+        self.occurrence_base = {
+            'taxon': 'Select',
+            'ecotype': 'Select',
+            'quantity': 'Select',
+            'metric': 0,
+            'status': 'unknown',
+            'trend': 'unknown',
+            'oc_remarks': 'None',
+            'est_means': 'Select',
+            'est_remarks': 'None',
+            'spawn_con': 'unknown',
+            'spawn_loc': 'unknown',
+            'verified_by': 'Nobody',
+            'verified_date': self.today,
+            'yearprecision_remarks': 'None'}
 
-        self.occurrence = {'taxon': ['Select', ],
-                           'ecotype': ['Select', ],
-                           'quantity': ['Select', ],
-                           'metric': [0, ],
-                           'status': ['Select', ],
-                           'trend': ['unknown', ],
-                           'oc_remarks': ['None', ],
-                           'est_means': ['Select', ],
-                           'est_remarks': ['None', ],
-                           'spawn_con': ['unknown', ],
-                           'spawn_loc': ['unknown', ],
-                           'verified_by': ['Nobody', ],
-                           'verified_date': [self.today, ],
-                           'yearprecision_remarks': ['None', ]
-                           }
+        self.occurrence = {
+            'taxon': ['Select', ],
+            'ecotype': ['Select', ],
+            'quantity': ['Select', ],
+            'metric': [0, ],
+            'status': ['Select', ],
+            'trend': ['unknown', ],
+            'oc_remarks': ['None', ],
+            'est_means': ['Select', ],
+            'est_remarks': ['None', ],
+            'spawn_con': ['unknown', ],
+            'spawn_loc': ['unknown', ],
+            'verified_by': ['Nobody', ],
+            'verified_date': [self.today, ],
+            'yearprecision_remarks': ['None', ]}
 
         self.taxonomicc = []
 
-        self.event = {'protocol': 'unknown',
-                      'size_value': None,
-                      'size_unit': 'None',
-                      'effort': 'unknown',
-                      'protocol_remarks': 'None',
-                      'date_start': self.today,
-                      'date_end': self.today,
-                      'recorded_by': 'unknown',
-                      'event_remarks': 'None',
-                      'reliability': 'Select'
-                      }
+        self.event = {
+            'protocol': 'unknown',
+            'size_value': None,
+            'size_unit': 'None',
+            'effort': 'unknown',
+            'protocol_remarks': 'None',
+            'date_start': self.today,
+            'date_end': self.today,
+            'recorded_by': 'unknown',
+            'event_remarks': 'None',
+            'reliability': 'Select'}
 
-        self.dataset = {'dataset_id': 'None',
-                        'rightsholder': 'None',
-                        'dataset_name': 'None',
-                        'owner_institution': 'None',
-                        'access_rights': 'None',
-                        'license': 'None',
-                        'citation': 'None',
-                        'comment': 'None',
-                        'information': 'None',
-                        'generalizations': 'None'
-                        }
+        self.dataset = {
+            'dataset_id': 'None',
+            'rightsholder': 'None',
+            'dataset_name': 'None',
+            'owner_institution': 'None',
+            'access_rights': 'None',
+            'license': 'None',
+            'citation': 'None',
+            'comment': 'None',
+            'information': 'None',
+            'generalizations': 'None'}
 
-        self.project = {'project_id': 'None',
-                        'project_name': 'None',
-                        'project_number': 'None',
-                        'start_year': unicode(self.year),
-                        'end_year': unicode(self.year),
-                        'leader': 'None',
-                        'members': 'None',
-                        'organisation': 'None',
-                        'financer': 'None',
-                        'project_remarks': 'None'
-                        }
+        self.project = {
+            'project_id': 'None',
+            'project_name': 'None',
+            'project_number': 'None',
+            'start_year': unicode(self.year),
+            'end_year': unicode(self.year),
+            'leader': 'None',
+            'members': 'None',
+            'organisation': 'None',
+            'financer': 'None',
+            'project_remarks': 'None'}
 
-        self.reference = {'reference_id': 'None',
-                          'doi': 'None',
-                          'authors': 'None',
-                          'reference_type': 'None',
-                          'year': unicode(self.year),
-                          'title': 'None',
-                          'journal': 'None',
-                          'volume': 'None',
-                          'date': unicode(self.today),
-                          'issn': 'None',
-                          'isbn': 'None',
-                          'page': 'None'
-                          }
+        self.reference = {
+            'reference_id': 'None',
+            'doi': 'None',
+            'authors': 'None',
+            'reference_type': 'None',
+            'year': unicode(self.year),
+            'title': 'None',
+            'journal': 'None',
+            'volume': 'None',
+            'date': unicode(self.today),
+            'issn': 'None',
+            'isbn': 'None',
+            'page': 'None'}
 
         # temporary list, to replace the currently empty table l_occurrenceStatus. Will be used in the occurrence status dropdown
-        self.occurrence_status = ['unknown', 'absent', 'common', 'doubtful', 'excluded', 'irregular', 'present', 'rare']
+        self.occurrence_status = [
+            'unknown', 'absent', 'common', 'doubtful',
+            'excluded', 'irregular','present', 'rare']
 
-        self.population_trend = ['unknown', 'increasing', 'decrasing', 'stable', 'extinction', 'introduction', 're-introduction']
+        self.population_trend = [
+            'unknown', 'increasing', 'decrasing', 'stable',
+            'extinction', 'introduction', 're-introduction']
 
         '''
         # collect the multiple data and metadata containers into a single object, a dictionary of dictionaries/lists.
