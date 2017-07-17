@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1107</width>
-    <height>662</height>
+    <width>1195</width>
+    <height>659</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1091</width>
+     <width>1171</width>
      <height>651</height>
     </rect>
    </property>
@@ -136,14 +136,14 @@
           <x>10</x>
           <y>20</y>
           <width>361</width>
-          <height>392</height>
+          <height>425</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout">
          <item row="5" column="1">
           <widget class="QLineEdit" name="samplingEffort"/>
          </item>
-         <item row="15" column="0">
+         <item row="18" column="0">
           <widget class="QLabel" name="label_51">
            <property name="text">
             <string>reliability</string>
@@ -176,7 +176,7 @@
            </property>
           </widget>
          </item>
-         <item row="12" column="1">
+         <item row="15" column="1">
           <widget class="QLineEdit" name="recordedBy_e"/>
          </item>
          <item row="2" column="0">
@@ -199,7 +199,7 @@
            </property>
           </widget>
          </item>
-         <item row="12" column="0">
+         <item row="15" column="0">
           <widget class="QLabel" name="label_46">
            <property name="text">
             <string>recordedBy</string>
@@ -209,45 +209,34 @@
            </property>
           </widget>
          </item>
-         <item row="15" column="1">
+         <item row="18" column="1">
           <widget class="QComboBox" name="reliability"/>
          </item>
-         <item row="10" column="0">
+         <item row="13" column="0">
           <widget class="QLabel" name="label_17">
            <property name="text">
             <string>dateStart</string>
            </property>
           </widget>
          </item>
-         <item row="11" column="0">
-          <widget class="QDateEdit" name="dateStart">
-           <property name="displayFormat">
-            <string>yyyy-MM-dd</string>
-           </property>
-          </widget>
-         </item>
-         <item row="13" column="0" colspan="2">
+         <item row="16" column="0" colspan="2">
           <widget class="QLabel" name="label_42">
            <property name="text">
             <string>eventRemarks</string>
            </property>
           </widget>
          </item>
-         <item row="10" column="1">
-          <widget class="QLabel" name="label_22">
-           <property name="text">
-            <string>dateEnd</string>
-           </property>
-          </widget>
-         </item>
-         <item row="11" column="1">
+         <item row="14" column="1">
           <widget class="QDateEdit" name="dateEnd">
            <property name="displayFormat">
             <string>yyyy-MM-dd</string>
            </property>
+           <property name="calendarPopup">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
-         <item row="14" column="0" colspan="2">
+         <item row="17" column="0" colspan="2">
           <widget class="QLineEdit" name="eventRemarks">
            <property name="minimumSize">
             <size>
@@ -277,6 +266,23 @@
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="14" column="0">
+          <widget class="QLabel" name="label_22">
+           <property name="text">
+            <string>dateEnd</string>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="1">
+          <widget class="QDateEdit" name="dateStart">
+           <property name="displayFormat">
+            <string>yyyy-MM-dd</string>
+           </property>
+           <property name="calendarPopup">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -559,8 +565,8 @@
       <rect>
        <x>660</x>
        <y>160</y>
-       <width>421</width>
-       <height>421</height>
+       <width>505</width>
+       <height>424</height>
       </rect>
      </property>
      <property name="font">
@@ -576,247 +582,242 @@
      <property name="title">
       <string>Occurrence</string>
      </property>
-     <widget class="QWidget" name="gridLayoutWidget_2">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>20</y>
-        <width>401</width>
-        <height>404</height>
-       </rect>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="1">
-        <widget class="QComboBox" name="taxonID"/>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="label_103">
-         <property name="text">
-          <string>Quantity</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QComboBox" name="trend"/>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="oq_metric"/>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="label_44">
-         <property name="text">
-          <string>establishmentRemarks</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1" colspan="3">
-        <widget class="QLineEdit" name="yearPrecisionRemarks">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>48</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="label_95">
-         <property name="text">
-          <string>yearPrecisionRemarks</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QComboBox" name="ecotypeID"/>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_99">
-         <property name="text">
-          <string>occurrenceRemarks</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QLineEdit" name="verifiedBy"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_109">
-         <property name="text">
-          <string>occurrenceStatus</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QComboBox" name="status"/>
-       </item>
-       <item row="2" column="2">
-        <widget class="QLabel" name="label_105">
-         <property name="text">
-          <string>population trend</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_90">
-         <property name="text">
-          <string>taxon</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="2">
-        <widget class="QLabel" name="label_100">
-         <property name="text">
-          <string>verifiedDate</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="3">
-        <widget class="QDateEdit" name="verifiedDate">
-         <property name="displayFormat">
-          <string>yyyy-MM-dd</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_94">
-         <property name="text">
-          <string>ecotype</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QComboBox" name="organismQuantityID"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_102">
-         <property name="text">
-          <string>Quantity type</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_106">
-         <property name="text">
-          <string>establishmentMeans</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1" colspan="3">
-        <widget class="QComboBox" name="establishmentMeans"/>
-       </item>
-       <item row="3" column="1" colspan="3">
-        <widget class="QLineEdit" name="occurrenceRemarks">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>48</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1" colspan="3">
-        <widget class="QLineEdit" name="establishmentRemarks">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>48</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="3">
-        <widget class="QComboBox" name="spawningLocation"/>
-       </item>
-       <item row="6" column="1">
-        <widget class="QComboBox" name="spawningCondition"/>
-       </item>
-       <item row="6" column="2">
-        <widget class="QLabel" name="label_108">
-         <property name="text">
-          <string>spawningLocation</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_107">
-         <property name="text">
-          <string>spawningCondition</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="label_96">
-         <property name="text">
-          <string>verifiedBy</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="occurrence_number">
-         <property name="font">
-          <font>
-           <pointsize>23</pointsize>
-          </font>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <property name="text">
-          <string>1</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="1" colspan="3">
-        <widget class="QPushButton" name="update_row_button">
-         <property name="text">
-          <string>Update occurrence row</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <zorder>gridLayoutWidget_2</zorder>
-     <zorder>gridLayoutWidget_2</zorder>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="1" column="1">
+         <widget class="QComboBox" name="organismQuantityID"/>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="taxonID"/>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="label_103">
+          <property name="text">
+           <string>Quantity</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="3">
+         <widget class="QComboBox" name="trend"/>
+        </item>
+        <item row="1" column="3">
+         <widget class="QLineEdit" name="oq_metric"/>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_44">
+          <property name="text">
+           <string>establishmentRemarks</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1" colspan="3">
+         <widget class="QLineEdit" name="yearPrecisionRemarks">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>48</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="label_95">
+          <property name="text">
+           <string>yearPrecisionRemarks</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QComboBox" name="ecotypeID"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_99">
+          <property name="text">
+           <string>occurrenceRemarks</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QLineEdit" name="verifiedBy"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_109">
+          <property name="text">
+           <string>occurrenceStatus</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="status"/>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="label_105">
+          <property name="text">
+           <string>population trend</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_90">
+          <property name="text">
+           <string>taxon</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="2">
+         <widget class="QLabel" name="label_100">
+          <property name="text">
+           <string>verifiedDate</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="3">
+         <widget class="QDateEdit" name="verifiedDate">
+          <property name="displayFormat">
+           <string>yyyy-MM-dd</string>
+          </property>
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="label_94">
+          <property name="text">
+           <string>ecotype</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_102">
+          <property name="text">
+           <string>Quantity type</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_106">
+          <property name="text">
+           <string>establishmentMeans</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1" colspan="3">
+         <widget class="QComboBox" name="establishmentMeans"/>
+        </item>
+        <item row="3" column="1" colspan="3">
+         <widget class="QLineEdit" name="occurrenceRemarks">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>48</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1" colspan="3">
+         <widget class="QLineEdit" name="establishmentRemarks">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>48</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="3">
+         <widget class="QComboBox" name="spawningLocation"/>
+        </item>
+        <item row="6" column="1">
+         <widget class="QComboBox" name="spawningCondition"/>
+        </item>
+        <item row="6" column="2">
+         <widget class="QLabel" name="label_108">
+          <property name="text">
+           <string>spawningLocation</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_107">
+          <property name="text">
+           <string>spawningCondition</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="label_96">
+          <property name="text">
+           <string>verifiedBy</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
+         <widget class="QLabel" name="occurrence_number">
+          <property name="font">
+           <font>
+            <pointsize>23</pointsize>
+           </font>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <property name="text">
+           <string>1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1" colspan="3">
+         <widget class="QPushButton" name="update_row_button">
+          <property name="text">
+           <string>Update occurrence row</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
     </widget>
     <widget class="QPushButton" name="insert_button">
      <property name="geometry">
       <rect>
        <x>660</x>
        <y>580</y>
-       <width>421</width>
+       <width>511</width>
        <height>41</height>
       </rect>
      </property>
@@ -829,7 +830,7 @@
       <rect>
        <x>450</x>
        <y>0</y>
-       <width>631</width>
+       <width>721</width>
        <height>161</height>
       </rect>
      </property>
