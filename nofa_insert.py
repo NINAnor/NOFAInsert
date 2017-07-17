@@ -27,7 +27,8 @@ from PyQt4.QtCore import (
     QSettings, QTranslator, qVersion, QCoreApplication, Qt, QObject, QDate)
 from PyQt4.QtGui import (
     QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget,
-    QTableWidgetItem, QColor, QFont, QCompleter, QLineEdit, QDialog)
+    QTableWidgetItem, QColor, QFont, QCompleter, QLineEdit, QDialog,
+    QDoubleValidator)
 
 from qgis.core import *
 
@@ -427,7 +428,8 @@ class NOFAInsert:
         self.dlg.time_filter_button.clicked.connect(self.filter_occurrence_by_time)
         self.dlg.combined_filter_button.clicked.connect(self.filter_by_user_and_time)
 
-
+        self.dlg.sampleSizeValue.setValidator(QDoubleValidator(None))
+        self.dlg.samplingEffort.setValidator(QDoubleValidator(None))
 
 
 
