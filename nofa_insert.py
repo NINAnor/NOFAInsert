@@ -100,6 +100,9 @@ class NOFAInsert:
             self.usr_str,
             self.pwd_str)
 
+        self.sel_str = u'Select'
+        self.none_str = str(None)
+
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&NOFAInsert')
@@ -463,7 +466,7 @@ class NOFAInsert:
         self.dlg.edit_reference_button.clicked.connect(self.open_reference_dialog)
 
 
-        self.dlg.existingDataset.currentIndexChanged.connect(self.update_dataset)
+        self.dlg.existingDataset.currentIndexChanged.connect(self.upd_dtst)
         self.dlg.existingProject.currentIndexChanged.connect(self.update_project)
         self.dlg.existingReference.currentIndexChanged.connect(self.update_reference)
 
@@ -2159,74 +2162,65 @@ class NOFAInsert:
         self.get_existing_references()
 
 
-    def update_dataset(self):
-        currentdataset = self.dlg.existingDataset.currentText()
-        if currentdataset != 'None' and  currentdataset !='' and currentdataset!= None:
+    def upd_dtst(self):
+        """Updates dataset list widget according to the selected dataset.
+        """
 
+        currDtst = self.dlg.existingDataset.currentText()
+
+        if currDtst != self.sel_str:
             self.preview_conditions['dataset_selected'] = True
             self.check_preview_conditions()
 
-            # Get dataset record from NOFA db:
             cur = self._get_db_cur()
             cur.execute(
-                u'SELECT "datasetID", "datasetName", "rightsHolder", "institutionCode", "license", '
-                u'"bibliographicCitation", "datasetComment", "informationWithheld", "dataGeneralizations" '
-                u'FROM nofa."m_dataset" WHERE "datasetName" = (%s);',  (currentdataset,))
-            dataset = cur.fetchone()
+                '''
+                SELECT      "datasetID",
+                            "datasetName",
+                            "rightsHolder",
+                            "institutionCode",
+                            "license",
+                            "bibliographicCitation",
+                            "datasetComment",
+                            "informationWithheld",
+                            "dataGeneralizations"
+                FROM        nofa."m_dataset"
+                WHERE       "datasetName" = (%s);
+                ''',
+                (currDtst,))
+            dtst_list = cur.fetchone()
 
-            # Create a python-list from query result
-            dataset_list = dataset
-            #referenceID_list = [p[0] for p in projects]
-
-            # Inject sorted python-list for existingProjects into UI
-            #dataset_list.sort()
-            #dataset_list.insert(0, 'None')
-
-
-            self.dataset['dataset_id'] = unicode(dataset_list[0])
-            self.dataset['dataset_name'] = dataset_list[1]
-            self.dataset['rightsholder'] = dataset_list[2]
-            self.dataset['owner_institution'] = dataset_list[3]
-            self.dataset['license'] = dataset_list[4]
-            self.dataset['citation'] = dataset_list[5]
-            self.dataset['comment'] = dataset_list[6]
-            self.dataset['information'] = dataset_list[7]
-            self.dataset['generalizations'] = dataset_list[8]
-
-            #QMessageBox.information(None, "DEBUG:", str(self.dataset))
+            self.dataset['dataset_id'] = unicode(dtst_list[0])
+            self.dataset['dataset_name'] = dtst_list[1]
+            self.dataset['rightsholder'] = dtst_list[2]
+            self.dataset['owner_institution'] = dtst_list[3]
+            self.dataset['license'] = dtst_list[4]
+            self.dataset['citation'] = dtst_list[5]
+            self.dataset['comment'] = dtst_list[6]
+            self.dataset['information'] = dtst_list[7]
+            self.dataset['generalizations'] = dtst_list[8]
 
             self.dlg.listview_dataset.clear()
-            for key, value in self.dataset.iteritems():
-                if value is not None:
-                    dstitem = QListWidgetItem(key + ':    ' + value)
-                else:
-                    dstitem = QListWidgetItem(key + ':    None')
 
+            for key, value in self.dataset.iteritems():
+                dstitem = QListWidgetItem(key + ':    ' + str(value))
                 self.dlg.listview_dataset.addItem(dstitem)
 
-            self.dlg.metadata.setItemText(1, 'Dataset - ' + self.dataset['dataset_name'])
+            self.dlg.metadata.setItemText(
+                self.dlg.metadata.currentIndex(),
+                'Dataset - ' + self.dataset['dataset_name'])
+        else:
+            self.preview_conditions['dataset_selected'] = False
 
-        elif currentdataset == 'None':
             self.dlg.listview_dataset.clear()
-            self.dlg.metadata.setItemText(1, 'Dataset - None')
 
-            '''
-            self.dlg.display_dataset_1.setText(self.dataset['dataset_name'])
-            self.dlg.display_dataset_1.setWordWrap(True)
-            self.dlg.display_dataset_2.setText(self.dataset['dataset_id'])
-            self.dlg.display_dataset_3.setText(self.dataset['rightsholder'])
-            self.dlg.display_dataset_4.setText(self.dataset['owner_institution'])
-            self.dlg.display_dataset_5.setText(self.dataset['license'])
-            self.dlg.display_dataset_6.setText(self.dataset['citation'])
-            self.dlg.display_dataset_6.setWordWrap(True)
-            self.dlg.display_dataset_7.setText(self.dataset['comment'])
-            self.dlg.display_dataset_7.setWordWrap(True)
-            self.dlg.display_dataset_8.setText(self.dataset['information'])
-            self.dlg.display_dataset_8.setWordWrap(True)
-            self.dlg.display_dataset_9.setText(self.dataset['generalizations'])
-            self.dlg.display_dataset_9.setWordWrap(True)
-            '''
-            #QMessageBox.information(None, "DEBUG:", str(dataset_list))
+            for key, value in self.dataset.iteritems():
+                dstitem = QListWidgetItem(key + ':    ' + self.none_str)
+                self.dlg.listview_dataset.addItem(dstitem)
+
+            self.dlg.metadata.setItemText(
+                self.dlg.metadata.currentIndex(),
+                'Dataset - ' + self.none_str)
 
     def update_project(self):
         """
@@ -2417,7 +2411,7 @@ class NOFAInsert:
     def fetch_db(self):
 
 
-        self.get_existing_datasets()
+        self.pop_dtst_cb()
 
         #####################################
         # get existing projects from db
@@ -2712,22 +2706,24 @@ class NOFAInsert:
 
         '''
 
-    def get_existing_datasets(self):
+    def pop_dtst_cb(self):
+        """Populates dataset combo box.
+        """
 
         cur = self._get_db_cur()
-        cur.execute(u'SELECT "datasetID", "datasetName" FROM nofa."m_dataset";')
-        datasets = cur.fetchall()
+        cur.execute(
+            '''
+            SELECT      "datasetName" dsn
+            FROM        nofa."m_dataset"
+            ORDER BY    dsn;
+            ''')
+        dtsts = cur.fetchall()
 
-        # Create a python-list from query result
-        # datasetID_list = [d[0] for d in datasets]
-        dataset_list = [d[1] for d in datasets]
+        dtst_list = [d[0] for d in dtsts]
+        dtst_list.insert(0, 'Select')
 
-        # Inject sorted python-list for existingDatasets into UI
-        dataset_list.sort()
-        dataset_list.insert(0, 'None')
         self.dlg.existingDataset.clear()
-        self.dlg.existingDataset.addItems(dataset_list)
-        self.dlg.existingDataset.setCurrentIndex(dataset_list.index(self.dataset['dataset_name']))
+        self.dlg.existingDataset.addItems(dtst_list)
 
     def get_existing_projects(self):
 
