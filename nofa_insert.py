@@ -430,8 +430,7 @@ class NOFAInsert:
 
         self.dlg.sampleSizeValue.setValidator(QDoubleValidator(None))
         self.dlg.samplingEffort.setValidator(QIntValidator(None))
-
-
+        self.dlg.oq_metric.setValidator(QDoubleValidator(None))
 
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
