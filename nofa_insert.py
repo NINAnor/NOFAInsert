@@ -466,8 +466,8 @@ class NOFAInsert:
         self.dlg.edit_reference_button.clicked.connect(self.open_reference_dialog)
 
 
-        self.dlg.existingDataset.currentIndexChanged.connect(self.upd_dtst)
-        self.dlg.existingProject.currentIndexChanged.connect(self.update_project)
+        self.dlg.existingDataset.activated.connect(self._upd_dtst_lw)
+        self.dlg.existingProject.currentIndexChanged.connect(self._upd_prj_lw)
         self.dlg.existingReference.currentIndexChanged.connect(self.update_reference)
 
         self.dlg.insert_button.clicked.connect(self.preview)
@@ -2161,16 +2161,32 @@ class NOFAInsert:
 
         self.get_existing_references()
 
-
-    def upd_dtst(self):
-        """Updates dataset list widget according to the selected dataset.
+    def _upd_dtst(self):
+        """
+        Updates a dataset according to the last selected.
         """
 
-        currDtst = self.dlg.existingDataset.currentText()
+        last_dtst = self.settings.value('last_dataset_name', self.sel_str)
 
-        if currDtst != self.sel_str:
+        last_dtst_index = self.dlg.existingDataset.findText(last_dtst)
+
+        self.dlg.existingDataset.setCurrentIndex(last_dtst_index)
+
+        self._upd_dtst_lw(last_dtst)
+
+    def _upd_dtst_lw(self, curr_dtst):
+        """
+        Updates the dataset list widget according to the current or last
+        dataset.
+        """
+
+        if isinstance(curr_dtst, int):
+            curr_dtst = self.dlg.existingDataset.currentText()
+
+        self.dlg.listview_dataset.clear()
+
+        if curr_dtst != self.sel_str:
             self.preview_conditions['dataset_selected'] = True
-            self.check_preview_conditions()
 
             cur = self._get_db_cur()
             cur.execute(
@@ -2187,10 +2203,10 @@ class NOFAInsert:
                 FROM        nofa."m_dataset"
                 WHERE       "datasetName" = (%s);
                 ''',
-                (currDtst,))
+                (curr_dtst,))
             dtst_list = cur.fetchone()
 
-            self.dataset['dataset_id'] = unicode(dtst_list[0])
+            self.dataset['dataset_id'] = dtst_list[0]
             self.dataset['dataset_name'] = dtst_list[1]
             self.dataset['rightsholder'] = dtst_list[2]
             self.dataset['owner_institution'] = dtst_list[3]
@@ -2200,31 +2216,41 @@ class NOFAInsert:
             self.dataset['information'] = dtst_list[7]
             self.dataset['generalizations'] = dtst_list[8]
 
-            self.dlg.listview_dataset.clear()
-
             for key, value in self.dataset.iteritems():
                 dstitem = QListWidgetItem(key + ':    ' + str(value))
                 self.dlg.listview_dataset.addItem(dstitem)
 
-            self.dlg.metadata.setItemText(
-                self.dlg.metadata.currentIndex(),
-                'Dataset - ' + self.dataset['dataset_name'])
+            self._set_mtdt_item_text(
+                1, 'Dataset - ' + self.dataset['dataset_name'])
         else:
             self.preview_conditions['dataset_selected'] = False
-
-            self.dlg.listview_dataset.clear()
 
             for key, value in self.dataset.iteritems():
                 dstitem = QListWidgetItem(key + ':    ' + self.none_str)
                 self.dlg.listview_dataset.addItem(dstitem)
 
-            self.dlg.metadata.setItemText(
-                self.dlg.metadata.currentIndex(),
-                'Dataset - ' + self.none_str)
+            self._set_mtdt_item_text(1, 'Dataset - ' + self.none_str)
 
-    def update_project(self):
+        self.settings.setValue('last_dataset_name', curr_dtst)
+
+        self.check_preview_conditions()
+
+    def _set_mtdt_item_text(self, item_index, text):
         """
-        Fetches the project attributes from the database and stores them in the project list. 
+        Sets metadata item text.
+
+        :param item_index: An Item index.
+        :type item_index: int.
+        :param text: A text.
+        :type text: str.
+        """
+
+        self.dlg.metadata.setItemText(item_index, text)
+
+    def _upd_prj_lw(self):
+        """
+        Updates the project list widget according to the current or last
+        dataset.
         """
 
         # get the current project number from the dropdown menu
@@ -2323,7 +2349,10 @@ class NOFAInsert:
             self.dlg.metadata.setItemText(3, 'Reference - None')
 
     def unload(self):
-        """Removes the plugin menu item and icon from QGIS GUI."""
+        """
+        Removes the plugin menu item and icon from QGIS GUI.
+        """
+
         for action in self.actions:
             self.iface.removePluginMenu(
                 self.tr(u'&NOFAInsert'),
@@ -2333,7 +2362,8 @@ class NOFAInsert:
         del self.toolbar
 
     def _get_con_info(self):
-        """Returns a connection information from QSettings.
+        """
+        Returns a connection information from QSettings.
 
         :returns: A connection information dictionary.
         :rtype: dict.
@@ -2349,7 +2379,8 @@ class NOFAInsert:
         return con_info
 
     def get_con(self, con_info):
-        """Returns a connection.
+        """
+        Returns a connection.
 
         :returns: A connection.
         :rtype: psycopg2.connection.
@@ -2361,7 +2392,8 @@ class NOFAInsert:
         return con
 
     def check_nofa_tbls(self):
-        """Checks if the database is NOFA.
+        """
+        Checks if the database is NOFA.
 
         :returns: True when database is NOFA, False otherwise.
         :rtype: bool.
@@ -2386,7 +2418,8 @@ class NOFAInsert:
         return resp
 
     def _get_db_cur(self):
-        """Returns a database cursor.
+        """
+        Returns a database cursor.
         
         :returns: A database cursor.
         :rtype: psycopg2.cursor.
@@ -2412,6 +2445,8 @@ class NOFAInsert:
 
 
         self.pop_dtst_cb()
+        QgsApplication.processEvents()
+        self._upd_dtst()
 
         #####################################
         # get existing projects from db
@@ -2840,17 +2875,6 @@ class NOFAInsert:
         self.dlg.verifiedDate = self.occurrence['verified_date'][self.row_position]
         '''
 
-    def populate_dataset(self):
-        self.dlg.listview_dataset.clear()
-        self.dlg.listview_dataset.setWordWrap(True)
-
-        for key, value in self.dataset.iteritems():
-            if value is not None:
-                dstitem = QListWidgetItem(key + ':    ' + value)
-
-                self.dlg.listview_dataset.addItem(dstitem)
-
-
     def populate_project(self):
         """ 
         Display the attributes of the chosen project in the UI
@@ -2881,7 +2905,6 @@ class NOFAInsert:
 
     def populate_information(self):
 
-        self.populate_dataset()
         self.populate_project()
         self.populate_reference()
 

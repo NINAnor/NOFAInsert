@@ -55,7 +55,8 @@ class ConDlg(QDialog):
         self._setup_self(con_info, stat_bar_msg)
 
     def _setup_self(self, con_info, stat_bar_msg):
-        """Sets up self.
+        """
+        Sets up self.
 
         :param con_info: A connection information.
         :type con_info: dict.
@@ -74,7 +75,8 @@ class ConDlg(QDialog):
         self._build_wdgs(con_info, stat_bar_msg)
 
     def _build_wdgs(self, con_info, stat_bar_msg):
-        """Builds own widgets.
+        """
+        Builds own widgets.
 
         :param con_info: A connection information.
         :type con_info: dict.
@@ -160,7 +162,8 @@ class ConDlg(QDialog):
         self.grid_lyt.addWidget(self.stat_bar, 6, 0, 1, 2)
 
     def _ins_con_info(self, con_info):
-        """Inserts a connection information into line edits.
+        """
+        Inserts a connection information into line edits.
 
         :param con_info: A connection information.
         :type con_info: dict.
@@ -170,7 +173,8 @@ class ConDlg(QDialog):
             conn_le.setText(con_info[conn_str])
 
     def _test_con(self):
-        """Tests a connection.
+        """
+        Tests a connection.
         """
 
         msg_dur = 5000
@@ -210,7 +214,8 @@ class ConDlg(QDialog):
             self._enable_wdgs(True)
 
     def _get_con_info_le(self):
-        """Returns a connection information from line edits.
+        """
+        Returns a connection information from line edits.
 
         :returns: A connection information dictionary.
         :rtype: dict.
@@ -224,7 +229,8 @@ class ConDlg(QDialog):
         return con_info
 
     def _save_con_info(self, con_info):
-        """Saves a connection information to QSettings.
+        """
+        Saves a connection information to QSettings.
 
         :param con_info: A connection information.
         :type con_info: dict.
