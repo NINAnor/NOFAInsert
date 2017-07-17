@@ -217,6 +217,9 @@
            <property name="text">
             <string>dateStart</string>
            </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
           </widget>
          </item>
          <item row="16" column="0" colspan="2">
@@ -273,6 +276,9 @@
           <widget class="QLabel" name="label_22">
            <property name="text">
             <string>dateEnd</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
