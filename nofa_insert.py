@@ -1286,16 +1286,16 @@ class NOFAInsert:
         self.prwdlg.show()
 
         self.container = [
-                          self.event,
-                          self.dataset,
-                          self.project,
-                          self.reference]
+            self.event,
+            self.dataset,
+            self.project,
+            self.reference]
 
         listWidget_list = [
-                           self.prwdlg.listWidget_4,
-                           self.prwdlg.listWidget_5,
-                           self.prwdlg.listWidget_6,
-                           self.prwdlg.listWidget_7]
+            self.prwdlg.listWidget_4,
+            self.prwdlg.listWidget_5,
+            self.prwdlg.listWidget_6,
+            self.prwdlg.listWidget_7]
 
         # Set the locations
         for elem in self.locations['location']:
@@ -1568,15 +1568,17 @@ class NOFAInsert:
                 try:
                     project = int(self.project['project_id'])
                 except:
-                    QMessageBox.information(None, "DEBUG:",
-                                                'The type of project id is wrong. Should be integer')
+                    QMessageBox.information(
+                        None, "DEBUG:",
+                        'The type of project id is wrong. Should be integer')
                     return
 
             elif isinstance(self.project['project_id'], unicode):
                 try:
                     project = int(self.project['project_id'])
                 except:
-                    QMessageBox.information(None, "DEBUG:", 'Problem with project id')
+                    QMessageBox.information(
+                        None, "DEBUG:", 'Problem with project id')
                     # self.project['project_id'] = 0
                     #project = int(self.project['project_id'])
             #elif self.project['project_id'] is None:
@@ -1652,8 +1654,9 @@ class NOFAInsert:
             # Adding taxonomic coverage for a given event
 
             for tax in self.taxonomicc:
-                cur.execute(u"""SELECT "taxonID" FROM nofa."l_taxon" WHERE "%s" = '%s';""",
-                            (self.species_names[self.language], tax,))
+                cur.execute(
+                    u"""SELECT "taxonID" FROM nofa."l_taxon" WHERE "%s" = '%s';""",
+                    (self.species_names[self.language], tax,))
                 taxon = cur.fetchone()
                 #QMessageBox.information(None, "DEBUG:", 'taxon is: ' + str(taxon[0]))
                 cur = self._get_db_cur()
@@ -1916,11 +1919,19 @@ class NOFAInsert:
 
         cur = self._get_db_cur()
 
-        insert_project = cur.mogrify("""INSERT INTO nofa.m_project({}) VALUES {} RETURNING "projectID" """.format(
-            self.insert_project_columns,
-            self.project_values
-        ), (new_id, project_name, project_number, start_year.year(), end_year.year(), project_leader, project_members,
-            organisation, financer, remarks,))
+        insert_project = cur.mogrify(
+            """
+            INSERT INTO    nofa.m_project({})
+            VALUES         {}
+            RETURNING      "projectID"
+            """
+            .format(
+                self.insert_project_columns,
+                self.project_values), (
+                    new_id, project_name, project_number,
+                    start_year.year(), end_year.year(),
+                    project_leader, project_members,
+                    organisation, financer, remarks,))
 
         #QMessageBox.information(None, "DEBUG:", insert_project)
 
@@ -1934,10 +1945,13 @@ class NOFAInsert:
 
         cur = self._get_db_cur()
 
-        insert_project_log = cur.mogrify("INSERT INTO nofa.plugin_project_log({}) VALUES {}".format(
-            self.insert_log_project_columns,
-            self.log_project_values,
-        ), (returned, True, self.username,))
+        insert_project_log = cur.mogrify(
+            """
+            INSERT INTO    nofa.plugin_project_log({})
+            VALUES         {}
+            """.format(
+                self.insert_log_project_columns,
+                self.log_project_values,), (returned, True, self.username,))
 
         #QMessageBox.information(None, "DEBUG:", insert_project_log)
 
@@ -2005,11 +2019,17 @@ class NOFAInsert:
 
         cur = self._get_db_cur()
 
-        insert_reference = cur.mogrify("""INSERT INTO nofa.m_reference({}) VALUES {} RETURNING "referenceID" """.format(
-            self.insert_reference_columns,
-            self.reference_values
-        ), (new_r_id, doi, author, reference_type, int(year.year()), title, journal_name,
-            volume, date.toPyDate(), issn, isbn, page,))
+        insert_reference = cur.mogrify(
+            """
+            INSERT INTO    nofa.m_reference({})
+            VALUES         {}
+            RETURNING      "referenceID"
+            """.format(
+                self.insert_reference_columns,
+                self.reference_values), (
+                    new_r_id, doi, author, reference_type, int(year.year()),
+                    title, journal_name, volume, date.toPyDate(),
+                    issn, isbn, page,))
 
         #QMessageBox.information(None, "DEBUG:", insert_reference)
 
