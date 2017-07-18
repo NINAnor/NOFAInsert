@@ -310,8 +310,8 @@ class NOFAInsert:
             'project_id': 'None',
             'project_name': 'None',
             'project_number': 'None',
-            'start_year': unicode(self.year),
-            'end_year': unicode(self.year),
+            'start_year': 'None',
+            'end_year': 'None',
             'leader': 'None',
             'members': 'None',
             'organisation': 'None',
@@ -367,6 +367,10 @@ class NOFAInsert:
             "username",
             "insert_time",
             "update_time"]
+
+        self.dash_split_str = u' - '
+        self.dtst_str = u'Dataset'
+        self.prj_str = u'Project'
 
         # temporary list, to replace the currently empty table l_occurrenceStatus. Will be used in the occurrence status dropdown
         self.occurrence_status = [
@@ -467,7 +471,7 @@ class NOFAInsert:
 
 
         self.dlg.existingDataset.activated.connect(self._upd_dtst_lw)
-        self.dlg.existingProject.currentIndexChanged.connect(self._upd_prj_lw)
+        self.dlg.existingProject.activated.connect(self._upd_prj_lw)
         self.dlg.existingReference.currentIndexChanged.connect(self.update_reference)
 
         self.dlg.insert_button.clicked.connect(self.preview)
@@ -2064,7 +2068,7 @@ class NOFAInsert:
 
         cur.execute(insert_project_log)
 
-        self.get_existing_projects()
+        self._pop_proj_cb()
 
 
 
@@ -2166,26 +2170,32 @@ class NOFAInsert:
         Updates a dataset according to the last selected.
         """
 
-        last_dtst = self.settings.value('last_dataset_name', self.sel_str)
+        dtst_id_name = self.settings.value('dataset_id_name', self.sel_str)
 
-        last_dtst_index = self.dlg.existingDataset.findText(last_dtst)
+        dtst_cb_index = self.dlg.existingDataset.findText(dtst_id_name)
 
-        self.dlg.existingDataset.setCurrentIndex(last_dtst_index)
+        self.dlg.existingDataset.setCurrentIndex(dtst_cb_index)
 
-        self._upd_dtst_lw(last_dtst)
+        self._upd_dtst_lw(dtst_id_name)
 
-    def _upd_dtst_lw(self, curr_dtst):
+    def _upd_dtst_lw(self, dtst_id_name):
         """
         Updates the dataset list widget according to the current or last
         dataset.
+
+        :param dtst_id_name: A dataset ID and name "<dataset> - <name>".
+        :type dtst_id_name: str.
         """
 
-        if isinstance(curr_dtst, int):
-            curr_dtst = self.dlg.existingDataset.currentText()
+        if isinstance(dtst_id_name, int):
+            dtst_id_name = self.dlg.existingDataset.currentText()
+
+        split_dtst_id_name = dtst_id_name.split(self.dash_split_str)
+        dtst_id = split_dtst_id_name[0]
 
         self.dlg.listview_dataset.clear()
 
-        if curr_dtst != self.sel_str:
+        if dtst_id != self.sel_str:
             self.preview_conditions['dataset_selected'] = True
 
             cur = self._get_db_cur()
@@ -2201,37 +2211,46 @@ class NOFAInsert:
                             "informationWithheld",
                             "dataGeneralizations"
                 FROM        nofa."m_dataset"
-                WHERE       "datasetName" = (%s);
+                WHERE       "datasetID" = (%s);
                 ''',
-                (curr_dtst,))
-            dtst_list = cur.fetchone()
+                (dtst_id,))
+            dtst = cur.fetchone()
 
-            self.dataset['dataset_id'] = dtst_list[0]
-            self.dataset['dataset_name'] = dtst_list[1]
-            self.dataset['rightsholder'] = dtst_list[2]
-            self.dataset['owner_institution'] = dtst_list[3]
-            self.dataset['license'] = dtst_list[4]
-            self.dataset['citation'] = dtst_list[5]
-            self.dataset['comment'] = dtst_list[6]
-            self.dataset['information'] = dtst_list[7]
-            self.dataset['generalizations'] = dtst_list[8]
+            self.dataset['dataset_id'] = dtst[0]
+            self.dataset['dataset_name'] = dtst[1]
+            self.dataset['rightsholder'] = dtst[2]
+            self.dataset['owner_institution'] = dtst[3]
+            self.dataset['license'] = dtst[4]
+            self.dataset['citation'] = dtst[5]
+            self.dataset['comment'] = dtst[6]
+            self.dataset['information'] = dtst[7]
+            self.dataset['generalizations'] = dtst[8]
 
             for key, value in self.dataset.iteritems():
-                dstitem = QListWidgetItem(key + ':    ' + str(value))
-                self.dlg.listview_dataset.addItem(dstitem)
+                dtst_item = QListWidgetItem(key + ':    ' + unicode(value))
+                self.dlg.listview_dataset.addItem(dtst_item)
 
             self._set_mtdt_item_text(
-                1, 'Dataset - ' + self.dataset['dataset_name'])
+                1,
+                u'{}{}{}'.format(
+                    self.dtst_str,
+                    self.dash_split_str,
+                    self.dataset['dataset_name']))
         else:
             self.preview_conditions['dataset_selected'] = False
 
             for key, value in self.dataset.iteritems():
-                dstitem = QListWidgetItem(key + ':    ' + self.none_str)
-                self.dlg.listview_dataset.addItem(dstitem)
+                dtst_item = QListWidgetItem(key + ':    ' + self.none_str)
+                self.dlg.listview_dataset.addItem(dtst_item)
 
-            self._set_mtdt_item_text(1, 'Dataset - ' + self.none_str)
+            self._set_mtdt_item_text(
+                1,
+                u'{}{}{}'.format(
+                    self.dtst_str,
+                    self.dash_split_str,
+                    self.none_str))
 
-        self.settings.setValue('last_dataset_name', curr_dtst)
+        self.settings.setValue('dataset_id_name', dtst_id_name)
 
         self.check_preview_conditions()
 
@@ -2247,55 +2266,96 @@ class NOFAInsert:
 
         self.dlg.metadata.setItemText(item_index, text)
 
-    def _upd_prj_lw(self):
+    def _upd_prj(self):
+        """
+        Updates a project according to the last selected.
+        """
+
+        proj_id_name = self.settings.value('project_id_name', self.sel_str)
+
+        proj_cb_index = self.dlg.existingProject.findText(proj_id_name)
+
+        self.dlg.existingProject.setCurrentIndex(proj_cb_index)
+
+        self._upd_prj_lw(proj_id_name)
+
+    def _upd_prj_lw(self, prj_id_name):
         """
         Updates the project list widget according to the current or last
         dataset.
+        
+        :param prj_id_name: A project ID and name "<project> - <name>".
+        :type prj_id_name: str.
         """
 
-        # get the current project number from the dropdown menu
-        current_index = self.dlg.existingProject.currentIndex()
-        current_project_number = self.project_list[current_index][0]
+        if isinstance(prj_id_name, int):
+            prj_id_name = self.dlg.existingProject.currentText()
 
-        if current_project_number != 'None' and current_project_number != '':
+        split_prj_id_name = prj_id_name.split(self.dash_split_str)
+        prj_id = split_prj_id_name[0]
 
+        self.dlg.listview_project.clear()
+
+        if prj_id != self.sel_str:
             self.preview_conditions['project_selected'] = True
-            self.check_preview_conditions()
 
             cur = self._get_db_cur()
             cur.execute(
-                u'SELECT "projectNumber", "projectName", "startYear", "endYear", "projectLeader", '
-                u'"projectMembers", "organisation", "financer", "remarks", "projectID" '
-                u'FROM nofa."m_project" WHERE "projectNumber" = (%s);', (current_project_number,))
-            project = cur.fetchone()
+                '''
+                SELECT      "projectNumber",
+                            "projectName",
+                            "startYear",
+                            "endYear",
+                            "projectLeader",
+                            "projectMembers",
+                            "organisation",
+                            "financer",
+                            "remarks",
+                            "projectID"
+                FROM        nofa."m_project"
+                WHERE       "projectID" = (%s);
+                ''',
+                (prj_id,))
+            prj = cur.fetchone()
 
-        # Create a python-list from query result
+            self.project['project_number'] = unicode(prj[0])
+            self.project['project_name'] = prj[1]
+            self.project['start_year'] = unicode(prj[2])
+            self.project['end_year'] = unicode(prj[3])
+            self.project['project_leader'] = prj[4]
+            self.project['members'] = prj[5]
+            self.project['organisation'] = prj[6]
+            self.project['financer'] = prj[7]
+            self.project['project_remarks'] = prj[8]
+            self.project['project_id'] = prj[9]
 
-            self.project['project_number'] = unicode(project[0])
-            self.project['project_name'] = project[1]
-            self.project['start_year'] = unicode(project[2])
-            self.project['end_year'] = unicode(project[3])
-            self.project['project_leader'] = project[4]
-            self.project['members'] = project[5]
-            self.project['organisation'] = project[6]
-            self.project['financer'] = project[7]
-            self.project['project_remarks'] = project[8]
-            self.project['project_id'] = project[9]
-
-            self.dlg.listview_project.clear()
             for key, value in self.project.iteritems():
-                if value is not None:
-                    prjitem = QListWidgetItem(key + ':    ' + unicode(value))
-                else:
-                    prjitem = QListWidgetItem(key + ':    None')
+                prj_item = QListWidgetItem(key + ':    ' + unicode(value))
+                self.dlg.listview_project.addItem(prj_item)
 
-                self.dlg.listview_project.addItem(prjitem)
+            self._set_mtdt_item_text(
+                2,
+                u'{}{}{}'.format(
+                    self.prj_str,
+                    self.dash_split_str,
+                    self.project['project_name']))
+        else:
+            self.preview_conditions['project_selected'] = False
 
-            self.dlg.metadata.setItemText(2, 'Project - ' + self.project['project_name'])
+            for key, value in self.dataset.iteritems():
+                prj_item = QListWidgetItem(key + ':    ' + self.none_str)
+                self.dlg.listview_project.addItem(prj_item)
 
-        elif self.dlg.existingProject.currentText() == 'None':
-            self.dlg.listview_project.clear()
-            self.dlg.metadata.setItemText(2, 'Project - None')
+            self._set_mtdt_item_text(
+                2,
+                u'{}{}{}'.format(
+                    self.prj_str,
+                    self.dash_split_str,
+                    self.none_str))
+
+        self.settings.setValue('project_id_name', prj_id_name)
+
+        self.check_preview_conditions()
 
     def update_reference(self):
 
@@ -2444,13 +2504,13 @@ class NOFAInsert:
     def fetch_db(self):
 
 
-        self.pop_dtst_cb()
+        self._pop_dtst_cb()
         QgsApplication.processEvents()
         self._upd_dtst()
 
-        #####################################
-        # get existing projects from db
-        self.get_existing_projects()
+        self._pop_prj_cb()
+        QgsApplication.processEvents()
+        self._upd_prj()
 
         #####################################
 
@@ -2741,61 +2801,49 @@ class NOFAInsert:
 
         '''
 
-    def pop_dtst_cb(self):
-        """Populates dataset combo box.
+    def _pop_dtst_cb(self):
+        """
+        Populates the dataset combo box.
         """
 
         cur = self._get_db_cur()
         cur.execute(
             '''
-            SELECT      "datasetName" dsn
+            SELECT      "datasetID" dsid,
+                        "datasetName" dsn
             FROM        nofa."m_dataset"
             ORDER BY    dsn;
             ''')
         dtsts = cur.fetchall()
 
-        dtst_list = [d[0] for d in dtsts]
-        dtst_list.insert(0, 'Select')
+        dtst_list = [
+            '{}{}{}'.format(d[0], self.dash_split_str, d[1]) for d in dtsts]
+        dtst_list.insert(0, self.sel_str)
 
         self.dlg.existingDataset.clear()
         self.dlg.existingDataset.addItems(dtst_list)
 
-    def get_existing_projects(self):
+    def _pop_prj_cb(self):
+        """
+        Populates the project combo box.
+        """
 
-        # Get existingProjects from database
         cur = self._get_db_cur()
-        cur.execute(u'SELECT "projectID", "projectNumber", "projectName" FROM nofa."m_project";')
+        cur.execute(
+            '''
+            SELECT      "projectID" pid,
+                        "projectName"
+            FROM        nofa."m_project"
+            ORDER BY    pid;
+            ''')
         projects = cur.fetchall()
 
-        # Create a global list from query result (a list of lists)
-        self.project_list = [[p[1], p[2]] for p in projects]
-
-        # Inject sorted python-list for existingProjects into UI
-        # sort by project_number
-        self.project_list = sorted(self.project_list, key= lambda p: p[0])
-
-        self.project_list.insert(0, ['None','None'])
+        proj_list = [
+            '{}{}{}'.format(p[0], self.dash_split_str, p[1]) for p in projects]
+        proj_list.insert(0, self.sel_str)
 
         self.dlg.existingProject.clear()
-
-        # create list that shows project number and name
-        project_list_display = [u'{0} {1}'.format(p[0], p[1]) for p in self.project_list]
-
-        # add this list to the UI
-        self.dlg.existingProject.addItems(project_list_display)
-
-        try:
-            # convert project_number and project_name to a list like it is stored in self.project_list
-            current_project_nr_name = [self.project['project_number'] , self.project['project_name']]
-
-            # find index of current project
-            current_project_index = self.project_list.index(current_project_nr_name)
-
-            # set drop-down menu to current project
-            self.dlg.existingProject.setCurrentIndex(current_project_index)
-        except:
-            self.dlg.existingProject.setCurrentIndex(0)
-
+        self.dlg.existingProject.addItems(proj_list)
 
     def get_existing_references(self):
 
@@ -2905,7 +2953,6 @@ class NOFAInsert:
 
     def populate_information(self):
 
-        self.populate_project()
         self.populate_reference()
 
     def create_occurrence_table(self):
