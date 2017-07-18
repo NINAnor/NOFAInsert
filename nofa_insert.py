@@ -381,18 +381,6 @@ class NOFAInsert:
             'unknown', 'increasing', 'decrasing', 'stable',
             'extinction', 'introduction', 're-introduction']
 
-        '''
-        # collect the multiple data and metadata containers into a single object, a dictionary of dictionaries/lists.
-        self.container = {'locations': self.locations,
-                          'occurrence': self.occurrence,
-                          'taxonomicc': self.taxonomicc,
-                          'event': self.event,
-                          'dataset': self.dataset,
-                          'project': self.project,
-                          'reference': self.reference}
-        '''
-        # noinspection PyMethodMayBeStatic
-
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
 
@@ -1034,23 +1022,6 @@ class NOFAInsert:
         self.datadlg = DatasetDialog()
         self.datadlg.show()
 
-        '''
-        # Get existingDatasets from database
-        cur = self._get_db_cur()
-        cur.execute(u'SELECT "datasetID", "datasetName" FROM nofa."m_dataset";')
-        datasets = cur.fetchall()
-
-        # Create a python-list from query result
-        datasetID_list = [d[0] for d in datasets]
-        dataset_list = [d[1] for d in datasets]
-
-        # Inject sorted python-list for existingDatasets into UI
-        dataset_list.sort()
-        dataset_list.insert(0, 'None')
-        self.datadlg.existingDataset.clear()
-        self.datadlg.existingDataset.addItems(dataset_list)
-        self.datadlg.existingDataset.setCurrentIndex(dataset_list.index("None"))
-        '''
         ##################################################################
 
         self.datadlg.rightsHolder.clear()
@@ -1086,11 +1057,6 @@ class NOFAInsert:
         dataset_comment = self.datadlg.datasetComment.toPlainText()
         information_withheld = self.datadlg.informationWithheld.toPlainText()
         data_generalizations = self.datadlg.dataGeneralizations.toPlainText()
-
-        '''QMessageBox.information(None, "DEBUG:", unicode(rights_holder + ' ' + owner_institution + ' ' +  dataset_name + ' ' +  access_rights + ' ' +
-                                                    bibliographic_citation + ' ' +  dataset_comment + ' ' +  information_withheld + ' ' +
-                                                    data_generalizations))
-        '''
 
         cur = self._get_db_cur()
         cur.execute(u'SELECT max("datasetID") FROM nofa.m_dataset;')
@@ -1135,49 +1101,7 @@ class NOFAInsert:
 
         cur.execute(insert_dataset_log)
 
-
-        '''
-
-        self.insert_dataset = u"""INSERT INTO nofa.m_dataset ("rightsHolder", "ownerInstitutionCode",
-                                    "datasetName", "accessRights", "license", "bibliographicCitation", "datasetComment",
-                                    "informationWithheld", "dataGeneralization")
-                                    VALUES\n"""
-
-        self.insert_log_dataset_columns = u""""dataset_id", "test",
-                                    "username", "insert_timestamp", "update_timestamp""""
-
-         query = cursor.mogrify("INSERT INTO {} ({}) VALUES {} RETURNING {}".format(
-            table,
-            ', '.join(keys),
-            ', '.join(['%s'] * len(values)),
-            id_column
-        ), [tuple(v.values()) for v in values])
-
-        self.insert_log_dataset = u"""INSERT INTO nofa.plugin_dataset_log ("dataset_id", "test",
-                                    "username", "insert_timestamp", "update_timestamp")
-                                    VALUES\n"""
-
-        cur = self._get_db_cur()
-        insert_log_dataset = self.insert_log_dataset
-        insert_log_dataset += cur.mogrify(self.log_occurrence_values,
-                                             (unicode(occurrence_id), unicode(event_id), self.dataset['dataset_id'],
-                                              self.project['project_id'],
-                                              self.reference['reference_id'], loc, True, self.username,
-                                              ))
-        cur.execute(insert_log_occurrence)
-
-        sql_string = "INSERT INTO domes_hundred (name,name_slug,status) VALUES (%s,%s,%s) RETURNING id;"
-
-        '''
-
     def get_location(self):
-        '''
-        Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
-        'coordinates UTM33':    '196098.1000    6572796.0100    Dam Grønnerød,194572.6100    6575712.0100    Dam Løberg'
-                                '194572.6100    6575712.0100    løberg dam, 136210.9600    6497277.7500    Springvannsdamm, 149719.5000    6506063.2800    DamKilsund'
-
-
-        '''
 
         # initialise data and metadata containers:
         self.locations = {'location_ID': [],
@@ -1292,21 +1216,6 @@ class NOFAInsert:
 
                     cur = self._get_db_cur()
                     srid = type
-
-                    '''
-
-                                               Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
-                                               'coordinates UTM33':    196098.1000    6572796.0100    Dam Grønnerød,194572.6100    6575712.0100    Dam Løberg
-                                                                       194572.6100    6575712.0100    løberg dam, 136210.9600    6497277.7500    Springvannsdamm, 149719.5000    6506063.2800    DamKilsund
-                                                                       -43893.189 6620749.358 Vågavatnet, 194572.6100    6575712.0100    Dam Løberg
-                                                                       262491.48    6651383.97    Akerselva,272567.61    6651129.3    nuggerudbk,342561.74    6792178.06    Våråna,379904.34    6791377.43    Storbekken,377548.06    6791361.56    Nesvollbekken
-
-                                               'coordinates UTM32':    601404.85    6644928.24    Hovinbk; 580033.012    6633807.99    Drengsrudbk;580322.6    6632959.64    Askerleva;658472.23    6842698.72    Engeråa;652499.37    6802699.72    Bruråsbk;
-                                                                       634422.28    6788379.28    Flåtestøbk;633855.79    6792859.46    Rødsbakkbk;630580.08    6785079.49    Ygla;628663.92    6785056.12    Svarttjernbk;629047.03    6785047.57    Vesl Ygla;
-                                                                       634687.42    6814177.67    Pottbekken;630348.1    6801364.63    Ullsettbk;
-                                                                       627139.64    6803681.51    Grønvollbk;530415.53    6722441.27    Åslielva;549629.28    6642631.88    Overnbek;
-                                       '''
-
 
                     point = "ST_Transform(ST_GeomFromText('POINT({0} {1})', {2}), 25833)".format(x, y, srid)
 
@@ -1498,15 +1407,6 @@ class NOFAInsert:
                 point = "MULTIPOINT({0} {1})".format(loc[1], loc[2])
                 geom_orig = "ST_GeometryFromText('{0}', {1})".format(point, unicode(loc[3]))
                 geom = "ST_Transform({}, 25833)".format(geom_orig)
-                #QMessageBox.information(None, "DEBUG:", geom)
-
-
-                #QMessageBox.information(None, "DEBUG:", str((self.insert_location, (loc[0], location_type, geom, loc[4], 'test',))))
-
-                # Insert any new location into the DB
-
-                #QMessageBox.information(None, "DEBUG:", "insert_location is: " + self.insert_location)
-                #QMessageBox.information(None, "DEBUG:", str(type(loc[0])))
 
                 location_columns = u""" "locationID", "locationType", geom, "waterBody", "locationRemarks" """
                 #location_values = '%s, %s, %s, %s, %s'
@@ -1535,77 +1435,9 @@ class NOFAInsert:
                 except:
                     QMessageBox.information(None, "DEBUG:", unicode('problem inserting the new locations to location log db'))
 
-
-
-                    '''
-
-                            Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
-                            'coordinates UTM33':    196098.1000    6572796.0100    Dam Grønnerød,194572.6100    6575712.0100    Dam Løberg
-                                                    194572.6100    6575712.0100    løberg dam, 136210.9600    6497277.7500    Springvannsdamm, 149719.5000    6506063.2800    DamKilsund
-                                                    -43893.189 6620749.358 Vågavatnet, 194572.6100    6575712.0100    Dam Løberg
-                                                    262491.48    6651383.97    Akerselva,272567.61    6651129.3    nuggerudbk,342561.74    6792178.06    Våråna,379904.34    6791377.43    Storbekken,377548.06    6791361.56    Nesvollbekken
-
-                            'coordinates UTM32':    601404.85    6644928.24    Hovinbk; 580033.012    6633807.99    Drengsrudbk;580322.6    6632959.64    Askerleva;658472.23    6842698.72    Engeråa;652499.37    6802699.72    Bruråsbk;
-                                                    634422.28    6788379.28    Flåtestøbk;633855.79    6792859.46    Rødsbakkbk;630580.08    6785079.49    Ygla;628663.92    6785056.12    Svarttjernbk;629047.03    6785047.57    Vesl Ygla;
-                                                    634687.42    6814177.67    Pottbekken;630348.1    6801364.63    Ullsettbk;
-                                                    627139.64    6803681.51    Grønvollbk;530415.53    6722441.27    Åslielva;549629.28    6642631.88    Overnbek;
-                    '''
-
-                '''
-
-                 insert_project = cur.mogrify("""INSERT INTO nofa.m_project({}) VALUES {} RETURNING "projectID" """.format(
-            self.insert_project_columns,
-            self.project_values
-        ), (new_id, project_name, project_number, start_year.year(), end_year.year(), project_leader, project_members,
-            organisation, financer, remarks,))
-
-                self.insert_location = """INSERT INTO nofa.location ("locationID", "locationType", geom, "waterBody", "locationRemarks") VALUES (%s, %s, %s, %s, %s);"""
-
-
-                try:
-                    QMessageBox.information(None, "DEBUG:", "insert_location is: " + self.insert_location)
-                    QMessageBox.information(None, "DEBUG:", loc[0])
-                    cur.execute(self.insert_location, (loc[0], location_type, geom, loc[4], 'test'))
-
-                    # Keep track of the insertion in the location log table
-                    try:
-                        cur = self._get_db_cur()
-                        insert_location_log = cur.mogrify("INSERT INTO nofa.plugin_location_log({}) VALUES {}".format(
-                            self.insert_log_location_columns,
-                            self.log_location_values,
-                        ), (loc[0], True, self.username, loc[4]))
-
-                        cur.execute(insert_location_log)
-
-                        QMessageBox.information(None, "DEBUG:", "occurrence correctly stored in NOFA db")
-                    except:
-                        QMessageBox.information(None, "DEBUG:", unicode('problem inserting the new locations to location log db'))
-
-
-                except:
-                    QMessageBox.information(None, "DEBUG:", unicode('problem inserting the new locations to db'))
-                '''
-
         # add a new event to nofa.events fore each location
         for i, loc in enumerate(self.locations['location_ID']):
-            #QMessageBox.information(None, "DEBUG:", str('in the event loop'))
-            #QMessageBox.information(None, "DEBUG:", str(self.locations))
-            #QMessageBox.information(None, "DEBUG:", str(type(self.locations['location_ID'][i])))
-            # generate an UUID for the event
             event_id = uuid.uuid4()
-
-
-            #QMessageBox.information(None, "DEBUG:", str(self.dataset['dataset_id'] + self.reference['reference_id'] +
-                                                        #self.project['project_id']))
-            # insert_event = self.insert_event
-
-            #loc_uuid = uuid.UUID(loc)
-            #event_uuid = uuid.UUID(str(event_id)).urn
-            #QMessageBox.information(None, "DEBUG:", str(type(loc_uuid)))
-
-           # QMessageBox.information(None, "DEBUG:", 'before ' + str((loc, event_id, self.event['size_value'], self.event['protocol_remarks'], self.event['recorded_by'], self.event['protocol'], self.event['reliability'], self.event['date_start'], self.event['date_end'], self.event['event_remarks'], self.event['size_unit'], self.event['effort'], self.dataset['dataset_id'], self.reference['reference_id'], self.project['project_id'], 'test')))
-            ## NB - last entry, 'test', going to fieldNotes, is just for testing purposes
-
 
             if self.event['protocol_remarks'] is None:
                 QMessageBox.information(None, "DEBUG:", "protocol remarks is empty")
@@ -1908,66 +1740,6 @@ class NOFAInsert:
                 # cur.execute(insert_log_occurrence)
 
         QMessageBox.information(None, "DEBUG:", "occurrences correctly stored in NOFA db")
-
-        '''
-            self.insert_occurrence = u"""INSERT INTO nofa.occurrence ("occurrenceID",
-                                    "ecotypeID", "establishmentMeans", "verifiedBy", "verifiedDate", "taxonID",
-                                    "spawningLocation", "spawningCondition", "occurrenceStatus",
-                                    "yearPrecisionRemarks", "organismQuantityID",
-                                    "occurrenceRemarks", "modified", "establishmentRemarks", "eventID", "fieldNumber")
-                                    VALUES\n"""
-
-
-                        self.insert_event = u"""INSERT INTO nofa.event ("locationID", "eventID", "fieldNotes",
-                            "sampleSizeValue", "fieldNumber", "samplingProtocolRemarks", "recordedBy",
-                            "samplingProtocol", "reliability", "dateStart", "dateEnd", "eventRemarks",
-                            "sampleSizeUnit", "samplingEffort", "datasetID", "referenceID", "projectID")
-                            VALUES\n"""
-
-        # 17 event values, placeholders
-        self.event_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-
-        self.occurrence = {'taxon': ['Select', ],
-                           'ecotype': ['Select', ],
-                           'quantity': ['Select', ],
-                           'status': ['True', ],
-                           'oc_remarks': ['None', ],
-                           'est_means': ['Select', ],
-                           'est_remarks': ['None', ],
-                           'spawn_con': ['unknown', ],
-                           'spawn_loc': ['unknown', ],
-                           'verified_by': ['Nobody', ],
-                           'verified_date': [unicode(self.today), ],
-                           'yearprecision_remarks': ['None', ]
-                           }
-
-         self.event = {'protocol': 'unknown',
-                      'size_value': 'unknown',
-                      'size_unit': 'None',
-                      'effort': 'unknown',
-                      'protocol_remarks': 'None',
-                      'date_start': self.today,
-                      'date_end': self.today,
-                      'recorded_by': 'unknown',
-                      'event_remarks': 'None',
-                      'reliability': 'Select'
-                      }
-
-                                    Norwegian VatLnr: 1241, 3067, 5616, 5627, 10688, 10719, 10732, 22480, 23086, 129180, 129182, 129209, 129219, 129444, 163449, 205354
-                                    'coordinates UTM33':    196098.1000    6572796.0100    Dam Grønnerød,194572.6100    6575712.0100    Dam Løberg
-                                                            194572.6100    6575712.0100    løberg dam, 136210.9600    6497277.7500    Springvannsdamm, 149719.5000    6506063.2800    DamKilsund
-                                                            -43893.189 6620749.358 Vågavatnet, 194572.6100    6575712.0100    Dam Løberg
-                                                            262491.48    6651383.97    Akerselva,272567.61    6651129.3    nuggerudbk,342561.74    6792178.06    Våråna,379904.34    6791377.43    Storbekken,377548.06    6791361.56    Nesvollbekken
-
-                                    'coordinates UTM32':    601404.85    6644928.24    Hovinbk;580033.012    6633807.99    Drengsrudbk;580322.6    6632959.64    Askerleva;658472.23    6842698.72    Engeråa;652499.37    6802699.72    Bruråsbk;
-                                                            634422.28    6788379.28    Flåtestøbk;633855.79    6792859.46    Rødsbakkbk;630580.08    6785079.49    Ygla;628663.92    6785056.12    Svarttjernbk;629047.03    6785047.57    Vesl Ygla;
-                                                            634687.42    6814177.67    Pottbekken;630348.1    6801364.63    Ullsettbk;
-                                                            627139.64    6803681.51    Grønvollbk;530415.53    6722441.27    Åslielva;549629.28    6642631.88    Overnbek;
-                            '''
-
-
-
-
 
     def open_project_dialog(self):
         """On button click opens the Project Metadata Editing Dialog"""
