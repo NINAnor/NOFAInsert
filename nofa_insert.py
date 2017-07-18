@@ -320,14 +320,12 @@ class NOFAInsert:
 
         self.reference = {
             'reference_id': 'None',
-            'doi': 'None',
             'authors': 'None',
             'reference_type': 'None',
-            'year': unicode(self.year),
+            'year': 'None',
             'title': 'None',
             'journal': 'None',
             'volume': 'None',
-            'date': unicode(self.today),
             'issn': 'None',
             'isbn': 'None',
             'page': 'None'}
@@ -369,8 +367,10 @@ class NOFAInsert:
             "update_time"]
 
         self.dash_split_str = u' - '
+        self.at_split_str = u'@'
         self.dtst_str = u'Dataset'
         self.prj_str = u'Project'
+        self.ref_str = u'Reference'
 
         # temporary list, to replace the currently empty table l_occurrenceStatus. Will be used in the occurrence status dropdown
         self.occurrence_status = [
@@ -472,7 +472,7 @@ class NOFAInsert:
 
         self.dlg.existingDataset.activated.connect(self._upd_dtst_lw)
         self.dlg.existingProject.activated.connect(self._upd_prj_lw)
-        self.dlg.existingReference.currentIndexChanged.connect(self.update_reference)
+        self.dlg.existingReference.activated.connect(self._upd_ref_lw)
 
         self.dlg.insert_button.clicked.connect(self.preview)
 
@@ -2190,8 +2190,7 @@ class NOFAInsert:
         if isinstance(dtst_id_name, int):
             dtst_id_name = self.dlg.existingDataset.currentText()
 
-        split_dtst_id_name = dtst_id_name.split(self.dash_split_str)
-        dtst_id = split_dtst_id_name[0]
+        dtst_id = dtst_id_name.split(self.dash_split_str)[0]
 
         self.dlg.listview_dataset.clear()
 
@@ -2282,7 +2281,7 @@ class NOFAInsert:
     def _upd_prj_lw(self, prj_id_name):
         """
         Updates the project list widget according to the current or last
-        dataset.
+        project.
         
         :param prj_id_name: A project ID and name "<project> - <name>".
         :type prj_id_name: str.
@@ -2291,8 +2290,7 @@ class NOFAInsert:
         if isinstance(prj_id_name, int):
             prj_id_name = self.dlg.existingProject.currentText()
 
-        split_prj_id_name = prj_id_name.split(self.dash_split_str)
-        prj_id = split_prj_id_name[0]
+        prj_id = prj_id_name.split(self.dash_split_str)[0]
 
         self.dlg.listview_project.clear()
 
@@ -2354,6 +2352,96 @@ class NOFAInsert:
                     self.none_str))
 
         self.settings.setValue('project_id_name', prj_id_name)
+
+        self.check_preview_conditions()
+
+    def _upd_ref(self):
+        """
+        Updates a reference according to the last selected.
+        """
+
+        ref_au_til_id = self.settings.value('reference_au_til_id', self.sel_str)
+
+        ref_cb_index = self.dlg.existingReference.findText(ref_au_til_id)
+
+        self.dlg.existingReference.setCurrentIndex(ref_cb_index)
+
+        self._upd_ref_lw(ref_au_til_id)
+
+    def _upd_ref_lw(self, ref_au_til_id):
+        """
+        Updates the reference list widget according to the current or last
+        reference.
+        
+        :param ref_au_til_id: A reference author title and ID
+            "<author>: <title> @<ID>".
+        :type ref_au_til_id: str.
+        """
+
+        if isinstance(ref_au_til_id, int):
+            ref_au_til_id = self.dlg.existingReference.currentText()
+
+        if ref_au_til_id == self.sel_str:
+            ref_id = self.sel_str
+        else:
+            ref_id = ref_au_til_id.split(self.at_split_str)[1]
+
+        self.dlg.listview_reference.clear()
+
+        if ref_id != self.sel_str:
+            cur = self._get_db_cur()
+            cur.execute(
+                '''
+                SELECT      "referenceID",
+                            "author",
+                            "referenceType",
+                            "year",
+                            "titel",
+                            "journalName",
+                            "volume",
+                            "issn",
+                            "isbn",
+                            "page"
+                FROM        nofa."m_reference"
+                WHERE       "referenceID" = (%s);
+                ''',
+                (ref_id,))
+            ref = cur.fetchone()
+
+            self.reference['reference_id'] = ref[0]
+            self.reference['authors'] = unicode(ref[1])
+            self.reference['reference_type'] = unicode(ref[2])
+            self.reference['year'] = unicode(ref[3])
+            self.reference['title'] = unicode(ref[4])
+            self.reference['journal'] = unicode(ref[5])
+            self.reference['volume'] = unicode(ref[6])
+            self.reference['issn'] = unicode(ref[7])
+            self.reference['isbn'] = unicode(ref[8])
+            self.reference['page'] = unicode(ref[9])
+
+            for key, value in self.reference.iteritems():
+                ref_item = QListWidgetItem(key + ':    ' + unicode(value))
+                self.dlg.listview_reference.addItem(ref_item)
+
+            self._set_mtdt_item_text(
+                3,
+                u'{}{}{}'.format(
+                    self.ref_str,
+                    self.dash_split_str,
+                    self.reference['title']))
+        else:
+            for key, value in self.dataset.iteritems():
+                ref_item = QListWidgetItem(key + ':    ' + self.none_str)
+                self.dlg.listview_reference.addItem(ref_item)
+
+            self._set_mtdt_item_text(
+                3,
+                u'{}{}{}'.format(
+                    self.ref_str,
+                    self.dash_split_str,
+                    self.none_str))
+
+        self.settings.setValue('reference_au_til_id', ref_au_til_id)
 
         self.check_preview_conditions()
 
@@ -2503,7 +2591,6 @@ class NOFAInsert:
 
     def fetch_db(self):
 
-
         self._pop_dtst_cb()
         QgsApplication.processEvents()
         self._upd_dtst()
@@ -2512,9 +2599,9 @@ class NOFAInsert:
         QgsApplication.processEvents()
         self._upd_prj()
 
-        #####################################
-
-        self.get_existing_references()
+        self._pop_ref_cb()
+        QgsApplication.processEvents()
+        self._upd_ref()
 
         #########################################
         # Get taxon list
@@ -2817,7 +2904,7 @@ class NOFAInsert:
         dtsts = cur.fetchall()
 
         dtst_list = [
-            '{}{}{}'.format(d[0], self.dash_split_str, d[1]) for d in dtsts]
+            u'{}{}{}'.format(d[0], self.dash_split_str, d[1]) for d in dtsts]
         dtst_list.insert(0, self.sel_str)
 
         self.dlg.existingDataset.clear()
@@ -2836,14 +2923,35 @@ class NOFAInsert:
             FROM        nofa."m_project"
             ORDER BY    pid;
             ''')
-        projects = cur.fetchall()
+        prjs = cur.fetchall()
 
         proj_list = [
-            '{}{}{}'.format(p[0], self.dash_split_str, p[1]) for p in projects]
+            u'{}{}{}'.format(p[0], self.dash_split_str, p[1]) for p in prjs]
         proj_list.insert(0, self.sel_str)
 
         self.dlg.existingProject.clear()
         self.dlg.existingProject.addItems(proj_list)
+
+    def _pop_ref_cb(self):
+        """
+        Populates the reference combo box.
+        """
+
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT      "referenceID",
+                        "author",
+                        "titel"
+            FROM        nofa."m_reference";
+            ''')
+        refs = cur.fetchall()
+
+        ref_list = [u'{0}: {1} @{2}'.format(r[1], r[2], r[0]) for r in refs]
+        ref_list.insert(0, self.sel_str)
+
+        self.dlg.existingReference.clear()
+        self.dlg.existingReference.addItems(ref_list)
 
     def get_existing_references(self):
 
@@ -3092,7 +3200,7 @@ class NOFAInsert:
             return
 
         self.fetch_db()
-        self.populate_information()
+        # self.populate_information()
         self.create_occurrence_table()
         # show the dialog
         self.dlg.show()
