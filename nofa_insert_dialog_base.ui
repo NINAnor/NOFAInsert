@@ -105,45 +105,16 @@
       <attribute name="label">
        <string>Event</string>
       </attribute>
-      <widget class="QGroupBox" name="event">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>0</y>
-         <width>401</width>
-         <height>551</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="title">
-        <string>Event</string>
-       </property>
-       <widget class="QWidget" name="gridLayoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>20</y>
-          <width>361</width>
-          <height>425</height>
-         </rect>
-        </property>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="0" column="0">
         <layout class="QGridLayout" name="gridLayout">
-         <item row="5" column="1">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinimumSize</enum>
+         </property>
+         <item row="3" column="1">
           <widget class="QLineEdit" name="samplingEffort"/>
          </item>
-         <item row="18" column="0">
+         <item row="8" column="0">
           <widget class="QLabel" name="label_51">
            <property name="text">
             <string>reliability</string>
@@ -153,33 +124,20 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0" colspan="2">
-          <widget class="QLabel" name="label_43">
-           <property name="text">
-            <string>samplingProtocolRemarks</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
+         <item row="1" column="1">
           <widget class="QLineEdit" name="sampleSizeValue"/>
          </item>
-         <item row="2" column="1">
-          <widget class="QComboBox" name="samplingProtocol"/>
-         </item>
-         <item row="7" column="0" colspan="2">
-          <widget class="QLineEdit" name="samplingProtocolRemarks">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>48</height>
-            </size>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="samplingProtocol">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
            </property>
           </widget>
          </item>
-         <item row="15" column="1">
+         <item row="6" column="1">
           <widget class="QLineEdit" name="recordedBy_e"/>
          </item>
-         <item row="2" column="0">
+         <item row="0" column="0">
           <widget class="QLabel" name="label_50">
            <property name="text">
             <string>samplingProtocol</string>
@@ -189,7 +147,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
+         <item row="1" column="0">
           <widget class="QLabel" name="label_49">
            <property name="text">
             <string>sampleSizeValue</string>
@@ -199,7 +157,7 @@
            </property>
           </widget>
          </item>
-         <item row="15" column="0">
+         <item row="6" column="0">
           <widget class="QLabel" name="label_46">
            <property name="text">
             <string>recordedBy</string>
@@ -209,27 +167,14 @@
            </property>
           </widget>
          </item>
-         <item row="18" column="1">
-          <widget class="QComboBox" name="reliability"/>
-         </item>
-         <item row="13" column="0">
-          <widget class="QLabel" name="label_17">
-           <property name="text">
-            <string>dateStart</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <item row="8" column="1">
+          <widget class="QComboBox" name="reliability">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
            </property>
           </widget>
          </item>
-         <item row="16" column="0" colspan="2">
-          <widget class="QLabel" name="label_42">
-           <property name="text">
-            <string>eventRemarks</string>
-           </property>
-          </widget>
-         </item>
-         <item row="14" column="1">
+         <item row="5" column="1">
           <widget class="QDateEdit" name="dateEnd">
            <property name="displayFormat">
             <string>yyyy-MM-dd</string>
@@ -239,20 +184,14 @@
            </property>
           </widget>
          </item>
-         <item row="17" column="0" colspan="2">
-          <widget class="QLineEdit" name="eventRemarks">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>48</height>
-            </size>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="sampleSizeUnit">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
-          <widget class="QComboBox" name="sampleSizeUnit"/>
-         </item>
-         <item row="4" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="label_48">
            <property name="text">
             <string>sampleSizeUnit</string>
@@ -262,7 +201,7 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
+         <item row="3" column="0">
           <widget class="QLabel" name="label_47">
            <property name="text">
             <string>samplingEffort</string>
@@ -272,7 +211,7 @@
            </property>
           </widget>
          </item>
-         <item row="14" column="0">
+         <item row="5" column="0">
           <widget class="QLabel" name="label_22">
            <property name="text">
             <string>dateEnd</string>
@@ -282,7 +221,7 @@
            </property>
           </widget>
          </item>
-         <item row="13" column="1">
+         <item row="4" column="1">
           <widget class="QDateEdit" name="dateStart">
            <property name="displayFormat">
             <string>yyyy-MM-dd</string>
@@ -292,9 +231,45 @@
            </property>
           </widget>
          </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_17">
+           <property name="text">
+            <string>dateStart</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_42">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>eventRemarks</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QLineEdit" name="eventRemarks">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>48</height>
+            </size>
+           </property>
+          </widget>
+         </item>
         </layout>
-       </widget>
-      </widget>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="toolBoxPage2">
       <property name="geometry">
@@ -308,68 +283,48 @@
       <attribute name="label">
        <string>Dataset - None</string>
       </attribute>
-      <widget class="QLabel" name="label_edit_dataset">
-       <property name="geometry">
-        <rect>
-         <x>70</x>
-         <y>388</y>
-         <width>161</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Insert a new dataset</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="editDatasetButton">
-       <property name="geometry">
-        <rect>
-         <x>240</x>
-         <y>390</y>
-         <width>151</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Add a dataset</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_choose_dataset">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>358</y>
-         <width>141</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Choose existing dataset</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="existingDataset">
-       <property name="geometry">
-        <rect>
-         <x>150</x>
-         <y>358</y>
-         <width>251</width>
-         <height>21</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QListWidget" name="listview_dataset">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>391</width>
-         <height>341</height>
-        </rect>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,1,0">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinimumSize</enum>
+         </property>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="existingDataset">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_choose_dataset">
+           <property name="text">
+            <string>Dataset</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="editDatasetButton">
+           <property name="text">
+            <string>Add</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="3">
+          <widget class="QListWidget" name="listview_dataset"/>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="toolBoxPage3">
       <property name="geometry">
@@ -383,68 +338,45 @@
       <attribute name="label">
        <string>Project - None</string>
       </attribute>
-      <widget class="QPushButton" name="editProjectButton">
-       <property name="geometry">
-        <rect>
-         <x>220</x>
-         <y>370</y>
-         <width>151</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Add a project</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_3">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>370</y>
-         <width>161</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Insert a new project</string>
-       </property>
-      </widget>
-      <widget class="QListWidget" name="listview_project">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>391</width>
-         <height>321</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_choose_project">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>339</y>
-         <width>121</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Choose existing project</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="existingProject">
-       <property name="geometry">
-        <rect>
-         <x>150</x>
-         <y>340</y>
-         <width>236</width>
-         <height>18</height>
-        </rect>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout_9">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_8" columnstretch="0,1,0">
+         <item row="1" column="2">
+          <widget class="QPushButton" name="editProjectButton">
+           <property name="text">
+            <string>Add</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_choose_project">
+           <property name="text">
+            <string>Project</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="existingProject">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="3">
+          <widget class="QListWidget" name="listview_project"/>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="toolBoxPage4">
       <property name="geometry">
@@ -458,68 +390,39 @@
       <attribute name="label">
        <string>Reference - None</string>
       </attribute>
-      <widget class="QLabel" name="label_4">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>360</y>
-         <width>181</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Insert a new reference</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="edit_reference_button">
-       <property name="geometry">
-        <rect>
-         <x>230</x>
-         <y>360</y>
-         <width>141</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Add a Reference</string>
-       </property>
-      </widget>
-      <widget class="QListWidget" name="listview_reference">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>0</y>
-         <width>391</width>
-         <height>321</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_choose_project_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>330</y>
-         <width>141</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Choose existing reference</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="existingReference">
-       <property name="geometry">
-        <rect>
-         <x>180</x>
-         <y>330</y>
-         <width>201</width>
-         <height>21</height>
-        </rect>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout_11">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_10" columnstretch="0,1,0">
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_choose_project_2">
+           <property name="text">
+            <string>Reference</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="existingReference">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="edit_reference_button">
+           <property name="text">
+            <string>Add</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="3">
+          <widget class="QListWidget" name="listview_reference"/>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QGroupBox" name="reference_6">

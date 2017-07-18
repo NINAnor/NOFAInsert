@@ -1383,7 +1383,6 @@ class NOFAInsert:
         self.event['size_value'] = self.dlg.sampleSizeValue.text()
         self.event['size_unit'] = self.dlg.sampleSizeUnit.currentText()
         self.event['effort'] = self.dlg.samplingEffort.text()
-        self.event['protocol_remarks'] = self.dlg.samplingProtocolRemarks.text()
         #self.event['date_start'] = self.dlg.dateStart.date().toString()
         self.event['date_start'] = self.dlg.dateStart.date()
         #self.event['date_end'] = self.dlg.dateEnd.date().toString()
