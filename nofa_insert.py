@@ -2001,7 +2001,7 @@ class NOFAInsert:
                 self.dlg.listview_dataset.addItem(dtst_item)
 
             self._set_mtdt_item_text(
-                1,
+                2,
                 u'{}{}{}'.format(
                     self.dtst_str,
                     self.dash_split_str,
@@ -2014,7 +2014,7 @@ class NOFAInsert:
                 self.dlg.listview_dataset.addItem(dtst_item)
 
             self._set_mtdt_item_text(
-                1,
+                2,
                 u'{}{}{}'.format(
                     self.dtst_str,
                     self.dash_split_str,
@@ -2103,7 +2103,7 @@ class NOFAInsert:
                 self.dlg.listview_project.addItem(prj_item)
 
             self._set_mtdt_item_text(
-                2,
+                3,
                 u'{}{}{}'.format(
                     self.prj_str,
                     self.dash_split_str,
@@ -2116,7 +2116,7 @@ class NOFAInsert:
                 self.dlg.listview_project.addItem(prj_item)
 
             self._set_mtdt_item_text(
-                2,
+                3,
                 u'{}{}{}'.format(
                     self.prj_str,
                     self.dash_split_str,
@@ -2195,7 +2195,7 @@ class NOFAInsert:
                 self.dlg.listview_reference.addItem(ref_item)
 
             self._set_mtdt_item_text(
-                3,
+                4,
                 u'{}{}{}'.format(
                     self.ref_str,
                     self.dash_split_str,
@@ -2206,7 +2206,7 @@ class NOFAInsert:
                 self.dlg.listview_reference.addItem(ref_item)
 
             self._set_mtdt_item_text(
-                3,
+                4,
                 u'{}{}{}'.format(
                     self.ref_str,
                     self.dash_split_str,
