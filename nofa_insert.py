@@ -34,7 +34,7 @@ from qgis.core import *
 
 import resources
 
-from nofa import con_dlg
+from nofa import con_dlg, dtst_dlg
 
 from nofa_insert_dialog import NOFAInsertDialog
 from dataset_dialog import DatasetDialog
@@ -442,7 +442,7 @@ class NOFAInsert:
 
         self.dlg.insert_button.setStyleSheet("background-color: #F6CECE")
 
-        self.dlg.editDatasetButton.clicked.connect(self._open_dataset_dialog)
+        self.dlg.editDatasetButton.clicked.connect(self._open_dtst_dlg)
         self.dlg.editProjectButton.clicked.connect(self.open_project_dialog)
         self.dlg.edit_reference_button.clicked.connect(self.open_reference_dialog)
 
@@ -924,7 +924,7 @@ class NOFAInsert:
                             "update_timestamp" '
                 FROM        nofa.plugin_occurrence_log
                 WHERE       "username" = %s AND "insert_timestamp"
-                                BETWEEN %s AND %s
+                            BETWEEN %s AND %s
                 ''',
                 (username, time_from.toPyDate(), time_to.toPyDate(),))
         except:
@@ -980,89 +980,13 @@ class NOFAInsert:
                             newchild = child.child(n)
                             newchild.setCheckState(0, Qt.Unchecked)
 
-    def _open_dataset_dialog(self):
-        """On button click opens the Dataset Metadata Editing Dialog"""
-        self.datadlg = DatasetDialog()
-        self.datadlg.show()
-
-        ##################################################################
-
-        self.datadlg.rightsHolder.clear()
-        self.datadlg.rightsHolder.addItems(self.institution_list)
-        self.datadlg.ownerInstitutionCode.clear()
-        self.datadlg.ownerInstitutionCode.addItems(self.institution_list)
-
-
-        #################################################################
-
-
-        # Add licences
-        license_list = ['None', 'NLOD', 'CC-0', 'CC-BY 4.0']
-        license_list.sort()
-        self.datadlg.license.clear()
-        self.datadlg.license.addItems(license_list)
-
-
-
-        ################################################################
-        # connect the Ok button in dataset dialog to the insert dataset function
-        self.datadlg.dataset_dialog_button.clicked.connect(self.dataset_button)
-
-    def dataset_button(self):
-        #QMessageBox.information(None, "DEBUG:", str("dataset button pressed"))
-
-        rights_holder = self.datadlg.rightsHolder.currentText()
-        owner_institution = self.datadlg.ownerInstitutionCode.currentText()
-        dataset_name = self.datadlg.datasetName.text()
-        access_rights = self.datadlg.accessRights.text()
-        license = self.datadlg.license.currentText()
-        bibliographic_citation = self.datadlg.bibliographicCitation.toPlainText()
-        dataset_comment = self.datadlg.datasetComment.toPlainText()
-        information_withheld = self.datadlg.informationWithheld.toPlainText()
-        data_generalizations = self.datadlg.dataGeneralizations.toPlainText()
-
-        cur = self._get_db_cur()
-        cur.execute(u'SELECT max("datasetID") FROM nofa.m_dataset;')
-        max_dataset_id = cur.fetchone()[0]
-        #QMessageBox.information(None, "DEBUG:", str(max_dataset_id))
-        new_d_id = max_dataset_id + 1
-
-
-        cur = self._get_db_cur()
-
-        insert_dataset = cur.mogrify("""INSERT INTO nofa.m_dataset({}) VALUES {} RETURNING "datasetID" """.format(
-            self.insert_dataset_columns,
-            self.dataset_values
-        ), (new_d_id, rights_holder, owner_institution, dataset_name, access_rights, license, bibliographic_citation,
-            dataset_comment, information_withheld, data_generalizations,))
-
-        """insert_dataset += cur.mogrify(self.dataset_values, (rights_holder, owner_institution, dataset_name, access_rights,
-                                           license, bibliographic_citation, dataset_comment, information_withheld,
-                                           data_generalizations,))
+    def _open_dtst_dlg(self):
+        """
+        Opens a dialog for adding a new dataset.
         """
 
-
-
-        #QMessageBox.information(None, "DEBUG:", insert_dataset)
-
-        cur.execute(insert_dataset)
-
-        returned = cur.fetchone()[0]
-        #QMessageBox.information(None, "DEBUG:", str(returned))
-
-        ##################
-        # Insert a dataset log entry
-
-        cur = self._get_db_cur()
-
-        insert_dataset_log = cur.mogrify("INSERT INTO nofa.plugin_dataset_log({}) VALUES {}".format(
-            self.insert_log_dataset_columns,
-            self.log_dataset_values,
-        ), (returned, True, self.username,))
-
-        #QMessageBox.information(None, "DEBUG:", insert_dataset_log)
-
-        cur.execute(insert_dataset_log)
+        self.dtstDlg = dtst_dlg.DtstDlg(self)
+        self.dtstDlg.show()
 
     def get_location(self):
 
@@ -2914,18 +2838,5 @@ class NOFAInsert:
             return
 
         self.fetch_db()
-        # self.populate_information()
         self.create_occurrence_table()
-        # show the dialog
         self.dlg.show()
-        # Run the dialog event loop
-        result = self.dlg.exec_()
-        # See if OK was pressed
-        if result:
-            # Do something useful here - delete the line containing pass and
-            # substitute with your code.
-            pass
-
-####################################
-#***********************************
-####################################
