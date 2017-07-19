@@ -237,17 +237,6 @@ class NOFAInsert:
             'coordinates UTM32': 25832,
             'coordinates UTM33': 25833,}
 
-
-        self.ecotypes = {
-            26164: ['Salmon', 'Landlocked Salmon', 'Relict Salmon'],
-            26165: ['Brown trout', 'Anadromous Brown Trout',
-                    'Big Piscivorous Brown Trout','Fine-spotted Brown Trout',
-                    'Danish River Trout'],
-            26167: ['Arctic Charr', 'Anadromous Arctic Charr',
-                    'Arctic Charr Dwarf', 'Saimaa Arctic Charr'],
-            26175: ['Vendace', 'Spring Spawning Vendace'],
-            26176: ['Whitefish', 'Plankton Whitefish']}
-
         self.occurrence_base = {
             'taxon': 'Select',
             'ecotype': 'Select',
@@ -490,7 +479,7 @@ class NOFAInsert:
         # history tab is disabled
         self.dlg.tabWidget.setTabEnabled(1, False)
 
-        self.dlg.taxonID.currentIndexChanged.connect(self.look_for_ecotype)
+        self.dlg.taxonID.currentIndexChanged.connect(self._pop_ectp_cb)
 
         # taxonomic coverage treewidget parent item changed
         self.dlg.taxonomicCoverage.itemChanged.connect(self.checked_tree)
@@ -960,32 +949,6 @@ class NOFAInsert:
 
                 # setItem(row, column, QTableWidgetItem)
                 self.dlg.tableWidget_occurrences.setItem(l, n, newitem)
-
-    def look_for_ecotype(self):
-        taxon_name = self.dlg.taxonID.currentText()
-        #QMessageBox.information(None, "DEBUG:", taxon_name)
-
-        if taxon_name is not None and taxon_name not in ("Select"):
-
-            cur = self._get_db_cur()
-
-
-            string = u"""SELECT "taxonID" FROM nofa."l_taxon" WHERE "{0}" = '{1}';""".format(self.species_names[self.language], taxon_name)
-            cur.execute(string)
-            taxon = cur.fetchone()[0]
-
-            if taxon in self.ecotypes:
-                ecotypes_list = [e for e in self.ecotypes[taxon]]
-
-            # QMessageBox.information(None, "DEBUG:", str(ecotypes_list))
-            # Inject sorted python-list for ecotypes into UI
-                ecotypes_list.sort()
-                ecotypes_list.insert(0, 'None')
-                self.dlg.ecotypeID.clear()
-                self.dlg.ecotypeID.addItems(ecotypes_list)
-            else:
-                self.dlg.ecotypeID.clear()
-                self.dlg.ecotypeID.addItems(['None',])
 
     def checked_tree(self, item):
         """Checking/Unchecking taxa based on hierarchical groups.
@@ -1614,22 +1577,21 @@ class NOFAInsert:
                 #QMessageBox.information(None, "DEBUG:", str(self.occurrence))
                 occurrence_id = uuid.uuid4()
 
+                ectp = self.dlg.ecotypeID.currentText()
 
-                if self.occurrence['ecotype'][m] == 'None':
+                if ectp == self.sel_str:
                     ecotype_id = None
                 else:
                     cur = self._get_db_cur()
-                    query = u"""SELECT "ecotypeID" FROM nofa."l_ecotype" WHERE "vernacularName" = '{}';""".format(
-                        self.occurrence['ecotype'][m])
-                    #QMessageBox.information(None, "DEBUG:", str(query))
-                    cur.execute(query)
+                    cur.execute = (
+                        """
+                        SELECT      "ecotypeID"
+                        FROM        nofa."l_ecotype"
+                        WHERE       "vernacularName" = %s;
+                        """,
+                        (ectp,))
 
                     ecotype_id = cur.fetchone()[0]
-
-
-                # change type of date in a uitable one for postgres
-                #verified_date = self.occurrence['verified_date'][m].toPyDate()
-
 
                 if self.occurrence['taxon'][m] == 'Select':
                     #QMessageBox.information(None, "DEBUG:", 'Please select a a taxon ID for your occurrence entry')
@@ -2216,57 +2178,6 @@ class NOFAInsert:
 
         self.check_preview_conditions()
 
-    def update_reference(self):
-
-        currentref= self.dlg.existingReference.currentText()
-        #QMessageBox.information(None, "DEBUG:", str(currentref))
-
-        #QMessageBox.information(None, "DEBUG:", str(currentproject_number))
-
-        if currentref != 'None' and currentref != '' and currentref != None:
-            currentref_number = currentref.split('@')[1]
-            cur = self._get_db_cur()
-            cur.execute(
-                u'SELECT "referenceID", "doi", "author", "referenceType", "year", '
-                u'"titel", "journalName", "volume", "date", "issn", "isbn", "page" '
-                u'FROM nofa."m_reference" WHERE "referenceID" = (%s);', (currentref_number,))
-            ref = cur.fetchone()
-            #QMessageBox.information(None, "DEBUG:", str(project))
-
-
-            # Create a python-list from query result
-
-            self.reference['reference_id'] = unicode(ref[0])
-            self.reference['doi'] = unicode(ref[1])
-            self.reference['authors'] = unicode(ref[2])
-            self.reference['reference_type'] = unicode(ref[3])
-            self.reference['year'] = unicode(ref[4])
-            self.reference['title'] = unicode(ref[5])
-            self.reference['journal'] = unicode(ref[6])
-            self.reference['volume'] = unicode(ref[7])
-            self.reference['date'] = unicode(ref[8])
-            self.reference['issn'] = unicode(ref[9])
-            self.reference['isbn'] = unicode(ref[10])
-            self.reference['page'] = unicode(ref[11])
-
-            self.dlg.listview_reference.clear()
-            for key, value in self.reference.iteritems():
-                if value is not None:
-                    refitem = QListWidgetItem(key + ':    ' + value)
-                else:
-                    refitem = QListWidgetItem(key + ':    None')
-
-                self.dlg.listview_reference.addItem(refitem)
-
-            # Title should have constraint UNIQUE. Or, we should choose another option for visualizing
-            if self.reference['title'] is not None and self.reference['title'] != 'None':
-                self.dlg.metadata.setItemText(3, 'Reference - ' + self.reference['title'])
-            else:
-                self.dlg.metadata.setItemText(3, 'Reference - title not available')
-        elif currentref == 'None':
-            self.dlg.listview_reference.clear()
-            self.dlg.metadata.setItemText(3, 'Reference - None')
-
     def unload(self):
         """
         Removes the plugin menu item and icon from QGIS GUI.
@@ -2373,23 +2284,8 @@ class NOFAInsert:
         self._pop_ref_cb()
         QgsApplication.processEvents()
         self._upd_ref()
-
-        #########################################
-        # Get taxon list
-        cur = self._get_db_cur()
-
-        cur.execute(u"""SELECT "{0}" FROM nofa.l_taxon WHERE "taxonRank" IN ('species', 'hybrid', 'genus')  GROUP BY "{0}" ;""".format(self.species_names[self.language]))
-        species = cur.fetchall()
-
-        # Create a python-list from query result
-        species_list = [s[0] for s in species]
-
-        # Inject sorted python-list for species into UI
-        species_list.sort()
-        species_list.insert(0, 'Select')
-        self.dlg.taxonID.clear()
-        self.dlg.taxonID.addItems(species_list)
-        #QMessageBox.information(None, "DEBUG:", str(species_list))
+        
+        self._pop_txn_cb()
 
         #################################
         '''
@@ -2723,6 +2619,53 @@ class NOFAInsert:
 
         self.dlg.existingReference.clear()
         self.dlg.existingReference.addItems(ref_list)
+
+    def _pop_txn_cb(self):
+        """
+        Populates the taxon combo box.
+        """
+
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT      "scientificName" sn
+            FROM        nofa.l_taxon
+            WHERE       "taxonRank" IN ('species', 'hybrid', 'genus')
+            ORDER BY    sn
+            ''')
+        txns = cur.fetchall()
+
+        txn_list = [t[0] for t in txns]
+        txn_list.insert(0, self.sel_str)
+
+        self.dlg.taxonID.clear()
+        self.dlg.taxonID.addItems(txn_list)
+
+    def _pop_ectp_cb(self):
+        """
+        Populates the ecotype combo box.
+        """
+
+        txn_name = self.dlg.taxonID.currentText()
+
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT      e."vernacularName" vn
+            FROM        nofa.l_ecotype e
+                        JOIN
+                        nofa.l_taxon t ON e."taxonID" = t."taxonID"
+            WHERE       t."scientificName" = %s
+            ORDER BY    vn;
+            ''',
+            (txn_name,))
+        ectps = cur.fetchall()
+
+        ectp_list = [e[0] for e in ectps]
+        ectp_list.insert(0, self.sel_str)
+
+        self.dlg.ecotypeID.clear()
+        self.dlg.ecotypeID.addItems(ectp_list)
 
     def get_existing_references(self):
 
