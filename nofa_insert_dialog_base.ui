@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1156</width>
+    <width>1221</width>
     <height>751</height>
    </rect>
   </property>
@@ -60,10 +60,30 @@
                <enum>QLayout::SetMinimumSize</enum>
               </property>
               <item row="1" column="1">
-               <widget class="QComboBox" name="organismQuantityID"/>
+               <widget class="QComboBox" name="organismQuantityID">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="sizeAdjustPolicy">
+                 <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                </property>
+               </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QComboBox" name="taxonID"/>
+               <widget class="QComboBox" name="taxonID">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="sizeAdjustPolicy">
+                 <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                </property>
+               </widget>
               </item>
               <item row="1" column="2">
                <widget class="QLabel" name="label_103">
@@ -163,7 +183,17 @@
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QComboBox" name="status"/>
+               <widget class="QComboBox" name="status">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="sizeAdjustPolicy">
+                 <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                </property>
+               </widget>
               </item>
               <item row="2" column="2">
                <widget class="QLabel" name="label_105">
@@ -291,6 +321,9 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="sizeAdjustPolicy">
+                 <enum>QComboBox::AdjustToMinimumContentsLength</enum>
                 </property>
                </widget>
               </item>
@@ -670,7 +703,7 @@
               <x>0</x>
               <y>0</y>
               <width>239</width>
-              <height>338</height>
+              <height>525</height>
              </rect>
             </property>
             <attribute name="label">
@@ -906,7 +939,7 @@
               <x>0</x>
               <y>0</y>
               <width>276</width>
-              <height>245</height>
+              <height>525</height>
              </rect>
             </property>
             <attribute name="label">
@@ -961,7 +994,7 @@
               <x>0</x>
               <y>0</y>
               <width>276</width>
-              <height>245</height>
+              <height>525</height>
              </rect>
             </property>
             <attribute name="label">
@@ -1016,7 +1049,7 @@
               <x>0</x>
               <y>0</y>
               <width>276</width>
-              <height>245</height>
+              <height>525</height>
              </rect>
             </property>
             <attribute name="label">
