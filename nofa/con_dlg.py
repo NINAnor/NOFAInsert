@@ -33,7 +33,8 @@ import psycopg2
 
 
 class ConDlg(QDialog):
-    """A connection dialog for setting database connection parameters.
+    """
+    A connection dialog for setting database connection parameters.
     """
 
     def __init__(self, mw, con_info, stat_bar_msg):
@@ -66,11 +67,11 @@ class ConDlg(QDialog):
 
         self.setObjectName(u'ConnDlg')
 
+        self.setWindowTitle(u'Connection Information')
+
         self.grid_lyt = QGridLayout(self)
         self.grid_lyt.setObjectName(u'grid_lyt')
         self.grid_lyt.setColumnMinimumWidth(1, 300)
-
-        self.setWindowTitle(u'Connection Information')
 
         self._build_wdgs(con_info, stat_bar_msg)
 
