@@ -29,8 +29,6 @@ from PyQt4.QtGui import (
     QPlainTextEdit, QHBoxLayout, QPushButton, QStatusBar, QDateEdit,
     QIntValidator)
 
-import uuid
-
 
 class PrjDlg(QDialog):
     """
