@@ -34,10 +34,9 @@ from qgis.core import *
 
 import resources
 
-from nofa import con_dlg, dtst_dlg, prj_dlg
+from nofa import con_dlg, dtst_dlg, prj_dlg, ref_dlg
 
 from nofa_insert_dialog import NOFAInsertDialog
-from reference_dialog import ReferenceDialog
 from preview_dialog import PreviewDialog
 
 from collections import defaultdict
@@ -442,12 +441,12 @@ class NOFAInsert:
 
         self.dlg.editDatasetButton.clicked.connect(self._open_dtst_dlg)
         self.dlg.editProjectButton.clicked.connect(self._open_prj_dlg)
-        self.dlg.edit_reference_button.clicked.connect(self.open_reference_dialog)
+        self.dlg.edit_reference_button.clicked.connect(self._open_ref_dlg)
 
 
         self.dlg.dtst_cb.activated.connect(self._upd_dtst_lw)
         self.dlg.prj_cb.activated.connect(self._upd_prj_lw)
-        self.dlg.existingReference.activated.connect(self._upd_ref_lw)
+        self.dlg.ref_cb.activated.connect(self._upd_ref_lw)
 
         self.dlg.insert_button.clicked.connect(self.preview)
 
@@ -993,6 +992,14 @@ class NOFAInsert:
 
         self.prj_dlg = prj_dlg.PrjDlg(self)
         self.prj_dlg.show()
+
+    def _open_ref_dlg(self):
+        """
+        Opens a dialog for adding a new reference.
+        """
+
+        self.ref_dlg = ref_dlg.RefDlg(self)
+        self.ref_dlg.show()
 
     def get_location(self):
 
@@ -1935,16 +1942,18 @@ class NOFAInsert:
 
         self.check_preview_conditions()
 
-    def _upd_ref(self):
+    def upd_ref(self, ref_au_til_id=None):
         """
         Updates a reference according to the last selected.
         """
 
-        ref_au_til_id = self.settings.value('reference_au_til_id', self.sel_str)
+        if not ref_au_til_id:
+            ref_au_til_id = self.settings.value(
+                'reference_au_til_id', self.sel_str)
 
-        ref_cb_index = self.dlg.existingReference.findText(ref_au_til_id)
+        ref_cb_index = self.dlg.ref_cb.findText(ref_au_til_id)
 
-        self.dlg.existingReference.setCurrentIndex(ref_cb_index)
+        self.dlg.ref_cb.setCurrentIndex(ref_cb_index)
 
         self._upd_ref_lw(ref_au_til_id)
 
@@ -1959,8 +1968,8 @@ class NOFAInsert:
         """
 
         if isinstance(ref_au_til_id, int):
-            ref_au_til_id = self.dlg.existingReference.currentText()
-
+            ref_au_til_id = self.dlg.ref_cb.currentText()
+        QgsMessageLog.logMessage(unicode(ref_au_til_id), 'test')
         if ref_au_til_id == self.sel_str:
             ref_id = self.sel_str
         else:
@@ -1969,6 +1978,7 @@ class NOFAInsert:
         self.dlg.listview_reference.clear()
 
         if ref_id != self.sel_str:
+            QgsMessageLog.logMessage(str(ref_id), 'test')
             cur = self._get_db_cur()
             cur.execute(
                 '''
@@ -2128,9 +2138,9 @@ class NOFAInsert:
         QgsApplication.processEvents()
         self.upd_prj()
 
-        self._pop_ref_cb()
+        self.pop_ref_cb()
         QgsApplication.processEvents()
-        self._upd_ref()
+        self.upd_ref()
         
         self._pop_txn_cb()
 
@@ -2478,7 +2488,7 @@ class NOFAInsert:
 
         return prj_str
 
-    def _pop_ref_cb(self):
+    def pop_ref_cb(self):
         """
         Populates the reference combo box.
         """
@@ -2489,15 +2499,32 @@ class NOFAInsert:
             SELECT      "referenceID",
                         "author",
                         "titel"
-            FROM        nofa."m_reference";
+            FROM        nofa."m_reference"
+            ORDER BY    "author", "titel";
             ''')
         refs = cur.fetchall()
 
-        ref_list = [u'{0}: {1} @{2}'.format(r[1], r[2], r[0]) for r in refs]
+        ref_list = [self.get_ref_str(r[1], r[2], r[0]) for r in refs]
         ref_list.insert(0, self.sel_str)
 
-        self.dlg.existingReference.clear()
-        self.dlg.existingReference.addItems(ref_list)
+        self.dlg.ref_cb.clear()
+        self.dlg.ref_cb.addItems(ref_list)
+
+    def get_ref_str(self, au, ttl, id):
+        """
+        Returns a reference string "<author>: <title> @<id>".
+
+        :param au: A reference author.
+        :type au: str.
+        :param ttl: A reference title.
+        :type ttl: str.
+        :param id: A reference ID.
+        :type id: str.
+        """
+
+        ref_str = u'{}: {} @{}'.format(au, ttl, id)
+        
+        return ref_str
 
     def _pop_txn_cb(self):
         """
@@ -2546,33 +2573,6 @@ class NOFAInsert:
         self.dlg.ecotypeID.clear()
         self.dlg.ecotypeID.addItems(ectp_list)
 
-    def get_existing_references(self):
-
-        # Get existingReference from database
-        cur = self._get_db_cur()
-
-        cur.execute(u'SELECT "referenceID", "author", "titel" FROM nofa."m_reference";')
-        references = cur.fetchall()
-
-        # Create a python-list from query result
-
-        reference_list = [u'{0}: {1} @{2}'.format(r[1], r[2], r[0]) for r in references]
-        reference_title_list = [r[1] for r in references]
-        reference_title_list.insert(0, 'None')
-
-        # Inject sorted python-list for existingProjects into UI
-        reference_list.sort()
-        reference_list.insert(0, 'None')
-        self.dlg.existingReference.clear()
-        self.dlg.existingReference.addItems(reference_list)
-        self.dlg.existingReference.setEditable(True)
-        self.dlg.existingReference.completer().setCompletionMode(QCompleter.PopupCompletion)
-        #self.dlg.existingReference.setCurrentIndex(reference_list.index("None"))
-
-        self.dlg.existingReference.setCurrentIndex(reference_title_list.index(self.reference['authors']))
-
-        #QMessageBox.information(None, "DEBUG:", str(reference_title_list.index(self.reference['authors'])))
-
     def update_occurrence(self):
         """syncs the occurrence form with the chosen row of the occurrence table"""
 
@@ -2618,43 +2618,6 @@ class NOFAInsert:
         self.dlg.occurrence_number.setText(str(self.row_position + 1))
         self.dlg.occurrence_number.setStyleSheet('color: black')
         # self.dlg.frame.setStyleSheet('color: white')
-
-
-        '''
-        self.dlg.verifiedDate = self.occurrence['verified_date'][self.row_position]
-        '''
-
-    def populate_project(self):
-        """ 
-        Display the attributes of the chosen project in the UI
-        """
-
-        #self.project['organisation'] = "Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text Veeeery long text"
-        self.dlg.listview_project.clear()
-        self.dlg.listview_project.setWordWrap(True)
-        self.dlg.listview_project.setTextElideMode(Qt.ElideNone)
-        #self.dlg.listview_project.setStyleSheet("QListWidget::item { border: 0.5px solid black }")
-
-        for key, value in self.project.iteritems():
-            if value is not None:
-                prjitem = QListWidgetItem(key + ':    ' + unicode(value))
-
-                self.dlg.listview_project.addItem(prjitem)
-
-    def populate_reference(self):
-
-        self.dlg.listview_reference.clear()
-        self.dlg.listview_reference.setWordWrap(True)
-
-        for key, value in self.reference.iteritems():
-            if value is not None:
-                rfritem = QListWidgetItem(key + ':    ' + unicode(value))
-
-                self.dlg.listview_reference.addItem(rfritem)
-
-    def populate_information(self):
-
-        self.populate_reference()
 
     def create_occurrence_table(self):
         """creates occurrence table and populates it one row of default values"""
