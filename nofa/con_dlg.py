@@ -67,7 +67,7 @@ class ConDlg(QDialog):
 
         self.setObjectName(u'ConnDlg')
 
-        self.setWindowTitle(u'Connection Information')
+        self.setWindowTitle(u'Connection Parameters')
 
         self.grid_lyt = QGridLayout(self)
         self.grid_lyt.setObjectName(u'grid_lyt')
