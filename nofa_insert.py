@@ -1724,7 +1724,7 @@ class NOFAInsert:
 
         cur.execute(insert_project_log)
 
-        self._pop_proj_cb()
+        self._pop_prj_cb()
 
 
 
@@ -1927,7 +1927,7 @@ class NOFAInsert:
         Updates a project according to the last selected.
         """
 
-        proj_id_name = self.settings.value('project_id_name', self.sel_str)
+        proj_id_name = self.settings.value('project_org_no_name', self.sel_str)
 
         proj_cb_index = self.dlg.existingProject.findText(proj_id_name)
 
@@ -1935,23 +1935,28 @@ class NOFAInsert:
 
         self._upd_prj_lw(proj_id_name)
 
-    def _upd_prj_lw(self, prj_id_name):
+    def _upd_prj_lw(self, prj_org_no_name):
         """
         Updates the project list widget according to the current or last
         project.
         
-        :param prj_id_name: A project ID and name "<project> - <name>".
-        :type prj_id_name: str.
+        :param prj_org_no_name: A project ID number and name
+            "<organisation> - <number> - <name>".
+        :type prj_org_no_name: str.
         """
 
-        if isinstance(prj_id_name, int):
-            prj_id_name = self.dlg.existingProject.currentText()
+        if isinstance(prj_org_no_name, int):
+            prj_org_no_name = self.dlg.existingProject.currentText()
 
-        prj_id = prj_id_name.split(self.dash_split_str)[0]
+        split_prj_org_no_name = prj_org_no_name.split(self.dash_split_str)
+        prj_org = split_prj_org_no_name[0]
 
         self.dlg.listview_project.clear()
 
-        if prj_id != self.sel_str:
+        if prj_org != self.sel_str:
+            prj_no = split_prj_org_no_name[1]
+            prj_name = split_prj_org_no_name[2]
+
             self.preview_conditions['project_selected'] = True
 
             cur = self._get_db_cur()
@@ -1968,9 +1973,13 @@ class NOFAInsert:
                             "remarks",
                             "projectID"
                 FROM        nofa."m_project"
-                WHERE       "projectID" = (%s);
+                WHERE       "organisation" = %s
+                            AND
+                            "projectNumber" = %s
+                            AND
+                            "projectName" = %s;
                 ''',
-                (prj_id,))
+                (prj_org, prj_no, prj_name,))
             prj = cur.fetchone()
 
             self.project['project_number'] = unicode(prj[0])
@@ -1993,7 +2002,7 @@ class NOFAInsert:
                 u'{}{}{}'.format(
                     self.prj_str,
                     self.dash_split_str,
-                    self.project['project_name']))
+                    prj_org_no_name))
         else:
             self.preview_conditions['project_selected'] = False
 
@@ -2008,7 +2017,7 @@ class NOFAInsert:
                     self.dash_split_str,
                     self.none_str))
 
-        self.settings.setValue('project_id_name', prj_id_name)
+        self.settings.setValue('project_org_no_name', prj_org_no_name)
 
         self.check_preview_conditions()
 
@@ -2509,19 +2518,37 @@ class NOFAInsert:
         cur = self._get_db_cur()
         cur.execute(
             '''
-            SELECT      "projectID" pid,
-                        "projectName"
+            SELECT      "organisation" o,
+                        "projectNumber" pno,
+                        "projectName" pn
             FROM        nofa."m_project"
-            ORDER BY    pid;
+            ORDER BY    o, pno, pn;
             ''')
         prjs = cur.fetchall()
 
         proj_list = [
-            u'{}{}{}'.format(p[0], self.dash_split_str, p[1]) for p in prjs]
+            self._get_prj_str(p[0], p[1], p[2]) for p in prjs]
         proj_list.insert(0, self.sel_str)
 
         self.dlg.existingProject.clear()
         self.dlg.existingProject.addItems(proj_list)
+
+    def _get_prj_str(self, prj_org, prj_no, prj_name):
+        """
+        Returns a project string "<organisation> - <number> - <name>"
+
+        :param prj_org: A project organization.
+        :type prj_org: str.
+        :param prj_no: A project number.
+        :type prj_no: str.
+        :param prj_name: A project name.
+        :type prj_name: str.
+        """
+
+        prj_str = u'{}{}{}{}{}'.format(
+            prj_org, self.dash_split_str, prj_no, self.dash_split_str, prj_name)
+
+        return prj_str
 
     def _pop_ref_cb(self):
         """
