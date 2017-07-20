@@ -74,7 +74,7 @@ class DtstDlg(QDialog):
         self.name_lbl = QLabel(self)
         self.name_lbl.setObjectName(u'name_lbl')
         self.name_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
-        self.name_lbl.setText(u'datasetName')
+        self.name_lbl.setText(u'datasetName*')
         self.grid_lyt.addWidget(self.name_lbl, 0, 0, 1, 1)
 
         self.name_le = QLineEdit(self)
@@ -192,7 +192,6 @@ class DtstDlg(QDialog):
 
         self.stat_bar = QStatusBar(self)
         self.stat_bar.setObjectName(u'stat_bar')
-        self.stat_bar.setStyleSheet('border: none')
         self.grid_lyt.addWidget(self.stat_bar, 11, 0, 1, 2)
 
     def _pop_inst_cb(self):
@@ -269,8 +268,11 @@ class DtstDlg(QDialog):
         Saves a dataset into the database.
         """
 
-        name = self.name_le.text() \
-            if len(self.name_le.text()) != 0 else None
+        if len(self.name_le.text()) != 0:
+            name = self.name_le.text()
+        else:
+            self.stat_bar.showMessage(u'Enter a dataset name.', 10000)
+            return
         id = self.id_le.text()
         inst = self.inst_cb.currentText() \
             if len(self.inst_cb.currentText()) != 0 else None
@@ -345,3 +347,6 @@ class DtstDlg(QDialog):
              'dataGeneralizations': dtgen})
 
         self.stat_bar.showMessage(u'Dataset saved.', 10000)
+
+        self.mw.pop_dtst_cb()
+        self.mw.upd_dtst(u'{}{}{}'.format(id, self.mw.dash_split_str, name))

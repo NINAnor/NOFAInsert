@@ -158,7 +158,6 @@ class ConDlg(QDialog):
 
         self.stat_bar = QStatusBar(self)
         self.stat_bar.setObjectName(u'stat_bar')
-        self.stat_bar.setStyleSheet('border: none')
         self.stat_bar.showMessage(stat_bar_msg)
         self.grid_lyt.addWidget(self.stat_bar, 6, 0, 1, 2)
 

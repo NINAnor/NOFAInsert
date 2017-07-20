@@ -37,7 +37,6 @@ import resources
 from nofa import con_dlg, dtst_dlg
 
 from nofa_insert_dialog import NOFAInsertDialog
-from dataset_dialog import DatasetDialog
 from project_dialog import ProjectDialog
 from reference_dialog import ReferenceDialog
 from preview_dialog import PreviewDialog
@@ -447,7 +446,7 @@ class NOFAInsert:
         self.dlg.edit_reference_button.clicked.connect(self.open_reference_dialog)
 
 
-        self.dlg.existingDataset.activated.connect(self._upd_dtst_lw)
+        self.dlg.dtst_cb.activated.connect(self._upd_dtst_lw)
         self.dlg.existingProject.activated.connect(self._upd_prj_lw)
         self.dlg.existingReference.activated.connect(self._upd_ref_lw)
 
@@ -1822,16 +1821,17 @@ class NOFAInsert:
 
         self.get_existing_references()
 
-    def _upd_dtst(self):
+    def upd_dtst(self, dtst_id_name=None):
         """
         Updates a dataset according to the last selected.
         """
 
-        dtst_id_name = self.settings.value('dataset_id_name', self.sel_str)
+        if not dtst_id_name:
+            dtst_id_name = self.settings.value('dataset_id_name', self.sel_str)
 
-        dtst_cb_index = self.dlg.existingDataset.findText(dtst_id_name)
+        dtst_cb_index = self.dlg.dtst_cb.findText(dtst_id_name)
 
-        self.dlg.existingDataset.setCurrentIndex(dtst_cb_index)
+        self.dlg.dtst_cb.setCurrentIndex(dtst_cb_index)
 
         self._upd_dtst_lw(dtst_id_name)
 
@@ -1840,12 +1840,12 @@ class NOFAInsert:
         Updates the dataset list widget according to the current or last
         dataset.
 
-        :param dtst_id_name: A dataset ID and name "<dataset> - <name>".
+        :param dtst_id_name: A dataset ID and name "<datasetID> - <name>".
         :type dtst_id_name: str.
         """
 
         if isinstance(dtst_id_name, int):
-            dtst_id_name = self.dlg.existingDataset.currentText()
+            dtst_id_name = self.dlg.dtst_cb.currentText()
 
         dtst_id = dtst_id_name.split(self.dash_split_str)[0]
 
@@ -2197,9 +2197,9 @@ class NOFAInsert:
 
     def fetch_db(self):
 
-        self._pop_dtst_cb()
+        self.pop_dtst_cb()
         QgsApplication.processEvents()
-        self._upd_dtst()
+        self.upd_dtst()
 
         self._pop_prj_cb()
         QgsApplication.processEvents()
@@ -2479,7 +2479,7 @@ class NOFAInsert:
 
         '''
 
-    def _pop_dtst_cb(self):
+    def pop_dtst_cb(self):
         """
         Populates the dataset combo box.
         """
@@ -2498,8 +2498,8 @@ class NOFAInsert:
             u'{}{}{}'.format(d[0], self.dash_split_str, d[1]) for d in dtsts]
         dtst_list.insert(0, self.sel_str)
 
-        self.dlg.existingDataset.clear()
-        self.dlg.existingDataset.addItems(dtst_list)
+        self.dlg.dtst_cb.clear()
+        self.dlg.dtst_cb.addItems(dtst_list)
 
     def _pop_prj_cb(self):
         """
