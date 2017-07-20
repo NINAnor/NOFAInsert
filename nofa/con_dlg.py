@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- NOFAInsert
+ ConDlg
                                  A QGIS plugin
  Insert fish occurrence data to NOFA DB
                               -------------------

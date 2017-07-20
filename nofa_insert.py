@@ -34,10 +34,9 @@ from qgis.core import *
 
 import resources
 
-from nofa import con_dlg, dtst_dlg
+from nofa import con_dlg, dtst_dlg, prj_dlg
 
 from nofa_insert_dialog import NOFAInsertDialog
-from project_dialog import ProjectDialog
 from reference_dialog import ReferenceDialog
 from preview_dialog import PreviewDialog
 
@@ -442,12 +441,12 @@ class NOFAInsert:
         self.dlg.insert_button.setStyleSheet("background-color: #F6CECE")
 
         self.dlg.editDatasetButton.clicked.connect(self._open_dtst_dlg)
-        self.dlg.editProjectButton.clicked.connect(self.open_project_dialog)
+        self.dlg.editProjectButton.clicked.connect(self._open_prj_dlg)
         self.dlg.edit_reference_button.clicked.connect(self.open_reference_dialog)
 
 
         self.dlg.dtst_cb.activated.connect(self._upd_dtst_lw)
-        self.dlg.existingProject.activated.connect(self._upd_prj_lw)
+        self.dlg.prj_cb.activated.connect(self._upd_prj_lw)
         self.dlg.existingReference.activated.connect(self._upd_ref_lw)
 
         self.dlg.insert_button.clicked.connect(self.preview)
@@ -984,8 +983,16 @@ class NOFAInsert:
         Opens a dialog for adding a new dataset.
         """
 
-        self.dtstDlg = dtst_dlg.DtstDlg(self)
-        self.dtstDlg.show()
+        self.dtst_dlg = dtst_dlg.DtstDlg(self)
+        self.dtst_dlg.show()
+
+    def _open_prj_dlg(self):
+        """
+        Opens a dialog for adding a new project.
+        """
+
+        self.prj_dlg = prj_dlg.PrjDlg(self)
+        self.prj_dlg.show()
 
     def get_location(self):
 
@@ -1626,108 +1633,6 @@ class NOFAInsert:
 
         QMessageBox.information(None, "DEBUG:", "occurrences correctly stored in NOFA db")
 
-    def open_project_dialog(self):
-        """On button click opens the Project Metadata Editing Dialog"""
-
-        self.prjdlg = ProjectDialog()
-        self.prjdlg.show()
-
-        '''
-        # Get existingProjects from database
-        cur = self._get_db_cur()
-        cur.execute(u'SELECT "projectID", "projectNumber", "projectName" FROM nofa."m_project";')
-        projects = cur.fetchall()
-
-        # Create a python-list from query result
-        project_list = [u'{0}: {1}'.format(p[1], p[2]) for p in projects]
-
-        # Inject sorted python-list for existingProjects into UI
-        project_list.sort()
-        project_list.insert(0, 'None')
-        self.prjdlg.existingProject.clear()
-        self.prjdlg.existingProject.addItems(project_list)
-        self.prjdlg.existingProject.setCurrentIndex(project_list.index("None"))
-
-        #####################################################################
-        '''
-
-
-        self.prjdlg.organisation.clear()
-        self.prjdlg.organisation.addItems(self.institution_list)
-
-        #############################################
-        # Connect the Ok button to the project insert function
-
-        self.prjdlg.project_dialog_button.clicked.connect(self.project_button)
-
-    def project_button(self):
-        """
-        method inserting new project entries to m_project table
-        and log entries in plugin_project_log
-        """
-
-        project_name = self.prjdlg.projectName.text()
-        project_number = self.prjdlg.projectNumber.text()
-        start_year = self.prjdlg.p_startYear.date()
-        end_year = self.prjdlg.p_endYear.date()
-        project_leader = self.prjdlg.projectLeader.text()
-        project_members = self.prjdlg.project_members.toPlainText()
-        organisation = self.prjdlg.organisation.currentText()
-        financer = self.prjdlg.financer.text()
-        remarks = self.prjdlg.remarks.text()
-
-
-        cur = self._get_db_cur()
-        cur.execute(u'SELECT max("projectID") FROM nofa.m_project;')
-        max_proj_id = cur.fetchone()[0]
-        #QMessageBox.information(None, "DEBUG:", str(max_proj_id))
-        new_id = max_proj_id + 1
-
-
-        cur = self._get_db_cur()
-
-        insert_project = cur.mogrify(
-            """
-            INSERT INTO    nofa.m_project({})
-            VALUES         {}
-            RETURNING      "projectID"
-            """
-            .format(
-                self.insert_project_columns,
-                self.project_values), (
-                    new_id, project_name, project_number,
-                    start_year.year(), end_year.year(),
-                    project_leader, project_members,
-                    organisation, financer, remarks,))
-
-        #QMessageBox.information(None, "DEBUG:", insert_project)
-
-        cur.execute(insert_project)
-
-        returned = cur.fetchone()[0]
-        #QMessageBox.information(None, "DEBUG:", str(returned))
-
-        ##################
-        # Insert a dataset log entry
-
-        cur = self._get_db_cur()
-
-        insert_project_log = cur.mogrify(
-            """
-            INSERT INTO    nofa.plugin_project_log({})
-            VALUES         {}
-            """.format(
-                self.insert_log_project_columns,
-                self.log_project_values,), (returned, True, self.username,))
-
-        #QMessageBox.information(None, "DEBUG:", insert_project_log)
-
-        cur.execute(insert_project_log)
-
-        self._pop_prj_cb()
-
-
-
     def open_reference_dialog(self):
         """On button click opens the Project Metadata Editing Dialog"""
         self.rfrdlg = ReferenceDialog()
@@ -1824,6 +1729,9 @@ class NOFAInsert:
     def upd_dtst(self, dtst_id_name=None):
         """
         Updates a dataset according to the last selected.
+        
+        :param dtst_id_name: A dataset ID and name "<datasetID> - <name>".
+        :type dtst_id_name: str.
         """
 
         if not dtst_id_name:
@@ -1922,18 +1830,24 @@ class NOFAInsert:
 
         self.dlg.metadata.setItemText(item_index, text)
 
-    def _upd_prj(self):
+    def upd_prj(self, prj_org_no_name=None):
         """
         Updates a project according to the last selected.
+        
+        :param prj_org_no_name: A project ID number and name
+            "<organisation> - <number> - <name>".
+        :type prj_org_no_name: str.
         """
 
-        proj_id_name = self.settings.value('project_org_no_name', self.sel_str)
+        if not prj_org_no_name:
+            prj_org_no_name = self.settings.value(
+                'project_org_no_name', self.sel_str)
 
-        proj_cb_index = self.dlg.existingProject.findText(proj_id_name)
+        proj_cb_index = self.dlg.prj_cb.findText(prj_org_no_name)
 
-        self.dlg.existingProject.setCurrentIndex(proj_cb_index)
+        self.dlg.prj_cb.setCurrentIndex(proj_cb_index)
 
-        self._upd_prj_lw(proj_id_name)
+        self._upd_prj_lw(prj_org_no_name)
 
     def _upd_prj_lw(self, prj_org_no_name):
         """
@@ -1946,7 +1860,7 @@ class NOFAInsert:
         """
 
         if isinstance(prj_org_no_name, int):
-            prj_org_no_name = self.dlg.existingProject.currentText()
+            prj_org_no_name = self.dlg.prj_cb.currentText()
 
         split_prj_org_no_name = prj_org_no_name.split(self.dash_split_str)
         prj_org = split_prj_org_no_name[0]
@@ -2210,9 +2124,9 @@ class NOFAInsert:
         QgsApplication.processEvents()
         self.upd_dtst()
 
-        self._pop_prj_cb()
+        self.pop_prj_cb()
         QgsApplication.processEvents()
-        self._upd_prj()
+        self.upd_prj()
 
         self._pop_ref_cb()
         QgsApplication.processEvents()
@@ -2504,13 +2418,27 @@ class NOFAInsert:
         dtsts = cur.fetchall()
 
         dtst_list = [
-            u'{}{}{}'.format(d[0], self.dash_split_str, d[1]) for d in dtsts]
+            self.get_dtst_str(d[0], d[1]) for d in dtsts]
         dtst_list.insert(0, self.sel_str)
 
         self.dlg.dtst_cb.clear()
         self.dlg.dtst_cb.addItems(dtst_list)
 
-    def _pop_prj_cb(self):
+    def get_dtst_str(self, id, name):
+        """
+        Returns a dataset string "<id> - <name>"
+
+        :param id: A dataset ID.
+        :type id: str.
+        :param name: A dataset name.
+        :type name: str.
+        """
+
+        dtst_str = u'{}{}{}'.format(id, self.dash_split_str, name)
+
+        return dtst_str
+
+    def pop_prj_cb(self):
         """
         Populates the project combo box.
         """
@@ -2527,26 +2455,26 @@ class NOFAInsert:
         prjs = cur.fetchall()
 
         proj_list = [
-            self._get_prj_str(p[0], p[1], p[2]) for p in prjs]
+            self.get_prj_str(p[0], p[1], p[2]) for p in prjs]
         proj_list.insert(0, self.sel_str)
 
-        self.dlg.existingProject.clear()
-        self.dlg.existingProject.addItems(proj_list)
+        self.dlg.prj_cb.clear()
+        self.dlg.prj_cb.addItems(proj_list)
 
-    def _get_prj_str(self, prj_org, prj_no, prj_name):
+    def get_prj_str(self, org, no, name):
         """
         Returns a project string "<organisation> - <number> - <name>"
 
-        :param prj_org: A project organization.
-        :type prj_org: str.
-        :param prj_no: A project number.
-        :type prj_no: str.
-        :param prj_name: A project name.
-        :type prj_name: str.
+        :param org: A project organization.
+        :type org: str.
+        :param no: A project number.
+        :type no: str.
+        :param name: A project name.
+        :type name: str.
         """
 
         prj_str = u'{}{}{}{}{}'.format(
-            prj_org, self.dash_split_str, prj_no, self.dash_split_str, prj_name)
+            org, self.dash_split_str, no, self.dash_split_str, name)
 
         return prj_str
 

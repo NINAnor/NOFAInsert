@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- NOFAInsert
+ DtstDlg
                                  A QGIS plugin
  Insert fish occurrence data to NOFA DB
                               -------------------
@@ -349,4 +349,4 @@ class DtstDlg(QDialog):
         self.stat_bar.showMessage(u'Dataset saved.', 10000)
 
         self.mw.pop_dtst_cb()
-        self.mw.upd_dtst(u'{}{}{}'.format(id, self.mw.dash_split_str, name))
+        self.mw.upd_dtst(self.mw.get_dtst_str(id, name))
