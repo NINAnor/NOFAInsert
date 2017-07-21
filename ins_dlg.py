@@ -233,8 +233,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             'spawn_con': 'unknown',
             'spawn_loc': 'unknown',
             'verified_by': 'Nobody',
-            'verified_date': self.today,
-            'yearprecision_remarks': 'None'}
+            'verified_date': self.today}
 
         self.occurrence = {
             'taxon': ['Select', ],
@@ -249,8 +248,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             'spawn_con': ['unknown', ],
             'spawn_loc': ['unknown', ],
             'verified_by': ['Nobody', ],
-            'verified_date': [self.today, ],
-            'yearprecision_remarks': ['None', ]}
+            'verified_date': [self.today, ]}
 
         self.taxonomicc = []
 
@@ -481,8 +479,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.occurrence['spawn_loc'][self.row_position] = self.spawningLocation.currentText()
         self.occurrence['verified_by'][self.row_position] = self.verifiedBy.text()
         self.occurrence['verified_date'][self.row_position] = self.verifiedDate.date()
-        self.occurrence['yearprecision_remarks'][self.row_position] = self.yearPrecisionRemarks.text()
-
 
         for m, key in enumerate(sorted(self.occurrence.keys())):
             item = self.occurrence[key][self.row_position]
@@ -906,7 +902,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.new_locs = []
 
 
-        locs = self.locations.text()
+        locs = self.loc_le.text()
         location_type = self.locIDType.currentText()
         #QMessageBox.information(None, "DEBUG:", locations)
         #QMessageBox.information(None, "DEBUG:", location_type)
@@ -1164,10 +1160,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         #  populate tableWidget
         headers = []
         for n, key in enumerate(self.occurrence.keys()):
-            if key != 'yearprecision_remarks':
-                self.prwdlg.table.setColumnWidth(n, 88)
-            else:
-                self.prwdlg.table.setColumnWidth(n, 94)
+            self.prwdlg.table.setColumnWidth(n, 94)
             headers.append(key)
             #QMessageBox.information(None, "DEBUG:", str(headers))
             for m, item in enumerate(self.occurrence[key]):
@@ -1503,7 +1496,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                      'spawningCondition': self.occurrence['spawn_con'][m],
                      'occurrenceStatus': self.occurrence['status'][m],
                      'populationTrend': self.occurrence['trend'][m],
-                     'yearPrecisionRemarks': self.occurrence['yearprecision_remarks'][m],
                      'organismQuantityID': self.occurrence['quantity'][m],
                      'occurrenceRemarks': self.occurrence['oc_remarks'][m],
                      'modified': self.today,
@@ -2418,8 +2410,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.establishmentRemarks.setText(self.occurrence['est_remarks'][self.row_position])
 
         self.verifiedBy.setText(self.occurrence['verified_by'][self.row_position])
-
-        self.yearPrecisionRemarks.setText(self.occurrence['yearprecision_remarks'][self.row_position])
 
         self.occurrence_number.setText(str(self.row_position + 1))
         self.occurrence_number.setStyleSheet('color: black')
