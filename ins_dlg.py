@@ -142,19 +142,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             VALUES\n
             """
 
-
-
-        self.insert_dataset_columns = u""" "datasetID", "rightsHolder", "ownerInstitutionCode",
-        "datasetName", "accessRights", "license", "bibliographicCitation", "datasetComment",
-        "informationWithheld", "dataGeneralizations" """
-
-        self.insert_project_columns = u""" "projectID", "projectName", "projectNumber", "startYear", "endYear", "projectLeader",
-        "projectMembers", "organisation", "financer", "remarks"
-        """
-
-        self.insert_reference_columns = u""" "referenceID", "doi", "author", "referenceType", "year", "titel",
-        "journalName", "volume", "date", "issn", "isbn", "page" """
-
         self.insert_log_dataset_columns = u""" "dataset_id", "test", "username" """
 
         self.insert_log_project_columns = u""" "project_id", "test", "username" """
@@ -162,12 +149,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.insert_log_reference_columns = u""" "reference_id", "test", "username" """
 
         self.insert_log_location_columns = u""" "location_id", "test", "username", "location_name" """
-
-        self.dataset_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-
-        self.project_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-
-        self.reference_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
 
         self.log_occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s)'
 
@@ -178,8 +159,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.log_reference_values = u'(%s,%s,%s)'
 
         self.log_location_values = u'(%s,%s,%s,%s)'
-
-
 
         self.preview_conditions = {
             'dataset_selected': False,
@@ -344,23 +323,12 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.prj_cb.activated.connect(self._upd_prj_lw)
         self.ref_cb.activated.connect(self._upd_ref_lw)
 
-        self.insert_button.clicked.connect(self.preview)
+        self.occ_tbl.currentItemChanged.connect(self._upd_occ_gb_at_selrow)
+        self.rowup_btn.clicked.connect(self._sel_row_up)
+        self.rowdwn_btn.clicked.connect(self._sel_row_dwn)
 
-        self.addOccurrence.clicked.connect(self.add_occurrence)
+        self.deleteOccurrence.clicked.connect(self._del_occ_row)
 
-        # Up and Down buttons to move selection of the occurrence table
-        self.upButton.clicked.connect(self.row_up)
-        self.downButton.clicked.connect(self.row_down)
-
-        self.deleteOccurrence.clicked.connect(self.delete_occurrence_row)
-
-        # Table clicked events
-        self.occ_tbl.itemClicked.connect(self.update_row)
-        self.occ_tbl.verticalHeader().sectionClicked.connect(self.update_header)
-        # set the occurrenceStatus checkbox to True, as a default initial status
-        #self.occurrenceStatus.setChecked(True)
-
-        #connect the occurrence input widgets to table content
         self.update_row_button.clicked.connect(self.update_occurrence_row)
 
         # trigger action when history tabs are clicked
@@ -373,6 +341,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.tabWidget.setTabEnabled(1, False)
 
         self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
+
+        self.insert_button.clicked.connect(self.preview)
+
+        self.addOccurrence.clicked.connect(self.add_occurrence)
 
         # taxonomic coverage treewidget parent item changed
         self.txncvg_tw.itemChanged.connect(self.checked_tree)
@@ -407,7 +379,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         """
 
         if self.txn_cb.currentText():
-            self.occurrence['taxon'][self.row_position] = self.txn_cb.currentText()
+            self.occurrence['taxon'][self.row] = self.txn_cb.currentText()
 
             # update the preview conditions for taxon presence
             if self.txn_cb.currentText() != 'Select':
@@ -419,10 +391,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                 self.preview_conditions['taxon_selected'] = False
                 self.check_preview_conditions()
         else:
-            self.occurrence['taxon'][self.row_position] = 'None'
+            self.occurrence['taxon'][self.row] = 'None'
 
         if self.estm_cb.currentText():
-            self.occurrence['est_means'][self.row_position] = self.estm_cb.currentText()
+            self.occurrence['est_means'][self.row] = self.estm_cb.currentText()
 
             if self.estm_cb.currentText() != ' ' or self.estm_cb.currentText() != 'Select':
                 #QMessageBox.information(None, "DEBUG:", str(self.occurrence['taxon']))
@@ -435,7 +407,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
 
         if self.oqt_cb.currentText():
-            self.occurrence['quantity'][self.row_position] = self.oqt_cb.currentText()
+            self.occurrence['quantity'][self.row] = self.oqt_cb.currentText()
 
             if self.oqt_cb.currentText() != ' ' or self.oqt_cb.currentText() != 'Select':
                 #QMessageBox.information(None, "DEBUG:", str(self.occurrence['taxon']))
@@ -446,54 +418,55 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                 self.preview_conditions['quantity'] = False
                 self.check_preview_conditions()
 
-        self.occurrence['ecotype'][self.row_position] = self.ectp_cb.currentText()
-        #QMessageBox.information(None, "DEBUG:", str(self.occurrence['ecotype'][self.row_position]))
+        self.occurrence['ecotype'][self.row] = self.ectp_cb.currentText()
+        #QMessageBox.information(None, "DEBUG:", str(self.occurrence['ecotype'][self.row]))
 
 
-        #self.occurrence['quantity'][self.row_position] = self.oqt_cb.currentText()
-        self.occurrence['metric'][self.row_position] = self.oq_cb.text()
-        self.occurrence['status'][self.row_position] = self.occstat_cb.currentText()
-        self.occurrence['trend'][self.row_position] = self.poptrend_cb.currentText()
-        self.occurrence['oc_remarks'][self.row_position] = self.occurrenceRemarks.text()
+        #self.occurrence['quantity'][self.row] = self.oqt_cb.currentText()
+        self.occurrence['metric'][self.row] = self.oq_cb.text()
+        self.occurrence['status'][self.row] = self.occstat_cb.currentText()
+        self.occurrence['trend'][self.row] = self.poptrend_cb.currentText()
+        self.occurrence['oc_remarks'][self.row] = self.occrmk_le.text()
 
-        self.occurrence['est_remarks'][self.row_position] = self.establishmentRemarks.text()
-        self.occurrence['spawn_con'][self.row_position] = self.spwnc_cb.currentText()
-        self.occurrence['spawn_loc'][self.row_position] = self.spwnl_cb.currentText()
-        self.occurrence['verified_by'][self.row_position] = self.verifiedBy.text()
-        self.occurrence['verified_date'][self.row_position] = self.verdt_de.date()
+        self.occurrence['est_remarks'][self.row] = self.estrmk_le.text()
+        self.occurrence['spawn_con'][self.row] = self.spwnc_cb.currentText()
+        self.occurrence['spawn_loc'][self.row] = self.spwnl_cb.currentText()
+        self.occurrence['verified_by'][self.row] = self.vfdby_le.text()
+        self.occurrence['verified_date'][self.row] = self.verdt_de.date()
 
         for m, key in enumerate(sorted(self.occurrence.keys())):
-            item = self.occurrence[key][self.row_position]
+            item = self.occurrence[key][self.row]
             try:
                 newitem = QTableWidgetItem(item)
             except:
                 newitem = QTableWidgetItem(unicode(item))
             # setItem(row, column, QTableWidgetItem)
-            self.occ_tbl.setItem(self.row_position, m, newitem)
+            self.occ_tbl.setItem(self.row, m, newitem)
 
-    def delete_occurrence_row(self):
-        """Delete a row from occurrence table on button click."""
-
-        # checks if table contains occurrences
-        if self.occ_tbl.rowCount()==0:
+    def _del_occ_row(self):
+        """
+        Delete a row from the occurrence table.
+        """
+        QgsMessageLog.logMessage(str(self.occ_tbl.rowCount()), 'test')
+        if self.occ_tbl.rowCount() == 1:
             return
+        else:
+            for i, key in enumerate(self.occurrence.keys()):
+                del self.occurrence[key][self.row]
 
-        for i, key in enumerate(self.occurrence.keys()):
-            del self.occurrence[key][self.row_position]
+            self.occ_tbl.removeRow(self.row)
+    
+            self.row = 0
+            self.occ_tbl.selectRow(self.row)
+            self.occno_lbl.setText(unicode(self.row + 1))
 
-        self.occ_tbl.removeRow(self.row_position)
-
-        self.row_position = 0
-        self.occ_tbl.selectRow(self.row_position)
-        self.occurrence_number.setText(unicode(self.row_position + 1))
-
-        # Check if some row with taxon remains:
-        if 'Select' in self.occurrence['taxon']:
-            self.preview_conditions['taxon_selected'] = False
-            self.check_preview_conditions()
-        elif 'Select' not in self.occurrence['taxon']:
-            self.preview_conditions['taxon_selected'] = True
-            self.check_preview_conditions()
+            # Check if some row with taxon remains:
+            if 'Select' in self.occurrence['taxon']:
+                self.preview_conditions['taxon_selected'] = False
+                self.check_preview_conditions()
+            elif 'Select' not in self.occurrence['taxon']:
+                self.preview_conditions['taxon_selected'] = True
+                self.check_preview_conditions()
 
     def history_tab_clicked(self):
         #QMessageBox.information(None, "DEBUG:",  str(self.tabWidget.currentIndex()))
@@ -525,7 +498,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
 
 
-            self.row_position = 0
+            self.row = 0
 
             self.occ_tbl_occurrences.setSelectionBehavior(QTableWidget.SelectRows)
 
@@ -1595,7 +1568,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         :type text: str.
         """
 
-        self.metadata.setItemText(item_index, text)
+        self.main_tb.setItemText(item_index, text)
 
     def upd_prj(self, prj_org_no_name=None):
         """
@@ -1808,7 +1781,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         Fetches data from the database and populates widgets.
         """
 
-        self.row_position = 0
+        self.row = 0
 
         self.pop_dtst_cb()
         QgsApplication.processEvents()
@@ -2195,7 +2168,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.spwnc_cb.clear()
         self.spwnc_cb.addItems(spwnc_list)
         spwnc_idx = self.spwnc_cb.findText(
-            self.occurrence['spawn_con'][self.row_position])
+            self.occurrence['spawn_con'][self.row])
         self.spwnc_cb.setCurrentIndex(spwnc_idx)
 
     def _pop_spwnl_cb(self):
@@ -2216,7 +2189,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.spwnl_cb.clear()
         self.spwnl_cb.addItems(spwnl_list)
         spwnl_idx = self.spwnl_cb.findText(
-            self.occurrence['spawn_loc'][self.row_position])
+            self.occurrence['spawn_loc'][self.row])
         self.spwnl_cb.setCurrentIndex(spwnl_idx)
 
     def _pop_loctp_cb(self):
@@ -2234,58 +2207,13 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.loctp_cb.addItems(loctp_list)
         self.loctp_cb.setCurrentIndex(loctp_list.index('Norwegian VatnLnr'))
 
-    def update_occurrence(self):
-        """syncs the occurrence form with the chosen row of the occurrence table"""
-
-        # set current taxon value
-        taxon_index = self.txn_cb.findText(self.occurrence['taxon'][self.row_position], Qt.MatchFixedString)
-        self.txn_cb.setCurrentIndex(taxon_index)
-
-        ecotype_index = self.ectp_cb.findText(self.occurrence['ecotype'][self.row_position], Qt.MatchFixedString)
-        self.ectp_cb.setCurrentIndex(ecotype_index)
-
-        quantity_index = self.oqt_cb.findText(self.occurrence['quantity'][self.row_position], Qt.MatchFixedString)
-        self.oqt_cb.setCurrentIndex(quantity_index)
-
-        self.oq_cb.setText(str(self.occurrence['metric'][self.row_position]))
-
-        status_index = self.occstat_cb.findText(self.occurrence['status'][self.row_position], Qt.MatchFixedString)
-        self.occstat_cb.setCurrentIndex(status_index)
-
-        trend_index = self.poptrend_cb.findText(self.occurrence['trend'][self.row_position], Qt.MatchFixedString)
-        self.poptrend_cb.setCurrentIndex(trend_index)
-        '''if self.occurrence['status'][self.row_position] == 'True':
-            self.occurrenceStatus.setChecked(True)
-        else:
-            self.occurrenceStatus.setChecked(False)
-        '''
-
-        self.occurrenceRemarks.setText(self.occurrence['oc_remarks'][self.row_position])
-
-        est_means_index = self.estm_cb.findText(self.occurrence['est_means'][self.row_position], Qt.MatchFixedString)
-        self.estm_cb.setCurrentIndex(est_means_index)
-
-        spawn_con_index = self.spwnc_cb.findText(self.occurrence['spawn_con'][self.row_position], Qt.MatchFixedString)
-        self.spwnc_cb.setCurrentIndex(spawn_con_index)
-
-        spawn_loc_index = self.spwnl_cb.findText(self.occurrence['spawn_loc'][self.row_position], Qt.MatchFixedString)
-        self.spwnl_cb.setCurrentIndex(spawn_loc_index)
-
-        self.establishmentRemarks.setText(self.occurrence['est_remarks'][self.row_position])
-
-        self.verifiedBy.setText(self.occurrence['verified_by'][self.row_position])
-
-        self.occurrence_number.setText(str(self.row_position + 1))
-        self.occurrence_number.setStyleSheet('color: black')
-        # self.frame.setStyleSheet('color: white')
-
     def create_occ_tbl(self):
         """
         Creates an occurrence table with one row of default values.
         """
 
         self.occ_tbl.setRowCount(len(self.occurrence['taxon']))
-        self.occ_tbl.setColumnCount(12)
+        self.occ_tbl.setColumnCount(len(self.occurrence))
 
         self.occ_tbl.setSelectionBehavior(QTableWidget.SelectRows);
 
@@ -2302,7 +2230,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                 self.occ_tbl.setItem(m, n, newitem)
             self.occ_tbl.setHorizontalHeaderLabels(headers)
 
-        self.update_occurrence_form()
+        self._upd_occ_gb()
         #QMessageBox.information(None, "DEBUG:", str(headers))
 
     def add_occurrence(self):
@@ -2320,8 +2248,8 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
 
         # adds a new occurrence row in occurrence table
-        self.row_position = self.occ_tbl.rowCount()
-        self.occ_tbl.insertRow(self.row_position)
+        self.row = self.occ_tbl.rowCount()
+        self.occ_tbl.insertRow(self.row)
 
         # add a new occurrence record in self.occurrence dictionary and table
         for n, key in enumerate(sorted(self.occurrence.keys())):
@@ -2331,16 +2259,16 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             if isinstance(item, datetime.date):
                 item = unicode(item)
             new_item = QTableWidgetItem(item)
-            self.occ_tbl.setItem(self.row_position, n, new_item)
+            self.occ_tbl.setItem(self.row, n, new_item)
 
-        self.occ_tbl.selectRow(self.row_position)
-        self.update_occurrence_form()
+        self.occ_tbl.selectRow(self.row)
+        self._upd_occ_gb()
 
         self.preview_conditions['taxon_selected'] = False
         self.preview_conditions['est_means_selected'] = False
         self.check_preview_conditions()
 
-       #QMessageBox.information(None, "DEBUG:", str(self.row_position))
+       #QMessageBox.information(None, "DEBUG:", str(self.row))
 
     def is_last_row_empty(self):
         """Checks if last row is empty"""
@@ -2361,36 +2289,82 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         return True
 
-    def update_occurrence_form(self):
-        """Adds occurrence title and syncs form with table"""
+    def _upd_occ_gb(self):
+        """
+        Updates the occurrence group box according to the occurrence dict.
+        """
 
-        #QMessageBox.information(None, "DEBUG:", str("Occurrence - " + str(self.row_position)))
-        # update values in occurrence form based on current row selection in table widget
-        self.occ_gb.setTitle("Occurrence - " + unicode(self.row_position + 1))
-        self.update_occurrence()
+        self.occ_gb.setTitle('Occurrence - {}'.format(self.row + 1))
 
-    def update_row(self, widget_object):
-        self.row_position = widget_object.row()
-        self.update_occurrence_form()
-        #QMessageBox.information(None, "DEBUG:", str(widget_object.row()))
+        txn_idx = self.txn_cb.findText(
+            self.occurrence['taxon'][self.row], Qt.MatchFixedString)
+        self.txn_cb.setCurrentIndex(txn_idx)
 
-    def update_header(self, header_index):
+        ectp_idx = self.ectp_cb.findText(
+            self.occurrence['ecotype'][self.row], Qt.MatchFixedString)
+        self.ectp_cb.setCurrentIndex(ectp_idx)
 
-        #QMessageBox.information(None, "DEBUG:", str(header_index))
-        self.row_position = header_index
-        self.update_occurrence_form()
+        oqt_idx = self.oqt_cb.findText(
+            self.occurrence['quantity'][self.row], Qt.MatchFixedString)
+        self.oqt_cb.setCurrentIndex(oqt_idx)
 
-    def row_up(self):
-        # moving selection one row up in occurrence table
-        if self.row_position > 0:
-            self.row_position = self.row_position - 1
-        self.occ_tbl.selectRow(self.row_position)
-        self.update_occurrence_form()
+        self.oq_cb.setText(str(self.occurrence['metric'][self.row]))
 
-    def row_down(self):
-        # moving selection one row down in occurrence table
-        if self.row_position < (self.occ_tbl.rowCount() - 1):
-            self.row_position = self.row_position + 1
-        self.occ_tbl.selectRow(self.row_position)
-        self.update_occurrence_form()
+        occstat_idx = self.occstat_cb.findText(
+            self.occurrence['status'][self.row], Qt.MatchFixedString)
+        self.occstat_cb.setCurrentIndex(occstat_idx)
 
+        poptrend_idx = self.poptrend_cb.findText(
+            self.occurrence['trend'][self.row], Qt.MatchFixedString)
+        self.poptrend_cb.setCurrentIndex(poptrend_idx)
+
+        self.occrmk_le.setText(self.occurrence['oc_remarks'][self.row])
+
+        estm_idx = self.estm_cb.findText(
+            self.occurrence['est_means'][self.row], Qt.MatchFixedString)
+        self.estm_cb.setCurrentIndex(estm_idx)
+
+        spwnc_idx = self.spwnc_cb.findText(
+            self.occurrence['spawn_con'][self.row], Qt.MatchFixedString)
+        self.spwnc_cb.setCurrentIndex(spwnc_idx)
+
+        spwnl_idx = self.spwnl_cb.findText(
+            self.occurrence['spawn_loc'][self.row], Qt.MatchFixedString)
+        self.spwnl_cb.setCurrentIndex(spwnl_idx)
+
+        self.estrmk_le.setText(self.occurrence['est_remarks'][self.row])
+
+        self.vfdby_le.setText(self.occurrence['verified_by'][self.row])
+
+        self.occno_lbl.setText(str(self.row + 1))
+
+    def _upd_occ_gb_at_selrow(self, wdg_item):
+        """
+        Updates the occurrence group box according to the selected row.
+
+        :param wdg_item: A current widget item.
+        :type wdg_item: QTableWidgetItem.
+        """
+
+        self.row = wdg_item.row()
+        self._upd_occ_gb()
+
+    def _sel_row_up(self):
+        """
+        Select one row up in the occurrences table.
+        """
+
+        if self.row > 0:
+            self.row = self.row - 1
+
+        self.occ_tbl.selectRow(self.row)
+
+    def _sel_row_dwn(self):
+        """
+        Select one row down in the occurrences table.
+        """
+
+        if self.row < (self.occ_tbl.rowCount() - 1):
+            self.row = self.row + 1
+
+        self.occ_tbl.selectRow(self.row)

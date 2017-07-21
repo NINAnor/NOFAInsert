@@ -116,7 +116,7 @@
                </widget>
               </item>
               <item row="5" column="0">
-               <widget class="QLabel" name="label_44">
+               <widget class="QLabel" name="estrmk_lbl">
                 <property name="text">
                  <string>establishmentRemarks</string>
                 </property>
@@ -133,7 +133,7 @@
                </widget>
               </item>
               <item row="3" column="0">
-               <widget class="QLabel" name="label_99">
+               <widget class="QLabel" name="occrmk_lbl">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -149,7 +149,7 @@
                </widget>
               </item>
               <item row="7" column="1">
-               <widget class="QLineEdit" name="verifiedBy">
+               <widget class="QLineEdit" name="vfdby_le">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -271,7 +271,7 @@
                </widget>
               </item>
               <item row="3" column="1" colspan="3">
-               <widget class="QLineEdit" name="occurrenceRemarks">
+               <widget class="QLineEdit" name="occrmk_le">
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
@@ -281,7 +281,7 @@
                </widget>
               </item>
               <item row="5" column="1" colspan="3">
-               <widget class="QLineEdit" name="establishmentRemarks">
+               <widget class="QLineEdit" name="estrmk_le">
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
@@ -334,7 +334,7 @@
                </widget>
               </item>
               <item row="7" column="0">
-               <widget class="QLabel" name="label_96">
+               <widget class="QLabel" name="vfdby_lbl">
                 <property name="text">
                  <string>verifiedBy</string>
                 </property>
@@ -344,7 +344,7 @@
                </widget>
               </item>
               <item row="8" column="0">
-               <widget class="QLabel" name="occurrence_number">
+               <widget class="QLabel" name="occno_lbl">
                 <property name="font">
                  <font>
                   <pointsize>23</pointsize>
@@ -387,7 +387,7 @@
               <enum>QLayout::SetMinimumSize</enum>
              </property>
              <item>
-              <widget class="QPushButton" name="upButton">
+              <widget class="QPushButton" name="rowup_btn">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -423,7 +423,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="downButton">
+              <widget class="QPushButton" name="rowdwn_btn">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -605,7 +605,7 @@
           </widget>
          </item>
          <item row="0" column="0" rowspan="3">
-          <widget class="QToolBox" name="metadata">
+          <widget class="QToolBox" name="main_tb">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
              <horstretch>0</horstretch>
