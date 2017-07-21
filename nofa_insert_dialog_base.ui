@@ -60,7 +60,7 @@
                <enum>QLayout::SetMinimumSize</enum>
               </property>
               <item row="1" column="1">
-               <widget class="QComboBox" name="organismQuantityID">
+               <widget class="QComboBox" name="oqt_cb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -86,9 +86,9 @@
                </widget>
               </item>
               <item row="1" column="2">
-               <widget class="QLabel" name="label_103">
+               <widget class="QLabel" name="oq_lbl">
                 <property name="text">
-                 <string>Quantity</string>
+                 <string>organismQuantity</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -96,7 +96,7 @@
                </widget>
               </item>
               <item row="2" column="3">
-               <widget class="QComboBox" name="trend">
+               <widget class="QComboBox" name="poptrend_cb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -106,7 +106,7 @@
                </widget>
               </item>
               <item row="1" column="3">
-               <widget class="QLineEdit" name="oq_metric">
+               <widget class="QLineEdit" name="oq_cb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -123,7 +123,7 @@
                </widget>
               </item>
               <item row="0" column="3">
-               <widget class="QComboBox" name="ecotypeID">
+               <widget class="QComboBox" name="ectp_cb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -143,6 +143,9 @@
                 <property name="text">
                  <string>occurrenceRemarks</string>
                 </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
                </widget>
               </item>
               <item row="7" column="1">
@@ -156,7 +159,7 @@
                </widget>
               </item>
               <item row="2" column="0">
-               <widget class="QLabel" name="label_109">
+               <widget class="QLabel" name="occstat_lbl">
                 <property name="text">
                  <string>occurrenceStatus</string>
                 </property>
@@ -166,7 +169,7 @@
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QComboBox" name="status">
+               <widget class="QComboBox" name="occstat_cb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -179,9 +182,9 @@
                </widget>
               </item>
               <item row="2" column="2">
-               <widget class="QLabel" name="label_105">
+               <widget class="QLabel" name="poptrend_lbl">
                 <property name="text">
-                 <string>population trend</string>
+                 <string>populationTrend</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -189,7 +192,7 @@
                </widget>
               </item>
               <item row="0" column="0">
-               <widget class="QLabel" name="label_90">
+               <widget class="QLabel" name="txn_lbl">
                 <property name="text">
                  <string>taxon</string>
                 </property>
@@ -228,7 +231,7 @@
                </widget>
               </item>
               <item row="0" column="2">
-               <widget class="QLabel" name="label_94">
+               <widget class="QLabel" name="ectp_lbl">
                 <property name="text">
                  <string>ecotype</string>
                 </property>
@@ -238,9 +241,9 @@
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QLabel" name="label_102">
+               <widget class="QLabel" name="oqt_lbl">
                 <property name="text">
-                 <string>Quantity type</string>
+                 <string>organismQuantityType</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -258,7 +261,7 @@
                </widget>
               </item>
               <item row="4" column="1" colspan="3">
-               <widget class="QComboBox" name="establishmentMeans">
+               <widget class="QComboBox" name="estm_cb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -735,7 +738,7 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="QComboBox" name="samplingProtocol">
+                <widget class="QComboBox" name="smpp_cb">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -758,7 +761,7 @@
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="label_50">
+                <widget class="QLabel" name="smpp_lbl">
                  <property name="text">
                   <string>samplingProtocol</string>
                  </property>

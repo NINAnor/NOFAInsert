@@ -329,15 +329,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.prj_str = u'Project'
         self.ref_str = u'Reference'
 
-        # temporary list, to replace the currently empty table l_occurrenceStatus. Will be used in the occurrence status dropdown
-        self.occurrence_status = [
-            'unknown', 'absent', 'common', 'doubtful',
-            'excluded', 'irregular','present', 'rare']
-
-        self.population_trend = [
-            'unknown', 'increasing', 'decrasing', 'stable',
-            'extinction', 'introduction', 're-introduction']
-
         self.insert_button.setStyleSheet("background-color: #F6CECE")
 
         self.editDatasetButton.clicked.connect(self._open_dtst_dlg)
@@ -389,7 +380,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.sampleSizeValue.setValidator(QDoubleValidator(None))
         self.samplingEffort.setValidator(QIntValidator(None))
-        self.oq_metric.setValidator(QDoubleValidator(None))
+        self.oq_cb.setValidator(QDoubleValidator(None))
 
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -426,39 +417,39 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         else:
             self.occurrence['taxon'][self.row_position] = 'None'
 
-        if self.establishmentMeans.currentText():
-            self.occurrence['est_means'][self.row_position] = self.establishmentMeans.currentText()
+        if self.estm_cb.currentText():
+            self.occurrence['est_means'][self.row_position] = self.estm_cb.currentText()
 
-            if self.establishmentMeans.currentText() != ' ' or self.establishmentMeans.currentText() != 'Select':
+            if self.estm_cb.currentText() != ' ' or self.estm_cb.currentText() != 'Select':
                 #QMessageBox.information(None, "DEBUG:", str(self.occurrence['taxon']))
                 if 'Select' not in self.occurrence['est_means']:
                     self.preview_conditions['est_means_selected'] = True
                     self.check_preview_conditions()
-            elif self.establishmentMeans.currentText() == 'Select' or self.establishmentMeans.currentText() == ' ':
+            elif self.estm_cb.currentText() == 'Select' or self.estm_cb.currentText() == ' ':
                 self.preview_conditions['est_means_selected'] = False
                 self.check_preview_conditions()
 
 
-        if self.organismQuantityID.currentText():
-            self.occurrence['quantity'][self.row_position] = self.organismQuantityID.currentText()
+        if self.oqt_cb.currentText():
+            self.occurrence['quantity'][self.row_position] = self.oqt_cb.currentText()
 
-            if self.organismQuantityID.currentText() != ' ' or self.organismQuantityID.currentText() != 'Select':
+            if self.oqt_cb.currentText() != ' ' or self.oqt_cb.currentText() != 'Select':
                 #QMessageBox.information(None, "DEBUG:", str(self.occurrence['taxon']))
                 if 'Select' not in self.occurrence['quantity']:
                     self.preview_conditions['quantity'] = True
                     self.check_preview_conditions()
-            elif self.organismQuantityID.currentText() == 'Select' or self.organismQuantityID.currentText() == ' ':
+            elif self.oqt_cb.currentText() == 'Select' or self.oqt_cb.currentText() == ' ':
                 self.preview_conditions['quantity'] = False
                 self.check_preview_conditions()
 
-        self.occurrence['ecotype'][self.row_position] = self.ecotypeID.currentText()
+        self.occurrence['ecotype'][self.row_position] = self.ectp_cb.currentText()
         #QMessageBox.information(None, "DEBUG:", str(self.occurrence['ecotype'][self.row_position]))
 
 
-        #self.occurrence['quantity'][self.row_position] = self.organismQuantityID.currentText()
-        self.occurrence['metric'][self.row_position] = self.oq_metric.text()
-        self.occurrence['status'][self.row_position] = self.status.currentText()
-        self.occurrence['trend'][self.row_position] = self.trend.currentText()
+        #self.occurrence['quantity'][self.row_position] = self.oqt_cb.currentText()
+        self.occurrence['metric'][self.row_position] = self.oq_cb.text()
+        self.occurrence['status'][self.row_position] = self.occstat_cb.currentText()
+        self.occurrence['trend'][self.row_position] = self.poptrend_cb.currentText()
         self.occurrence['oc_remarks'][self.row_position] = self.occurrenceRemarks.text()
 
         self.occurrence['est_remarks'][self.row_position] = self.establishmentRemarks.text()
@@ -1062,7 +1053,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         #Get Event Data
 
-        self.event['protocol'] = self.samplingProtocol.currentText()
+        self.event['protocol'] = self.smpp_cb.currentText()
         self.event['size_value'] = self.sampleSizeValue.text()
         self.event['size_unit'] = self.sampleSizeUnit.currentText()
         self.event['effort'] = self.samplingEffort.text()
@@ -1385,7 +1376,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                 #QMessageBox.information(None, "DEBUG:", str(self.occurrence))
                 occurrence_id = uuid.uuid4()
 
-                ectp = self.ecotypeID.currentText()
+                ectp = self.ectp_cb.currentText()
 
                 if ectp == self.sel_str:
                     ecotype_id = None
@@ -1461,12 +1452,12 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                                        %(spawningCondition)s,
                                        %(occurrenceStatus)s,
                                        %(populationTrend)s,
-                                       %(organismQuantityID)s,
+                                       %(organismQuantityType)s,
                                        %(occurrenceRemarks)s,
                                        %(modified)s,
                                        %(establishmentRemarks)s,
                                        %(eventID)s,
-                                       %(organismQuantityMetric)s,
+                                       %(organismQuantity)s,
                                        %(fieldNumber)s)
                     ''')
 
@@ -1483,12 +1474,12 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                      'spawningCondition': self.occurrence['spawn_con'][m],
                      'occurrenceStatus': self.occurrence['status'][m],
                      'populationTrend': self.occurrence['trend'][m],
-                     'organismQuantityID': self.occurrence['quantity'][m],
+                     'organismQuantityType': self.occurrence['quantity'][m],
                      'occurrenceRemarks': self.occurrence['oc_remarks'][m],
                      'modified': self.today,
                      'establishmentRemarks': self.occurrence['est_remarks'][m],
                      'eventID': event_id,
-                     'organismQuantityMetric': organismquantity_metric,
+                     'organismQuantity': organismquantity_metric,
                      'fieldNumber': 'test'})
 
                 #QMessageBox.information(None, "DEBUG:", str(insert_occurrence))
@@ -1929,78 +1920,15 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         
         self._pop_txn_cb()
 
-        # Get organismQuantity from database
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT    "organismQuantityType" oqt
-            FROM      nofa."l_organismQuantityType"
-            ORDER BY  oqt
-            ''')
-        orgQuantID  = cur.fetchall()
-        orgQuantID_list = [o[0] for o in orgQuantID]
-        orgQuantID_list.insert(0, 'Select')
+        self._pop_oqt_cb()
 
-        self.organismQuantityID.clear()
-        self.organismQuantityID.addItems(orgQuantID_list)
+        self._pop_occstat_cb()
 
-        #############################################
+        self._pop_poptrend_cb()
 
-        # Get occurrence status
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT    "occurrenceStatus" os
-            FROM      nofa."l_occurrenceStatus"
-            ORDER BY  os
-            ''')
-        occStat  = cur.fetchall()
-        occStat_list = [o[0] for o in occStat]
-        occStat_list.insert(0, 'Select')
+        self._pop_estbm_cb()
 
-        self.status.clear()
-        self.status.addItems(occStat_list)
-
-        #############################################
-
-        # Get population trend
-        self.trend.clear()
-        self.trend.addItems(self.population_trend)
-        self.trend.setCurrentIndex(self.population_trend.index("unknown"))
-        
-
-        #############################################
-
-        # Get establishmentMeans from database
-        cur = self._get_db_cur()
-        cur.execute(u'SELECT "establishmentMeans" FROM nofa."l_establishmentMeans";')
-        establishment = cur.fetchall()
-
-        # Create a python-list from query result
-        establishment_list = [e[0] for e in establishment]
-
-        # Inject sorted python-list for establishmentMeans into UI
-        establishment_list.sort()
-        establishment_list.insert(0, 'Select')
-        self.establishmentMeans.clear()
-        self.establishmentMeans.addItems(establishment_list)
-        self.establishmentMeans.setCurrentIndex(establishment_list.index("unknown"))
-
-        ###################################################
-
-        # Get samplingProtocols from database
-        cur = self._get_db_cur()
-        cur.execute(u'SELECT "samplingProtocol" FROM nofa."l_samplingProtocol";')
-        samplingProt = cur.fetchall()
-
-        # Create a python-list from query result
-        samplingProt_list = [s[0] for s in samplingProt]
-
-        # Inject sorted python-list for samplingProtocol into UI
-        samplingProt_list.sort()
-        self.samplingProtocol.clear()
-        self.samplingProtocol.addItems(samplingProt_list)
-        self.samplingProtocol.setCurrentIndex(samplingProt_list.index("unknown"))
+        self._pop_smpp_cb()
 
         ######################################################
 
@@ -2342,8 +2270,108 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         ectp_list = [e[0] for e in ectps]
         ectp_list.insert(0, self.sel_str)
 
-        self.ecotypeID.clear()
-        self.ecotypeID.addItems(ectp_list)
+        self.ectp_cb.clear()
+        self.ectp_cb.addItems(ectp_list)
+        self.ectp_cb.model().item(0).setEnabled(False)
+
+    def _pop_oqt_cb(self):
+        """
+        Populates the organism quantity type combo box.
+        """
+
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT    "organismQuantityType" oqt
+            FROM      nofa."l_organismQuantityType"
+            ORDER BY  oqt
+            ''')
+        oqts  = cur.fetchall()
+        oqt_list = [o[0] for o in oqts]
+        oqt_list.insert(0, self.sel_str)
+
+        self.oqt_cb.clear()
+        self.oqt_cb.addItems(oqt_list)
+        self.oqt_cb.model().item(0).setEnabled(False)
+
+    def _pop_occstat_cb(self):
+        """
+        Populates the organism quantity type combo box.
+        """
+
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT    "occurrenceStatus" os
+            FROM      nofa."l_occurrenceStatus"
+            ORDER BY  os
+            ''')
+        occstats  = cur.fetchall()
+        occstat_list = [o[0] for o in occstats]
+        occstat_list.insert(0, self.sel_str)
+
+        self.occstat_cb.clear()
+        self.occstat_cb.addItems(occstat_list)
+        self.occstat_cb.model().item(0).setEnabled(False)
+
+    def _pop_poptrend_cb(self):
+        """
+        Populates the population trend combo box.
+        """
+
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT      "populationTrend" pt
+            FROM        nofa."l_populationTrend"
+            WHERE       "populationTrend" is not null
+            ORDER BY    pt
+            ''')
+        poptrends  = cur.fetchall()
+        poptrend_list = [p[0] for p in poptrends]
+
+        self.poptrend_cb.clear()
+        self.poptrend_cb.addItems(poptrend_list)
+
+    def _pop_estbm_cb(self):
+        """
+        Populates the establishment means combo box.
+        """
+
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT      "establishmentMeans" em
+            FROM        nofa."l_establishmentMeans"
+            ORDER BY    em
+            ''')
+        estms  = cur.fetchall()
+        estm_list = [e[0] for e in estms]
+        estm_list.insert(0, self.sel_str)
+
+        self.estm_cb.clear()
+        self.estm_cb.addItems(estm_list)
+        self.estm_cb.model().item(0).setEnabled(False)
+
+    def _pop_smpp_cb(self):
+        """
+        Populates the sampling protocol combo box.
+        """
+
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT      "samplingProtocol" sp
+            FROM        nofa."l_samplingProtocol"
+            ORDER BY    sp
+            ''')
+        smpps  = cur.fetchall()
+        smpp_list = [s[0] for s in smpps]
+
+        self.smpp_cb.clear()
+        self.smpp_cb.addItems(smpp_list)
+        smpp_idx = self.smpp_cb.findText(self.event['protocol'])
+        self.smpp_cb.setCurrentIndex(smpp_idx)
 
     def update_occurrence(self):
         """syncs the occurrence form with the chosen row of the occurrence table"""
@@ -2352,28 +2380,29 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         taxon_index = self.txn_cb.findText(self.occurrence['taxon'][self.row_position], Qt.MatchFixedString)
         self.txn_cb.setCurrentIndex(taxon_index)
 
-        ecotype_index = self.ecotypeID.findText(self.occurrence['ecotype'][self.row_position], Qt.MatchFixedString)
-        self.ecotypeID.setCurrentIndex(ecotype_index)
+        ecotype_index = self.ectp_cb.findText(self.occurrence['ecotype'][self.row_position], Qt.MatchFixedString)
+        self.ectp_cb.setCurrentIndex(ecotype_index)
 
-        quantity_index = self.organismQuantityID.findText(self.occurrence['quantity'][self.row_position], Qt.MatchFixedString)
-        self.organismQuantityID.setCurrentIndex(quantity_index)
+        quantity_index = self.oqt_cb.findText(self.occurrence['quantity'][self.row_position], Qt.MatchFixedString)
+        self.oqt_cb.setCurrentIndex(quantity_index)
 
-        self.oq_metric.setText(str(self.occurrence['metric'][self.row_position]))
+        self.oq_cb.setText(str(self.occurrence['metric'][self.row_position]))
 
-        status_index = self.status.findText(self.occurrence['status'][self.row_position], Qt.MatchFixedString)
-        self.status.setCurrentIndex(status_index)
+        status_index = self.occstat_cb.findText(self.occurrence['status'][self.row_position], Qt.MatchFixedString)
+        self.occstat_cb.setCurrentIndex(status_index)
 
-        trend_index = self.trend.findText(self.occurrence['trend'][self.row_position], Qt.MatchFixedString)
-        self.trend.setCurrentIndex(trend_index)
+        trend_index = self.poptrend_cb.findText(self.occurrence['trend'][self.row_position], Qt.MatchFixedString)
+        self.poptrend_cb.setCurrentIndex(trend_index)
         '''if self.occurrence['status'][self.row_position] == 'True':
             self.occurrenceStatus.setChecked(True)
         else:
             self.occurrenceStatus.setChecked(False)
         '''
+
         self.occurrenceRemarks.setText(self.occurrence['oc_remarks'][self.row_position])
 
-        est_means_index = self.establishmentMeans.findText(self.occurrence['est_means'][self.row_position], Qt.MatchFixedString)
-        self.establishmentMeans.setCurrentIndex(est_means_index)
+        est_means_index = self.estm_cb.findText(self.occurrence['est_means'][self.row_position], Qt.MatchFixedString)
+        self.estm_cb.setCurrentIndex(est_means_index)
 
         spawn_con_index = self.spawningCondition.findText(self.occurrence['spawn_con'][self.row_position], Qt.MatchFixedString)
         self.spawningCondition.setCurrentIndex(spawn_con_index)
