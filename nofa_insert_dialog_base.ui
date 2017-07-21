@@ -30,7 +30,7 @@
           <enum>QLayout::SetMinimumSize</enum>
          </property>
          <item row="1" column="2">
-          <widget class="QGroupBox" name="reference_4">
+          <widget class="QGroupBox" name="occ_gb">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
              <horstretch>0</horstretch>
@@ -55,7 +55,7 @@
              <enum>QLayout::SetMinimumSize</enum>
             </property>
             <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0,0,0">
+             <layout class="QGridLayout" name="occ_grid_lyt" columnstretch="0,0,0,0">
               <property name="sizeConstraint">
                <enum>QLayout::SetMinimumSize</enum>
               </property>
@@ -624,7 +624,7 @@
              <height>16777215</height>
             </size>
            </property>
-           <widget class="QWidget" name="location_2">
+           <widget class="QWidget" name="loc_wdg">
             <property name="geometry">
              <rect>
               <x>0</x>
@@ -638,7 +638,7 @@
             </attribute>
             <layout class="QGridLayout" name="gridLayout_13">
              <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_4" columnstretch="0,1">
+              <layout class="QGridLayout" name="loc_grid_lyt" columnstretch="0,1">
                <property name="sizeConstraint">
                 <enum>QLayout::SetMinimumSize</enum>
                </property>
@@ -692,7 +692,7 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="toolBoxPage1">
+           <widget class="QWidget" name="event_wdg">
             <property name="geometry">
              <rect>
               <x>0</x>
@@ -706,7 +706,7 @@
             </attribute>
             <layout class="QGridLayout" name="gridLayout_7">
              <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout" columnstretch="0,1">
+              <layout class="QGridLayout" name="event_grid_lyt" columnstretch="0,1">
                <property name="sizeConstraint">
                 <enum>QLayout::SetMinimumSize</enum>
                </property>
@@ -870,7 +870,7 @@
                 </widget>
                </item>
                <item row="4" column="0">
-                <widget class="QLabel" name="label_17">
+                <widget class="QLabel" name="dtst_lbl">
                  <property name="text">
                   <string>dateStart</string>
                  </property>
@@ -928,7 +928,7 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="toolBoxPage2">
+           <widget class="QWidget" name="dtst_wdg">
             <property name="geometry">
              <rect>
               <x>0</x>
@@ -942,7 +942,7 @@
             </attribute>
             <layout class="QGridLayout" name="gridLayout_6">
              <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,1,0">
+              <layout class="QGridLayout" name="dtst_grid_lyt" columnstretch="0,1,0">
                <property name="sizeConstraint">
                 <enum>QLayout::SetMinimumSize</enum>
                </property>
@@ -983,7 +983,7 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="toolBoxPage3">
+           <widget class="QWidget" name="prj_wdg">
             <property name="geometry">
              <rect>
               <x>0</x>
@@ -997,7 +997,7 @@
             </attribute>
             <layout class="QGridLayout" name="gridLayout_9">
              <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_8" columnstretch="0,1,0">
+              <layout class="QGridLayout" name="prj_grid_lyt" columnstretch="0,1,0">
                <property name="sizeConstraint">
                 <enum>QLayout::SetMinimumSize</enum>
                </property>
@@ -1038,7 +1038,7 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="toolBoxPage4">
+           <widget class="QWidget" name="ref_wdg">
             <property name="geometry">
              <rect>
               <x>0</x>
@@ -1052,7 +1052,7 @@
             </attribute>
             <layout class="QGridLayout" name="gridLayout_11">
              <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_10" columnstretch="0,1,0">
+              <layout class="QGridLayout" name="ref_grid_lyt" columnstretch="0,1,0">
                <property name="sizeConstraint">
                 <enum>QLayout::SetMinimumSize</enum>
                </property>

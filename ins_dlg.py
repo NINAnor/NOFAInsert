@@ -2366,7 +2366,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         #QMessageBox.information(None, "DEBUG:", str("Occurrence - " + str(self.row_position)))
         # update values in occurrence form based on current row selection in table widget
-        self.reference_4.setTitle("Occurrence - " + unicode(self.row_position + 1))
+        self.occ_gb.setTitle("Occurrence - " + unicode(self.row_position + 1))
         self.update_occurrence()
 
     def update_row(self, widget_object):
