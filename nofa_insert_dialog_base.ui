@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1295</width>
+    <width>1298</width>
     <height>751</height>
    </rect>
   </property>
@@ -202,7 +202,7 @@
                </widget>
               </item>
               <item row="7" column="2">
-               <widget class="QLabel" name="label_100">
+               <widget class="QLabel" name="verdt_lbl">
                 <property name="text">
                  <string>verifiedDate</string>
                 </property>
@@ -212,7 +212,7 @@
                </widget>
               </item>
               <item row="7" column="3">
-               <widget class="QDateEdit" name="verifiedDate">
+               <widget class="QDateEdit" name="verdt_de">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -251,7 +251,7 @@
                </widget>
               </item>
               <item row="4" column="0">
-               <widget class="QLabel" name="label_106">
+               <widget class="QLabel" name="estm_lbl">
                 <property name="text">
                  <string>establishmentMeans</string>
                 </property>
@@ -291,7 +291,7 @@
                </widget>
               </item>
               <item row="6" column="3">
-               <widget class="QComboBox" name="spawningLocation">
+               <widget class="QComboBox" name="spwnl_cb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -301,7 +301,7 @@
                </widget>
               </item>
               <item row="6" column="1">
-               <widget class="QComboBox" name="spawningCondition">
+               <widget class="QComboBox" name="spwnc_cb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -314,7 +314,7 @@
                </widget>
               </item>
               <item row="6" column="2">
-               <widget class="QLabel" name="label_108">
+               <widget class="QLabel" name="spwnl_lbl">
                 <property name="text">
                  <string>spawningLocation</string>
                 </property>
@@ -324,7 +324,7 @@
                </widget>
               </item>
               <item row="6" column="0">
-               <widget class="QLabel" name="label_107">
+               <widget class="QLabel" name="spwnc_lbl">
                 <property name="text">
                  <string>spawningCondition</string>
                 </property>
@@ -577,9 +577,12 @@
              <enum>QLayout::SetMaximumSize</enum>
             </property>
             <item row="0" column="0">
-             <widget class="QTreeWidget" name="taxonomicCoverage">
+             <widget class="QTreeWidget" name="txncvg_tw">
               <property name="contextMenuPolicy">
                <enum>Qt::ActionsContextMenu</enum>
+              </property>
+              <property name="sortingEnabled">
+               <bool>false</bool>
               </property>
               <attribute name="headerVisible">
                <bool>false</bool>
@@ -640,7 +643,7 @@
                 <enum>QLayout::SetMinimumSize</enum>
                </property>
                <item row="0" column="1">
-                <widget class="QComboBox" name="locIDType">
+                <widget class="QComboBox" name="loctp_cb">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -666,7 +669,7 @@
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="label_9">
+                <widget class="QLabel" name="loctp_lbl">
                  <property name="text">
                   <string>locationType</string>
                  </property>
@@ -791,7 +794,7 @@
                 </widget>
                </item>
                <item row="8" column="1">
-                <widget class="QComboBox" name="reliability">
+                <widget class="QComboBox" name="relia_cb">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -804,7 +807,7 @@
                 </widget>
                </item>
                <item row="5" column="1">
-                <widget class="QDateEdit" name="dateEnd">
+                <widget class="QDateEdit" name="dtend_de">
                  <property name="displayFormat">
                   <string>yyyy-MM-dd</string>
                  </property>
@@ -814,7 +817,7 @@
                 </widget>
                </item>
                <item row="2" column="1">
-                <widget class="QComboBox" name="sampleSizeUnit">
+                <widget class="QComboBox" name="smpsu_cb">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -827,7 +830,7 @@
                 </widget>
                </item>
                <item row="2" column="0">
-                <widget class="QLabel" name="label_48">
+                <widget class="QLabel" name="smpsu_lbl">
                  <property name="text">
                   <string>sampleSizeUnit</string>
                  </property>
@@ -857,7 +860,7 @@
                 </widget>
                </item>
                <item row="4" column="1">
-                <widget class="QDateEdit" name="dateStart">
+                <widget class="QDateEdit" name="dtst_de">
                  <property name="displayFormat">
                   <string>yyyy-MM-dd</string>
                  </property>

@@ -82,7 +82,11 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.today = datetime.datetime.today().date()
         self.year = datetime.datetime.today().year
-        self.nextWeek = self.today + datetime.timedelta(days=7)
+        self.nxt_week = self.today + datetime.timedelta(days=7)
+
+        self.dtst_de.setDate(self.today)
+        self.dtend_de.setDate(self.today)
+        self.verdt_de.setDate(self.nxt_week)
 
         self.dataset_name = "none"
 
@@ -202,7 +206,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             'Finish': 'FI'}'''
 
         #TODO the remaining location types should be added here
-        self.locIDType_dict = {
+        self.loctp_dict = {
             'Norwegian VatnLnr': 'no_vatn_lnr',
             'coordinates UTM32': 25832,
             'coordinates UTM33': 25833,}
@@ -241,8 +245,8 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.event = {
             'protocol': 'unknown',
-            'size_value': None,
-            'size_unit': 'None',
+            'size_value': 'None',
+            'size_unit': 'metre',
             'effort': 'unknown',
             'protocol_remarks': 'None',
             'date_start': self.today,
@@ -371,7 +375,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
 
         # taxonomic coverage treewidget parent item changed
-        self.taxonomicCoverage.itemChanged.connect(self.checked_tree)
+        self.txncvg_tw.itemChanged.connect(self.checked_tree)
 
         # filter occurrences by username and time interval
         self.username_filter_button.clicked.connect(self.filter_occurrences_by_username)
@@ -453,10 +457,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.occurrence['oc_remarks'][self.row_position] = self.occurrenceRemarks.text()
 
         self.occurrence['est_remarks'][self.row_position] = self.establishmentRemarks.text()
-        self.occurrence['spawn_con'][self.row_position] = self.spawningCondition.currentText()
-        self.occurrence['spawn_loc'][self.row_position] = self.spawningLocation.currentText()
+        self.occurrence['spawn_con'][self.row_position] = self.spwnc_cb.currentText()
+        self.occurrence['spawn_loc'][self.row_position] = self.spwnl_cb.currentText()
         self.occurrence['verified_by'][self.row_position] = self.verifiedBy.text()
-        self.occurrence['verified_date'][self.row_position] = self.verifiedDate.date()
+        self.occurrence['verified_date'][self.row_position] = self.verdt_de.date()
 
         for m, key in enumerate(sorted(self.occurrence.keys())):
             item = self.occurrence[key][self.row_position]
@@ -881,14 +885,14 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
 
         locs = self.loc_le.text()
-        location_type = self.locIDType.currentText()
+        location_type = self.loctp_cb.currentText()
         #QMessageBox.information(None, "DEBUG:", locations)
         #QMessageBox.information(None, "DEBUG:", location_type)
 
         #Manage the case of Norwegian VatLnr coordinates input
         if location_type == 'Norwegian VatnLnr':
             locations = locs.split(',')
-            col = self.locIDType_dict[location_type]
+            col = self.loctp_dict[location_type]
 
             # Fetch locationIDs (From Stefan's code)
             cur = self._get_db_cur()
@@ -929,7 +933,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         # manage the case of UTM33 coordinates
         elif location_type.startswith('coordinates'):
-            type = self.locIDType_dict[location_type]
+            type = self.loctp_dict[location_type]
             self.locations['loc_type'] = type
             #QMessageBox.information(None, "DEBUG:", str(type))
 
@@ -967,8 +971,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                         y = float(northing)
                     except:
                         QMessageBox.information(None, "DEBUG:", unicode("WARNIG - problem with easting and northing?"))
-
-
 
                     name = elems[2:]
                     loc_name = ' '.join(name)
@@ -1055,15 +1057,13 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.event['protocol'] = self.smpp_cb.currentText()
         self.event['size_value'] = self.sampleSizeValue.text()
-        self.event['size_unit'] = self.sampleSizeUnit.currentText()
+        self.event['size_unit'] = self.smpsu_cb.currentText()
         self.event['effort'] = self.samplingEffort.text()
-        #self.event['date_start'] = self.dateStart.date().toString()
-        self.event['date_start'] = self.dateStart.date()
-        #self.event['date_end'] = self.dateEnd.date().toString()
-        self.event['date_end'] = self.dateEnd.date()
+        self.event['date_start'] = self.dtst_de.date()
+        self.event['date_end'] = self.dtend_de.date()
         self.event['recorded_by'] = self.recordedBy_e.text()
         self.event['event_remarks'] = self.eventRemarks.text()
-        self.event['reliability'] = self.reliability.currentText()
+        self.event['reliability'] = self.relia_cb.currentText()
 
         #QMessageBox.information(None, "DEBUG:", str(self.event))
         self.prwdlg = PreviewDialog()
@@ -1086,7 +1086,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             self.prwdlg.listWidget_1.addItem(QListWidgetItem(elem))
 
         # Get taxonomic coverage items
-        root = self.taxonomicCoverage.invisibleRootItem()
+        root = self.txncvg_tw.invisibleRootItem()
         counted = root.childCount()
         #QMessageBox.information(None, "DEBUG:", str(counted))
 
@@ -1225,11 +1225,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
             if self.event['event_remarks'] is None:
                 self.event['event_remarks'] = 'None'
-
-            if self.event['size_unit'] is None:
-                self.event['size_unit'] = 'metre'
-            elif self.event['size_unit'] == 'None':
-                self.event['size_unit'] = 'metre'
 
             start_date = self.event['date_start'].toPyDate()
             end_date = self.event['date_end'].toPyDate()
@@ -1905,6 +1900,11 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         return self.mc.con.cursor()
 
     def fetch_db(self):
+        """
+        Fetches data from the database and populates widgets.
+        """
+
+        self.row_position = 0
 
         self.pop_dtst_cb()
         QgsApplication.processEvents()
@@ -1919,194 +1919,56 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.upd_ref()
         
         self._pop_txn_cb()
-
         self._pop_oqt_cb()
-
         self._pop_occstat_cb()
-
         self._pop_poptrend_cb()
-
         self._pop_estbm_cb()
-
         self._pop_smpp_cb()
+        self._pop_reliab_cb()
+        self._pop_smpsu_cb()
+        self._pop_spwnc_cb()
+        self._pop_spwnl_cb()
+        self._pop_loctp_cb()
+        self._pop_txncvg_tw()
 
-        ######################################################
+    def _pop_txncvg_tw(self):
+        """
+        Populates the taxon coverage tree widget.
+        """
 
-        # Get reliability from database
-        cur = self._get_db_cur()
-        cur.execute(u'SELECT "reliability" FROM nofa."l_reliability";')
-        reliab = cur.fetchall()
-
-        # Create a python-list from query result
-        reliab_list = [r[0] for r in reliab]
-
-        # Inject sorted python-list for reliability into UI
-        reliab_list.sort()
-        self.reliability.clear()
-        self.reliability.addItems(reliab_list)
-
-        #########################################################
-
-        # Get sampleSizeUnit from database
-        cur = self._get_db_cur()
-        cur.execute(u'SELECT "sampleSizeUnit" FROM nofa."l_sampleSizeUnit";')
-        sampUnit = cur.fetchall()
-
-        # Create a python-list from query result
-        sampUnit_list = [s[0] for s in sampUnit]
-
-        # Inject sorted python-list for establishmentMeans into UI
-        sampUnit_list.sort()
-        sampUnit_list.insert(0, 'None')
-        self.sampleSizeUnit.clear()
-        self.sampleSizeUnit.addItems(sampUnit_list)
-        self.sampleSizeUnit.setCurrentIndex(sampUnit_list.index("None"))
-
-        ############################################################
-
-        # Get spawningCondition from database
-        cur = self._get_db_cur()
-        cur.execute(u'SELECT "spawningCondition" FROM nofa."l_spawningCondition";')
-        spawnCon = cur.fetchall()
-
-        # Create a python-list from query result
-        spawnCon_list = [s[0] for s in spawnCon]
-
-        # Inject sorted python-list for spawningCondition into UI
-        spawnCon_list.sort()
-        self.spawningCondition.clear()
-        self.spawningCondition.addItems(spawnCon_list)
-        self.spawningCondition.setCurrentIndex(spawnCon_list.index("unknown"))
-
-        ###############################################################
-
-        # Get spawningLocation from database
-        cur = self._get_db_cur()
-        cur.execute(u'SELECT "spawningLocation" FROM nofa."l_spawningLocation";')
-        spawnLoc = cur.fetchall()
-
-        # Create a python-list from query result
-        spawnLoc_list = [s[0] for s in spawnLoc]
-
-        # Inject sorted python-list for spawningLocation into UI
-        spawnLoc_list.sort()
-        self.spawningLocation.clear()
-        self.spawningLocation.addItems(spawnLoc_list)
-        self.spawningLocation.setCurrentIndex(spawnLoc_list.index("unknown"))
-
-        ##################################################################
-
-
-        # Get institutions from database
         cur = self._get_db_cur()
         cur.execute(
             '''
-            SELECT    "institutionCode"
-            FROM      nofa."m_dataset"
+            SELECT      "scientificName",
+                        "family"
+            FROM        nofa.l_taxon
+            WHERE       "scientificName" IS NOT NULL
+                        AND
+                        "family" IS NOT NULL
+            GROUP BY    "scientificName", "family"
             ''')
-        institutions = cur.fetchall()
+        spp = cur.fetchall()
 
-        # Create a python-list from query result
-        self.institution_list = [i[0] for i in institutions]
+        fam_dict = defaultdict(list)
+        for s in spp:
+            fam_dict[s[1]].append(s[0])
 
-        # Inject sorted python-list for existingProjects into UI
-        self.institution_list.sort()
+        root_item = QTreeWidgetItem(self.txncvg_tw, ["All"])
+        root_item.setCheckState(0, Qt.Unchecked)
+        root_item.setFlags(Qt.ItemIsUserCheckable|Qt.ItemIsEnabled)
 
-        ##################################################################
+        for family in fam_dict.keys():
+            family_item = QTreeWidgetItem(root_item, [family])
+            family_item.setCheckState(0, Qt.Unchecked)
+            family_item.setFlags(Qt.ItemIsUserCheckable|Qt.ItemIsEnabled)
 
-        self.dateStart.setDate(self.today)
-        self.dateEnd.setDate(self.today)
-        self.verifiedDate.setDate(self.nextWeek)
+            for taxon in fam_dict[family]:
+                txn_item = QTreeWidgetItem(family_item, [taxon])
+                txn_item.setCheckState(0, Qt.Unchecked)
+                txn_item.setFlags(Qt.ItemIsUserCheckable|Qt.ItemIsEnabled)
 
-        """
-        locIDType_dict = {'coordinates lon/lat': 4326,
-                          'Norwegian VatnLnr': 'no_vatn_lnr',
-                          'Swedish SjoID': 'se_sjoid',
-                          'Finish nro': 'fi_nro',
-                          'coordinates UTM32': 25832,
-                          'coordinates UTM33': 25833,
-                          'coordinates UTM35': 25835,
-                          'waterBody register name': '"waterBody"'
-                          }
-        """
-
-
-        # Add more location match options (e.g. coordinates)
-
-        locIDType_list = self.locIDType_dict.keys()
-        locIDType_list.sort()
-
-        self.locIDType.clear()
-        self.locIDType.addItems(locIDType_list)
-        self.locIDType.setCurrentIndex(locIDType_list.index("Norwegian VatnLnr"))
-
-        ###################################################################
-        # Create the Taxonomic Coverage list of taxa
-
-        cur = self._get_db_cur()
-
-        cur.execute(u'SELECT "{0}", "{1}" FROM nofa.l_taxon GROUP BY "{0}", "{1}";'.format(self.species_names[self.language], "family"))
-        species = cur.fetchall()
-
-        taxa = defaultdict(list)
-
-        for s in species:
-            if s[1] is not None:
-                taxa[s[1]].append(s[0])
-
-        #QMessageBox.information(None, "DEBUG:", str(taxa))
-
-        self.taxonomicCoverage.clear()
-
-        families = []
-        root = QTreeWidgetItem(self.taxonomicCoverage, ["All"])
-        root.setCheckState(0, Qt.Unchecked)
-        root.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
-
-        for family in taxa.keys():
-            #families.append(family)
-
-            if family not in (""):
-                item = QTreeWidgetItem(root, [family])
-
-                item.setCheckState(0, Qt.Unchecked)
-                item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
-
-                families.append(item)
-
-                taxa_list = []
-                for taxon in taxa[family]:
-                    if taxon is not None:
-                        child = QTreeWidgetItem(item, [taxon])
-
-                        child.setCheckState(0, Qt.Unchecked)
-                        child.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
-
-                        taxa_list.append(child)
-
-        self.taxonomicCoverage.expandToDepth(0)
-
-        #QMessageBox.information(None, "DEBUG:", str(type(families)))
-
-        #self.taxonomicCoverage.topLevelItem(root)
-
-        '''
-        taxa = []
-        self.taxonomicCoverage.clear()
-        for species in species_list:
-            if species is not None:
-                item = QTreeWidgetItem([species])
-                item.setCheckState(0, Qt.Unchecked)
-                item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
-
-                taxa.append(item)
-
-        #QMessageBox.information(None, "DEBUG:", unicode(type(taxa)))
-        self.taxonomicCoverage.addTopLevelItems(taxa)
-
-            #QMessageBox.information(None, "DEBUG:", unicode(species))
-
-        '''
+        self.txncvg_tw.sortByColumn(0, Qt.AscendingOrder)
+        self.txncvg_tw.expandToDepth(0)
 
     def pop_dtst_cb(self):
         """
@@ -2373,6 +2235,101 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         smpp_idx = self.smpp_cb.findText(self.event['protocol'])
         self.smpp_cb.setCurrentIndex(smpp_idx)
 
+    def _pop_reliab_cb(self):
+        """
+        Populates the reliability combo box.
+        """
+
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT      "reliability" r
+            FROM        nofa."l_reliability"
+            ORDER BY    r
+            ''')
+        relias  = cur.fetchall()
+        relia_list = [r[0] for r in relias]
+
+        self.relia_cb.clear()
+        self.relia_cb.addItems(relia_list)
+
+    def _pop_smpsu_cb(self):
+        """
+        Populates the sample size unit combo box.
+        """
+
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT      "sampleSizeUnit" s
+            FROM        nofa."l_sampleSizeUnit"
+            ORDER BY    s
+            ''')
+        smpsus  = cur.fetchall()
+        smpsu_list = [s[0] for s in smpsus]
+
+        self.smpsu_cb.clear()
+        self.smpsu_cb.addItems(smpsu_list)
+        smpsu_idx = self.smpsu_cb.findText(self.event['size_unit'])
+        self.smpsu_cb.setCurrentIndex(smpsu_idx)
+
+    def _pop_spwnc_cb(self):
+        """
+        Populates the spawning condition combo box.
+        """
+
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT      "spawningCondition" s
+            FROM        nofa."l_spawningCondition"
+            ORDER BY    s
+            ''')
+        spwncs  = cur.fetchall()
+        spwnc_list = [s[0] for s in spwncs]
+
+        self.spwnc_cb.clear()
+        self.spwnc_cb.addItems(spwnc_list)
+        spwnc_idx = self.spwnc_cb.findText(
+            self.occurrence['spawn_con'][self.row_position])
+        self.spwnc_cb.setCurrentIndex(spwnc_idx)
+
+    def _pop_spwnl_cb(self):
+        """
+        Populates the spawning location combo box.
+        """
+
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT      "spawningLocation" s
+            FROM        nofa."l_spawningLocation"
+            ORDER BY    s
+            ''')
+        spwnls  = cur.fetchall()
+        spwnl_list = [s[0] for s in spwnls]
+
+        self.spwnl_cb.clear()
+        self.spwnl_cb.addItems(spwnl_list)
+        spwnl_idx = self.spwnl_cb.findText(
+            self.occurrence['spawn_loc'][self.row_position])
+        self.spwnl_cb.setCurrentIndex(spwnl_idx)
+
+    def _pop_loctp_cb(self):
+        """
+        Populates the location type combo box.
+        """
+
+        # OS.NINA
+        # location types are hardcoded
+        # could not find a list of location types in db
+        loctp_list = self.loctp_dict.keys()
+        loctp_list.sort()
+
+        self.loctp_cb.clear()
+        self.loctp_cb.addItems(loctp_list)
+        self.loctp_cb.setCurrentIndex(loctp_list.index('Norwegian VatnLnr'))
+
     def update_occurrence(self):
         """syncs the occurrence form with the chosen row of the occurrence table"""
 
@@ -2404,11 +2361,11 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         est_means_index = self.estm_cb.findText(self.occurrence['est_means'][self.row_position], Qt.MatchFixedString)
         self.estm_cb.setCurrentIndex(est_means_index)
 
-        spawn_con_index = self.spawningCondition.findText(self.occurrence['spawn_con'][self.row_position], Qt.MatchFixedString)
-        self.spawningCondition.setCurrentIndex(spawn_con_index)
+        spawn_con_index = self.spwnc_cb.findText(self.occurrence['spawn_con'][self.row_position], Qt.MatchFixedString)
+        self.spwnc_cb.setCurrentIndex(spawn_con_index)
 
-        spawn_loc_index = self.spawningLocation.findText(self.occurrence['spawn_loc'][self.row_position], Qt.MatchFixedString)
-        self.spawningLocation.setCurrentIndex(spawn_loc_index)
+        spawn_loc_index = self.spwnl_cb.findText(self.occurrence['spawn_loc'][self.row_position], Qt.MatchFixedString)
+        self.spwnl_cb.setCurrentIndex(spawn_loc_index)
 
         self.establishmentRemarks.setText(self.occurrence['est_remarks'][self.row_position])
 
@@ -2425,7 +2382,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.occ_tbl.setRowCount(len(self.occurrence['taxon']))
         self.occ_tbl.setColumnCount(12)
-        self.row_position = 0
 
         self.occ_tbl.setSelectionBehavior(QTableWidget.SelectRows);
 
