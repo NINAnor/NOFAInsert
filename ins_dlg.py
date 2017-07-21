@@ -70,19 +70,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.settings = QSettings(self.org, self.app_name)
 
-        self.host_str = u'host'
-        self.port_str = u'port'
-        self.db_str = u'database'
-        self.usr_str = u'user'
-        self.pwd_str = u'password'
-
-        self.con_str_tpl = (
-            self.host_str,
-            self.port_str,
-            self.db_str,
-            self.usr_str,
-            self.pwd_str)
-
         self.sel_str = u'Select'
         self.none_str = str(None)
 
@@ -373,8 +360,8 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.deleteOccurrence.clicked.connect(self.delete_occurrence_row)
 
         # Table clicked events
-        self.tableWidget.itemClicked.connect(self.update_row)
-        self.tableWidget.verticalHeader().sectionClicked.connect(self.update_header)
+        self.occ_tbl.itemClicked.connect(self.update_row)
+        self.occ_tbl.verticalHeader().sectionClicked.connect(self.update_header)
         # set the occurrenceStatus checkbox to True, as a default initial status
         #self.occurrenceStatus.setChecked(True)
 
@@ -390,7 +377,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         # history tab is disabled
         self.tabWidget.setTabEnabled(1, False)
 
-        self.taxonID.currentIndexChanged.connect(self._pop_ectp_cb)
+        self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
 
         # taxonomic coverage treewidget parent item changed
         self.taxonomicCoverage.itemChanged.connect(self.checked_tree)
@@ -424,16 +411,16 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         :return: 
         """
 
-        if self.taxonID.currentText():
-            self.occurrence['taxon'][self.row_position] = self.taxonID.currentText()
+        if self.txn_cb.currentText():
+            self.occurrence['taxon'][self.row_position] = self.txn_cb.currentText()
 
             # update the preview conditions for taxon presence
-            if self.taxonID.currentText() != 'Select':
+            if self.txn_cb.currentText() != 'Select':
                 #QMessageBox.information(None, "DEBUG:", str(self.occurrence['taxon']))
                 if 'Select' not in self.occurrence['taxon']:
                     self.preview_conditions['taxon_selected'] = True
                     self.check_preview_conditions()
-            elif self.taxonID.currentText() == 'Select':
+            elif self.txn_cb.currentText() == 'Select':
                 self.preview_conditions['taxon_selected'] = False
                 self.check_preview_conditions()
         else:
@@ -487,22 +474,22 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             except:
                 newitem = QTableWidgetItem(unicode(item))
             # setItem(row, column, QTableWidgetItem)
-            self.tableWidget.setItem(self.row_position, m, newitem)
+            self.occ_tbl.setItem(self.row_position, m, newitem)
 
     def delete_occurrence_row(self):
         """Delete a row from occurrence table on button click."""
 
         # checks if table contains occurrences
-        if self.tableWidget.rowCount()==0:
+        if self.occ_tbl.rowCount()==0:
             return
 
         for i, key in enumerate(self.occurrence.keys()):
             del self.occurrence[key][self.row_position]
 
-        self.tableWidget.removeRow(self.row_position)
+        self.occ_tbl.removeRow(self.row_position)
 
         self.row_position = 0
-        self.tableWidget.selectRow(self.row_position)
+        self.occ_tbl.selectRow(self.row_position)
         self.occurrence_number.setText(unicode(self.row_position + 1))
 
         # Check if some row with taxon remains:
@@ -545,7 +532,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
             self.row_position = 0
 
-            self.tableWidget_occurrences.setSelectionBehavior(QTableWidget.SelectRows)
+            self.occ_tbl_occurrences.setSelectionBehavior(QTableWidget.SelectRows)
 
             #  populate tableWidget
 
@@ -560,10 +547,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
             lim = len(fetched_occ)
 
-            self.tableWidget_occurrences.setRowCount(lim)
-            self.tableWidget_occurrences.setColumnCount(9)
+            self.occ_tbl_occurrences.setRowCount(lim)
+            self.occ_tbl_occurrences.setColumnCount(9)
 
-            self.tableWidget_occurrences.setHorizontalHeaderLabels(
+            self.occ_tbl_occurrences.setHorizontalHeaderLabels(
                 self.occ_hdrs)
 
             for l in range(lim):
@@ -574,11 +561,11 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                     newitem = QTableWidgetItem(unicode(occurrence[n]))
 
                         # setItem(row, column, QTableWidgetItem)
-                    self.tableWidget_occurrences.setItem(l, n, newitem)
+                    self.occ_tbl_occurrences.setItem(l, n, newitem)
 
         elif self.tabWidget_history.currentIndex() == 1:
             # add locations log entries to history -> locations
-            self.tableWidget_locations.setSelectionBehavior(QTableWidget.SelectRows)
+            self.occ_tbl_locations.setSelectionBehavior(QTableWidget.SelectRows)
 
             cur = self._get_db_cur()
             try:
@@ -592,10 +579,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
             lim = len(fetched_location_logs)
 
-            self.tableWidget_locations.setRowCount(lim)
-            self.tableWidget_locations.setColumnCount(5)
+            self.occ_tbl_locations.setRowCount(lim)
+            self.occ_tbl_locations.setColumnCount(5)
 
-            self.tableWidget_locations.setHorizontalHeaderLabels(
+            self.occ_tbl_locations.setHorizontalHeaderLabels(
                 self.loc_hdrs)
 
             for l in range(lim):
@@ -605,10 +592,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                     newitem = QTableWidgetItem(unicode(locations[n]))
 
                         # setItem(row, column, QTableWidgetItem)
-                    self.tableWidget_locations.setItem(l, n, newitem)
+                    self.occ_tbl_locations.setItem(l, n, newitem)
 
         elif self.tabWidget_history.currentIndex() == 2:
-            self.tableWidget_datasets.setSelectionBehavior(QTableWidget.SelectRows)
+            self.occ_tbl_datasets.setSelectionBehavior(QTableWidget.SelectRows)
 
             cur = self._get_db_cur()
             try:
@@ -622,10 +609,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
             lim = len(fetched_datasets)
 
-            self.tableWidget_datasets.setRowCount(lim)
-            self.tableWidget_datasets.setColumnCount(4)
+            self.occ_tbl_datasets.setRowCount(lim)
+            self.occ_tbl_datasets.setColumnCount(4)
 
-            self.tableWidget_datasets.setHorizontalHeaderLabels(
+            self.occ_tbl_datasets.setHorizontalHeaderLabels(
                 self.dtst_hdrs)
 
             for l in range(lim):
@@ -635,11 +622,11 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                     newitem = QTableWidgetItem(unicode(dataset[n]))
 
                         # setItem(row, column, QTableWidgetItem)
-                    self.tableWidget_datasets.setItem(l, n, newitem)
+                    self.occ_tbl_datasets.setItem(l, n, newitem)
 
         elif self.tabWidget_history.currentIndex() == 3:
 
-            self.tableWidget_projects.setSelectionBehavior(QTableWidget.SelectRows)
+            self.occ_tbl_projects.setSelectionBehavior(QTableWidget.SelectRows)
 
             cur = self._get_db_cur()
             try:
@@ -653,10 +640,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
             lim = len(fetched_projects)
 
-            self.tableWidget_projects.setRowCount(lim)
-            self.tableWidget_projects.setColumnCount(4)
+            self.occ_tbl_projects.setRowCount(lim)
+            self.occ_tbl_projects.setColumnCount(4)
 
-            self.tableWidget_projects.setHorizontalHeaderLabels(
+            self.occ_tbl_projects.setHorizontalHeaderLabels(
                 self.prj_hdrs)
 
             for l in range(lim):
@@ -665,11 +652,11 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                     newitem = QTableWidgetItem(unicode(projects[n]))
 
                     # setItem(row, column, QTableWidgetItem)
-                    self.tableWidget_projects.setItem(l, n, newitem)
+                    self.occ_tbl_projects.setItem(l, n, newitem)
 
         elif self.tabWidget_history.currentIndex() == 4:
 
-            self.tableWidget_references.setSelectionBehavior(QTableWidget.SelectRows)
+            self.occ_tbl_references.setSelectionBehavior(QTableWidget.SelectRows)
 
             cur = self._get_db_cur()
             try:
@@ -682,10 +669,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
             lim = len(fetched_references)
 
-            self.tableWidget_references.setRowCount(lim)
-            self.tableWidget_references.setColumnCount(4)
+            self.occ_tbl_references.setRowCount(lim)
+            self.occ_tbl_references.setColumnCount(4)
 
-            self.tableWidget_references.setHorizontalHeaderLabels(
+            self.occ_tbl_references.setHorizontalHeaderLabels(
                 self.ref_hdrs)
 
             for l in range(lim):
@@ -694,7 +681,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                     newitem = QTableWidgetItem(unicode(references[n]))
 
                     # setItem(row, column, QTableWidgetItem)
-                    self.tableWidget_references.setItem(l, n, newitem)
+                    self.occ_tbl_references.setItem(l, n, newitem)
 
     def filter_occurrences_by_username(self):
 
@@ -726,10 +713,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         lim = len(fetched_occ)
 
-        self.tableWidget_occurrences.setRowCount(lim)
-        self.tableWidget_occurrences.setColumnCount(9)
+        self.occ_tbl_occurrences.setRowCount(lim)
+        self.occ_tbl_occurrences.setColumnCount(9)
 
-        self.tableWidget_occurrences.setHorizontalHeaderLabels(
+        self.occ_tbl_occurrences.setHorizontalHeaderLabels(
             self.occ_hdrs)
 
         for l in range(lim):
@@ -738,7 +725,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                 newitem = QTableWidgetItem(unicode(occurrence[n]))
 
                 # setItem(row, column, QTableWidgetItem)
-                self.tableWidget_occurrences.setItem(l, n, newitem)
+                self.occ_tbl_occurrences.setItem(l, n, newitem)
 
     def filter_occurrence_by_time(self):
 
@@ -771,10 +758,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         lim = len(fetched_occ)
 
-        self.tableWidget_occurrences.setRowCount(lim)
-        self.tableWidget_occurrences.setColumnCount(9)
+        self.occ_tbl_occurrences.setRowCount(lim)
+        self.occ_tbl_occurrences.setColumnCount(9)
 
-        self.tableWidget_occurrences.setHorizontalHeaderLabels(
+        self.occ_tbl_occurrences.setHorizontalHeaderLabels(
             self.occ_hdrs)
 
         for l in range(lim):
@@ -783,7 +770,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                 newitem = QTableWidgetItem(unicode(occurrence[n]))
 
                 # setItem(row, column, QTableWidgetItem)
-                self.tableWidget_occurrences.setItem(l, n, newitem)
+                self.occ_tbl_occurrences.setItem(l, n, newitem)
 
     def filter_by_user_and_time(self):
 
@@ -820,10 +807,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         lim = len(fetched_occ)
 
-        self.tableWidget_occurrences.setRowCount(lim)
-        self.tableWidget_occurrences.setColumnCount(9)
+        self.occ_tbl_occurrences.setRowCount(lim)
+        self.occ_tbl_occurrences.setColumnCount(9)
 
-        self.tableWidget_occurrences.setHorizontalHeaderLabels(
+        self.occ_tbl_occurrences.setHorizontalHeaderLabels(
             self.occ_hdrs)
 
         for l in range(lim):
@@ -832,7 +819,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                 newitem = QTableWidgetItem(unicode(occurrence[n]))
 
                 # setItem(row, column, QTableWidgetItem)
-                self.tableWidget_occurrences.setItem(l, n, newitem)
+                self.occ_tbl_occurrences.setItem(l, n, newitem)
 
     def checked_tree(self, item):
         """Checking/Unchecking taxa based on hierarchical groups.
@@ -2221,7 +2208,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             SELECT      "datasetID" dsid,
                         "datasetName" dsn
             FROM        nofa."m_dataset"
-            ORDER BY    dsn;
+            ORDER BY    dsid, dsn;
             ''')
         dtsts = cur.fetchall()
 
@@ -2231,6 +2218,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.dtst_cb.clear()
         self.dtst_cb.addItems(dtst_list)
+        self.dtst_cb.model().item(0).setEnabled(False)
 
     def get_dtst_str(self, id, name):
         """
@@ -2342,15 +2330,16 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         txn_list = [t[0] for t in txns]
         txn_list.insert(0, self.sel_str)
 
-        self.taxonID.clear()
-        self.taxonID.addItems(txn_list)
+        self.txn_cb.clear()
+        self.txn_cb.addItems(txn_list)
+        self.txn_cb.model().item(0).setEnabled(False)
 
     def _pop_ectp_cb(self):
         """
         Populates the ecotype combo box.
         """
 
-        txn_name = self.taxonID.currentText()
+        txn_name = self.txn_cb.currentText()
 
         cur = self._get_db_cur()
         cur.execute(
@@ -2375,8 +2364,8 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         """syncs the occurrence form with the chosen row of the occurrence table"""
 
         # set current taxon value
-        taxon_index = self.taxonID.findText(self.occurrence['taxon'][self.row_position], Qt.MatchFixedString)
-        self.taxonID.setCurrentIndex(taxon_index)
+        taxon_index = self.txn_cb.findText(self.occurrence['taxon'][self.row_position], Qt.MatchFixedString)
+        self.txn_cb.setCurrentIndex(taxon_index)
 
         ecotype_index = self.ecotypeID.findText(self.occurrence['ecotype'][self.row_position], Qt.MatchFixedString)
         self.ecotypeID.setCurrentIndex(ecotype_index)
@@ -2415,18 +2404,16 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.occurrence_number.setStyleSheet('color: black')
         # self.frame.setStyleSheet('color: white')
 
-    def create_occurrence_table(self):
-        """creates occurrence table and populates it one row of default values"""
+    def create_occ_tbl(self):
+        """
+        Creates an occurrence table with one row of default values.
+        """
 
-        #currentrow = self.tableWidget.rowCount()
-        #self.tableWidget.insertRow(currentrow)
-
-        #set rows and columns for tableWidget
-        self.tableWidget.setRowCount(len(self.occurrence['taxon']))
-        self.tableWidget.setColumnCount(12)
+        self.occ_tbl.setRowCount(len(self.occurrence['taxon']))
+        self.occ_tbl.setColumnCount(12)
         self.row_position = 0
 
-        self.tableWidget.setSelectionBehavior(QTableWidget.SelectRows);
+        self.occ_tbl.setSelectionBehavior(QTableWidget.SelectRows);
 
         #  populate tableWidget
         headers = []
@@ -2438,8 +2425,8 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                 except:
                     newitem = QTableWidgetItem(str(item))
                 # setItem(row, column, QTableWidgetItem)
-                self.tableWidget.setItem(m, n, newitem)
-            self.tableWidget.setHorizontalHeaderLabels(headers)
+                self.occ_tbl.setItem(m, n, newitem)
+            self.occ_tbl.setHorizontalHeaderLabels(headers)
 
         self.update_occurrence_form()
         #QMessageBox.information(None, "DEBUG:", str(headers))
@@ -2450,7 +2437,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         # check if Table has some entries
         # check if last row is empty
 
-        if (self.tableWidget.rowCount() > 0 and self.is_last_row_empty()):
+        if (self.occ_tbl.rowCount() > 0 and self.is_last_row_empty()):
             # do not add an occurrence
             QMessageBox.information(None, "Information",
                                     "The last occurrence is empty. " +
@@ -2459,8 +2446,8 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
 
         # adds a new occurrence row in occurrence table
-        self.row_position = self.tableWidget.rowCount()
-        self.tableWidget.insertRow(self.row_position)
+        self.row_position = self.occ_tbl.rowCount()
+        self.occ_tbl.insertRow(self.row_position)
 
         # add a new occurrence record in self.occurrence dictionary and table
         for n, key in enumerate(sorted(self.occurrence.keys())):
@@ -2470,9 +2457,9 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             if isinstance(item, datetime.date):
                 item = unicode(item)
             new_item = QTableWidgetItem(item)
-            self.tableWidget.setItem(self.row_position, n, new_item)
+            self.occ_tbl.setItem(self.row_position, n, new_item)
 
-        self.tableWidget.selectRow(self.row_position)
+        self.occ_tbl.selectRow(self.row_position)
         self.update_occurrence_form()
 
         self.preview_conditions['taxon_selected'] = False
@@ -2485,7 +2472,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         """Checks if last row is empty"""
 
         # use last row number in case not the last occurrence is clicked
-        last_row_number = self.tableWidget.rowCount() - 1
+        last_row_number = self.occ_tbl.rowCount() - 1
 
         # iterate trough values of last row
         for key, value in self.occurrence.iteritems():
@@ -2523,13 +2510,13 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         # moving selection one row up in occurrence table
         if self.row_position > 0:
             self.row_position = self.row_position - 1
-        self.tableWidget.selectRow(self.row_position)
+        self.occ_tbl.selectRow(self.row_position)
         self.update_occurrence_form()
 
     def row_down(self):
         # moving selection one row down in occurrence table
-        if self.row_position < (self.tableWidget.rowCount() - 1):
+        if self.row_position < (self.occ_tbl.rowCount() - 1):
             self.row_position = self.row_position + 1
-        self.tableWidget.selectRow(self.row_position)
+        self.occ_tbl.selectRow(self.row_position)
         self.update_occurrence_form()
 

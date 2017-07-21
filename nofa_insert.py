@@ -227,5 +227,5 @@ class NOFAInsert:
             return
 
         self.ins_dlg.fetch_db()
-        self.ins_dlg.create_occurrence_table()
+        self.ins_dlg.create_occ_tbl()
         self.ins_dlg.show()

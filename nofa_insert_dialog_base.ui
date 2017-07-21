@@ -73,7 +73,7 @@
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QComboBox" name="taxonID">
+               <widget class="QComboBox" name="txn_cb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -537,7 +537,7 @@
             </layout>
            </item>
            <item row="0" column="1" rowspan="2">
-            <widget class="QTableWidget" name="tableWidget">
+            <widget class="QTableWidget" name="occ_tbl">
              <property name="sizePolicy">
               <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
