@@ -1929,23 +1929,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         
         self._pop_txn_cb()
 
-        #################################
-        '''
-        # Get ecotypes from database
-        cur = self._get_db_cur()
-        cur.execute(u'SELECT "vernacularName_NO" FROM nofa."l_ecotype" GROUP BY "vernacularName_NO";')
-        ecotypes = cur.fetchall()
-
-        # Create a python-list from query result
-        ecotypes_list = [e[0] for e in ecotypes]
-        #QMessageBox.information(None, "DEBUG:", unicode(ecotypes_list))
-        # Inject sorted python-list for ecotypes into UI
-        ecotypes_list.sort()
-        self.ecotypeID.clear()
-        self.ecotypeID.addItems(ecotypes_list)
-        '''
-        ##########################################
-
         # Get organismQuantity from database
         cur = self._get_db_cur()
         cur.execute(
@@ -2256,6 +2239,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.prj_cb.clear()
         self.prj_cb.addItems(proj_list)
+        self.prj_cb.model().item(0).setEnabled(False)
 
     def get_prj_str(self, org, no, name):
         """
@@ -2295,6 +2279,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.ref_cb.clear()
         self.ref_cb.addItems(ref_list)
+        self.ref_cb.model().item(0).setEnabled(False)
 
     def get_ref_str(self, au, ttl, id):
         """
