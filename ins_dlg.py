@@ -1024,9 +1024,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
                         self.new_locs.append([locationID, x, y, srid, waterbody])
 
-                        #QMessageBox.information(None, "DEBUG:", str(loc[4]))
-                        #QMessageBox.information(None, "DEBUG:", str("loc not found"))
-
             self.locations['location'] = coords
 
 
@@ -1495,99 +1492,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                 # cur.execute(insert_log_occurrence)
 
         QMessageBox.information(None, "DEBUG:", "occurrences correctly stored in NOFA db")
-
-    def open_reference_dialog(self):
-        """On button click opens the Project Metadata Editing Dialog"""
-        self.rfrdlg = ReferenceDialog()
-        self.rfrdlg.show()
-
-        ###########################################################################
-
-
-        # Get referenceType from database
-        cur = self._get_db_cur()
-        cur.execute(u'SELECT "referenceType" FROM nofa."l_referenceType";')
-        refType = cur.fetchall()
-
-        # Create a python-list from query result
-        refType_list = [r[0] for r in refType]
-
-        # Inject sorted python-list for referenceType into UI
-        refType_list.sort()
-        self.rfrdlg.referenceType.clear()
-        self.rfrdlg.referenceType.addItems(refType_list)
-        self.rfrdlg.referenceType.setCurrentIndex(refType_list.index("Unknown"))
-
-        ###########################################################################
-
-
-        self.rfrdlg.date.setDate(self.today)
-
-        self.rfrdlg.year.setDate(self.today)
-        # self.o_modified.setDate(nextWeek)
-
-        self.rfrdlg.reference_dialog_button.clicked.connect(self.reference_button)
-
-    def reference_button(self):
-        """
-                method inserting new reference entries to m_reference table
-                and log entries in plugin_project_log
-                """
-
-        doi = self.rfrdlg.doi.text()
-        author = self.rfrdlg.author.text()
-        reference_type = self.rfrdlg.referenceType.currentText()
-        year = self.rfrdlg.year.date()
-        title = self.rfrdlg.title.toPlainText()
-        journal_name = self.rfrdlg.journalName.text()
-        volume = self.rfrdlg.volume.text()
-        date = self.rfrdlg.date.date()
-        issn = self.rfrdlg.issn.text()
-        isbn = self.rfrdlg.isbn.text()
-        page = self.rfrdlg.page.text()
-
-        cur = self._get_db_cur()
-        cur.execute(u'SELECT max("referenceID") FROM nofa.m_reference;')
-        max_rfr_id = cur.fetchone()[0]
-        #QMessageBox.information(None, "DEBUG:", str(max_rfr_id))
-        new_r_id = max_rfr_id + 1
-
-        cur = self._get_db_cur()
-
-        insert_reference = cur.mogrify(
-            """
-            INSERT INTO    nofa.m_reference({})
-            VALUES         {}
-            RETURNING      "referenceID"
-            """.format(
-                self.insert_reference_columns,
-                self.reference_values), (
-                    new_r_id, doi, author, reference_type, int(year.year()),
-                    title, journal_name, volume, date.toPyDate(),
-                    issn, isbn, page,))
-
-        #QMessageBox.information(None, "DEBUG:", insert_reference)
-
-        cur.execute(insert_reference)
-
-        returned = cur.fetchone()[0]
-        #QMessageBox.information(None, "DEBUG:", str(returned))
-
-        ##################
-        # Insert a reference log entry
-
-        cur = self._get_db_cur()
-
-        insert_reference_log = cur.mogrify("INSERT INTO nofa.plugin_reference_log({}) VALUES {}".format(
-            self.insert_log_reference_columns,
-            self.log_reference_values,
-        ), (returned, True, self.username,))
-
-        #QMessageBox.information(None, "DEBUG:", insert_reference_log)
-
-        cur.execute(insert_reference_log)
-
-        self.get_existing_references()
 
     def upd_dtst(self, dtst_id_name=None):
         """
