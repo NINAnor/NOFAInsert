@@ -224,18 +224,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             'event_remarks': 'None',
             'reliability': 'Select'}
 
-        self.reference = {
-            'reference_id': 'None',
-            'authors': 'None',
-            'reference_type': 'None',
-            'year': 'None',
-            'title': 'None',
-            'journal': 'None',
-            'volume': 'None',
-            'issn': 'None',
-            'isbn': 'None',
-            'page': 'None'}
-
         self.occ_hdrs = [
             "occurrence_id",
             "event_id",
@@ -1695,27 +1683,14 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             (ref_id,))
         ref = cur.fetchone()
 
-        self.reference['reference_id'] = ref[0]
-        self.reference['authors'] = unicode(ref[1])
-        self.reference['reference_type'] = unicode(ref[2])
-        self.reference['year'] = unicode(ref[3])
-        self.reference['title'] = unicode(ref[4])
-        self.reference['journal'] = unicode(ref[5])
-        self.reference['volume'] = unicode(ref[6])
-        self.reference['issn'] = unicode(ref[7])
-        self.reference['isbn'] = unicode(ref[8])
-        self.reference['page'] = unicode(ref[9])
-
-        for key, value in self.reference.iteritems():
-            ref_item = QListWidgetItem(key + ':    ' + unicode(value))
+        for idx, ref_data in enumerate(ref):
+            ref_item = QListWidgetItem(
+                u'{}: {}'.format(cur.description[idx][0], ref_data))
             self.listview_reference.addItem(ref_item)
 
         self._set_mtdt_item_text(
             4,
-            u'{}{}{}'.format(
-                self.ref_str,
-                self.dash_split_str,
-                self.reference['title']))
+            u'{}{}{}'.format(self.ref_str, self.dash_split_str, ref[4]))
 
         self.settings.setValue('reference_au_til_id', ref_au_til_id)
 
