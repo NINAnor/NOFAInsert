@@ -152,13 +152,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.log_location_values = u'(%s,%s,%s,%s)'
 
-        self.preview_conditions = {
-            'dataset_selected': False,
-            'project_selected': False,
-            'taxon_selected': False,
-            'est_means_selected': False,
-            'quantity': False}
-
         self.language = 'Latin'
 
         self.species_names = {
@@ -230,18 +223,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             'recorded_by': 'unknown',
             'event_remarks': 'None',
             'reliability': 'Select'}
-
-        self.project = {
-            'project_id': 'None',
-            'project_name': 'None',
-            'project_number': 'None',
-            'start_year': 'None',
-            'end_year': 'None',
-            'leader': 'None',
-            'members': 'None',
-            'organisation': 'None',
-            'financer': 'None',
-            'project_remarks': 'None'}
 
         self.reference = {
             'reference_id': 'None',
@@ -1629,8 +1610,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         prj_no = split_prj_org_no_name[1]
         prj_name = split_prj_org_no_name[2]
 
-        self.preview_conditions['project_selected'] = True
-
         cur = self._get_db_cur()
         cur.execute(
             '''
@@ -1654,19 +1633,9 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             (prj_org, prj_no, prj_name,))
         prj = cur.fetchone()
 
-        self.project['project_number'] = unicode(prj[0])
-        self.project['project_name'] = prj[1]
-        self.project['start_year'] = unicode(prj[2])
-        self.project['end_year'] = unicode(prj[3])
-        self.project['project_leader'] = prj[4]
-        self.project['members'] = prj[5]
-        self.project['organisation'] = prj[6]
-        self.project['financer'] = prj[7]
-        self.project['project_remarks'] = prj[8]
-        self.project['project_id'] = prj[9]
-
-        for key, value in self.project.iteritems():
-            prj_item = QListWidgetItem(key + ':    ' + unicode(value))
+        for idx, prj_data in enumerate(prj):
+            prj_item = QListWidgetItem(
+                u'{}: {}'.format(cur.description[idx][0], prj_data))
             self.listview_project.addItem(prj_item)
 
         self._set_mtdt_item_text(
