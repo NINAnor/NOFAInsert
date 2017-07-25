@@ -231,18 +231,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             'event_remarks': 'None',
             'reliability': 'Select'}
 
-        self.dataset = {
-            'dataset_id': 'None',
-            'rightsholder': 'None',
-            'dataset_name': 'None',
-            'owner_institution': 'None',
-            'access_rights': 'None',
-            'license': 'None',
-            'citation': 'None',
-            'comment': 'None',
-            'information': 'None',
-            'generalizations': 'None'}
-
         self.project = {
             'project_id': 'None',
             'project_name': 'None',
@@ -1561,12 +1549,9 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         if isinstance(dtst_id_name, int):
             dtst_id_name = self.dtst_cb.currentText()
 
-
         dtst_id = dtst_id_name.split(self.dash_split_str)[0]
 
         self.listview_dataset.clear()
-
-        self.preview_conditions['dataset_selected'] = True
 
         cur = self._get_db_cur()
         cur.execute(
@@ -1586,26 +1571,14 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             (dtst_id,))
         dtst = cur.fetchone()
 
-        self.dataset['dataset_id'] = dtst[0]
-        self.dataset['dataset_name'] = dtst[1]
-        self.dataset['rightsholder'] = dtst[2]
-        self.dataset['owner_institution'] = dtst[3]
-        self.dataset['license'] = dtst[4]
-        self.dataset['citation'] = dtst[5]
-        self.dataset['comment'] = dtst[6]
-        self.dataset['information'] = dtst[7]
-        self.dataset['generalizations'] = dtst[8]
-
-        for key, value in self.dataset.iteritems():
-            dtst_item = QListWidgetItem(key + ':    ' + unicode(value))
+        for idx, dtst_data in enumerate(dtst):
+            dtst_item = QListWidgetItem(
+                u'{}: {}'.format(cur.description[idx][0], dtst_data))
             self.listview_dataset.addItem(dtst_item)
 
         self._set_mtdt_item_text(
             2,
-            u'{}{}{}'.format(
-                self.dtst_str,
-                self.dash_split_str,
-                self.dataset['dataset_name']))
+            u'{}{}{}'.format(self.dtst_str, self.dash_split_str, dtst[1]))
 
         self.settings.setValue('dataset_id_name', dtst_id_name)
 
