@@ -297,8 +297,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.prj_str = u'Project'
         self.ref_str = u'Reference'
 
-        self.ins_btn.setStyleSheet("background-color: #F6CECE")
-
         self.adddtst_btn.clicked.connect(self._open_dtst_dlg)
         self.addprj_btn.clicked.connect(self._open_prj_dlg)
         self.addref_btn.clicked.connect(self._open_ref_dlg)
