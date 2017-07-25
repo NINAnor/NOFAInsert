@@ -255,7 +255,8 @@ class PrjDlg(QDialog):
                                 %(projectLeader)s,
                                 %(projectMembers)s,
                                 %(financer)s,
-                                %(remarks)s);
+                                %(remarks)s)
+            RETURNING       "projectID"
             ''',
             {'organisation': org,
              'projectNumber': no,
@@ -266,8 +267,9 @@ class PrjDlg(QDialog):
              'projectMembers': mbr,
              'financer': fncr,
              'remarks': rmk})
+        id = cur.fetchone()[0]
 
         self.stat_bar.showMessage(u'Project saved.', 10000)
 
         self.mw.pop_prj_cb()
-        self.mw.upd_prj(self.mw.get_prj_str(org, no, name))
+        self.mw.upd_prj(self.mw.get_prj_str(org, no, name, id))

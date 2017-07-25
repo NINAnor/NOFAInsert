@@ -26,7 +26,7 @@ from PyQt4.QtCore import (
 from PyQt4.QtGui import (
     QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget,
     QTableWidgetItem, QColor, QFont, QCompleter, QLineEdit, QDialog,
-    QDoubleValidator, QIntValidator)
+    QDoubleValidator, QIntValidator, QComboBox, QLineEdit, QDateEdit)
 
 from qgis.core import *
 
@@ -44,6 +44,16 @@ import datetime
 import uuid
 import sys
 import os
+
+
+class NoLocationException(Exception):
+    """
+    A custom exception when no location is provided.
+    """
+
+    pass
+
+
 
 from PyQt4 import QtGui, uic
 
@@ -84,7 +94,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.year = datetime.datetime.today().year
         self.nxt_week = self.today + datetime.timedelta(days=7)
 
-        self.dtst_de.setDate(self.today)
+        self.dtstrt_de.setDate(self.today)
         self.dtend_de.setDate(self.today)
         self.verdt_de.setDate(self.nxt_week)
 
@@ -110,9 +120,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             """
         # creating the string for event data insertion to nofa.event table. fieldNotes is used just for testing purposes
 
-        # 16 event values, placeholders
-        self.event_values = u'(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-
         self.insert_log_occurrence = \
             """
             INSERT INTO     nofa.plugin_occurrence_log (
@@ -124,21 +131,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                                 "location_id",
                                 "test",
                                 "username")
-            VALUES\n
-            """
-
-        self.insert_dataset = \
-            """
-            INSERT INTO     nofa.m_dataset (
-                                "rightsHolder",
-                                "ownerInstitutionCode",
-                                "datasetName",
-                                "accessRights",
-                                "license",
-                                "bibliographicCitation",
-                                "datasetComment",
-                                "informationWithheld",
-                                "dataGeneralization")
             VALUES\n
             """
 
@@ -189,6 +181,11 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             'Norwegian VatnLnr': 'no_vatn_lnr',
             'coordinates UTM32': 25832,
             'coordinates UTM33': 25833,}
+
+        self.loctp_list = [
+            'Norwegian VatnLnr',
+            'coordinates UTM32',
+            'coordinates UTM33']
 
         self.occurrence_base = {
             'taxon': 'Select',
@@ -312,12 +309,11 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.prj_str = u'Project'
         self.ref_str = u'Reference'
 
-        self.insert_button.setStyleSheet("background-color: #F6CECE")
+        self.ins_btn.setStyleSheet("background-color: #F6CECE")
 
-        self.editDatasetButton.clicked.connect(self._open_dtst_dlg)
-        self.editProjectButton.clicked.connect(self._open_prj_dlg)
-        self.edit_reference_button.clicked.connect(self._open_ref_dlg)
-
+        self.adddtst_btn.clicked.connect(self._open_dtst_dlg)
+        self.addprj_btn.clicked.connect(self._open_prj_dlg)
+        self.addref_btn.clicked.connect(self._open_ref_dlg)
 
         self.dtst_cb.activated.connect(self._upd_dtst_lw)
         self.prj_cb.activated.connect(self._upd_prj_lw)
@@ -326,10 +322,8 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.occ_tbl.currentItemChanged.connect(self._upd_occ_gb_at_selrow)
         self.rowup_btn.clicked.connect(self._sel_row_up)
         self.rowdwn_btn.clicked.connect(self._sel_row_dwn)
-
-        self.deleteOccurrence.clicked.connect(self._del_occ_row)
-
-        self.update_row_button.clicked.connect(self.update_occurrence_row)
+        self.addocc_btn.clicked.connect(self._add_occ_row)
+        self.delocc_btn.clicked.connect(self._del_occ_row)
 
         # trigger action when history tabs are clicked
         self.tabWidget.currentChanged.connect(self.history_tab_clicked)
@@ -342,21 +336,63 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
 
-        self.insert_button.clicked.connect(self.preview)
-
-        self.addOccurrence.clicked.connect(self.add_occurrence)
-
-        # taxonomic coverage treewidget parent item changed
-        self.txncvg_tw.itemChanged.connect(self.checked_tree)
+        self.ins_btn.clicked.connect(self._ins)
 
         # filter occurrences by username and time interval
         self.username_filter_button.clicked.connect(self.filter_occurrences_by_username)
         self.time_filter_button.clicked.connect(self.filter_occurrence_by_time)
         self.combined_filter_button.clicked.connect(self.filter_by_user_and_time)
 
-        self.sampleSizeValue.setValidator(QDoubleValidator(None))
-        self.samplingEffort.setValidator(QIntValidator(None))
-        self.oq_cb.setValidator(QDoubleValidator(None))
+        self.smpsv_le.setValidator(QIntValidator(None))
+        self.smpe_le.setValidator(QIntValidator(None))
+        self.oq_le.setValidator(QDoubleValidator(None))
+
+        self.event_input_wdgs = [
+            self.smpp_cb,
+            self.smpsv_le,
+            self.smpsu_cb,
+            self.smpe_le,
+            self.dtstrt_de,
+            self.dtend_de,
+            self.rcdby_le,
+            self.eventrmk_le,
+            self.relia_cb]
+
+        self.occ_input_wdgs = [
+            self.txn_cb,
+            self.ectp_cb,
+            self.oqt_cb,
+            self.oq_le,
+            self.occstat_cb,
+            self.poptrend_cb,
+            self.occrmk_le,
+            self.estm_cb,
+            self.estrmk_le,
+            self.spwnc_cb,
+            self.spwnl_cb,
+            self.vfdby_le,
+            self.verdt_de]
+
+        self.occ_le_wdgs = []
+        self.occ_cb_wdgs = []
+        self.occ_de_wdgs = []
+
+        for wdg in self.occ_input_wdgs:
+            if isinstance(wdg, QLineEdit):
+                self.occ_le_wdgs.append(wdg)
+            elif isinstance(wdg, QComboBox):
+                self.occ_cb_wdgs.append(wdg)
+            elif isinstance(wdg, QDateEdit):
+                self.occ_de_wdgs.append(wdg)
+
+        for occ_le_wdg in self.occ_le_wdgs:
+            occ_le_wdg.textChanged.connect(self._upd_occ_row)
+
+        for occ_cb_wdg in self.occ_cb_wdgs:
+            occ_cb_wdg.activated.connect(self._upd_occ_row)
+
+        for occ_de_wdg in self.occ_de_wdgs:
+            occ_de_wdg.dateChanged.connect(self._upd_occ_row)
 
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -371,102 +407,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('NOFAInsert', message)
-
-    def update_occurrence_row(self):
-        """
-        Inserts the data from the occurrence form into the occurrence table
-        :return: 
-        """
-
-        if self.txn_cb.currentText():
-            self.occurrence['taxon'][self.row] = self.txn_cb.currentText()
-
-            # update the preview conditions for taxon presence
-            if self.txn_cb.currentText() != 'Select':
-                #QMessageBox.information(None, "DEBUG:", str(self.occurrence['taxon']))
-                if 'Select' not in self.occurrence['taxon']:
-                    self.preview_conditions['taxon_selected'] = True
-                    self.check_preview_conditions()
-            elif self.txn_cb.currentText() == 'Select':
-                self.preview_conditions['taxon_selected'] = False
-                self.check_preview_conditions()
-        else:
-            self.occurrence['taxon'][self.row] = 'None'
-
-        if self.estm_cb.currentText():
-            self.occurrence['est_means'][self.row] = self.estm_cb.currentText()
-
-            if self.estm_cb.currentText() != ' ' or self.estm_cb.currentText() != 'Select':
-                #QMessageBox.information(None, "DEBUG:", str(self.occurrence['taxon']))
-                if 'Select' not in self.occurrence['est_means']:
-                    self.preview_conditions['est_means_selected'] = True
-                    self.check_preview_conditions()
-            elif self.estm_cb.currentText() == 'Select' or self.estm_cb.currentText() == ' ':
-                self.preview_conditions['est_means_selected'] = False
-                self.check_preview_conditions()
-
-
-        if self.oqt_cb.currentText():
-            self.occurrence['quantity'][self.row] = self.oqt_cb.currentText()
-
-            if self.oqt_cb.currentText() != ' ' or self.oqt_cb.currentText() != 'Select':
-                #QMessageBox.information(None, "DEBUG:", str(self.occurrence['taxon']))
-                if 'Select' not in self.occurrence['quantity']:
-                    self.preview_conditions['quantity'] = True
-                    self.check_preview_conditions()
-            elif self.oqt_cb.currentText() == 'Select' or self.oqt_cb.currentText() == ' ':
-                self.preview_conditions['quantity'] = False
-                self.check_preview_conditions()
-
-        self.occurrence['ecotype'][self.row] = self.ectp_cb.currentText()
-        #QMessageBox.information(None, "DEBUG:", str(self.occurrence['ecotype'][self.row]))
-
-
-        #self.occurrence['quantity'][self.row] = self.oqt_cb.currentText()
-        self.occurrence['metric'][self.row] = self.oq_cb.text()
-        self.occurrence['status'][self.row] = self.occstat_cb.currentText()
-        self.occurrence['trend'][self.row] = self.poptrend_cb.currentText()
-        self.occurrence['oc_remarks'][self.row] = self.occrmk_le.text()
-
-        self.occurrence['est_remarks'][self.row] = self.estrmk_le.text()
-        self.occurrence['spawn_con'][self.row] = self.spwnc_cb.currentText()
-        self.occurrence['spawn_loc'][self.row] = self.spwnl_cb.currentText()
-        self.occurrence['verified_by'][self.row] = self.vfdby_le.text()
-        self.occurrence['verified_date'][self.row] = self.verdt_de.date()
-
-        for m, key in enumerate(sorted(self.occurrence.keys())):
-            item = self.occurrence[key][self.row]
-            try:
-                newitem = QTableWidgetItem(item)
-            except:
-                newitem = QTableWidgetItem(unicode(item))
-            # setItem(row, column, QTableWidgetItem)
-            self.occ_tbl.setItem(self.row, m, newitem)
-
-    def _del_occ_row(self):
-        """
-        Delete a row from the occurrence table.
-        """
-        QgsMessageLog.logMessage(str(self.occ_tbl.rowCount()), 'test')
-        if self.occ_tbl.rowCount() == 1:
-            return
-        else:
-            for i, key in enumerate(self.occurrence.keys()):
-                del self.occurrence[key][self.row]
-
-            self.occ_tbl.removeRow(self.row)
-    
-            self.row = 0
-            self.occ_tbl.selectRow(self.row)
-            self.occno_lbl.setText(unicode(self.row + 1))
-
-            # Check if some row with taxon remains:
-            if 'Select' in self.occurrence['taxon']:
-                self.preview_conditions['taxon_selected'] = False
-                self.check_preview_conditions()
-            elif 'Select' not in self.occurrence['taxon']:
-                self.preview_conditions['taxon_selected'] = True
-                self.check_preview_conditions()
 
     def history_tab_clicked(self):
         #QMessageBox.information(None, "DEBUG:",  str(self.tabWidget.currentIndex()))
@@ -789,36 +729,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                 # setItem(row, column, QTableWidgetItem)
                 self.occ_tbl_occurrences.setItem(l, n, newitem)
 
-    def checked_tree(self, item):
-        """Checking/Unchecking taxa based on hierarchical groups.
-        Triggered by items checked/unchecked in TaxonomicCoverage QWidgetTree"""
-        counted = item.childCount()
-        if counted != 0:
-
-            if item.checkState(0) == Qt.Checked:
-                for i in range(counted):
-                    child = item.child(i)
-                    child.setCheckState(0, Qt.Checked)
-
-                    newcounted = child.childCount()
-                    if newcounted != 0:
-                        for n in range(newcounted):
-                            newchild = child.child(n)
-                            newchild.setCheckState(0, Qt.Checked)
-
-                    #QMessageBox.information(None, "DEBUG:", str(item.childCount()))
-            elif item.checkState(0) == Qt.Unchecked:
-                #QMessageBox.information(None, "DEBUG:", "item unchecked")
-                for i in range(counted):
-                    child = item.child(i)
-                    child.setCheckState(0, Qt.Unchecked)
-
-                    newcounted = child.childCount()
-                    if newcounted != 0:
-                        for n in range(newcounted):
-                            newchild = child.child(n)
-                            newchild.setCheckState(0, Qt.Unchecked)
-
     def _open_dtst_dlg(self):
         """
         Opens a dialog for adding a new dataset.
@@ -843,6 +753,286 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.ref_dlg = ref_dlg.RefDlg(self)
         self.ref_dlg.show()
 
+    def _ins(self):
+        """
+        Insert the data into the database.
+        """
+
+        try:
+            loc_id_list = self._get_loc()
+    
+            event_list = self._get_event_list()
+    
+            dtst_id = self._get_dtst_id()
+            prj_id = self._get_prj_id()
+    
+            for loc_id in loc_id_list:
+                event_id = uuid.uuid4()
+    
+                cur = self._get_db_cur()
+                cur.execute(
+                    '''
+                    INSERT INTO    nofa.event (
+                                       "locationID",
+                                       "eventID",
+                                       "samplingProtocol",
+                                       "sampleSizeValue",
+                                       "sampleSizeUnit",
+                                       "samplingEffort",
+                                       "dateStart",
+                                       "dateEnd",
+                                       "recordedBy",
+                                       "eventRemarks",
+                                       "reliability",
+                                       "datasetID",
+                                       "projectID")
+                    VALUES         (   %(locationID)s,
+                                       %(eventID)s,
+                                       %(samplingProtocol)s,
+                                       %(sampleSizeValue)s,
+                                       %(sampleSizeUnit)s,
+                                       %(samplingEffort)s,
+                                       %(dateStart)s,
+                                       %(dateEnd)s,
+                                       %(recordedBy)s,
+                                       %(eventRemarks)s,
+                                       %(reliability)s,
+                                       %(datasetID)s,
+                                       %(projectID)s)
+                    ''',
+                    {'locationID': loc_id,
+                     'eventID': event_id,
+                     'samplingProtocol': event_list[0],
+                     'sampleSizeValue': event_list[1],
+                     'sampleSizeUnit': event_list[2],
+                     'samplingEffort': event_list[3],
+                     'dateStart': event_list[4],
+                     'dateEnd': event_list[5],
+                     'recordedBy': event_list[6],
+                     'eventRemarks': event_list[7],
+                     'reliability': event_list[8],
+                     'datasetID': dtst_id,
+                     'projectID': prj_id})
+    
+                # self._ins_txncvg(event_id)
+    
+                for m in range(self.occ_tbl.rowCount()):
+                    occ_id = uuid.uuid4()
+    
+                    occ_row_list = []
+    
+                    # OS.NINA
+                    # depends on the order in the table
+                    for n in range(self.occ_tbl.columnCount()):
+                        text = self.occ_tbl.item(m, n).text()
+    
+                        occ_row_list.append(text)
+    
+                    txn =  occ_row_list[0]
+    
+                    cur = self._get_db_cur()
+                    cur.execute(
+                        '''
+                        SELECT      "taxonID"
+                        FROM        nofa."l_taxon"
+                        WHERE       "scientificName" = %s
+                        ''',
+                        (txn,))
+    
+                    txn_id = cur.fetchone()[0]
+    
+                    ectp = occ_row_list[1]
+    
+                    cur = self._get_db_cur()
+                    cur.execute(
+                        '''
+                        SELECT      "ecotypeID"
+                        FROM        nofa."l_ecotype"
+                        WHERE       "vernacularName" = %s
+                        ''',
+                        (ectp,))
+    
+                    ectp_id = cur.fetchone()[0] if cur.rowcount != 0 else None
+    
+                    QgsMessageLog.logMessage(str(type(occ_row_list[3])), 'test')
+    
+                    cur = self._get_db_cur()
+                    cur.execute(
+                        '''
+                        INSERT INTO    nofa."occurrence" (
+                                           "occurrenceID",
+                                           "taxonID",
+                                           "ecotypeID",
+                                           "organismQuantityType",
+                                           "organismQuantity",
+                                           "occurrenceStatus",
+                                           "populationTrend",
+                                           "occurrenceRemarks",
+                                           "establishmentMeans",
+                                           "establishmentRemarks",
+                                           "spawningCondition",
+                                           "spawningLocation",
+                                           "verifiedBy",
+                                           "verifiedDate",
+                                           "modified",
+                                           "eventID")
+                        VALUES         (   %(occurrenceID)s,
+                                           %(taxonID)s,
+                                           %(ecotypeID)s,
+                                           %(organismQuantityType)s,
+                                           %(organismQuantity)s,
+                                           %(occurrenceStatus)s,
+                                           %(populationTrend)s,
+                                           %(occurrenceRemarks)s,
+                                           %(establishmentMeans)s,
+                                           %(establishmentRemarks)s,
+                                           %(spawningCondition)s,
+                                           %(spawningLocation)s,
+                                           %(verifiedBy)s,
+                                           %(verifiedDate)s,
+                                           %(modified)s,
+                                           %(eventID)s)
+                        ''',
+                        {'occurrenceID': occ_id,
+                         'taxonID': txn_id,
+                         'ecotypeID': ectp_id,
+                         'organismQuantityType': occ_row_list[2],
+                         'organismQuantity': float(occ_row_list[3]) \
+                            if len(occ_row_list[3]) != 0 else None,
+                         'occurrenceStatus': occ_row_list[4],
+                         'populationTrend': occ_row_list[5],
+                         'occurrenceRemarks': occ_row_list[6],
+                         'establishmentMeans': occ_row_list[7],
+                         'establishmentRemarks': occ_row_list[8],
+                         'spawningCondition': occ_row_list[9],
+                         'spawningLocation': occ_row_list[10],
+                         'verifiedBy': occ_row_list[11],
+                         'verifiedDate': occ_row_list[12],
+                         'modified': datetime.datetime.now(),
+                         'eventID': event_id})
+    
+            QMessageBox.information(self, u'Saved', u'Data correctly saved.')
+        except NoLocationException:
+            QMessageBox.warning(self, u'No Location', u'Enter a location.')
+
+    def _get_event_list(self):
+        """
+        Returns the data from event input widgets.
+
+        :returns: A list of data from event input widgets.
+        :rtype: list.
+        """
+
+        event_list = []
+
+        for wdg in self.event_input_wdgs:
+
+            if isinstance(wdg, QLineEdit):
+                if isinstance(wdg.validator, QIntValidator):
+                    event_data = int(wdg.text()) \
+                        if len(wdg.text()) != 0 else None
+                else:
+                    event_data = wdg.text() if len(wdg.text()) != 0 else None
+            elif isinstance(wdg, QComboBox):
+                event_data = wdg.currentText()
+            elif isinstance(wdg, QDateEdit):
+                event_data = wdg.date().toPyDate()
+
+            event_list.append(event_data)
+
+        return event_list
+
+    def _ins_txncvg(self, eventid):
+        """
+        Inserts all checked taxons into the database.
+
+        :param eventid: An event ID.
+        :type eventid: uuid.UUID.
+        """
+
+        for txn in self._get_ckd_txns():
+            cur = self._get_db_cur()
+            cur.execute(
+                '''
+                SELECT          "taxonID"
+                FROM            nofa."l_taxon"
+                WHERE           "scientificName" = '%s'
+                '''
+                (txn,))
+            txnid = cur.fetchone()[0]
+
+            # OS.NINA
+            # this query does not work
+            # TODO - solve PK 
+            cur = self._get_db_cur()
+            cur.execute(
+                '''
+                INSERT INTO     nofa.taxonomicCoverage(
+                                    "taxonID_l_taxon",
+                                    "eventID_observationEvent")
+                VALUES          (%s,%s);
+                ''',
+                (txnid, eventid))
+
+    def _get_ckd_txns(self):
+        """
+        Returns all checked taxons from the taxon coverage tree widget.
+
+        :returns: A list of all checked taxons.
+        :rtype: list.
+        """
+
+        txn_list = []
+
+        all_item = self.txncvg_tw.invisibleRootItem().child(0)
+
+        for i in range(all_item.childCount()):
+            fam_item = all_item.child(i)
+
+            for j in range(fam_item.childCount()):
+                txn_item = fam_item.child(j)
+
+                if txn_item.checkState(0) == Qt.Checked:
+                    txn_list.append(txn_item.text(0))
+
+        return txn_list
+
+    def _get_loc(self):
+        """
+        Returns a list of location IDs.
+
+        :returns: A list of location IDs.
+        :rtype: list.
+        """
+
+        loctp = self.loctp_cb.currentText()
+        # OS.NINA
+        # add string check
+        if len(self.loc_le.text()) != 0:
+            locs_tpl = tuple(self.loc_le.text().split(u','))
+        else:
+            raise NoLocationException()
+
+        # OS.NINA
+        # add other location types
+        if loctp == 'Norwegian VatnLnr':
+            cur = self._get_db_cur()
+            cur.execute(
+                '''
+                SELECT      distinct "locationID" lid
+                FROM        nofa.location
+                WHERE       "no_vatn_lnr" IN %s
+                ORDER BY    lid
+                ''',
+                (locs_tpl,))
+            loc_ids = cur.fetchall()
+
+            loc_id_list = [l[0] for l in loc_ids]
+
+        return loc_id_list
+
+    # OS.NINA
+    # it is left here because other location types need to be implemented
     def get_location(self):
 
         # initialise data and metadata containers:
@@ -999,130 +1189,8 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
             self.locations['location'] = coords
 
-
-    def check_preview_conditions(self):
-
-        if False not in self.preview_conditions.values():
-            self.insert_button.setStyleSheet("background-color: #E0F8EC")
-        elif False in self.preview_conditions.values():
-            self.insert_button.setStyleSheet("background-color: #F6CECE")
-
-
-    def preview(self):
-
-        #QMessageBox.information(None, "DEBUG:", str(self.occurrence))
-
-        # Check if all required info is available before going to preview
-        if False in self.preview_conditions.values():
-            QMessageBox.information(None, "DEBUG:", "Please check if all required information is provided")
-            return
-
-
-        # Get the locations:
-        self.get_location()
-        #self.locations['location'] =
-
-
-        #Get Event Data
-
-        self.event['protocol'] = self.smpp_cb.currentText()
-        self.event['size_value'] = self.sampleSizeValue.text()
-        self.event['size_unit'] = self.smpsu_cb.currentText()
-        self.event['effort'] = self.samplingEffort.text()
-        self.event['date_start'] = self.dtst_de.date()
-        self.event['date_end'] = self.dtend_de.date()
-        self.event['recorded_by'] = self.recordedBy_e.text()
-        self.event['event_remarks'] = self.eventRemarks.text()
-        self.event['reliability'] = self.relia_cb.currentText()
-
-        #QMessageBox.information(None, "DEBUG:", str(self.event))
-        self.prwdlg = PreviewDialog()
-        self.prwdlg.show()
-
-        self.container = [
-            self.event,
-            self.dataset,
-            self.project,
-            self.reference]
-
-        listWidget_list = [
-            self.prwdlg.listWidget_4,
-            self.prwdlg.listWidget_5,
-            self.prwdlg.listWidget_6,
-            self.prwdlg.listWidget_7]
-
-        # Set the locations
-        for elem in self.locations['location']:
-            self.prwdlg.listWidget_1.addItem(QListWidgetItem(elem))
-
-        # Get taxonomic coverage items
-        root = self.txncvg_tw.invisibleRootItem()
-        counted = root.childCount()
-        #QMessageBox.information(None, "DEBUG:", str(counted))
-
-        taxon_list = []
-
-        for index in range(counted):
-            base = root.child(index)
-            new_counted = base.childCount()
-            #QMessageBox.information(None, "DEBUG:", str(new_counted))
-            for t in range(new_counted):
-                family = base.child(t)
-
-                very_new_count = family.childCount()
-                for n in range(very_new_count):
-                    taxon = family.child(n)
-                    taxon_list.append(taxon.text(0))
-
-                    if taxon.checkState(0) == Qt.Checked:
-                        self.prwdlg.listWidget_3.addItem(QListWidgetItem(taxon.text(0)))
-
-        #QMessageBox.information(None, "DEBUG:", str(taxon_list))
-        # 5616, 5627, 10688
-
-
-        # populate the preview list widgets with info from previous forms
-        for i in range(4):
-
-            for key, value in self.container[i].iteritems():
-                if value == u'' or value == u'unknown' or value == u'None':
-                    prwitem = QListWidgetItem(key + ':    None')
-                    prwitem.setTextColor(QColor("red"))
-                else:
-                    prwitem = QListWidgetItem(key + ':    ' + unicode(value))
-                    prwitem.setTextColor(QColor("green"))
-
-                listWidget_list[i].addItem(prwitem)
-
-        ## Create the preview occurrence table
-
-
-        self.prwdlg.table.setColumnCount(12)
-
-        m = len(self.occurrence['taxon'])
-        self.prwdlg.table.setRowCount(m)
-
-
-        self.prwdlg.table.setSelectionBehavior(QTableWidget.SelectRows);
-        #QMessageBox.information(None, "DEBUG:", str(self.occurrence))
-        #  populate tableWidget
-        headers = []
-        for n, key in enumerate(self.occurrence.keys()):
-            self.prwdlg.table.setColumnWidth(n, 94)
-            headers.append(key)
-            #QMessageBox.information(None, "DEBUG:", str(headers))
-            for m, item in enumerate(self.occurrence[key]):
-
-                if key == 'verified_date':
-                    newitem = QTableWidgetItem(item.toString())
-                else:
-                    newitem = QTableWidgetItem(unicode(item))
-                # setItem(row, column, QTableWidgetItem)
-                self.prwdlg.table.setItem(m, n, newitem)
-        self.prwdlg.table.setHorizontalHeaderLabels(headers)
-        self.prwdlg.confirmButton.clicked.connect(self.confirmed)
-
-
+    # OS.NINA
+    # it is left here because adding new location needs to be implemented
     def confirmed(self):
         """
         This method sends the occurrences, events and locations information to NOFA DB
@@ -1474,12 +1542,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         :type dtst_id_name: str.
         """
 
+        dtst_id_name = self.settings.value('dataset_id_name')
+
         if not dtst_id_name:
-            dtst_id_name = self.settings.value('dataset_id_name', self.sel_str)
-
-        dtst_cb_index = self.dtst_cb.findText(dtst_id_name)
-
-        self.dtst_cb.setCurrentIndex(dtst_cb_index)
+            dtst_id_name = self.dtst_cb.currentText()
 
         self._upd_dtst_lw(dtst_id_name)
 
@@ -1495,68 +1561,53 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         if isinstance(dtst_id_name, int):
             dtst_id_name = self.dtst_cb.currentText()
 
+
         dtst_id = dtst_id_name.split(self.dash_split_str)[0]
 
         self.listview_dataset.clear()
 
-        if dtst_id != self.sel_str:
-            self.preview_conditions['dataset_selected'] = True
+        self.preview_conditions['dataset_selected'] = True
 
-            cur = self._get_db_cur()
-            cur.execute(
-                '''
-                SELECT      "datasetID",
-                            "datasetName",
-                            "rightsHolder",
-                            "institutionCode",
-                            "license",
-                            "bibliographicCitation",
-                            "datasetComment",
-                            "informationWithheld",
-                            "dataGeneralizations"
-                FROM        nofa."m_dataset"
-                WHERE       "datasetID" = (%s);
-                ''',
-                (dtst_id,))
-            dtst = cur.fetchone()
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT      "datasetID",
+                        "datasetName",
+                        "rightsHolder",
+                        "institutionCode",
+                        "license",
+                        "bibliographicCitation",
+                        "datasetComment",
+                        "informationWithheld",
+                        "dataGeneralizations"
+            FROM        nofa."m_dataset"
+            WHERE       "datasetID" = (%s);
+            ''',
+            (dtst_id,))
+        dtst = cur.fetchone()
 
-            self.dataset['dataset_id'] = dtst[0]
-            self.dataset['dataset_name'] = dtst[1]
-            self.dataset['rightsholder'] = dtst[2]
-            self.dataset['owner_institution'] = dtst[3]
-            self.dataset['license'] = dtst[4]
-            self.dataset['citation'] = dtst[5]
-            self.dataset['comment'] = dtst[6]
-            self.dataset['information'] = dtst[7]
-            self.dataset['generalizations'] = dtst[8]
+        self.dataset['dataset_id'] = dtst[0]
+        self.dataset['dataset_name'] = dtst[1]
+        self.dataset['rightsholder'] = dtst[2]
+        self.dataset['owner_institution'] = dtst[3]
+        self.dataset['license'] = dtst[4]
+        self.dataset['citation'] = dtst[5]
+        self.dataset['comment'] = dtst[6]
+        self.dataset['information'] = dtst[7]
+        self.dataset['generalizations'] = dtst[8]
 
-            for key, value in self.dataset.iteritems():
-                dtst_item = QListWidgetItem(key + ':    ' + unicode(value))
-                self.listview_dataset.addItem(dtst_item)
+        for key, value in self.dataset.iteritems():
+            dtst_item = QListWidgetItem(key + ':    ' + unicode(value))
+            self.listview_dataset.addItem(dtst_item)
 
-            self._set_mtdt_item_text(
-                2,
-                u'{}{}{}'.format(
-                    self.dtst_str,
-                    self.dash_split_str,
-                    self.dataset['dataset_name']))
-        else:
-            self.preview_conditions['dataset_selected'] = False
-
-            for key, value in self.dataset.iteritems():
-                dtst_item = QListWidgetItem(key + ':    ' + self.none_str)
-                self.listview_dataset.addItem(dtst_item)
-
-            self._set_mtdt_item_text(
-                2,
-                u'{}{}{}'.format(
-                    self.dtst_str,
-                    self.dash_split_str,
-                    self.none_str))
+        self._set_mtdt_item_text(
+            2,
+            u'{}{}{}'.format(
+                self.dtst_str,
+                self.dash_split_str,
+                self.dataset['dataset_name']))
 
         self.settings.setValue('dataset_id_name', dtst_id_name)
-
-        self.check_preview_conditions()
 
     def _set_mtdt_item_text(self, item_index, text):
         """
@@ -1579,13 +1630,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         :type prj_org_no_name: str.
         """
 
+        prj_org_no_name = self.settings.value('project_org_no_name')
+
         if not prj_org_no_name:
-            prj_org_no_name = self.settings.value(
-                'project_org_no_name', self.sel_str)
-
-        proj_cb_index = self.prj_cb.findText(prj_org_no_name)
-
-        self.prj_cb.setCurrentIndex(proj_cb_index)
+            prj_org_no_name = self.prj_cb.currentText()
 
         self._upd_prj_lw(prj_org_no_name)
 
@@ -1602,91 +1650,72 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         if isinstance(prj_org_no_name, int):
             prj_org_no_name = self.prj_cb.currentText()
 
-        split_prj_org_no_name = prj_org_no_name.split(self.dash_split_str)
-        prj_org = split_prj_org_no_name[0]
-
         self.listview_project.clear()
 
-        if prj_org != self.sel_str:
-            prj_no = split_prj_org_no_name[1]
-            prj_name = split_prj_org_no_name[2]
+        split_prj_org_no_name = prj_org_no_name.split(self.dash_split_str)
 
-            self.preview_conditions['project_selected'] = True
+        prj_org = split_prj_org_no_name[0]
+        prj_no = split_prj_org_no_name[1]
+        prj_name = split_prj_org_no_name[2]
 
-            cur = self._get_db_cur()
-            cur.execute(
-                '''
-                SELECT      "projectNumber",
-                            "projectName",
-                            "startYear",
-                            "endYear",
-                            "projectLeader",
-                            "projectMembers",
-                            "organisation",
-                            "financer",
-                            "remarks",
-                            "projectID"
-                FROM        nofa."m_project"
-                WHERE       "organisation" = %s
-                            AND
-                            "projectNumber" = %s
-                            AND
-                            "projectName" = %s;
-                ''',
-                (prj_org, prj_no, prj_name,))
-            prj = cur.fetchone()
+        self.preview_conditions['project_selected'] = True
 
-            self.project['project_number'] = unicode(prj[0])
-            self.project['project_name'] = prj[1]
-            self.project['start_year'] = unicode(prj[2])
-            self.project['end_year'] = unicode(prj[3])
-            self.project['project_leader'] = prj[4]
-            self.project['members'] = prj[5]
-            self.project['organisation'] = prj[6]
-            self.project['financer'] = prj[7]
-            self.project['project_remarks'] = prj[8]
-            self.project['project_id'] = prj[9]
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT      "projectNumber",
+                        "projectName",
+                        "startYear",
+                        "endYear",
+                        "projectLeader",
+                        "projectMembers",
+                        "organisation",
+                        "financer",
+                        "remarks",
+                        "projectID"
+            FROM        nofa."m_project"
+            WHERE       "organisation" = %s
+                        AND
+                        "projectNumber" = %s
+                        AND
+                        "projectName" = %s;
+            ''',
+            (prj_org, prj_no, prj_name,))
+        prj = cur.fetchone()
 
-            for key, value in self.project.iteritems():
-                prj_item = QListWidgetItem(key + ':    ' + unicode(value))
-                self.listview_project.addItem(prj_item)
+        self.project['project_number'] = unicode(prj[0])
+        self.project['project_name'] = prj[1]
+        self.project['start_year'] = unicode(prj[2])
+        self.project['end_year'] = unicode(prj[3])
+        self.project['project_leader'] = prj[4]
+        self.project['members'] = prj[5]
+        self.project['organisation'] = prj[6]
+        self.project['financer'] = prj[7]
+        self.project['project_remarks'] = prj[8]
+        self.project['project_id'] = prj[9]
 
-            self._set_mtdt_item_text(
-                3,
-                u'{}{}{}'.format(
-                    self.prj_str,
-                    self.dash_split_str,
-                    prj_org_no_name))
-        else:
-            self.preview_conditions['project_selected'] = False
+        for key, value in self.project.iteritems():
+            prj_item = QListWidgetItem(key + ':    ' + unicode(value))
+            self.listview_project.addItem(prj_item)
 
-            for key, value in self.dataset.iteritems():
-                prj_item = QListWidgetItem(key + ':    ' + self.none_str)
-                self.listview_project.addItem(prj_item)
-
-            self._set_mtdt_item_text(
-                3,
-                u'{}{}{}'.format(
-                    self.prj_str,
-                    self.dash_split_str,
-                    self.none_str))
+        self._set_mtdt_item_text(
+            3,
+            u'{}{}{}'.format(
+                self.prj_str,
+                self.dash_split_str,
+                prj_org_no_name))
 
         self.settings.setValue('project_org_no_name', prj_org_no_name)
-
-        self.check_preview_conditions()
 
     def upd_ref(self, ref_au_til_id=None):
         """
         Updates a reference according to the last selected.
         """
 
+        ref_au_til_id = self.settings.value('reference_au_til_id')
+
         if not ref_au_til_id:
-            ref_au_til_id = self.settings.value(
-                'reference_au_til_id', self.sel_str)
-
-        ref_cb_index = self.ref_cb.findText(ref_au_til_id)
-
-        self.ref_cb.setCurrentIndex(ref_cb_index)
+            ref_au_til_id = self.ref_cb.currentText()
 
         self._upd_ref_lw(ref_au_til_id)
 
@@ -1702,69 +1731,53 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         if isinstance(ref_au_til_id, int):
             ref_au_til_id = self.ref_cb.currentText()
-        if ref_au_til_id == self.sel_str:
-            ref_id = self.sel_str
-        else:
-            ref_id = ref_au_til_id.split(self.at_split_str)[1]
+
+        ref_id = ref_au_til_id.split(self.at_split_str)[1]
 
         self.listview_reference.clear()
 
-        if ref_id != self.sel_str:
-            cur = self._get_db_cur()
-            cur.execute(
-                '''
-                SELECT      "referenceID",
-                            "author",
-                            "referenceType",
-                            "year",
-                            "titel",
-                            "journalName",
-                            "volume",
-                            "issn",
-                            "isbn",
-                            "page"
-                FROM        nofa."m_reference"
-                WHERE       "referenceID" = (%s);
-                ''',
-                (ref_id,))
-            ref = cur.fetchone()
+        cur = self._get_db_cur()
+        cur.execute(
+            '''
+            SELECT      "referenceID",
+                        "author",
+                        "referenceType",
+                        "year",
+                        "titel",
+                        "journalName",
+                        "volume",
+                        "issn",
+                        "isbn",
+                        "page"
+            FROM        nofa."m_reference"
+            WHERE       "referenceID" = (%s);
+            ''',
+            (ref_id,))
+        ref = cur.fetchone()
 
-            self.reference['reference_id'] = ref[0]
-            self.reference['authors'] = unicode(ref[1])
-            self.reference['reference_type'] = unicode(ref[2])
-            self.reference['year'] = unicode(ref[3])
-            self.reference['title'] = unicode(ref[4])
-            self.reference['journal'] = unicode(ref[5])
-            self.reference['volume'] = unicode(ref[6])
-            self.reference['issn'] = unicode(ref[7])
-            self.reference['isbn'] = unicode(ref[8])
-            self.reference['page'] = unicode(ref[9])
+        self.reference['reference_id'] = ref[0]
+        self.reference['authors'] = unicode(ref[1])
+        self.reference['reference_type'] = unicode(ref[2])
+        self.reference['year'] = unicode(ref[3])
+        self.reference['title'] = unicode(ref[4])
+        self.reference['journal'] = unicode(ref[5])
+        self.reference['volume'] = unicode(ref[6])
+        self.reference['issn'] = unicode(ref[7])
+        self.reference['isbn'] = unicode(ref[8])
+        self.reference['page'] = unicode(ref[9])
 
-            for key, value in self.reference.iteritems():
-                ref_item = QListWidgetItem(key + ':    ' + unicode(value))
-                self.listview_reference.addItem(ref_item)
+        for key, value in self.reference.iteritems():
+            ref_item = QListWidgetItem(key + ':    ' + unicode(value))
+            self.listview_reference.addItem(ref_item)
 
-            self._set_mtdt_item_text(
-                4,
-                u'{}{}{}'.format(
-                    self.ref_str,
-                    self.dash_split_str,
-                    self.reference['title']))
-        else:
-            for key, value in self.dataset.iteritems():
-                ref_item = QListWidgetItem(key + ':    ' + self.none_str)
-                self.listview_reference.addItem(ref_item)
-
-            self._set_mtdt_item_text(
-                4,
-                u'{}{}{}'.format(
-                    self.ref_str,
-                    self.dash_split_str,
-                    self.none_str))
+        self._set_mtdt_item_text(
+            4,
+            u'{}{}{}'.format(
+                self.ref_str,
+                self.dash_split_str,
+                self.reference['title']))
 
         self.settings.setValue('reference_au_til_id', ref_au_til_id)
-
-        self.check_preview_conditions()
 
     def _get_db_cur(self):
         """
@@ -1834,18 +1847,22 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         root_item.setCheckState(0, Qt.Unchecked)
         root_item.setFlags(Qt.ItemIsUserCheckable|Qt.ItemIsEnabled)
 
-        for family in fam_dict.keys():
-            family_item = QTreeWidgetItem(root_item, [family])
+        for fam in fam_dict.keys():
+            family_item = QTreeWidgetItem(root_item, [fam])
             family_item.setCheckState(0, Qt.Unchecked)
             family_item.setFlags(Qt.ItemIsUserCheckable|Qt.ItemIsEnabled)
 
-            for taxon in fam_dict[family]:
-                txn_item = QTreeWidgetItem(family_item, [taxon])
+            for txn in fam_dict[fam]:
+                txn_item = QTreeWidgetItem(family_item, [txn])
                 txn_item.setCheckState(0, Qt.Unchecked)
                 txn_item.setFlags(Qt.ItemIsUserCheckable|Qt.ItemIsEnabled)
 
         self.txncvg_tw.sortByColumn(0, Qt.AscendingOrder)
         self.txncvg_tw.expandToDepth(0)
+
+    def _get_ckd_txn(self):
+        root = self.txncvg_tw.invisibleRootItem()
+        
 
     def pop_dtst_cb(self):
         """
@@ -1862,13 +1879,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             ''')
         dtsts = cur.fetchall()
 
-        dtst_list = [
-            self.get_dtst_str(d[0], d[1]) for d in dtsts]
-        dtst_list.insert(0, self.sel_str)
+        dtst_list = [self.get_dtst_str(d[0], d[1]) for d in dtsts]
 
         self.dtst_cb.clear()
         self.dtst_cb.addItems(dtst_list)
-        self.dtst_cb.model().item(0).setEnabled(False)
 
     def get_dtst_str(self, id, name):
         """
@@ -1884,6 +1898,20 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         return dtst_str
 
+    def _get_dtst_id(self):
+        """
+        Returns a dataset id from the dataset combo box.
+
+        :returns: A dataset ID.
+        :rtype: str.
+        """
+
+        dtst_str = self.dtst_cb.currentText()
+
+        id = dtst_str.split(self.dash_split_str)[0]
+
+        return id
+
     def pop_prj_cb(self):
         """
         Populates the project combo box.
@@ -1894,23 +1922,21 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             '''
             SELECT      "organisation" o,
                         "projectNumber" pno,
-                        "projectName" pn
+                        "projectName" pn,
+                        "projectID" pid
             FROM        nofa."m_project"
-            ORDER BY    o, pno, pn;
+            ORDER BY    o, pno, pn, pid
             ''')
         prjs = cur.fetchall()
 
-        proj_list = [
-            self.get_prj_str(p[0], p[1], p[2]) for p in prjs]
-        proj_list.insert(0, self.sel_str)
+        proj_list = [self.get_prj_str(p[0], p[1], p[2], p[3]) for p in prjs]
 
         self.prj_cb.clear()
         self.prj_cb.addItems(proj_list)
-        self.prj_cb.model().item(0).setEnabled(False)
 
-    def get_prj_str(self, org, no, name):
+    def get_prj_str(self, org, no, name, id):
         """
-        Returns a project string "<organisation> - <number> - <name>"
+        Returns a project string "<organisation> - <number> - <name> - <ID>"
 
         :param org: A project organization.
         :type org: str.
@@ -1918,12 +1944,33 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         :type no: str.
         :param name: A project name.
         :type name: str.
+        :param id: A project ID.
+        :type id: int.
         """
 
-        prj_str = u'{}{}{}{}{}'.format(
-            org, self.dash_split_str, no, self.dash_split_str, name)
+        prj_str = u'{}{}{}{}{}{}{}'.format(
+            org,
+            self.dash_split_str,
+            no,
+            self.dash_split_str,
+            name,
+            self.dash_split_str,
+            id)
 
         return prj_str
+
+    def _get_prj_id(self):
+        """
+        Returns a project ID from the project combo box.
+        """
+
+        prj_str = self.prj_cb.currentText()
+
+        split_prj_str = prj_str.split(self.dash_split_str)
+
+        id = split_prj_str[3]
+
+        return id
 
     def pop_ref_cb(self):
         """
@@ -1942,11 +1989,9 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         refs = cur.fetchall()
 
         ref_list = [self.get_ref_str(r[1], r[2], r[0]) for r in refs]
-        ref_list.insert(0, self.sel_str)
 
         self.ref_cb.clear()
         self.ref_cb.addItems(ref_list)
-        self.ref_cb.model().item(0).setEnabled(False)
 
     def get_ref_str(self, au, ttl, id):
         """
@@ -1973,18 +2018,16 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         cur.execute(
             '''
             SELECT      "scientificName" sn
-            FROM        nofa.l_taxon
+            FROM        nofa."l_taxon"
             WHERE       "taxonRank" IN ('species', 'hybrid', 'genus')
             ORDER BY    sn
             ''')
         txns = cur.fetchall()
 
         txn_list = [t[0] for t in txns]
-        txn_list.insert(0, self.sel_str)
 
         self.txn_cb.clear()
         self.txn_cb.addItems(txn_list)
-        self.txn_cb.model().item(0).setEnabled(False)
 
     def _pop_ectp_cb(self):
         """
@@ -1997,9 +2040,9 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         cur.execute(
             '''
             SELECT      e."vernacularName" vn
-            FROM        nofa.l_ecotype e
+            FROM        nofa."l_ecotype" e
                         JOIN
-                        nofa.l_taxon t ON e."taxonID" = t."taxonID"
+                        nofa."l_taxon" t ON e."taxonID" = t."taxonID"
             WHERE       t."scientificName" = %s
             ORDER BY    vn;
             ''',
@@ -2007,11 +2050,9 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         ectps = cur.fetchall()
 
         ectp_list = [e[0] for e in ectps]
-        ectp_list.insert(0, self.sel_str)
 
         self.ectp_cb.clear()
         self.ectp_cb.addItems(ectp_list)
-        self.ectp_cb.model().item(0).setEnabled(False)
 
     def _pop_oqt_cb(self):
         """
@@ -2027,11 +2068,9 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             ''')
         oqts  = cur.fetchall()
         oqt_list = [o[0] for o in oqts]
-        oqt_list.insert(0, self.sel_str)
 
         self.oqt_cb.clear()
         self.oqt_cb.addItems(oqt_list)
-        self.oqt_cb.model().item(0).setEnabled(False)
 
     def _pop_occstat_cb(self):
         """
@@ -2047,11 +2086,9 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             ''')
         occstats  = cur.fetchall()
         occstat_list = [o[0] for o in occstats]
-        occstat_list.insert(0, self.sel_str)
 
         self.occstat_cb.clear()
         self.occstat_cb.addItems(occstat_list)
-        self.occstat_cb.model().item(0).setEnabled(False)
 
     def _pop_poptrend_cb(self):
         """
@@ -2086,11 +2123,9 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             ''')
         estms  = cur.fetchall()
         estm_list = [e[0] for e in estms]
-        estm_list.insert(0, self.sel_str)
 
         self.estm_cb.clear()
         self.estm_cb.addItems(estm_list)
-        self.estm_cb.model().item(0).setEnabled(False)
 
     def _pop_smpp_cb(self):
         """
@@ -2109,8 +2144,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.smpp_cb.clear()
         self.smpp_cb.addItems(smpp_list)
-        smpp_idx = self.smpp_cb.findText(self.event['protocol'])
-        self.smpp_cb.setCurrentIndex(smpp_idx)
 
     def _pop_reliab_cb(self):
         """
@@ -2147,8 +2180,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.smpsu_cb.clear()
         self.smpsu_cb.addItems(smpsu_list)
-        smpsu_idx = self.smpsu_cb.findText(self.event['size_unit'])
-        self.smpsu_cb.setCurrentIndex(smpsu_idx)
 
     def _pop_spwnc_cb(self):
         """
@@ -2167,9 +2198,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.spwnc_cb.clear()
         self.spwnc_cb.addItems(spwnc_list)
-        spwnc_idx = self.spwnc_cb.findText(
-            self.occurrence['spawn_con'][self.row])
-        self.spwnc_cb.setCurrentIndex(spwnc_idx)
 
     def _pop_spwnl_cb(self):
         """
@@ -2188,9 +2216,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.spwnl_cb.clear()
         self.spwnl_cb.addItems(spwnl_list)
-        spwnl_idx = self.spwnl_cb.findText(
-            self.occurrence['spawn_loc'][self.row])
-        self.spwnl_cb.setCurrentIndex(spwnl_idx)
 
     def _pop_loctp_cb(self):
         """
@@ -2200,143 +2225,130 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         # OS.NINA
         # location types are hardcoded
         # could not find a list of location types in db
-        loctp_list = self.loctp_dict.keys()
+        loctp_list = self.loctp_list
         loctp_list.sort()
 
         self.loctp_cb.clear()
         self.loctp_cb.addItems(loctp_list)
         self.loctp_cb.setCurrentIndex(loctp_list.index('Norwegian VatnLnr'))
 
+        # OS.NINA
+        # other location types are disabled for now
+        self.loctp_cb.model().item(1).setEnabled(False)
+        self.loctp_cb.model().item(2).setEnabled(False)
+
     def create_occ_tbl(self):
         """
-        Creates an occurrence table with one row of default values.
+        Creates an occurrence table with one row.
         """
 
-        self.occ_tbl.setRowCount(len(self.occurrence['taxon']))
-        self.occ_tbl.setColumnCount(len(self.occurrence))
+        self.occ_tbl_hdrs = (
+            'taxon',
+            'ecotype',
+            'organismQuantityType',
+            'organismQuantity',
+            'occurrenceStatus',
+            'populationTrend',
+            'occurrenceRemarks',
+            'establishmentMeans',
+            'establishmentRemarks',
+            'spawningCondition',
+            'spawningLocation',
+            'verifiedBy',
+            'verifiedDate')
+  
+        self.occ_tbl.setColumnCount(len(self.occ_tbl_hdrs))
+        self.occ_tbl.setSelectionBehavior(QTableWidget.SelectRows)
+        self.occ_tbl.setSelectionMode(QTableWidget.SingleSelection)
+        self.occ_tbl.setHorizontalHeaderLabels(self.occ_tbl_hdrs)
+        self.occ_tbl.setRowCount(1)
 
-        self.occ_tbl.setSelectionBehavior(QTableWidget.SelectRows);
+        m = 0
+        self._add_mty_occ_row_items(0)
 
-        #  populate tableWidget
-        headers = []
-        for n, key in enumerate(sorted(self.occurrence.keys())):
-            headers.append(key)
-            for m, item in enumerate(self.occurrence[key]):
-                try:
-                    newitem = QTableWidgetItem(item)
-                except:
-                    newitem = QTableWidgetItem(str(item))
-                # setItem(row, column, QTableWidgetItem)
-                self.occ_tbl.setItem(m, n, newitem)
-            self.occ_tbl.setHorizontalHeaderLabels(headers)
+        self.occ_tbl.blockSignals(True)
+        self.occ_tbl.selectRow(0)
+        self.occ_tbl.blockSignals(False)
 
-        self._upd_occ_gb()
-        #QMessageBox.information(None, "DEBUG:", str(headers))
+        self._upd_occ_row()
 
-    def add_occurrence(self):
-        """ adds a new occurrence row in occurrence table """
-
-        # check if Table has some entries
-        # check if last row is empty
-
-        if (self.occ_tbl.rowCount() > 0 and self.is_last_row_empty()):
-            # do not add an occurrence
-            QMessageBox.information(None, "Information",
-                                    "The last occurrence is empty. " +
-                                    "You have to finish it before you can enter a new occurrence.")
-            return
-
-
-        # adds a new occurrence row in occurrence table
-        self.row = self.occ_tbl.rowCount()
-        self.occ_tbl.insertRow(self.row)
-
-        # add a new occurrence record in self.occurrence dictionary and table
-        for n, key in enumerate(sorted(self.occurrence.keys())):
-            item = self.occurrence_base[key]
-            self.occurrence[key].append(item)
-            # add it to table
-            if isinstance(item, datetime.date):
-                item = unicode(item)
-            new_item = QTableWidgetItem(item)
-            self.occ_tbl.setItem(self.row, n, new_item)
-
-        self.occ_tbl.selectRow(self.row)
-        self._upd_occ_gb()
-
-        self.preview_conditions['taxon_selected'] = False
-        self.preview_conditions['est_means_selected'] = False
-        self.check_preview_conditions()
-
-       #QMessageBox.information(None, "DEBUG:", str(self.row))
-
-    def is_last_row_empty(self):
-        """Checks if last row is empty"""
-
-        # use last row number in case not the last occurrence is clicked
-        last_row_number = self.occ_tbl.rowCount() - 1
-
-        # iterate trough values of last row
-        for key, value in self.occurrence.iteritems():
-
-            value_last_row = value[last_row_number]
-            value_default = self.occurrence_base[key]
-
-            # compare with default values
-            if value_last_row != value_default:
-                # if any of the occurrence's values differs from default
-                return False
-
-        return True
-
-    def _upd_occ_gb(self):
+    def _add_mty_occ_row_items(self, m):
         """
-        Updates the occurrence group box according to the occurrence dict.
+        Adds a row at the given position with empty items.
+        
+        :param m: A row number.
+        :type m: int.
         """
 
-        self.occ_gb.setTitle('Occurrence - {}'.format(self.row + 1))
+        for n, elem in enumerate(self.occ_tbl_hdrs):
+            tbl_item = QTableWidgetItem(None)
+            self.occ_tbl.setItem(m, n, tbl_item)
 
-        txn_idx = self.txn_cb.findText(
-            self.occurrence['taxon'][self.row], Qt.MatchFixedString)
-        self.txn_cb.setCurrentIndex(txn_idx)
+    def _upd_occ_row(self):
+        """
+        Updates an occurrence row according to the values in the occurrence
+        widgets.
+        """
 
-        ectp_idx = self.ectp_cb.findText(
-            self.occurrence['ecotype'][self.row], Qt.MatchFixedString)
-        self.ectp_cb.setCurrentIndex(ectp_idx)
+        m = self.occ_tbl.currentRow()
 
-        oqt_idx = self.oqt_cb.findText(
-            self.occurrence['quantity'][self.row], Qt.MatchFixedString)
-        self.oqt_cb.setCurrentIndex(oqt_idx)
+        occ_list = [
+            self.txn_cb.currentText(),
+            self.ectp_cb.currentText(),
+            self.oqt_cb.currentText(),
+            self.oq_le.text() if len(self.oq_le.text()) != 0 else 0,
+            self.occstat_cb.currentText(),
+            self.poptrend_cb.currentText(),
+            self.occrmk_le.text() if len(self.occrmk_le.text()) != 0 else None,
+            self.estm_cb.currentText(),
+            self.estrmk_le.text() if len(self.estrmk_le.text()) != 0 else None,
+            self.spwnc_cb.currentText(),
+            self.spwnl_cb.currentText(),
+            self.vfdby_le.text() if len(self.vfdby_le.text()) != 0 else None,
+            self.verdt_de.date().toPyDate()]
 
-        self.oq_cb.setText(str(self.occurrence['metric'][self.row]))
+        for n, elem in enumerate(occ_list):
+            try:
+                tbl_item = QTableWidgetItem(elem)
+            except TypeError:
+                tbl_item = QTableWidgetItem(str(elem))
+            self.occ_tbl.setItem(m, n, tbl_item)
 
-        occstat_idx = self.occstat_cb.findText(
-            self.occurrence['status'][self.row], Qt.MatchFixedString)
-        self.occstat_cb.setCurrentIndex(occstat_idx)
+        self.occ_tbl.resizeColumnsToContents()
 
-        poptrend_idx = self.poptrend_cb.findText(
-            self.occurrence['trend'][self.row], Qt.MatchFixedString)
-        self.poptrend_cb.setCurrentIndex(poptrend_idx)
+    def _add_occ_row(self):
+        """
+        Adds an occurrence row.
+        """
 
-        self.occrmk_le.setText(self.occurrence['oc_remarks'][self.row])
+        m = self.occ_tbl.currentRow() + 1
+        self.occ_tbl.insertRow(m)
+        self._add_mty_occ_row_items(m)
 
-        estm_idx = self.estm_cb.findText(
-            self.occurrence['est_means'][self.row], Qt.MatchFixedString)
-        self.estm_cb.setCurrentIndex(estm_idx)
+        self.occ_tbl.blockSignals(True)
+        self.occ_tbl.selectRow(m)
+        self.occ_tbl.blockSignals(False)
 
-        spwnc_idx = self.spwnc_cb.findText(
-            self.occurrence['spawn_con'][self.row], Qt.MatchFixedString)
-        self.spwnc_cb.setCurrentIndex(spwnc_idx)
+        self._clear_occ_le_wdgs()
+        self._clear_occ_cb_wdgs()
 
-        spwnl_idx = self.spwnl_cb.findText(
-            self.occurrence['spawn_loc'][self.row], Qt.MatchFixedString)
-        self.spwnl_cb.setCurrentIndex(spwnl_idx)
+        self._upd_occ_row()        
 
-        self.estrmk_le.setText(self.occurrence['est_remarks'][self.row])
+    def _clear_occ_le_wdgs(self):
+        """
+        Clears occurrence line edit widgets.
+        """
 
-        self.vfdby_le.setText(self.occurrence['verified_by'][self.row])
+        for occ_le_wdg in self.occ_le_wdgs:
+            occ_le_wdg.clear()
 
-        self.occno_lbl.setText(str(self.row + 1))
+    def _clear_occ_cb_wdgs(self):
+        """
+        Clears occurrence combo box widgets.
+        """
+
+        for occ_cb_wdg in self.occ_cb_wdgs:
+            occ_cb_wdg.setCurrentIndex(0)
 
     def _upd_occ_gb_at_selrow(self, wdg_item):
         """
@@ -2346,25 +2358,45 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         :type wdg_item: QTableWidgetItem.
         """
 
-        self.row = wdg_item.row()
-        self._upd_occ_gb()
+        m = self.occ_tbl.currentRow()
+
+        for n, wdg in enumerate(self.occ_input_wdgs):
+            text = self.occ_tbl.item(m, n).text()
+
+            if isinstance(wdg, QLineEdit):
+                wdg.setText(text)
+            elif isinstance(wdg, QComboBox):
+                idx = wdg.findText(text)
+                wdg.setCurrentIndex(idx)
+            elif isinstance(wdg, QDateEdit):
+                wdg.setDate(QDate.fromString(text, 'yyyy-MM-dd'))
 
     def _sel_row_up(self):
         """
         Select one row up in the occurrences table.
         """
 
-        if self.row > 0:
-            self.row = self.row - 1
+        m = self.occ_tbl.currentRow()
 
-        self.occ_tbl.selectRow(self.row)
+        if m > 0:
+            self.occ_tbl.selectRow(m - 1)
 
     def _sel_row_dwn(self):
         """
         Select one row down in the occurrences table.
         """
 
-        if self.row < (self.occ_tbl.rowCount() - 1):
-            self.row = self.row + 1
+        m = self.occ_tbl.currentRow()
 
-        self.occ_tbl.selectRow(self.row)
+        if m < (self.occ_tbl.rowCount() - 1):
+            self.occ_tbl.selectRow(m + 1)
+
+    def _del_occ_row(self):
+        """
+        Delete a row from the occurrence table.
+        """
+
+        m = self.occ_tbl.currentRow()
+
+        if self.occ_tbl.rowCount() > 1:
+            self.occ_tbl.removeRow(m)

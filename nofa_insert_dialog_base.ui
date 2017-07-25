@@ -59,59 +59,13 @@
               <property name="sizeConstraint">
                <enum>QLayout::SetMinimumSize</enum>
               </property>
-              <item row="1" column="1">
-               <widget class="QComboBox" name="oqt_cb">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QComboBox" name="txn_cb">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QLabel" name="oq_lbl">
+              <item row="1" column="0">
+               <widget class="QLabel" name="oqt_lbl">
                 <property name="text">
-                 <string>organismQuantity</string>
+                 <string>organismQuantityType</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="3">
-               <widget class="QComboBox" name="poptrend_cb">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="3">
-               <widget class="QLineEdit" name="oq_cb">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
                 </property>
                </widget>
               </item>
@@ -122,13 +76,13 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="3">
-               <widget class="QComboBox" name="ectp_cb">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
+              <item row="2" column="2">
+               <widget class="QLabel" name="poptrend_lbl">
+                <property name="text">
+                 <string>populationTrend</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -158,13 +112,56 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="occstat_lbl">
+              <item row="6" column="1">
+               <widget class="QComboBox" name="spwnc_cb">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="sizeAdjustPolicy">
+                 <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QComboBox" name="ectp_cb">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1" colspan="3">
+               <widget class="QComboBox" name="estm_cb">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="2">
+               <widget class="QLabel" name="spwnl_lbl">
                 <property name="text">
-                 <string>occurrenceStatus</string>
+                 <string>spawningLocation</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="3">
+               <widget class="QComboBox" name="spwnl_cb">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
                </widget>
               </item>
@@ -181,13 +178,93 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="2">
-               <widget class="QLabel" name="poptrend_lbl">
+              <item row="7" column="0">
+               <widget class="QLabel" name="vfdby_lbl">
                 <property name="text">
-                 <string>populationTrend</string>
+                 <string>verifiedBy</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="spwnc_lbl">
+                <property name="text">
+                 <string>spawningCondition</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1" colspan="3">
+               <widget class="QLineEdit" name="estrmk_le">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>48</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="2">
+               <widget class="QLabel" name="verdt_lbl">
+                <property name="text">
+                 <string>verifiedDate</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QLabel" name="ectp_lbl">
+                <property name="text">
+                 <string>ecotype</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="estm_lbl">
+                <property name="text">
+                 <string>establishmentMeans</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="occstat_lbl">
+                <property name="text">
+                 <string>occurrenceStatus</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QLineEdit" name="oq_le">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1" colspan="3">
+               <widget class="QLineEdit" name="occrmk_le">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>48</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -201,10 +278,33 @@
                 </property>
                </widget>
               </item>
-              <item row="7" column="2">
-               <widget class="QLabel" name="verdt_lbl">
+              <item row="2" column="3">
+               <widget class="QComboBox" name="poptrend_cb">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="txn_cb">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="sizeAdjustPolicy">
+                 <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLabel" name="oq_lbl">
                 <property name="text">
-                 <string>verifiedDate</string>
+                 <string>organismQuantity</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -230,78 +330,8 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="2">
-               <widget class="QLabel" name="ectp_lbl">
-                <property name="text">
-                 <string>ecotype</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="oqt_lbl">
-                <property name="text">
-                 <string>organismQuantityType</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="estm_lbl">
-                <property name="text">
-                 <string>establishmentMeans</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1" colspan="3">
-               <widget class="QComboBox" name="estm_cb">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1" colspan="3">
-               <widget class="QLineEdit" name="occrmk_le">
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>48</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1" colspan="3">
-               <widget class="QLineEdit" name="estrmk_le">
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>48</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="3">
-               <widget class="QComboBox" name="spwnl_cb">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="1">
-               <widget class="QComboBox" name="spwnc_cb">
+              <item row="1" column="1">
+               <widget class="QComboBox" name="oqt_cb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -310,61 +340,6 @@
                 </property>
                 <property name="sizeAdjustPolicy">
                  <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="2">
-               <widget class="QLabel" name="spwnl_lbl">
-                <property name="text">
-                 <string>spawningLocation</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="0">
-               <widget class="QLabel" name="spwnc_lbl">
-                <property name="text">
-                 <string>spawningCondition</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="0">
-               <widget class="QLabel" name="vfdby_lbl">
-                <property name="text">
-                 <string>verifiedBy</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="0">
-               <widget class="QLabel" name="occno_lbl">
-                <property name="font">
-                 <font>
-                  <pointsize>23</pointsize>
-                 </font>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <property name="text">
-                 <string>1</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="1" colspan="3">
-               <widget class="QPushButton" name="update_row_button">
-                <property name="text">
-                 <string>Update occurrence row</string>
                 </property>
                </widget>
               </item>
@@ -459,44 +434,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="deleteOccurrence">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>41</width>
-                 <height>41</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>41</width>
-                 <height>41</height>
-                </size>
-               </property>
-               <property name="baseSize">
-                <size>
-                 <width>41</width>
-                 <height>41</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>del</string>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>15</width>
-                 <height>15</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="addOccurrence">
+              <widget class="QPushButton" name="addocc_btn">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -528,6 +466,48 @@
                </property>
                <property name="text">
                 <string>+</string>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="delocc_btn">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>41</width>
+                 <height>41</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>41</width>
+                 <height>41</height>
+                </size>
+               </property>
+               <property name="baseSize">
+                <size>
+                 <width>41</width>
+                 <height>41</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>16</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>−</string>
                </property>
                <property name="iconSize">
                 <size>
@@ -598,7 +578,7 @@
           </widget>
          </item>
          <item row="2" column="2">
-          <widget class="QPushButton" name="insert_button">
+          <widget class="QPushButton" name="ins_btn">
            <property name="text">
             <string>Insert to NOFA</string>
            </property>
@@ -711,7 +691,7 @@
                 <enum>QLayout::SetMinimumSize</enum>
                </property>
                <item row="3" column="1">
-                <widget class="QLineEdit" name="samplingEffort">
+                <widget class="QLineEdit" name="smpe_le">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -721,7 +701,7 @@
                 </widget>
                </item>
                <item row="8" column="0">
-                <widget class="QLabel" name="label_51">
+                <widget class="QLabel" name="relia_lbl">
                  <property name="text">
                   <string>reliability</string>
                  </property>
@@ -731,7 +711,7 @@
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QLineEdit" name="sampleSizeValue">
+                <widget class="QLineEdit" name="smpsv_le">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -754,7 +734,7 @@
                 </widget>
                </item>
                <item row="6" column="1">
-                <widget class="QLineEdit" name="recordedBy_e">
+                <widget class="QLineEdit" name="rcdby_le">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -774,7 +754,7 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QLabel" name="label_49">
+                <widget class="QLabel" name="smpsv_lbl">
                  <property name="text">
                   <string>sampleSizeValue</string>
                  </property>
@@ -784,7 +764,7 @@
                 </widget>
                </item>
                <item row="6" column="0">
-                <widget class="QLabel" name="label_46">
+                <widget class="QLabel" name="rcdby_lbl">
                  <property name="text">
                   <string>recordedBy</string>
                  </property>
@@ -840,7 +820,7 @@
                 </widget>
                </item>
                <item row="3" column="0">
-                <widget class="QLabel" name="label_47">
+                <widget class="QLabel" name="smpe_lbl">
                  <property name="text">
                   <string>samplingEffort</string>
                  </property>
@@ -860,7 +840,7 @@
                 </widget>
                </item>
                <item row="4" column="1">
-                <widget class="QDateEdit" name="dtst_de">
+                <widget class="QDateEdit" name="dtstrt_de">
                  <property name="displayFormat">
                   <string>yyyy-MM-dd</string>
                  </property>
@@ -880,7 +860,7 @@
                 </widget>
                </item>
                <item row="7" column="0">
-                <widget class="QLabel" name="label_42">
+                <widget class="QLabel" name="eventrmk_lbl">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -896,7 +876,7 @@
                 </widget>
                </item>
                <item row="7" column="1">
-                <widget class="QLineEdit" name="eventRemarks">
+                <widget class="QLineEdit" name="eventrmk_le">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -973,7 +953,7 @@
                 </widget>
                </item>
                <item row="0" column="2">
-                <widget class="QPushButton" name="editDatasetButton">
+                <widget class="QPushButton" name="adddtst_btn">
                  <property name="text">
                   <string>Add</string>
                  </property>
@@ -1028,7 +1008,7 @@
                 </widget>
                </item>
                <item row="0" column="2">
-                <widget class="QPushButton" name="editProjectButton">
+                <widget class="QPushButton" name="addprj_btn">
                  <property name="text">
                   <string>Add</string>
                  </property>
@@ -1077,7 +1057,7 @@
                 </widget>
                </item>
                <item row="0" column="2">
-                <widget class="QPushButton" name="edit_reference_button">
+                <widget class="QPushButton" name="addref_btn">
                  <property name="text">
                   <string>Add</string>
                  </property>

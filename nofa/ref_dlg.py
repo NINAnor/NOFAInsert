@@ -254,7 +254,7 @@ class RefDlg(QDialog):
                                 %(journalName)s,
                                 %(volume)s,
                                 %(page)s)
-            RETURNING           "referenceID"
+            RETURNING       "referenceID"
             ''',
             {'title': ttl,
              'author': au,
