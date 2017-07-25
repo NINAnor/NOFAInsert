@@ -161,7 +161,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             'Swedish': 'vernacularName_SE',
             'Finish': 'vernacularName_FI'}
 
-        ## Country codes not used for the moment
+        # Country codes not used for the moment
         '''countryCodes = {
             'Latin': None,
             'English': None,
@@ -169,7 +169,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             'Swedish': 'SE',
             'Finish': 'FI'}'''
 
-        #TODO the remaining location types should be added here
+        # TODO the remaining location types should be added here
         self.loctp_dict = {
             'Norwegian VatnLnr': 'no_vatn_lnr',
             'coordinates UTM32': 25832,
@@ -179,50 +179,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             'Norwegian VatnLnr',
             'coordinates UTM32',
             'coordinates UTM33']
-
-        self.occurrence_base = {
-            'taxon': 'Select',
-            'ecotype': 'Select',
-            'quantity': 'Select',
-            'metric': 0,
-            'status': 'unknown',
-            'trend': 'unknown',
-            'oc_remarks': 'None',
-            'est_means': 'Select',
-            'est_remarks': 'None',
-            'spawn_con': 'unknown',
-            'spawn_loc': 'unknown',
-            'verified_by': 'Nobody',
-            'verified_date': self.today}
-
-        self.occurrence = {
-            'taxon': ['Select', ],
-            'ecotype': ['Select', ],
-            'quantity': ['Select', ],
-            'metric': [0, ],
-            'status': ['Select', ],
-            'trend': ['unknown', ],
-            'oc_remarks': ['None', ],
-            'est_means': ['Select', ],
-            'est_remarks': ['None', ],
-            'spawn_con': ['unknown', ],
-            'spawn_loc': ['unknown', ],
-            'verified_by': ['Nobody', ],
-            'verified_date': [self.today, ]}
-
-        self.taxonomicc = []
-
-        self.event = {
-            'protocol': 'unknown',
-            'size_value': 'None',
-            'size_unit': 'metre',
-            'effort': 'unknown',
-            'protocol_remarks': 'None',
-            'date_start': self.today,
-            'date_end': self.today,
-            'recorded_by': 'unknown',
-            'event_remarks': 'None',
-            'reliability': 'Select'}
 
         self.occ_hdrs = [
             "occurrence_id",
