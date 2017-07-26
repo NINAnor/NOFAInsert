@@ -268,3 +268,56 @@ def ins_occ(con, occ_id, txn_id, ectp_id, occ_row_list, event_id):
          'verifiedDate': occ_row_list[12],
          'modified': datetime.datetime.now(),
          'eventID': event_id})
+
+def ins_txncvg(con, txn_id, event_id):
+    """
+    Insert a taxon coverage into the database.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param txn_id: A taxon ID.
+    :type txn_id: int.
+    :param event_id: An event ID.
+    :type event_id: uuid.UUID.
+    """
+
+    # OS.NINA
+    # this query does not work
+    # TODO - solve PK 
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        INSERT INTO     nofa."taxonomicCoverage"(
+                            "taxonID_l_taxon",
+                            "eventID_observationEvent")
+        VALUES          (%s, %s)
+        ''',
+        (txn_id, event_id))
+
+def get_loc_id_list(con, locs_tpl):
+    """
+    Returns a list of location IDs.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param locs_tpl: A tuple of locations.
+    :type locs_tpl: tuple.
+    :returns: A list of locations IDs.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      distinct "locationID" lid
+        FROM        nofa.location
+        WHERE       "no_vatn_lnr" IN %s
+        ORDER BY    lid
+        ''',
+        (locs_tpl,))
+    loc_ids = cur.fetchall()
+
+    loc_id_list = [l[0] for l in loc_ids]
+
+    return loc_id_list
+

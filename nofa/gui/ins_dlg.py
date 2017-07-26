@@ -778,32 +778,10 @@ class InsDlg(QDialog, FORM_CLASS):
         :type event_id: uuid.UUID.
         """
 
-        QgsMessageLog.logMessage(str(self._get_ckd_txns()), 'test')
         for txn in self._get_ckd_txns():
-            QgsMessageLog.logMessage(str(txn), 'test')
-            QgsMessageLog.logMessage(str(type(txn)), 'test')
-            cur = self._get_db_cur()
-            cur.execute(
-                '''
-                SELECT          "taxonID"
-                FROM            nofa."l_taxon"
-                WHERE           "scientificName" = %s
-                ''',
-                (txn,))
-            txn_id = cur.fetchone()[0]
+            txn_id = db.get_txn_id(self.mw.con, txn)
 
-            # OS.NINA
-            # this query does not work
-            # TODO - solve PK 
-            cur = self._get_db_cur()
-            cur.execute(
-                '''
-                INSERT INTO     nofa."taxonomicCoverage"(
-                                    "taxonID_l_taxon",
-                                    "eventID_observationEvent")
-                VALUES          (%s, %s)
-                ''',
-                (txn_id, event_id))
+            db.ins_txncvg(self.mw.con, txn_id, event_id)
 
     def _get_ckd_txns(self):
         """
@@ -847,18 +825,7 @@ class InsDlg(QDialog, FORM_CLASS):
         # OS.NINA
         # add other location types
         if loctp == 'Norwegian VatnLnr':
-            cur = self._get_db_cur()
-            cur.execute(
-                '''
-                SELECT      distinct "locationID" lid
-                FROM        nofa.location
-                WHERE       "no_vatn_lnr" IN %s
-                ORDER BY    lid
-                ''',
-                (locs_tpl,))
-            loc_ids = cur.fetchall()
-
-            loc_id_list = [l[0] for l in loc_ids]
+            loc_id_list = db.get_loc_id_list(self.mw.con, locs_tpl)
 
         return loc_id_list
 
