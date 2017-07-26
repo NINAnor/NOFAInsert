@@ -1425,28 +1425,7 @@ class InsDlg(QDialog, FORM_CLASS):
         prj_no = split_prj_org_no_name[1]
         prj_name = split_prj_org_no_name[2]
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "projectNumber",
-                        "projectName",
-                        "startYear",
-                        "endYear",
-                        "projectLeader",
-                        "projectMembers",
-                        "organisation",
-                        "financer",
-                        "remarks",
-                        "projectID"
-            FROM        nofa."m_project"
-            WHERE       "organisation" = %s
-                        AND
-                        "projectNumber" = %s
-                        AND
-                        "projectName" = %s;
-            ''',
-            (prj_org, prj_no, prj_name,))
-        prj = cur.fetchone()
+        cur, prj = db.get_prj_info(self.mw.con, prj_org, prj_no, prj_name)
 
         for idx, prj_data in enumerate(prj):
             prj_item = QListWidgetItem(

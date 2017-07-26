@@ -347,9 +347,52 @@ def get_dtst_info(con, dtst_id):
                     "informationWithheld",
                     "dataGeneralizations"
         FROM        nofa."m_dataset"
-        WHERE       "datasetID" = %s;
+        WHERE       "datasetID" = %s
         ''',
         (dtst_id,))
     dtst = cur.fetchone()
 
     return (cur, dtst)
+
+def get_prj_info(con, prj_org, prj_no, prj_name):
+    """
+    Returns information about a project with the given organization,
+    project number and project name.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param prj_org: A project ogranization.
+    :type prj_org: str.
+    :param prj_no: A project number.
+    :type prj_no: str.
+    :param prj_name: A project name.
+    :type prj_name: str.
+    :returns: A tuple containing cursor and a list of information
+        about the project.
+    :rtype: tuple.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "projectNumber",
+                    "projectName",
+                    "startYear",
+                    "endYear",
+                    "projectLeader",
+                    "projectMembers",
+                    "organisation",
+                    "financer",
+                    "remarks",
+                    "projectID"
+        FROM        nofa."m_project"
+        WHERE       "organisation" = %s
+                    AND
+                    "projectNumber" = %s
+                    AND
+                    "projectName" = %s
+        ''',
+        (prj_org, prj_no, prj_name,))
+    prj = cur.fetchone()
+
+    return (cur, prj)
