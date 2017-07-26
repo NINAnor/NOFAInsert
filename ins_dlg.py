@@ -240,6 +240,8 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.main_tabwdg.currentChanged.connect(self.history_tab_clicked)
         self.tabWidget_history.currentChanged.connect(self.history_tab_clicked)
 
+        self.txncvg_tw.itemChanged.connect(self._upd_txncvg_tw_chldn)
+
         # OS.NINA
         # there are not neccessary tables in the new db
         # history tab is disabled
@@ -665,6 +667,23 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         self.ref_dlg = ref_dlg.RefDlg(self)
         self.ref_dlg.show()
+
+    def _upd_txncvg_tw_chldn(self, par):
+        """
+        Updates children in the taxonomic coverage tree widget
+        based on the state of its parent. 
+ 
+        :param item: A changed item.
+        :type item: QTableWidgetItem.
+        """
+
+        chck_state = par.checkState(0)
+
+        for i in range(par.childCount()):
+            chld = par.child(i)
+            chld.setCheckState(0, chck_state)
+
+            self._upd_txncvg_tw_chldn(chld)
 
     def _ins(self):
         """
