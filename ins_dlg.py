@@ -1755,10 +1755,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.txncvg_tw.sortByColumn(0, Qt.AscendingOrder)
         self.txncvg_tw.expandToDepth(0)
 
-    def _get_ckd_txn(self):
-        root = self.txncvg_tw.invisibleRootItem()
-        
-
     def pop_dtst_cb(self):
         """
         Populates the dataset combo box.
