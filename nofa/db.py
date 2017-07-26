@@ -479,7 +479,7 @@ def get_dtst_list(con):
         SELECT      "datasetID" dsid,
                     "datasetName" dsn
         FROM        nofa."m_dataset"
-        ORDER BY    dsid, dsn;
+        ORDER BY    dsid, dsn
         ''')
     dtsts = cur.fetchall()
 
@@ -524,9 +524,9 @@ def get_prj_list(con):
         ''')
     prjs = cur.fetchall()
 
-    proj_list = [_get_prj_str(p[0], p[1], p[2], p[3]) for p in prjs]
+    prj_list = [_get_prj_str(p[0], p[1], p[2], p[3]) for p in prjs]
 
-    return proj_list
+    return prj_list
 
 def _get_prj_str(org, no, name, id):
     """
@@ -552,3 +552,45 @@ def _get_prj_str(org, no, name, id):
         id)
 
     return prj_str
+
+def get_ref_list(con):
+    """
+    Returns a list with information about references that is used to populate
+    project combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list with information about references.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "referenceID",
+                    "author",
+                    "titel"
+        FROM        nofa."m_reference"
+        ORDER BY    "author", "titel"
+        ''')
+    refs = cur.fetchall()
+
+    ref_list = [_get_ref_str(r[1], r[2], r[0]) for r in refs]
+
+    return ref_list
+
+def _get_ref_str(au, ttl, id):
+    """
+    Returns a reference string "<author>: <title> @<id>".
+
+    :param au: A reference author.
+    :type au: str.
+    :param ttl: A reference title.
+    :type ttl: str.
+    :param id: A reference ID.
+    :type id: str.
+    """
+
+    ref_str = u'{}: {} @{}'.format(au, ttl, id)
+    
+    return ref_str

@@ -1578,10 +1578,10 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the project combo box.
         """
 
-        proj_list = db.get_prj_list(self.mw.con)
+        prj_list = db.get_prj_list(self.mw.con)
 
         self.prj_cb.clear()
-        self.prj_cb.addItems(proj_list)
+        self.prj_cb.addItems(prj_list)
 
     def _get_prj_id(self):
         """
@@ -1604,37 +1604,10 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the reference combo box.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "referenceID",
-                        "author",
-                        "titel"
-            FROM        nofa."m_reference"
-            ORDER BY    "author", "titel";
-            ''')
-        refs = cur.fetchall()
-
-        ref_list = [self.get_ref_str(r[1], r[2], r[0]) for r in refs]
+        ref_list = db.get_ref_list(self.mw.con)
 
         self.ref_cb.clear()
         self.ref_cb.addItems(ref_list)
-
-    def get_ref_str(self, au, ttl, id):
-        """
-        Returns a reference string "<author>: <title> @<id>".
-
-        :param au: A reference author.
-        :type au: str.
-        :param ttl: A reference title.
-        :type ttl: str.
-        :param id: A reference ID.
-        :type id: str.
-        """
-
-        ref_str = u'{}: {} @{}'.format(au, ttl, id)
-        
-        return ref_str
 
     def _pop_txn_cb(self):
         """
