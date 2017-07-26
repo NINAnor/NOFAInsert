@@ -32,6 +32,7 @@ import psycopg2, psycopg2.extras
 import resources
 
 from nofa.gui import ins_dlg, con_dlg
+from nofa import db
 
 
 class NOFAInsert:
@@ -132,55 +133,6 @@ class NOFAInsert:
 
         return con_info
 
-    def get_con(self, con_info):
-        """
-        Returns a connection.
-
-        :returns: A connection.
-        :rtype: psycopg2.connection.
-        """
-
-        con = psycopg2.connect(**con_info)
-        con.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
-
-        return con
-
-    def check_nofa_tbls(self):
-        """
-        Checks if the database is NOFA.
-
-        :returns: True when database is NOFA, False otherwise.
-        :rtype: bool.
-        """
-
-        cur = self._get_db_cur()
-
-        cur.execute(
-            '''
-            SELECT    table_name
-            FROM      information_schema.tables
-            WHERE     table_schema = 'nofa'
-                      AND
-                      table_name IN ('location', 'event', 'occurrence')
-            ''')
-
-        if cur.rowcount == 3:
-            resp = True
-        else:
-            resp = False
-
-        return resp
-
-    def _get_db_cur(self):
-        """
-        Returns a database cursor.
-        
-        :returns: A database cursor.
-        :rtype: psycopg2.cursor.
-        """
-
-        return self.con.cursor()
-
     def _open_con_dlg(self, con_info=None):
         """
         Opens a connection dialog.
@@ -202,9 +154,9 @@ class NOFAInsert:
 
         try:
             con_info = self._get_con_info()
-            self.con = self.get_con(con_info)
+            self.con = db.get_con(con_info)
 
-            if not self.check_nofa_tbls():
+            if not db.check_nofa_tbls(self.con):
                 self._open_con_dlg(con_info)
         except psycopg2.OperationalError:
             self._open_con_dlg(con_info)

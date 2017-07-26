@@ -38,6 +38,8 @@ import sys
 
 import dtst_dlg, prj_dlg, ref_dlg
 
+from .. import db
+
 
 class NoLocationException(Exception):
     """
@@ -55,7 +57,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class InsDlg(QDialog, FORM_CLASS):
-    def __init__(self, iface, mc):
+    def __init__(self, iface, mw):
         """Constructor."""
         super(InsDlg, self).__init__()
         # Set up the user interface from Designer.
@@ -66,7 +68,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.setupUi(self)
 
         self.iface = iface
-        self.mc = mc
+        self.mw = mw
 
         self.org = u'NINA'
         self.app_name = u'NOFAInsert'
@@ -694,50 +696,8 @@ class InsDlg(QDialog, FORM_CLASS):
             for loc_id in loc_id_list:
                 event_id = uuid.uuid4()
     
-                cur = self._get_db_cur()
-                cur.execute(
-                    '''
-                    INSERT INTO    nofa.event (
-                                       "locationID",
-                                       "eventID",
-                                       "samplingProtocol",
-                                       "sampleSizeValue",
-                                       "sampleSizeUnit",
-                                       "samplingEffort",
-                                       "dateStart",
-                                       "dateEnd",
-                                       "recordedBy",
-                                       "eventRemarks",
-                                       "reliability",
-                                       "datasetID",
-                                       "projectID")
-                    VALUES         (   %(locationID)s,
-                                       %(eventID)s,
-                                       %(samplingProtocol)s,
-                                       %(sampleSizeValue)s,
-                                       %(sampleSizeUnit)s,
-                                       %(samplingEffort)s,
-                                       %(dateStart)s,
-                                       %(dateEnd)s,
-                                       %(recordedBy)s,
-                                       %(eventRemarks)s,
-                                       %(reliability)s,
-                                       %(datasetID)s,
-                                       %(projectID)s)
-                    ''',
-                    {'locationID': loc_id,
-                     'eventID': event_id,
-                     'samplingProtocol': event_list[0],
-                     'sampleSizeValue': event_list[1],
-                     'sampleSizeUnit': event_list[2],
-                     'samplingEffort': event_list[3],
-                     'dateStart': event_list[4],
-                     'dateEnd': event_list[5],
-                     'recordedBy': event_list[6],
-                     'eventRemarks': event_list[7],
-                     'reliability': event_list[8],
-                     'datasetID': dtst_id,
-                     'projectID': prj_id})
+                db.ins_event(
+                    self.mw.con, loc_id, event_id, event_list, dtst_id, prj_id)
     
                 # OS.NINA
                 # does not work now
@@ -746,95 +706,17 @@ class InsDlg(QDialog, FORM_CLASS):
                 for m in range(self.occ_tbl.rowCount()):
                     occ_id = uuid.uuid4()
     
-                    occ_row_list = []
-    
-                    # OS.NINA
-                    # depends on the order in the table
-                    for n in range(self.occ_tbl.columnCount()):
-                        text = self.occ_tbl.item(m, n).text()
-    
-                        occ_row_list.append(text)
+                    occ_row_list = self._get_occ_row_list(m)
     
                     txn =  occ_row_list[0]
+                    txn_id = db.get_txn_id(self.mw.con, txn)
     
-                    cur = self._get_db_cur()
-                    cur.execute(
-                        '''
-                        SELECT      "taxonID"
-                        FROM        nofa."l_taxon"
-                        WHERE       "scientificName" = %s
-                        ''',
-                        (txn,))
+                    ectp = occ_row_list[1]    
+                    ectp_id = db.get_ectp_id(self.mw.con, ectp)
     
-                    txn_id = cur.fetchone()[0]
-    
-                    ectp = occ_row_list[1]
-    
-                    cur = self._get_db_cur()
-                    cur.execute(
-                        '''
-                        SELECT      "ecotypeID"
-                        FROM        nofa."l_ecotype"
-                        WHERE       "vernacularName" = %s
-                        ''',
-                        (ectp,))
-    
-                    ectp_id = cur.fetchone()[0] if cur.rowcount != 0 else None
-    
-                    cur = self._get_db_cur()
-                    cur.execute(
-                        '''
-                        INSERT INTO    nofa."occurrence" (
-                                           "occurrenceID",
-                                           "taxonID",
-                                           "ecotypeID",
-                                           "organismQuantityType",
-                                           "organismQuantity",
-                                           "occurrenceStatus",
-                                           "populationTrend",
-                                           "occurrenceRemarks",
-                                           "establishmentMeans",
-                                           "establishmentRemarks",
-                                           "spawningCondition",
-                                           "spawningLocation",
-                                           "verifiedBy",
-                                           "verifiedDate",
-                                           "modified",
-                                           "eventID")
-                        VALUES         (   %(occurrenceID)s,
-                                           %(taxonID)s,
-                                           %(ecotypeID)s,
-                                           %(organismQuantityType)s,
-                                           %(organismQuantity)s,
-                                           %(occurrenceStatus)s,
-                                           %(populationTrend)s,
-                                           %(occurrenceRemarks)s,
-                                           %(establishmentMeans)s,
-                                           %(establishmentRemarks)s,
-                                           %(spawningCondition)s,
-                                           %(spawningLocation)s,
-                                           %(verifiedBy)s,
-                                           %(verifiedDate)s,
-                                           %(modified)s,
-                                           %(eventID)s)
-                        ''',
-                        {'occurrenceID': occ_id,
-                         'taxonID': txn_id,
-                         'ecotypeID': ectp_id,
-                         'organismQuantityType': occ_row_list[2],
-                         'organismQuantity': float(occ_row_list[3]) \
-                            if len(occ_row_list[3]) != 0 else None,
-                         'occurrenceStatus': occ_row_list[4],
-                         'populationTrend': occ_row_list[5],
-                         'occurrenceRemarks': occ_row_list[6],
-                         'establishmentMeans': occ_row_list[7],
-                         'establishmentRemarks': occ_row_list[8],
-                         'spawningCondition': occ_row_list[9],
-                         'spawningLocation': occ_row_list[10],
-                         'verifiedBy': occ_row_list[11],
-                         'verifiedDate': occ_row_list[12],
-                         'modified': datetime.datetime.now(),
-                         'eventID': event_id})
+                    db.ins_occ(
+                        self.mw.con,
+                        occ_id, txn_id, ectp_id, occ_row_list, event_id)
     
             QMessageBox.information(self, u'Saved', u'Data correctly saved.')
         except NoLocationException:
@@ -866,6 +748,27 @@ class InsDlg(QDialog, FORM_CLASS):
             event_list.append(event_data)
 
         return event_list
+
+    def _get_occ_row_list(self, m):
+        """
+        Returns an occurrence row list.
+
+        :param m: A row number.
+        :type m: int.
+        :returns: A list of data in the given row in the occurrence table.
+        :rtype: list.
+        """
+
+        occ_row_list = []
+
+        # OS.NINA
+        # depends on the order in the table
+        for n in range(self.occ_tbl.columnCount()):
+            text = self.occ_tbl.item(m, n).text()
+
+            occ_row_list.append(text)
+
+        return occ_row_list
 
     def _ins_txncvg(self, event_id):
         """
@@ -1675,7 +1578,7 @@ class InsDlg(QDialog, FORM_CLASS):
         :rtype: psycopg2.cursor.
         """
 
-        return self.mc.con.cursor()
+        return self.mw.con.cursor()
 
     def fetch_db(self):
         """
@@ -1846,6 +1749,9 @@ class InsDlg(QDialog, FORM_CLASS):
     def _get_prj_id(self):
         """
         Returns a project ID from the project combo box.
+
+        :returns: A project ID.
+        :rtype: str.
         """
 
         prj_str = self.prj_cb.currentText()

@@ -27,9 +27,9 @@ from PyQt4.QtGui import (
     QDialog, QGridLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton,
     QStatusBar)
 
-from qgis.core import *
-
 import psycopg2
+
+from .. import db
 
 
 class ConDlg(QDialog):
@@ -191,7 +191,7 @@ class ConDlg(QDialog):
 
             QgsApplication.processEvents()
 
-            self.mw.con = self.mw.get_con(con_info)
+            self.mw.con = db.get_con(con_info)
 
             if self.mw.check_nofa_tbls():
                 self.stat_bar.showMessage(
