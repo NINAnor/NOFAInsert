@@ -746,6 +746,8 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                      'datasetID': dtst_id,
                      'projectID': prj_id})
     
+                # OS.NINA
+                # does not work now
                 # self._ins_txncvg(event_id)
     
                 for m in range(self.occ_tbl.rowCount()):
@@ -889,9 +891,9 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             cur = self._get_db_cur()
             cur.execute(
                 '''
-                SELECT      "taxonID"
-                FROM        nofa."l_taxon"
-                WHERE       "scientificName" = %s
+                SELECT          "taxonID"
+                FROM            nofa."l_taxon"
+                WHERE           "scientificName" = %s
                 ''',
                 (txn,))
             txn_id = cur.fetchone()[0]
@@ -905,7 +907,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                 INSERT INTO     nofa."taxonomicCoverage"(
                                     "taxonID_l_taxon",
                                     "eventID_observationEvent")
-                VALUES          (%s, %s);
+                VALUES          (%s, %s)
                 ''',
                 (txn_id, event_id))
 
