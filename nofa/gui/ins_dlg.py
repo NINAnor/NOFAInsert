@@ -1470,24 +1470,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.ref_lw.clear()
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "referenceID",
-                        "author",
-                        "referenceType",
-                        "year",
-                        "titel",
-                        "journalName",
-                        "volume",
-                        "issn",
-                        "isbn",
-                        "page"
-            FROM        nofa."m_reference"
-            WHERE       "referenceID" = %s
-            ''',
-            (ref_id,))
-        ref = cur.fetchone()
+        cur, ref = db.get_ref_info(self.mw.con, ref_id)
 
         for idx, ref_data in enumerate(ref):
             ref_item = QListWidgetItem(

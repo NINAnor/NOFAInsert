@@ -396,3 +396,37 @@ def get_prj_info(con, prj_org, prj_no, prj_name):
     prj = cur.fetchone()
 
     return (cur, prj)
+
+def get_ref_info(con, ref_id):
+    """
+    Returns information about a reference with the given reference ID.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param ref_id: A reference ID.
+    :type ref_id: str.
+    :returns: A tuple containing cursor and a list of information
+        about the reference.
+    :rtype: tuple.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "referenceID",
+                    "author",
+                    "referenceType",
+                    "year",
+                    "titel",
+                    "journalName",
+                    "volume",
+                    "issn",
+                    "isbn",
+                    "page"
+        FROM        nofa."m_reference"
+        WHERE       "referenceID" = %s
+        ''',
+        (ref_id,))
+    ref = cur.fetchone()
+
+    return (cur, ref)
