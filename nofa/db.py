@@ -618,3 +618,32 @@ def get_txn_list(con):
     txn_list = [t[0] for t in txns]
 
     return txn_list
+
+def get_ectp_list(con, txn_name):
+    """
+    Returns a list of ecotypes that is used to populate ecotype combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param txn_name: A taxon name.
+    :type txn_name: str.
+    :returns: A list of ecotypes.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      e."vernacularName" vn
+        FROM        nofa."l_ecotype" e
+                    JOIN
+                    nofa."l_taxon" t ON e."taxonID" = t."taxonID"
+        WHERE       t."scientificName" = %s
+        ORDER BY    vn;
+        ''',
+        (txn_name,))
+    ectps = cur.fetchall()
+
+    ectp_list = [e[0] for e in ectps]
+
+    return ectp_list

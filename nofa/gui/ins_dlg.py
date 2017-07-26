@@ -1626,20 +1626,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         txn_name = self.txn_cb.currentText()
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      e."vernacularName" vn
-            FROM        nofa."l_ecotype" e
-                        JOIN
-                        nofa."l_taxon" t ON e."taxonID" = t."taxonID"
-            WHERE       t."scientificName" = %s
-            ORDER BY    vn;
-            ''',
-            (txn_name,))
-        ectps = cur.fetchall()
-
-        ectp_list = [e[0] for e in ectps]
+        ectp_list = db.get_ectp_list(self.mw.con, txn_name)
 
         self.ectp_cb.clear()
         self.ectp_cb.addItems(ectp_list)
