@@ -15,17 +15,17 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_16">
    <item row="0" column="0">
-    <widget class="QTabWidget" name="tabWidget">
+    <widget class="QTabWidget" name="main_tabwdg">
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="ins_tab">
       <attribute name="title">
        <string>Main</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_14">
        <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_15" rowstretch="1,0,0" columnstretch="0,1,0">
+        <layout class="QGridLayout" name="ins_grid_lyt" rowstretch="1,0,0" columnstretch="0,1,0">
          <property name="sizeConstraint">
           <enum>QLayout::SetMinimumSize</enum>
          </property>
@@ -349,12 +349,12 @@
           </widget>
          </item>
          <item row="0" column="1" colspan="2">
-          <layout class="QGridLayout" name="gridLayout_12" rowstretch="0,0">
+          <layout class="QGridLayout" name="occ_tbl_grid_lyt" rowstretch="0,0">
            <property name="sizeConstraint">
             <enum>QLayout::SetMinimumSize</enum>
            </property>
            <item row="0" column="0">
-            <layout class="QVBoxLayout" name="verticalLayout">
+            <layout class="QVBoxLayout" name="occ_tbl_btn_vlyt">
              <property name="spacing">
               <number>0</number>
              </property>
@@ -532,7 +532,7 @@
           </layout>
          </item>
          <item row="1" column="1" rowspan="2">
-          <widget class="QGroupBox" name="reference_6">
+          <widget class="QGroupBox" name="txncvg_gb">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
              <horstretch>0</horstretch>
@@ -830,7 +830,7 @@
                 </widget>
                </item>
                <item row="5" column="0">
-                <widget class="QLabel" name="label_22">
+                <widget class="QLabel" name="dtend_lbl">
                  <property name="text">
                   <string>dateEnd</string>
                  </property>
@@ -850,7 +850,7 @@
                 </widget>
                </item>
                <item row="4" column="0">
-                <widget class="QLabel" name="dtst_lbl">
+                <widget class="QLabel" name="dtstrt_lbl">
                  <property name="text">
                   <string>dateStart</string>
                  </property>
@@ -894,7 +894,7 @@
               </layout>
              </item>
              <item row="1" column="0">
-              <spacer name="verticalSpacer_2">
+              <spacer name="event_vspc">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
                </property>
@@ -927,10 +927,10 @@
                 <enum>QLayout::SetMinimumSize</enum>
                </property>
                <item row="1" column="0" colspan="3">
-                <widget class="QListWidget" name="listview_dataset"/>
+                <widget class="QListWidget" name="dtst_lw"/>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="label_choose_dataset">
+                <widget class="QLabel" name="dtst_lbl">
                  <property name="text">
                   <string>Dataset</string>
                  </property>
@@ -982,10 +982,10 @@
                 <enum>QLayout::SetMinimumSize</enum>
                </property>
                <item row="1" column="0" colspan="3">
-                <widget class="QListWidget" name="listview_project"/>
+                <widget class="QListWidget" name="prj_lw"/>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="label_choose_project">
+                <widget class="QLabel" name="prj_lbl">
                  <property name="text">
                   <string>Project</string>
                  </property>
@@ -1037,10 +1037,10 @@
                 <enum>QLayout::SetMinimumSize</enum>
                </property>
                <item row="1" column="0" colspan="3">
-                <widget class="QListWidget" name="listview_reference"/>
+                <widget class="QListWidget" name="ref_lw"/>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="label_choose_project_2">
+                <widget class="QLabel" name="ref_lbl">
                  <property name="text">
                   <string>Reference</string>
                  </property>

@@ -116,7 +116,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             INSERT INTO     nofa.taxonomicCoverage(
                                 "taxonID_l_taxon",
                                 "eventID_observationEvent")
-            VALUES          (%s,%s);
+            VALUES          (%s, %s);
             """
         # creating the string for event data insertion to nofa.event table. fieldNotes is used just for testing purposes
 
@@ -237,13 +237,13 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.delocc_btn.clicked.connect(self._del_occ_row)
 
         # trigger action when history tabs are clicked
-        self.tabWidget.currentChanged.connect(self.history_tab_clicked)
+        self.main_tabwdg.currentChanged.connect(self.history_tab_clicked)
         self.tabWidget_history.currentChanged.connect(self.history_tab_clicked)
 
         # OS.NINA
         # there are not neccessary tables in the new db
         # history tab is disabled
-        self.tabWidget.setTabEnabled(1, False)
+        self.main_tabwdg.setTabEnabled(1, False)
 
         self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
 
@@ -320,10 +320,10 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         return QCoreApplication.translate('NOFAInsert', message)
 
     def history_tab_clicked(self):
-        #QMessageBox.information(None, "DEBUG:",  str(self.tabWidget.currentIndex()))
+        #QMessageBox.information(None, "DEBUG:",  str(self.main_tabwdg.currentIndex()))
 
         if self.tabWidget_history.currentIndex() == 0:
-            #QMessageBox.information(None, "DEBUG:", str(self.tabWidget.currentIndex()))
+            #QMessageBox.information(None, "DEBUG:", str(self.main_tabwdg.currentIndex()))
 
             self.date_from.setDate(self.today)
             self.date_to.setDate(self.today)
@@ -521,7 +521,8 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                             "insert_timestamp",
                             "update_timestamp"
                 FROM         nofa.plugin_occurrence_log
-                WHERE        "username" = %s''',
+                WHERE        "username" = %s
+                ''',
                 (username,))
         except:
             QMessageBox.information(
@@ -566,7 +567,8 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                             "insert_timestamp",
                             "update_timestamp"
                 FROM        nofa.plugin_occurrence_log
-                WHERE       "insert_timestamp" BETWEEN %s AND %s''',
+                WHERE       "insert_timestamp" BETWEEN %s AND %s
+                ''',
                 (time_from.toPyDate(), time_to.toPyDate(),))
         except:
             QMessageBox.information(
@@ -853,24 +855,27 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         return event_list
 
-    def _ins_txncvg(self, eventid):
+    def _ins_txncvg(self, event_id):
         """
         Inserts all checked taxons into the database.
 
-        :param eventid: An event ID.
-        :type eventid: uuid.UUID.
+        :param event_id: An event ID.
+        :type event_id: uuid.UUID.
         """
 
+        QgsMessageLog.logMessage(str(self._get_ckd_txns()), 'test')
         for txn in self._get_ckd_txns():
+            QgsMessageLog.logMessage(str(txn), 'test')
+            QgsMessageLog.logMessage(str(type(txn)), 'test')
             cur = self._get_db_cur()
             cur.execute(
                 '''
-                SELECT          "taxonID"
-                FROM            nofa."l_taxon"
-                WHERE           "scientificName" = '%s'
-                '''
+                SELECT      "taxonID"
+                FROM        nofa."l_taxon"
+                WHERE       "scientificName" = %s
+                ''',
                 (txn,))
-            txnid = cur.fetchone()[0]
+            txn_id = cur.fetchone()[0]
 
             # OS.NINA
             # this query does not work
@@ -878,12 +883,12 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
             cur = self._get_db_cur()
             cur.execute(
                 '''
-                INSERT INTO     nofa.taxonomicCoverage(
+                INSERT INTO     nofa."taxonomicCoverage"(
                                     "taxonID_l_taxon",
                                     "eventID_observationEvent")
-                VALUES          (%s,%s);
+                VALUES          (%s, %s);
                 ''',
-                (txnid, eventid))
+                (txn_id, event_id))
 
     def _get_ckd_txns(self):
         """
@@ -1474,7 +1479,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         dtst_id = dtst_id_name.split(self.dash_split_str)[0]
 
-        self.listview_dataset.clear()
+        self.dtst_lw.clear()
 
         cur = self._get_db_cur()
         cur.execute(
@@ -1489,7 +1494,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                         "informationWithheld",
                         "dataGeneralizations"
             FROM        nofa."m_dataset"
-            WHERE       "datasetID" = (%s);
+            WHERE       "datasetID" = %s;
             ''',
             (dtst_id,))
         dtst = cur.fetchone()
@@ -1497,7 +1502,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         for idx, dtst_data in enumerate(dtst):
             dtst_item = QListWidgetItem(
                 u'{}: {}'.format(cur.description[idx][0], dtst_data))
-            self.listview_dataset.addItem(dtst_item)
+            self.dtst_lw.addItem(dtst_item)
 
         self._set_mtdt_item_text(
             2,
@@ -1546,7 +1551,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         if isinstance(prj_org_no_name, int):
             prj_org_no_name = self.prj_cb.currentText()
 
-        self.listview_project.clear()
+        self.prj_lw.clear()
 
         split_prj_org_no_name = prj_org_no_name.split(self.dash_split_str)
 
@@ -1580,7 +1585,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         for idx, prj_data in enumerate(prj):
             prj_item = QListWidgetItem(
                 u'{}: {}'.format(cur.description[idx][0], prj_data))
-            self.listview_project.addItem(prj_item)
+            self.prj_lw.addItem(prj_item)
 
         self._set_mtdt_item_text(
             3,
@@ -1618,7 +1623,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
 
         ref_id = ref_au_til_id.split(self.at_split_str)[1]
 
-        self.listview_reference.clear()
+        self.ref_lw.clear()
 
         cur = self._get_db_cur()
         cur.execute(
@@ -1634,7 +1639,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                         "isbn",
                         "page"
             FROM        nofa."m_reference"
-            WHERE       "referenceID" = (%s);
+            WHERE       "referenceID" = %s
             ''',
             (ref_id,))
         ref = cur.fetchone()
@@ -1642,7 +1647,7 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         for idx, ref_data in enumerate(ref):
             ref_item = QListWidgetItem(
                 u'{}: {}'.format(cur.description[idx][0], ref_data))
-            self.listview_reference.addItem(ref_item)
+            self.ref_lw.addItem(ref_item)
 
         self._set_mtdt_item_text(
             4,
