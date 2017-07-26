@@ -1530,22 +1530,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the taxon coverage tree widget.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "scientificName",
-                        "family"
-            FROM        nofa.l_taxon
-            WHERE       "scientificName" IS NOT NULL
-                        AND
-                        "family" IS NOT NULL
-            GROUP BY    "scientificName", "family"
-            ''')
-        spp = cur.fetchall()
-
-        fam_dict = defaultdict(list)
-        for s in spp:
-            fam_dict[s[1]].append(s[0])
+        fam_dict = db.get_fam_dict(self.mw.con)
 
         root_item = QTreeWidgetItem(self.txncvg_tw, ["All"])
         root_item.setCheckState(0, Qt.Unchecked)
@@ -1569,34 +1554,10 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the dataset combo box.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "datasetID" dsid,
-                        "datasetName" dsn
-            FROM        nofa."m_dataset"
-            ORDER BY    dsid, dsn;
-            ''')
-        dtsts = cur.fetchall()
-
-        dtst_list = [self.get_dtst_str(d[0], d[1]) for d in dtsts]
+        dtst_list = db.get_dtst_list(self.mw.con)
 
         self.dtst_cb.clear()
         self.dtst_cb.addItems(dtst_list)
-
-    def get_dtst_str(self, id, name):
-        """
-        Returns a dataset string "<id> - <name>"
-
-        :param id: A dataset ID.
-        :type id: str.
-        :param name: A dataset name.
-        :type name: str.
-        """
-
-        dtst_str = u'{}{}{}'.format(id, self.dash_split_str, name)
-
-        return dtst_str
 
     def _get_dtst_id(self):
         """
