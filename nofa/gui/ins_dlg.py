@@ -1636,15 +1636,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the organism quantity type combo box.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT    "organismQuantityType" oqt
-            FROM      nofa."l_organismQuantityType"
-            ORDER BY  oqt
-            ''')
-        oqts  = cur.fetchall()
-        oqt_list = [o[0] for o in oqts]
+        oqt_list = db.get_oqt_list(self.mw.con)
 
         self.oqt_cb.clear()
         self.oqt_cb.addItems(oqt_list)

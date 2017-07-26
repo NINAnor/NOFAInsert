@@ -647,3 +647,26 @@ def get_ectp_list(con, txn_name):
     ectp_list = [e[0] for e in ectps]
 
     return ectp_list
+
+def get_oqt_list(con):
+    """
+    Returns a list of organism quantity types that is used to populate
+    organism quantity type combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list of organism quantity types.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT    "organismQuantityType" oqt
+        FROM      nofa."l_organismQuantityType"
+        ORDER BY  oqt
+        ''')
+    oqts  = cur.fetchall()
+    oqt_list = [o[0] for o in oqts]
+
+    return oqt_list
