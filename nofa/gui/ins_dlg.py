@@ -1363,23 +1363,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.dtst_lw.clear()
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "datasetID",
-                        "datasetName",
-                        "rightsHolder",
-                        "institutionCode",
-                        "license",
-                        "bibliographicCitation",
-                        "datasetComment",
-                        "informationWithheld",
-                        "dataGeneralizations"
-            FROM        nofa."m_dataset"
-            WHERE       "datasetID" = %s;
-            ''',
-            (dtst_id,))
-        dtst = cur.fetchone()
+        cur, dtst = db.get_dtst_info(self.mw.con, dtst_id)
 
         for idx, dtst_data in enumerate(dtst):
             dtst_item = QListWidgetItem(

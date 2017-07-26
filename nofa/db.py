@@ -321,3 +321,35 @@ def get_loc_id_list(con, locs_tpl):
 
     return loc_id_list
 
+def get_dtst_info(con, dtst_id):
+    """
+    Returns information about a dataset with the given ID.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param dtst_id: A dataset ID.
+    :type dtst_id: str.
+    :returns: A tuple containing cursor and a list of information
+        about the dataset.
+    :rtype: tuple.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "datasetID",
+                    "datasetName",
+                    "rightsHolder",
+                    "institutionCode",
+                    "license",
+                    "bibliographicCitation",
+                    "datasetComment",
+                    "informationWithheld",
+                    "dataGeneralizations"
+        FROM        nofa."m_dataset"
+        WHERE       "datasetID" = %s;
+        ''',
+        (dtst_id,))
+    dtst = cur.fetchone()
+
+    return (cur, dtst)
