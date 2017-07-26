@@ -1578,47 +1578,10 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the project combo box.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "organisation" o,
-                        "projectNumber" pno,
-                        "projectName" pn,
-                        "projectID" pid
-            FROM        nofa."m_project"
-            ORDER BY    o, pno, pn, pid
-            ''')
-        prjs = cur.fetchall()
-
-        proj_list = [self.get_prj_str(p[0], p[1], p[2], p[3]) for p in prjs]
+        proj_list = db.get_prj_list(self.mw.con)
 
         self.prj_cb.clear()
         self.prj_cb.addItems(proj_list)
-
-    def get_prj_str(self, org, no, name, id):
-        """
-        Returns a project string "<organisation> - <number> - <name> - <ID>"
-
-        :param org: A project organization.
-        :type org: str.
-        :param no: A project number.
-        :type no: str.
-        :param name: A project name.
-        :type name: str.
-        :param id: A project ID.
-        :type id: int.
-        """
-
-        prj_str = u'{}{}{}{}{}{}{}'.format(
-            org,
-            self.dash_split_str,
-            no,
-            self.dash_split_str,
-            name,
-            self.dash_split_str,
-            id)
-
-        return prj_str
 
     def _get_prj_id(self):
         """

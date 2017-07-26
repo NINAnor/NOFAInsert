@@ -43,7 +43,6 @@ def get_con(con_info):
 
     return con
 
-
 def _get_db_cur(con):
     """
     Returns a database cursor.
@@ -55,7 +54,6 @@ def _get_db_cur(con):
     """
 
     return con.cursor()
-
 
 def check_nofa_tbls(con):
     """
@@ -502,3 +500,55 @@ def _get_dtst_str(id, name):
     dtst_str = u'{}{}{}'.format(id, DASH_SPLIT_STR, name)
 
     return dtst_str
+
+def get_prj_list(con):
+    """
+    Returns a list with information about projects that is used to populate
+    project combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list with information about projects.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "organisation" o,
+                    "projectNumber" pno,
+                    "projectName" pn,
+                    "projectID" pid
+        FROM        nofa."m_project"
+        ORDER BY    o, pno, pn, pid
+        ''')
+    prjs = cur.fetchall()
+
+    proj_list = [_get_prj_str(p[0], p[1], p[2], p[3]) for p in prjs]
+
+    return proj_list
+
+def _get_prj_str(org, no, name, id):
+    """
+    Returns a project string "<organisation> - <number> - <name> - <ID>"
+
+    :param org: A project organization.
+    :type org: str.
+    :param no: A project number.
+    :type no: str.
+    :param name: A project name.
+    :type name: str.
+    :param id: A project ID.
+    :type id: int.
+    """
+
+    prj_str = u'{}{}{}{}{}{}{}'.format(
+        org,
+        DASH_SPLIT_STR,
+        no,
+        DASH_SPLIT_STR,
+        name,
+        DASH_SPLIT_STR,
+        id)
+
+    return prj_str
