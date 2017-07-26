@@ -2155,10 +2155,11 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
         self.occ_tbl.setRowCount(1)
 
         m = 0
-        self._add_mty_occ_row_items(0)
+
+        self._add_mty_occ_row_items(m)
 
         self.occ_tbl.blockSignals(True)
-        self.occ_tbl.selectRow(0)
+        self.occ_tbl.selectRow(m)
         self.occ_tbl.blockSignals(False)
 
         self._upd_occ_row()
