@@ -21,25 +21,22 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import (
-    QSettings, QTranslator, qVersion, QCoreApplication, Qt, QObject, QDate)
+from PyQt4.QtCore import QSettings, QCoreApplication, Qt, QObject, QDate
 from PyQt4.QtGui import (
-    QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget,
-    QTableWidgetItem, QColor, QFont, QCompleter, QLineEdit, QDialog,
-    QDoubleValidator, QIntValidator, QComboBox, QLineEdit, QDateEdit)
+    QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget,
+    QTableWidgetItem, QDialog, QDoubleValidator, QIntValidator, QComboBox,
+    QLineEdit, QDateEdit)
 
 from qgis.core import QgsApplication, QgsMessageLog
 
-import dtst_dlg, prj_dlg, ref_dlg
-
 from collections import defaultdict
-import os.path
+import os
 import psycopg2, psycopg2.extras
-import logging
 import datetime
 import uuid
 import sys
-import os
+
+import dtst_dlg, prj_dlg, ref_dlg
 
 
 class NoLocationException(Exception):
@@ -57,7 +54,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'ins_dlg.ui'))
 
 
-class InsDlg(QtGui.QDialog, FORM_CLASS):
+class InsDlg(QDialog, FORM_CLASS):
     def __init__(self, iface, mc):
         """Constructor."""
         super(InsDlg, self).__init__()
