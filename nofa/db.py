@@ -556,7 +556,7 @@ def _get_prj_str(org, no, name, id):
 def get_ref_list(con):
     """
     Returns a list with information about references that is used to populate
-    project combo box.
+    reference combo box.
 
     :param con: A connection.
     :type con: psycopg2.connection.
@@ -594,3 +594,27 @@ def _get_ref_str(au, ttl, id):
     ref_str = u'{}: {} @{}'.format(au, ttl, id)
     
     return ref_str
+
+def get_txn_list(con):
+    """
+    Returns a list of taxons that is used to populate taxon combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list of taxons.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "scientificName" sn
+        FROM        nofa."l_taxon"
+        WHERE       "taxonRank" IN ('species', 'hybrid', 'genus')
+        ORDER BY    sn
+        ''')
+    txns = cur.fetchall()
+
+    txn_list = [t[0] for t in txns]
+
+    return txn_list

@@ -1614,17 +1614,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the taxon combo box.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "scientificName" sn
-            FROM        nofa."l_taxon"
-            WHERE       "taxonRank" IN ('species', 'hybrid', 'genus')
-            ORDER BY    sn
-            ''')
-        txns = cur.fetchall()
-
-        txn_list = [t[0] for t in txns]
+        txn_list = db.get_txn_list(self.mw.con)
 
         self.txn_cb.clear()
         self.txn_cb.addItems(txn_list)
