@@ -23,13 +23,12 @@
 """
 
 
-# noinspection PyPep8Naming
-def classFactory(iface):  # pylint: disable=invalid-name
+def classFactory(iface):
     """Load NOFAInsert class from file NOFAInsert.
 
     :param iface: A QGIS interface instance.
     :type iface: QgsInterface
     """
-    #
-    from .nofa_insert import NOFAInsert
+
+    from nofa_insert import NOFAInsert
     return NOFAInsert(iface)

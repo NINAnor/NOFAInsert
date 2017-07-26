@@ -23,29 +23,15 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import (
-    QSettings, QTranslator, qVersion, QCoreApplication, Qt, QObject, QDate)
-from PyQt4.QtGui import (
-    QAction, QIcon, QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget,
-    QTableWidgetItem, QColor, QFont, QCompleter, QLineEdit, QDialog,
-    QDoubleValidator, QIntValidator)
+from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
+from PyQt4.QtGui import QAction, QIcon
 
-from qgis.core import *
+import os
+import psycopg2, psycopg2.extras
 
 import resources
 
-from nofa import con_dlg, dtst_dlg, prj_dlg, ref_dlg
-
-from ins_dlg import InsDlg
-from preview_dialog import PreviewDialog
-
-from collections import defaultdict
-import os.path
-import psycopg2, psycopg2.extras
-import logging
-import datetime
-import uuid
-import sys
+from nofa.gui import ins_dlg, con_dlg
 
 
 class NOFAInsert:
@@ -119,7 +105,7 @@ class NOFAInsert:
         self.con_act.triggered.connect(self._open_con_dlg)
         self.iface.addPluginToMenu(self.app_name, self.con_act)
 
-        self.ins_dlg = InsDlg(self.iface, self)
+        self.ins_dlg = ins_dlg.InsDlg(self.iface, self)
 
     def unload(self):
         """

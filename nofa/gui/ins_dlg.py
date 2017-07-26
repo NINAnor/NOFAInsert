@@ -28,13 +28,9 @@ from PyQt4.QtGui import (
     QTableWidgetItem, QColor, QFont, QCompleter, QLineEdit, QDialog,
     QDoubleValidator, QIntValidator, QComboBox, QLineEdit, QDateEdit)
 
-from qgis.core import *
+from qgis.core import QgsApplication, QgsMessageLog
 
-import resources
-
-from nofa import con_dlg, dtst_dlg, prj_dlg, ref_dlg
-
-from preview_dialog import PreviewDialog
+import dtst_dlg, prj_dlg, ref_dlg
 
 from collections import defaultdict
 import os.path
@@ -58,7 +54,7 @@ class NoLocationException(Exception):
 from PyQt4 import QtGui, uic
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'nofa_insert_dialog_base.ui'))
+    os.path.dirname(__file__), 'ins_dlg.ui'))
 
 
 class InsDlg(QtGui.QDialog, FORM_CLASS):
@@ -787,8 +783,6 @@ class InsDlg(QtGui.QDialog, FORM_CLASS):
                         (ectp,))
     
                     ectp_id = cur.fetchone()[0] if cur.rowcount != 0 else None
-    
-                    QgsMessageLog.logMessage(str(type(occ_row_list[3])), 'test')
     
                     cur = self._get_db_cur()
                     cur.execute(
