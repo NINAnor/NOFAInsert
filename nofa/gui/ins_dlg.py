@@ -1597,19 +1597,23 @@ class InsDlg(QDialog, FORM_CLASS):
 
     def _get_prj_id(self):
         """
-        Returns a project ID from the project combo box.
+        Returns a project ID based on organization number and name.
 
         :returns: A project ID.
         :rtype: str.
         """
 
-        prj_str = self.prj_cb.currentText()
+        prj_org_no_name = self.prj_cb.currentText()
 
-        split_prj_str = prj_str.split(self.dash_split_str)
+        split_prj_org_no_name = prj_org_no_name.split(self.dash_split_str)
 
-        id = split_prj_str[3]
+        prj_org = split_prj_org_no_name[0]
+        prj_no = split_prj_org_no_name[1]
+        prj_name = split_prj_org_no_name[2]
 
-        return id
+        prj_id = db.get_prj_id(self.mc.con, prj_org, prj_no, prj_name)
+
+        return prj_id
 
     def pop_ref_cb(self):
         """

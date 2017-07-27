@@ -517,20 +517,19 @@ def get_prj_list(con):
         '''
         SELECT      "organisation" o,
                     "projectNumber" pno,
-                    "projectName" pn,
-                    "projectID" pid
+                    "projectName" pn
         FROM        nofa."m_project"
-        ORDER BY    o, pno, pn, pid
+        ORDER BY    o, pno, pn
         ''')
     prjs = cur.fetchall()
 
-    prj_list = [get_prj_str(p[0], p[1], p[2], p[3]) for p in prjs]
+    prj_list = [get_prj_str(p[0], p[1], p[2]) for p in prjs]
 
     return prj_list
 
-def get_prj_str(org, no, name, id):
+def get_prj_str(org, no, name):
     """
-    Returns a project string "<organisation> - <number> - <name> - <ID>"
+    Returns a project string "<organisation> - <number> - <name>".
 
     :param org: A project organization.
     :type org: str.
@@ -538,20 +537,43 @@ def get_prj_str(org, no, name, id):
     :type no: str.
     :param name: A project name.
     :type name: str.
-    :param id: A project ID.
-    :type id: int.
     """
 
-    prj_str = u'{}{}{}{}{}{}{}'.format(
+    prj_str = u'{}{}{}{}{}'.format(
         org,
         DASH_SPLIT_STR,
         no,
         DASH_SPLIT_STR,
-        name,
-        DASH_SPLIT_STR,
-        id)
+        name)
 
     return prj_str
+
+def get_prj_id(con, prj_org, prj_no, prj_name):
+    """
+    Returns a project ID with the given organization number and name.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A project ID with the given organization number and name.
+    :rtype: int.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "projectID" o
+        FROM        nofa."m_project"
+        WHERE       "organisation" = %s
+                    AND
+                    "projectNumber" = %s
+                    AND
+                    "projectName" = %s
+        ''',
+        (prj_org, prj_no, prj_name,))
+
+    prj_id = cur.fetchone()[0]
+
+    return prj_id
 
 def get_ref_list(con):
     """
@@ -1017,8 +1039,6 @@ def ins_prj(con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk):
     :type fncr: str.
     :param rmk: Project remarks.
     :type rmk: str.
-    :returns: A project ID.
-    :rtype: int.
     """
 
     cur = _get_db_cur(con)
@@ -1043,7 +1063,6 @@ def ins_prj(con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk):
                             %(projectMembers)s,
                             %(financer)s,
                             %(remarks)s)
-        RETURNING       "projectID"
         ''',
         {'organisation': org,
          'projectNumber': no,
@@ -1054,10 +1073,6 @@ def ins_prj(con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk):
          'projectMembers': mbr,
          'financer': fncr,
          'remarks': rmk})
-
-    id = cur.fetchone()[0]
-
-    return id
 
 def get_reftp_list(con):
     """
