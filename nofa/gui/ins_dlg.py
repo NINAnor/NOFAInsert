@@ -244,9 +244,10 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
 
+        self.ins_btn.clicked.connect(self._ins)
         self.rstrow_btn.clicked.connect(self._rst_occ_row)
         self.rstallrows_btn.clicked.connect(self._rst_all_occ_rows)
-        self.ins_btn.clicked.connect(self._ins)
+        self.del_btn.clicked.connect(self._del_all_rows)
 
         # filter occurrences by username and time interval
         self.username_filter_button.clicked.connect(self.filter_occurrences_by_username)
@@ -1968,3 +1969,16 @@ class InsDlg(QDialog, FORM_CLASS):
 
         if self.occ_tbl.rowCount() > 1:
             self.occ_tbl.removeRow(m)
+
+    def _del_all_rows(self):
+        """
+        Deletes all rows except the currently selected one.
+        """
+
+        occ_list = self._get_occ_list()
+
+        self.occ_tbl.blockSignals(True)
+        self.occ_tbl.setRowCount(1)
+        self.occ_tbl.blockSignals(False)
+
+        self._set_occ_row(0, occ_list)
