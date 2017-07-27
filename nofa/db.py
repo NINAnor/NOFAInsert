@@ -717,3 +717,26 @@ def get_poptrend_list(con):
     poptrend_list = [p[0] for p in poptrends]
 
     return poptrend_list
+
+def get_estbms_list(con):
+    """
+    Returns a list of establishment means that is used to populate
+    establishment means combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list of establishment means.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "establishmentMeans" em
+        FROM        nofa."l_establishmentMeans"
+        ORDER BY    em
+        ''')
+    estbms  = cur.fetchall()
+    estbms_list = [e[0] for e in estbms]
+
+    return estbms_list

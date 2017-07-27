@@ -1516,7 +1516,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self._pop_oqt_cb()
         self._pop_occstat_cb()
         self._pop_poptrend_cb()
-        self._pop_estbm_cb()
+        self._pop_estbms_cb()
         self._pop_smpp_cb()
         self._pop_reliab_cb()
         self._pop_smpsu_cb()
@@ -1661,23 +1661,15 @@ class InsDlg(QDialog, FORM_CLASS):
         self.poptrend_cb.clear()
         self.poptrend_cb.addItems(poptrend_list)
 
-    def _pop_estbm_cb(self):
+    def _pop_estbms_cb(self):
         """
         Populates the establishment means combo box.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "establishmentMeans" em
-            FROM        nofa."l_establishmentMeans"
-            ORDER BY    em
-            ''')
-        estms  = cur.fetchall()
-        estm_list = [e[0] for e in estms]
+        estbms_list = db.get_estbms_list(self.mw.con)
 
         self.estm_cb.clear()
-        self.estm_cb.addItems(estm_list)
+        self.estm_cb.addItems(estbms_list)
 
     def _pop_smpp_cb(self):
         """
