@@ -817,7 +817,7 @@ def get_spwnc_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
-    :returns: A list of sspawning conditions.
+    :returns: A list of spawning conditions.
     :rtype: list.
     """
 
@@ -832,3 +832,26 @@ def get_spwnc_list(con):
     spwnc_list = [s[0] for s in spwncs]
 
     return spwnc_list
+
+def get_spwnl_list(con):
+    """
+    Returns a list of spawning locations that is used to populate
+    spawning location combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list of spawning locations.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "spawningLocation" s
+        FROM        nofa."l_spawningLocation"
+        ORDER BY    s
+        ''')
+    spwnls  = cur.fetchall()
+    spwnl_list = [s[0] for s in spwnls]
+
+    return spwnl_list

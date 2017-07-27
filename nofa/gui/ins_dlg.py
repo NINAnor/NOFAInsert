@@ -1716,15 +1716,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the spawning location combo box.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "spawningLocation" s
-            FROM        nofa."l_spawningLocation"
-            ORDER BY    s
-            ''')
-        spwnls  = cur.fetchall()
-        spwnl_list = [s[0] for s in spwnls]
+        spwnl_list = db.get_spwnl_list(self.mw.con)
 
         self.spwnl_cb.clear()
         self.spwnl_cb.addItems(spwnl_list)
