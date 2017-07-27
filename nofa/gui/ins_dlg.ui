@@ -25,7 +25,7 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_14">
        <item row="0" column="0">
-        <layout class="QGridLayout" name="ins_grid_lyt" rowstretch="1,0,0" columnstretch="0,1,0">
+        <layout class="QGridLayout" name="ins_grid_lyt" rowstretch="1,0,0" columnstretch="0,0,0">
          <property name="sizeConstraint">
           <enum>QLayout::SetMinimumSize</enum>
          </property>
@@ -59,6 +59,16 @@
               <property name="sizeConstraint">
                <enum>QLayout::SetMinimumSize</enum>
               </property>
+              <item row="4" column="0">
+               <widget class="QLabel" name="estm_lbl">
+                <property name="text">
+                 <string>establishmentMeans</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
               <item row="1" column="0">
                <widget class="QLabel" name="oqt_lbl">
                 <property name="text">
@@ -222,16 +232,6 @@
                <widget class="QLabel" name="ectp_lbl">
                 <property name="text">
                  <string>ecotype</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="estm_lbl">
-                <property name="text">
-                 <string>establishmentMeans</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -542,62 +542,6 @@
             </widget>
            </item>
           </layout>
-         </item>
-         <item row="1" column="1" rowspan="2">
-          <widget class="QGroupBox" name="txncvg_gb">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="contextMenuPolicy">
-            <enum>Qt::ActionsContextMenu</enum>
-           </property>
-           <property name="title">
-            <string>taxonomicCoverage</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_17">
-            <property name="sizeConstraint">
-             <enum>QLayout::SetMaximumSize</enum>
-            </property>
-            <item row="0" column="0">
-             <widget class="QTreeWidget" name="txncvg_tw">
-              <property name="contextMenuPolicy">
-               <enum>Qt::ActionsContextMenu</enum>
-              </property>
-              <property name="sortingEnabled">
-               <bool>false</bool>
-              </property>
-              <attribute name="headerVisible">
-               <bool>false</bool>
-              </attribute>
-              <column>
-               <property name="text">
-                <string notr="true">1</string>
-               </property>
-              </column>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QPushButton" name="ins_btn">
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="text">
-            <string>Insert to NOFA</string>
-           </property>
-          </widget>
          </item>
          <item row="0" column="0" rowspan="3">
           <widget class="QToolBox" name="main_tb">
@@ -1083,6 +1027,76 @@
             </layout>
            </widget>
           </widget>
+         </item>
+         <item row="1" column="1" rowspan="2">
+          <widget class="QGroupBox" name="txncvg_gb">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="contextMenuPolicy">
+            <enum>Qt::ActionsContextMenu</enum>
+           </property>
+           <property name="title">
+            <string>taxonomicCoverage</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_17">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetMaximumSize</enum>
+            </property>
+            <item row="0" column="0">
+             <widget class="QTreeWidget" name="txncvg_tw">
+              <property name="contextMenuPolicy">
+               <enum>Qt::ActionsContextMenu</enum>
+              </property>
+              <property name="sortingEnabled">
+               <bool>false</bool>
+              </property>
+              <attribute name="headerVisible">
+               <bool>false</bool>
+              </attribute>
+              <column>
+               <property name="text">
+                <string notr="true">1</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <layout class="QHBoxLayout" name="rstins_h_lyt">
+           <item>
+            <widget class="QPushButton" name="rstrow_btn">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="text">
+              <string>Reset Row</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="ins_btn">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="text">
+              <string>Insert to NOFA</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>

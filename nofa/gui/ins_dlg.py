@@ -244,6 +244,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
 
+        self.rstrow_btn.clicked.connect(self._rst_row)
         self.ins_btn.clicked.connect(self._ins)
 
         # filter occurrences by username and time interval
@@ -1849,6 +1850,13 @@ class InsDlg(QDialog, FORM_CLASS):
         self.occ_tbl.blockSignals(True)
         self.occ_tbl.selectRow(m)
         self.occ_tbl.blockSignals(False)
+
+        self._rst_row()
+
+    def _rst_row(self):
+        """
+        Resets an occurrence row in the occurrence table.
+        """
 
         self._clear_occ_le_wdgs()
         self._clear_occ_cb_wdgs()
