@@ -392,6 +392,9 @@
                  <pointsize>20</pointsize>
                 </font>
                </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
                <property name="text">
                 <string>⇧</string>
                </property>
@@ -428,6 +431,9 @@
                  <pointsize>20</pointsize>
                 </font>
                </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
                <property name="text">
                 <string>⇩</string>
                </property>
@@ -463,6 +469,9 @@
                 <font>
                  <pointsize>16</pointsize>
                 </font>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="text">
                 <string>+</string>
@@ -505,6 +514,9 @@
                 <font>
                  <pointsize>16</pointsize>
                 </font>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="text">
                 <string>−</string>
@@ -579,6 +591,9 @@
          </item>
          <item row="2" column="2">
           <widget class="QPushButton" name="ins_btn">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Insert to NOFA</string>
            </property>
