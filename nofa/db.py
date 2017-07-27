@@ -786,3 +786,49 @@ def get_reliab_list(con):
     relia_list = [r[0] for r in relias]
 
     return relia_list
+
+def get_smpsu_list(con):
+    """
+    Returns a list of sample size units that is used to populate
+    sample size unit combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list of sample size units.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "sampleSizeUnit" s
+        FROM        nofa."l_sampleSizeUnit"
+        ORDER BY    s
+        ''')
+    smpsus  = cur.fetchall()
+    smpsu_list = [s[0] for s in smpsus]
+
+    return smpsu_list
+
+def get_spwnc_list(con):
+    """
+    Returns a list of spawning conditions that is used to populate
+    spawning condition combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list of sspawning conditions.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "spawningCondition" s
+        FROM        nofa."l_spawningCondition"
+        ORDER BY    s
+        ''')
+    spwncs  = cur.fetchall()
+    spwnc_list = [s[0] for s in spwncs]
+
+    return spwnc_list

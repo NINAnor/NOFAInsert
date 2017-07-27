@@ -1696,15 +1696,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the sample size unit combo box.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "sampleSizeUnit" s
-            FROM        nofa."l_sampleSizeUnit"
-            ORDER BY    s
-            ''')
-        smpsus  = cur.fetchall()
-        smpsu_list = [s[0] for s in smpsus]
+        smpsu_list = db.get_smpsu_list(self.mw.con)
 
         self.smpsu_cb.clear()
         self.smpsu_cb.addItems(smpsu_list)
@@ -1714,15 +1706,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the spawning condition combo box.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "spawningCondition" s
-            FROM        nofa."l_spawningCondition"
-            ORDER BY    s
-            ''')
-        spwncs  = cur.fetchall()
-        spwnc_list = [s[0] for s in spwncs]
+        spwnc_list = db.get_spwnc_list(self.mw.con)
 
         self.spwnc_cb.clear()
         self.spwnc_cb.addItems(spwnc_list)
