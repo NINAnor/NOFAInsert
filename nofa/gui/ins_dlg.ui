@@ -390,10 +390,15 @@
                <property name="font">
                 <font>
                  <pointsize>20</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Select row up</string>
                </property>
                <property name="text">
                 <string>⇧</string>
@@ -429,10 +434,15 @@
                <property name="font">
                 <font>
                  <pointsize>20</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Select row down</string>
                </property>
                <property name="text">
                 <string>⇩</string>
@@ -467,11 +477,16 @@
                </property>
                <property name="font">
                 <font>
-                 <pointsize>16</pointsize>
+                 <pointsize>20</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Add row</string>
                </property>
                <property name="text">
                 <string>+</string>
@@ -512,11 +527,16 @@
                </property>
                <property name="font">
                 <font>
-                 <pointsize>16</pointsize>
+                 <pointsize>20</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Delete row</string>
                </property>
                <property name="text">
                 <string>−</string>
@@ -526,6 +546,78 @@
                  <width>15</width>
                  <height>15</height>
                 </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="rstrow_btn">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>41</width>
+                 <height>41</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>41</width>
+                 <height>41</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>20</pointsize>
+                </font>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Reset selected row</string>
+               </property>
+               <property name="text">
+                <string>↺</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="rstallrows_btn">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>41</width>
+                 <height>41</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>41</width>
+                 <height>41</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>20</pointsize>
+                </font>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Reset all rows</string>
+               </property>
+               <property name="text">
+                <string>⟲</string>
                </property>
               </widget>
              </item>
@@ -1076,23 +1168,6 @@
          </item>
          <item row="2" column="2">
           <layout class="QHBoxLayout" name="rstins_h_lyt">
-           <item>
-            <widget class="QPushButton" name="rstrow_btn">
-             <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
-             </property>
-             <property name="text">
-              <string>Reset Row</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="rstallrows_btn">
-             <property name="text">
-              <string>Reset All Rows</string>
-             </property>
-            </widget>
-           </item>
            <item>
             <widget class="QPushButton" name="ins_btn">
              <property name="focusPolicy">
