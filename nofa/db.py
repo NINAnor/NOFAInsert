@@ -855,3 +855,27 @@ def get_spwnl_list(con):
     spwnl_list = [s[0] for s in spwnls]
 
     return spwnl_list
+
+def get_inst_list(con):
+    """
+    Returns a list of institutions that is used to populate
+    institution combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list of institutions.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      distinct "institutionCode" i
+        FROM        nofa."m_dataset"
+        ORDER BY    i;
+        ''')
+    insts = cur.fetchall()
+
+    inst_list = [i[0] for i in insts]
+
+    return inst_list

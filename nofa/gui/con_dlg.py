@@ -27,6 +27,8 @@ from PyQt4.QtGui import (
     QDialog, QGridLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton,
     QStatusBar)
 
+from qgis.core import QgsApplication
+
 import psycopg2
 
 from .. import db
@@ -193,7 +195,7 @@ class ConDlg(QDialog):
 
             self.mw.con = db.get_con(con_info)
 
-            if self.mw.check_nofa_tbls():
+            if db.check_nofa_tbls(self.mw.con):
                 self.stat_bar.showMessage(
                     u'Connection to NOFA database succeeded.',
                     msg_dur)

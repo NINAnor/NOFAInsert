@@ -199,16 +199,7 @@ class DtstDlg(QDialog):
         Populates the institution combo box.
         """
 
-        cur = self.mw._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      distinct "institutionCode" i
-            FROM        nofa."m_dataset"
-            ORDER BY    i;
-            ''')
-        insts = cur.fetchall()
-
-        inst_list = [i[0] for i in insts]
+        inst_list = db.get_inst_list(self.mw.con)
 
         self.inst_cb.clear()
         self.inst_cb.addItems(inst_list)
