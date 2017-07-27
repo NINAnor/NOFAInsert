@@ -763,3 +763,26 @@ def get_smpp_list(con):
     smpp_list = [s[0] for s in smpps]
 
     return smpp_list
+
+def get_reliab_list(con):
+    """
+    Returns a list of reliabilities that is used to populate
+    reliability combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list of reliabilities.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "reliability" r
+        FROM        nofa."l_reliability"
+        ORDER BY    r
+        ''')
+    relias  = cur.fetchall()
+    relia_list = [r[0] for r in relias]
+
+    return relia_list

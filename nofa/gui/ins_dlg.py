@@ -1686,15 +1686,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the reliability combo box.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "reliability" r
-            FROM        nofa."l_reliability"
-            ORDER BY    r
-            ''')
-        relias  = cur.fetchall()
-        relia_list = [r[0] for r in relias]
+        relia_list = db.get_reliab_list(self.mw.con)
 
         self.relia_cb.clear()
         self.relia_cb.addItems(relia_list)
