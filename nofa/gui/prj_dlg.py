@@ -29,23 +29,28 @@ from PyQt4.QtGui import (
     QPlainTextEdit, QHBoxLayout, QPushButton, QStatusBar, QDateEdit,
     QIntValidator)
 
+from .. import db
+
 
 class PrjDlg(QDialog):
     """
     A dialog for adding new project.
     """
 
-    def __init__(self, mw):
+    def __init__(self, mc, iw):
         """
         Constructor.
 
-        :param mw: A reference to the main window.
-        :type mw: QWidget.
+        :param mc: A reference to the main class.
+        :type mc: object.
+        :param iw: A reference to the insert window.
+        :type iw: QDialog.
         """
 
         super(QDialog, self).__init__()
 
-        self.mw = mw
+        self.mc = mc
+        self.iw = iw
 
         self._setup_self()
 
@@ -192,16 +197,7 @@ class PrjDlg(QDialog):
         Populates the organization combo box.
         """
 
-        cur = self.mw._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      distinct "institutionCode" i
-            FROM        nofa."m_dataset"
-            ORDER BY    i;
-            ''')
-        orgs = cur.fetchall()
-
-        org_list = [i[0] for i in orgs]
+        org_list = db.get_inst_list(self.mc.con)
 
         self.org_cb.clear()
         self.org_cb.addItems(org_list)
@@ -214,7 +210,7 @@ class PrjDlg(QDialog):
         org = self.org_cb.currentText() \
             if len(self.org_cb.currentText()) != 0 else None
         if len(self.no_le.text()) != 0:
-            no = self.no_le.text()
+            no = int(self.no_le.text())
         else:
             self.stat_bar.showMessage(u'Enter a project number.', 10000)
             return
@@ -234,42 +230,10 @@ class PrjDlg(QDialog):
         rmk = self.rmk_pte.toPlainText() \
             if len(self.rmk_pte.toPlainText()) != 0 else None
 
-        cur = self.mw._get_db_cur()
-        cur.execute(
-            '''
-            INSERT INTO     nofa.m_project (
-                                "organisation",
-                                "projectNumber",
-                                "projectName",
-                                "startYear",
-                                "endYear",
-                                "projectLeader",
-                                "projectMembers",
-                                "financer",
-                                "remarks")
-            VALUES          (   %(organisation)s,
-                                %(projectNumber)s,
-                                %(projectName)s,
-                                %(startYear)s,
-                                %(endYear)s,
-                                %(projectLeader)s,
-                                %(projectMembers)s,
-                                %(financer)s,
-                                %(remarks)s)
-            RETURNING       "projectID"
-            ''',
-            {'organisation': org,
-             'projectNumber': no,
-             'projectName': name,
-             'startYear': styr,
-             'endYear': endyr,
-             'projectLeader': ldr,
-             'projectMembers': mbr,
-             'financer': fncr,
-             'remarks': rmk})
-        id = cur.fetchone()[0]
+        id = db.ins_prj(
+            self.mc.con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk)
 
         self.stat_bar.showMessage(u'Project saved.', 10000)
 
-        self.mw.pop_prj_cb()
-        self.mw.upd_prj(self.mw.get_prj_str(org, no, name, id))
+        self.iw.pop_prj_cb()
+        self.iw.upd_prj(db.get_prj_str(org, no, name, id))

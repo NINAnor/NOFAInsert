@@ -57,7 +57,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class InsDlg(QDialog, FORM_CLASS):
-    def __init__(self, iface, mw):
+    def __init__(self, iface, mc):
         """Constructor."""
         super(InsDlg, self).__init__()
         # Set up the user interface from Designer.
@@ -68,7 +68,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.setupUi(self)
 
         self.iface = iface
-        self.mw = mw
+        self.mc = mc
 
         self.org = u'NINA'
         self.app_name = u'NOFAInsert'
@@ -644,7 +644,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Opens a dialog for adding a new dataset.
         """
 
-        self.dtst_dlg = dtst_dlg.DtstDlg(self)
+        self.dtst_dlg = dtst_dlg.DtstDlg(self.mc, self)
         self.dtst_dlg.show()
 
     def _open_prj_dlg(self):
@@ -652,7 +652,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Opens a dialog for adding a new project.
         """
 
-        self.prj_dlg = prj_dlg.PrjDlg(self)
+        self.prj_dlg = prj_dlg.PrjDlg(self.mc, self)
         self.prj_dlg.show()
 
     def _open_ref_dlg(self):
@@ -660,7 +660,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Opens a dialog for adding a new reference.
         """
 
-        self.ref_dlg = ref_dlg.RefDlg(self)
+        self.ref_dlg = ref_dlg.RefDlg(self.mc, self)
         self.ref_dlg.show()
 
     def _upd_txncvg_tw_chldn(self, par):
@@ -697,7 +697,7 @@ class InsDlg(QDialog, FORM_CLASS):
                 event_id = uuid.uuid4()
     
                 db.ins_event(
-                    self.mw.con, loc_id, event_id, event_list, dtst_id, prj_id)
+                    self.mc.con, loc_id, event_id, event_list, dtst_id, prj_id)
     
                 # OS.NINA
                 # does not work now
@@ -709,13 +709,13 @@ class InsDlg(QDialog, FORM_CLASS):
                     occ_row_list = self._get_occ_row_list(m)
     
                     txn =  occ_row_list[0]
-                    txn_id = db.get_txn_id(self.mw.con, txn)
+                    txn_id = db.get_txn_id(self.mc.con, txn)
     
                     ectp = occ_row_list[1]    
-                    ectp_id = db.get_ectp_id(self.mw.con, ectp)
+                    ectp_id = db.get_ectp_id(self.mc.con, ectp)
     
                     db.ins_occ(
-                        self.mw.con,
+                        self.mc.con,
                         occ_id, txn_id, ectp_id, occ_row_list, event_id)
     
             QMessageBox.information(self, u'Saved', u'Data correctly saved.')
@@ -779,9 +779,9 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         for txn in self._get_ckd_txns():
-            txn_id = db.get_txn_id(self.mw.con, txn)
+            txn_id = db.get_txn_id(self.mc.con, txn)
 
-            db.ins_txncvg(self.mw.con, txn_id, event_id)
+            db.ins_txncvg(self.mc.con, txn_id, event_id)
 
     def _get_ckd_txns(self):
         """
@@ -825,7 +825,7 @@ class InsDlg(QDialog, FORM_CLASS):
         # OS.NINA
         # add other location types
         if loctp == 'Norwegian VatnLnr':
-            loc_id_list = db.get_loc_id_list(self.mw.con, locs_tpl)
+            loc_id_list = db.get_loc_id_list(self.mc.con, locs_tpl)
 
         return loc_id_list
 
@@ -1340,7 +1340,11 @@ class InsDlg(QDialog, FORM_CLASS):
         :type dtst_id_name: str.
         """
 
-        dtst_id_name = self.settings.value('dataset_id_name')
+        if dtst_id_name:
+            dtst_cb_index = self.dtst_cb.findText(dtst_id_name)
+            self.dtst_cb.setCurrentIndex(dtst_cb_index)
+        else:
+            dtst_id_name = self.settings.value('dataset_id_name')
 
         if not dtst_id_name:
             dtst_id_name = self.dtst_cb.currentText()
@@ -1363,7 +1367,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.dtst_lw.clear()
 
-        cur, dtst = db.get_dtst_info(self.mw.con, dtst_id)
+        cur, dtst = db.get_dtst_info(self.mc.con, dtst_id)
 
         for idx, dtst_data in enumerate(dtst):
             dtst_item = QListWidgetItem(
@@ -1397,7 +1401,11 @@ class InsDlg(QDialog, FORM_CLASS):
         :type prj_org_no_name: str.
         """
 
-        prj_org_no_name = self.settings.value('project_org_no_name')
+        if prj_org_no_name:
+            proj_cb_index = self.prj_cb.findText(prj_org_no_name)
+            self.prj_cb.setCurrentIndex(proj_cb_index)
+        else:
+            prj_org_no_name = self.settings.value('project_org_no_name')
 
         if not prj_org_no_name:
             prj_org_no_name = self.prj_cb.currentText()
@@ -1425,7 +1433,7 @@ class InsDlg(QDialog, FORM_CLASS):
         prj_no = split_prj_org_no_name[1]
         prj_name = split_prj_org_no_name[2]
 
-        cur, prj = db.get_prj_info(self.mw.con, prj_org, prj_no, prj_name)
+        cur, prj = db.get_prj_info(self.mc.con, prj_org, prj_no, prj_name)
 
         for idx, prj_data in enumerate(prj):
             prj_item = QListWidgetItem(
@@ -1446,7 +1454,11 @@ class InsDlg(QDialog, FORM_CLASS):
         Updates a reference according to the last selected.
         """
 
-        ref_au_til_id = self.settings.value('reference_au_til_id')
+        if ref_au_til_id:
+            ref_cb_index = self.ref_cb.findText(ref_au_til_id)
+            self.ref_cb.setCurrentIndex(ref_cb_index)
+        else:
+            ref_au_til_id = self.settings.value('reference_au_til_id')
 
         if not ref_au_til_id:
             ref_au_til_id = self.ref_cb.currentText()
@@ -1470,7 +1482,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.ref_lw.clear()
 
-        cur, ref = db.get_ref_info(self.mw.con, ref_id)
+        cur, ref = db.get_ref_info(self.mc.con, ref_id)
 
         for idx, ref_data in enumerate(ref):
             ref_item = QListWidgetItem(
@@ -1491,7 +1503,7 @@ class InsDlg(QDialog, FORM_CLASS):
         :rtype: psycopg2.cursor.
         """
 
-        return self.mw.con.cursor()
+        return self.mc.con.cursor()
 
     def fetch_db(self):
         """
@@ -1530,7 +1542,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the taxon coverage tree widget.
         """
 
-        fam_dict = db.get_fam_dict(self.mw.con)
+        fam_dict = db.get_fam_dict(self.mc.con)
 
         root_item = QTreeWidgetItem(self.txncvg_tw, ["All"])
         root_item.setCheckState(0, Qt.Unchecked)
@@ -1554,7 +1566,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the dataset combo box.
         """
 
-        dtst_list = db.get_dtst_list(self.mw.con)
+        dtst_list = db.get_dtst_list(self.mc.con)
 
         self.dtst_cb.clear()
         self.dtst_cb.addItems(dtst_list)
@@ -1578,7 +1590,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the project combo box.
         """
 
-        prj_list = db.get_prj_list(self.mw.con)
+        prj_list = db.get_prj_list(self.mc.con)
 
         self.prj_cb.clear()
         self.prj_cb.addItems(prj_list)
@@ -1604,7 +1616,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the reference combo box.
         """
 
-        ref_list = db.get_ref_list(self.mw.con)
+        ref_list = db.get_ref_list(self.mc.con)
 
         self.ref_cb.clear()
         self.ref_cb.addItems(ref_list)
@@ -1614,7 +1626,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the taxon combo box.
         """
 
-        txn_list = db.get_txn_list(self.mw.con)
+        txn_list = db.get_txn_list(self.mc.con)
 
         self.txn_cb.clear()
         self.txn_cb.addItems(txn_list)
@@ -1626,7 +1638,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         txn_name = self.txn_cb.currentText()
 
-        ectp_list = db.get_ectp_list(self.mw.con, txn_name)
+        ectp_list = db.get_ectp_list(self.mc.con, txn_name)
 
         self.ectp_cb.clear()
         self.ectp_cb.addItems(ectp_list)
@@ -1636,7 +1648,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the organism quantity type combo box.
         """
 
-        oqt_list = db.get_oqt_list(self.mw.con)
+        oqt_list = db.get_oqt_list(self.mc.con)
 
         self.oqt_cb.clear()
         self.oqt_cb.addItems(oqt_list)
@@ -1646,7 +1658,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the occurrence status combo box.
         """
 
-        occstat_list = db.get_occstat_list(self.mw.con)
+        occstat_list = db.get_occstat_list(self.mc.con)
 
         self.occstat_cb.clear()
         self.occstat_cb.addItems(occstat_list)
@@ -1656,7 +1668,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the population trend combo box.
         """
 
-        poptrend_list = db.get_poptrend_list(self.mw.con)
+        poptrend_list = db.get_poptrend_list(self.mc.con)
 
         self.poptrend_cb.clear()
         self.poptrend_cb.addItems(poptrend_list)
@@ -1666,7 +1678,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the establishment means combo box.
         """
 
-        estbms_list = db.get_estbms_list(self.mw.con)
+        estbms_list = db.get_estbms_list(self.mc.con)
 
         self.estm_cb.clear()
         self.estm_cb.addItems(estbms_list)
@@ -1676,7 +1688,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the sampling protocol combo box.
         """
 
-        smpp_list = db.get_smpp_list(self.mw.con)
+        smpp_list = db.get_smpp_list(self.mc.con)
 
         self.smpp_cb.clear()
         self.smpp_cb.addItems(smpp_list)
@@ -1686,7 +1698,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the reliability combo box.
         """
 
-        relia_list = db.get_reliab_list(self.mw.con)
+        relia_list = db.get_reliab_list(self.mc.con)
 
         self.relia_cb.clear()
         self.relia_cb.addItems(relia_list)
@@ -1696,7 +1708,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the sample size unit combo box.
         """
 
-        smpsu_list = db.get_smpsu_list(self.mw.con)
+        smpsu_list = db.get_smpsu_list(self.mc.con)
 
         self.smpsu_cb.clear()
         self.smpsu_cb.addItems(smpsu_list)
@@ -1706,7 +1718,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the spawning condition combo box.
         """
 
-        spwnc_list = db.get_spwnc_list(self.mw.con)
+        spwnc_list = db.get_spwnc_list(self.mc.con)
 
         self.spwnc_cb.clear()
         self.spwnc_cb.addItems(spwnc_list)
@@ -1716,7 +1728,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the spawning location combo box.
         """
 
-        spwnl_list = db.get_spwnl_list(self.mw.con)
+        spwnl_list = db.get_spwnl_list(self.mc.con)
 
         self.spwnl_cb.clear()
         self.spwnl_cb.addItems(spwnl_list)

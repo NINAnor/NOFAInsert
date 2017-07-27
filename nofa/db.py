@@ -483,11 +483,11 @@ def get_dtst_list(con):
         ''')
     dtsts = cur.fetchall()
 
-    dtst_list = [_get_dtst_str(d[0], d[1]) for d in dtsts]
+    dtst_list = [get_dtst_str(d[0], d[1]) for d in dtsts]
 
     return dtst_list
 
-def _get_dtst_str(id, name):
+def get_dtst_str(id, name):
     """
     Returns a dataset string "<id> - <name>"
 
@@ -524,11 +524,11 @@ def get_prj_list(con):
         ''')
     prjs = cur.fetchall()
 
-    prj_list = [_get_prj_str(p[0], p[1], p[2], p[3]) for p in prjs]
+    prj_list = [get_prj_str(p[0], p[1], p[2], p[3]) for p in prjs]
 
     return prj_list
 
-def _get_prj_str(org, no, name, id):
+def get_prj_str(org, no, name, id):
     """
     Returns a project string "<organisation> - <number> - <name> - <ID>"
 
@@ -575,11 +575,11 @@ def get_ref_list(con):
         ''')
     refs = cur.fetchall()
 
-    ref_list = [_get_ref_str(r[1], r[2], r[0]) for r in refs]
+    ref_list = [get_ref_str(r[1], r[2], r[0]) for r in refs]
 
     return ref_list
 
-def _get_ref_str(au, ttl, id):
+def get_ref_str(au, ttl, id):
     """
     Returns a reference string "<author>: <title> @<id>".
 
@@ -879,3 +879,271 @@ def get_inst_list(con):
     inst_list = [i[0] for i in insts]
 
     return inst_list
+
+def get_acs_list(con):
+    """
+    Returns a list of access rights that is used to populate
+    access rights combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list of access rights.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      distinct "accessRights" ar
+        FROM        nofa."m_dataset"
+        ORDER BY    ar;
+        ''')
+    acs_rghts = cur.fetchall()
+
+    acs_rght_list = [ar[0] for ar in acs_rghts]
+
+    return acs_rght_list
+
+def get_dtst_cnt(con, id):
+    """
+    Returns a number of datasets with the given ID.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param id: A dataset ID.
+    :type id: str.
+    :returns: A number of datasets with the given ID.
+    :rtype: int.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "datasetID"
+        FROM        nofa."m_dataset"
+        WHERE       "datasetID" = %s;
+        ''',
+        (id,))
+
+    dtst_cnt = cur.rowcount
+
+    return dtst_cnt
+
+def ins_dtst(con, name, id, inst, rght, lic, acs, cit, cmnt, info, dtgen):
+    """
+    Insert an event to the database.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param name: A dataset name.
+    :type name: str.
+    :param id: A dataset ID.
+    :type id: uuid.UUID.
+    :param inst: An institution.
+    :type inst: str.
+    :param rght: A rights holder.
+    :type rght: str.
+    :param lic: A license.
+    :type lic: str.
+    :param acs: An access rights.
+    :type acs: str.
+    :param cit: A bibliographic citation.
+    :type cit: str.
+    :param cmnt: A comment.
+    :type cmnt: str.
+    :param info: An information withheld.
+    :type info: str.
+    :param dtgen: A data generalizations.
+    :type dtgen: str.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        INSERT INTO     nofa.m_dataset (
+                            "datasetName",
+                            "datasetID",
+                            "ownerInstitutionCode",
+                            "rightsHolder",
+                            "license",
+                            "accessRights",
+                            "bibliographicCitation",
+                            "datasetComment",
+                            "informationWithheld",
+                            "dataGeneralizations")
+        VALUES          (   %(datasetName)s,
+                            %(datasetID)s,
+                            %(ownerInstitutionCode)s,
+                            %(rightsHolder)s,
+                            %(license)s,
+                            %(accessRights)s,
+                            %(bibliographicCitation)s,
+                            %(datasetComment)s,
+                            %(informationWithheld)s,
+                            %(dataGeneralizations)s);
+        ''',
+        {'datasetName': name,
+         'datasetID': id,
+         'ownerInstitutionCode': inst,
+         'rightsHolder': rght,
+         'license': lic,
+         'accessRights': acs,
+         'bibliographicCitation': cit,
+         'datasetComment': cmnt,
+         'informationWithheld': info,
+         'dataGeneralizations': dtgen})
+
+def ins_prj(con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk):
+    """
+    Insert an event to the database.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param org: A organization.
+    :type org: str.
+    :param no: A project number.
+    :type no: int.
+    :param name: A project name.
+    :type name: str.
+    :param styr: A start year.
+    :type styr: int.
+    :param endyr: An end year.
+    :type endyr: int.
+    :param ldr: A project leader.
+    :type ldr: str.
+    :param mbr: Project members.
+    :type mbr: str.
+    :param fncr: A financer.
+    :type fncr: str.
+    :param rmk: Project remarks.
+    :type rmk: str.
+    :returns: A project ID.
+    :rtype: int.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        INSERT INTO     nofa.m_project (
+                            "organisation",
+                            "projectNumber",
+                            "projectName",
+                            "startYear",
+                            "endYear",
+                            "projectLeader",
+                            "projectMembers",
+                            "financer",
+                            "remarks")
+        VALUES          (   %(organisation)s,
+                            %(projectNumber)s,
+                            %(projectName)s,
+                            %(startYear)s,
+                            %(endYear)s,
+                            %(projectLeader)s,
+                            %(projectMembers)s,
+                            %(financer)s,
+                            %(remarks)s)
+        RETURNING       "projectID"
+        ''',
+        {'organisation': org,
+         'projectNumber': no,
+         'projectName': name,
+         'startYear': styr,
+         'endYear': endyr,
+         'projectLeader': ldr,
+         'projectMembers': mbr,
+         'financer': fncr,
+         'remarks': rmk})
+
+    id = cur.fetchone()[0]
+
+    return id
+
+def get_reftp_list(con):
+    """
+    Returns a list of reference types that is used to populate
+    reference type combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list of reference types.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "referenceType" rt
+        FROM        nofa."l_referenceType"
+        ORDER BY    rt
+        ''')
+    reftps = cur.fetchall()
+
+    reftp_list = [r[0] for r in reftps]
+
+    return reftp_list
+
+def ins_ref(con, ttl, au, yr, isbn, issn, tp, jrn, vol, pg):
+    """
+    Insert an event to the database.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param ttl: A reference title.
+    :type ttl: str.
+    :param au: A reference author.
+    :type au: str.
+    :param yr: A reference year.
+    :type yr: int.
+    :param isbn: A reference ISBN.
+    :type isbn: str.
+    :param issn: A reference ISSN.
+    :type issn: str.
+    :param tp: A reference type
+    :type tp: str.
+    :param jrn: A journal.
+    :type jrn: str.
+    :param vol: A volume.
+    :type vol: str.
+    :param pg: A page(s).
+    :type pg: str.
+    :returns: A reference ID.
+    :rtype: int.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        INSERT INTO     nofa.m_reference (
+                            "titel",
+                            "author",
+                            "year",
+                            "isbn",
+                            "issn",
+                            "referenceType",
+                            "journalName",
+                            "volume",
+                            "page")
+        VALUES          (   %(title)s,
+                            %(author)s,
+                            %(year)s,
+                            %(isbn)s,
+                            %(issn)s,
+                            %(referenceType)s,
+                            %(journalName)s,
+                            %(volume)s,
+                            %(page)s)
+        RETURNING       "referenceID"
+        ''',
+        {'title': ttl,
+         'author': au,
+         'year': yr,
+         'isbn': isbn,
+         'issn': issn,
+         'referenceType': tp,
+         'journalName': jrn,
+         'volume': vol,
+         'page': pg})
+    id = cur.fetchone()[0]
+
+    return id

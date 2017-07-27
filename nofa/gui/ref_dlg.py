@@ -29,23 +29,28 @@ from PyQt4.QtGui import (
     QPlainTextEdit, QHBoxLayout, QPushButton, QStatusBar, QDateEdit,
     QIntValidator)
 
+from .. import db
+
 
 class RefDlg(QDialog):
     """
     A dialog for adding new reference.
     """
 
-    def __init__(self, mw):
+    def __init__(self, mc, iw):
         """
         Constructor.
 
-        :param mw: A reference to the main window.
-        :type mw: QWidget.
+        :param mc: A reference to the main class.
+        :type mc: object.
+        :param iw: A reference to the insert window.
+        :type iw: QDialog.
         """
 
         super(QDialog, self).__init__()
 
-        self.mw = mw
+        self.mc = mc
+        self.iw = iw
 
         self._setup_self()
 
@@ -132,7 +137,7 @@ class RefDlg(QDialog):
 
         self.tp_cb = QComboBox(self)
         self.tp_cb.setObjectName(u'tp_cb')
-        self._pop_tp_cb()
+        self._pop_reftp_cb()
         self.grid_lyt.addWidget(self.tp_cb, 5, 1, 1, 1)
 
         self.jrn_lbl = QLabel(self)
@@ -185,24 +190,15 @@ class RefDlg(QDialog):
         self.stat_bar.setObjectName(u'stat_bar')
         self.grid_lyt.addWidget(self.stat_bar, 10, 0, 1, 2)
 
-    def _pop_tp_cb(self):
+    def _pop_reftp_cb(self):
         """
-        Populates the type combo box.
+        Populates the reference type combo box.
         """
 
-        cur = self.mw._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "referenceType" tp
-            FROM        nofa."l_referenceType"
-            ORDER BY    tp;
-            ''')
-        tps = cur.fetchall()
-
-        tp_list = [t[0] for t in tps]
+        reftp_list = db.get_reftp_list(self.mc.con)
 
         self.tp_cb.clear()
-        self.tp_cb.addItems(tp_list)
+        self.tp_cb.addItems(reftp_list)
 
     def _save_ref(self):
         """
@@ -232,42 +228,9 @@ class RefDlg(QDialog):
         pg = self.pg_le.text() \
             if len(self.pg_le.text()) != 0 else None
 
-        cur = self.mw._get_db_cur()
-        cur.execute(
-            '''
-            INSERT INTO     nofa.m_reference (
-                                "titel",
-                                "author",
-                                "year",
-                                "isbn",
-                                "issn",
-                                "referenceType",
-                                "journalName",
-                                "volume",
-                                "page")
-            VALUES          (   %(title)s,
-                                %(author)s,
-                                %(year)s,
-                                %(isbn)s,
-                                %(issn)s,
-                                %(referenceType)s,
-                                %(journalName)s,
-                                %(volume)s,
-                                %(page)s)
-            RETURNING       "referenceID"
-            ''',
-            {'title': ttl,
-             'author': au,
-             'year': yr,
-             'isbn': isbn,
-             'issn': issn,
-             'referenceType': tp,
-             'journalName': jrn,
-             'volume': vol,
-             'page': pg})
-        id = cur.fetchone()[0]
+        id = db.ins_ref(self.mc.con, ttl, au, yr, isbn, issn, tp, jrn, vol, pg)
 
         self.stat_bar.showMessage(u'Reference saved.', 10000)
 
-        self.mw.pop_ref_cb()
-        self.mw.upd_ref(self.mw.get_ref_str(au, ttl, id))
+        self.iw.pop_ref_cb()
+        self.iw.upd_ref(db.get_ref_str(au, ttl, id))

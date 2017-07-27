@@ -30,23 +30,28 @@ from PyQt4.QtGui import (
 
 import uuid
 
+from .. import db
+
 
 class DtstDlg(QDialog):
     """
     A dialog for adding new dataset.
     """
 
-    def __init__(self, mw):
+    def __init__(self, mc, iw):
         """
         Constructor.
 
-        :param mw: A reference to the main window.
-        :type mw: QWidget.
+        :param mc: A reference to the main class.
+        :type mc: object.
+        :param iw: A reference to the insert window.
+        :type iw: QDialog.
         """
 
         super(QDialog, self).__init__()
 
-        self.mw = mw
+        self.mc = mc
+        self.iw = iw
 
         self._setup_self()
 
@@ -199,7 +204,7 @@ class DtstDlg(QDialog):
         Populates the institution combo box.
         """
 
-        inst_list = db.get_inst_list(self.mw.con)
+        inst_list = db.get_inst_list(self.mc.con)
 
         self.inst_cb.clear()
         self.inst_cb.addItems(inst_list)
@@ -209,16 +214,7 @@ class DtstDlg(QDialog):
         Populates the rights combo box.
         """
 
-        cur = self.mw._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      distinct "institutionCode" i
-            FROM        nofa."m_dataset"
-            ORDER BY    i;
-            ''')
-        insts = cur.fetchall()
-
-        inst_list = [i[0] for i in insts]
+        inst_list = db.get_inst_list(self.mc.con)
 
         self.rght_cb.clear()
         self.rght_cb.addItems(inst_list)
@@ -240,16 +236,7 @@ class DtstDlg(QDialog):
         Populates the access rights combo box.
         """
 
-        cur = self.mw._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      distinct "accessRights" ar
-            FROM        nofa."m_dataset"
-            ORDER BY    ar;
-            ''')
-        acs_rghts = cur.fetchall()
-
-        acs_rght_list = [ar[0] for ar in acs_rghts]
+        acs_rght_list = db.get_acs_list(self.mc.con)
 
         self.acs_cb.clear()
         self.acs_cb.addItems(acs_rght_list)
@@ -285,59 +272,19 @@ class DtstDlg(QDialog):
         if len(id) == 0:
             id = uuid.uuid4()
         else:
-            cur = self.mw._get_db_cur()
-            cur.execute(
-                '''
-                SELECT      "datasetID"
-                FROM        nofa."m_dataset"
-                WHERE       "datasetID" = %s;
-                ''',
-                (id,))
+            dtst_cnt = db.get_dtst_cnt(self.mc.con, id)
 
-            if cur.rowcount != 0:
+            if dtst_cnt != 0:
                 self.stat_bar.showMessage(
                     u'datasetID "{}" is already in the table. '
                     u'You can leave it empty.'.format(id),
                     10000)
                 return
 
-        cur = self.mw._get_db_cur()
-        cur.execute(
-            '''
-            INSERT INTO     nofa.m_dataset (
-                                "datasetName",
-                                "datasetID",
-                                "ownerInstitutionCode",
-                                "rightsHolder",
-                                "license",
-                                "accessRights",
-                                "bibliographicCitation",
-                                "datasetComment",
-                                "informationWithheld",
-                                "dataGeneralizations")
-            VALUES          (   %(datasetName)s,
-                                %(datasetID)s,
-                                %(ownerInstitutionCode)s,
-                                %(rightsHolder)s,
-                                %(license)s,
-                                %(accessRights)s,
-                                %(bibliographicCitation)s,
-                                %(datasetComment)s,
-                                %(informationWithheld)s,
-                                %(dataGeneralizations)s);
-            ''',
-            {'datasetName': name,
-             'datasetID': id,
-             'ownerInstitutionCode': inst,
-             'rightsHolder': rght,
-             'license': lic,
-             'accessRights': acs,
-             'bibliographicCitation': cit,
-             'datasetComment': cmnt,
-             'informationWithheld': info,
-             'dataGeneralizations': dtgen})
+        db.ins_dtst(
+            self.mc.con, name, id, inst, rght, lic, acs, cit, cmnt, info, dtgen)
 
         self.stat_bar.showMessage(u'Dataset saved.', 10000)
 
-        self.mw.pop_dtst_cb()
-        self.mw.upd_dtst(self.mw.get_dtst_str(id, name))
+        self.iw.pop_dtst_cb()
+        self.iw.upd_dtst(db.get_dtst_str(id, name))

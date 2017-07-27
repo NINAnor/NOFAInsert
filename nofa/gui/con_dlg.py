@@ -39,12 +39,12 @@ class ConDlg(QDialog):
     A connection dialog for setting database connection parameters.
     """
 
-    def __init__(self, mw, con_info, stat_bar_msg):
+    def __init__(self, mc, con_info, stat_bar_msg):
         """
         Constructor.
 
-        :param mw: A reference to the main window.
-        :type mw: QWidget.
+        :param mc: A reference to the main class.
+        :type mc: object.
         :param con_info: A connection information.
         :type con_info: dict.
         :param stat_bar_msg: A status bar message.
@@ -53,7 +53,7 @@ class ConDlg(QDialog):
 
         super(QDialog, self).__init__()
 
-        self.mw = mw
+        self.mc = mc
 
         self._setup_self(con_info, stat_bar_msg)
 
@@ -89,7 +89,7 @@ class ConDlg(QDialog):
  
         self.host_lbl = QLabel(self)
         self.host_lbl.setObjectName(u'host_lbl')
-        self.host_lbl.setText(self.mw.host_str.title())
+        self.host_lbl.setText(self.mc.host_str.title())
         self.grid_lyt.addWidget(self.host_lbl, 0, 0, 1, 1)
  
         self.host_le = QLineEdit(self)
@@ -98,7 +98,7 @@ class ConDlg(QDialog):
  
         self.port_lbl = QLabel(self)
         self.port_lbl.setObjectName(u'port_lbl')
-        self.port_lbl.setText(self.mw.port_str.title())
+        self.port_lbl.setText(self.mc.port_str.title())
         self.grid_lyt.addWidget(self.port_lbl, 1, 0, 1, 1)
  
         self.port_le = QLineEdit(self)
@@ -107,7 +107,7 @@ class ConDlg(QDialog):
  
         self.db_lbl = QLabel(self)
         self.db_lbl.setObjectName(u'db_lbl')
-        self.db_lbl.setText(self.mw.db_str.title())
+        self.db_lbl.setText(self.mc.db_str.title())
         self.grid_lyt.addWidget(self.db_lbl, 2, 0, 1, 1)
  
         self.db_le = QLineEdit(self)
@@ -116,7 +116,7 @@ class ConDlg(QDialog):
  
         self.usr_lbl = QLabel(self)
         self.usr_lbl.setObjectName(u'usr_lbl')
-        self.usr_lbl.setText(self.mw.usr_str.title())
+        self.usr_lbl.setText(self.mc.usr_str.title())
         self.grid_lyt.addWidget(self.usr_lbl, 3, 0, 1, 1)
  
         self.usr_le = QLineEdit(self)
@@ -125,7 +125,7 @@ class ConDlg(QDialog):
  
         self.pwd_lbl = QLabel(self)
         self.pwd_lbl.setObjectName(u'pwd_lbl')
-        self.pwd_lbl.setText(self.mw.pwd_str.title())
+        self.pwd_lbl.setText(self.mc.pwd_str.title())
         self.grid_lyt.addWidget(self.pwd_lbl, 4, 0, 1, 1)
  
         self.pwd_le = QLineEdit(self)
@@ -134,11 +134,11 @@ class ConDlg(QDialog):
         self.grid_lyt.addWidget(self.pwd_le, 4, 1, 1, 1)
 
         self.con_dict = {}
-        self.con_dict[self.mw.host_str] = self.host_le
-        self.con_dict[self.mw.port_str] = self.port_le
-        self.con_dict[self.mw.db_str] = self.db_le
-        self.con_dict[self.mw.usr_str] = self.usr_le
-        self.con_dict[self.mw.pwd_str] = self.pwd_le
+        self.con_dict[self.mc.host_str] = self.host_le
+        self.con_dict[self.mc.port_str] = self.port_le
+        self.con_dict[self.mc.db_str] = self.db_le
+        self.con_dict[self.mc.usr_str] = self.usr_le
+        self.con_dict[self.mc.pwd_str] = self.pwd_le
 
         self._ins_con_info(con_info)
  
@@ -193,9 +193,9 @@ class ConDlg(QDialog):
 
             QgsApplication.processEvents()
 
-            self.mw.con = db.get_con(con_info)
+            self.mc.con = db.get_con(con_info)
 
-            if db.check_nofa_tbls(self.mw.con):
+            if db.check_nofa_tbls(self.mc.con):
                 self.stat_bar.showMessage(
                     u'Connection to NOFA database succeeded.',
                     msg_dur)
@@ -206,10 +206,10 @@ class ConDlg(QDialog):
                     msg_dur)
                 self.ok_btn.setEnabled(False)
 
-                self.mw.con.close()
-                self.mw.con = None
+                self.mc.con.close()
+                self.mc.con = None
         except psycopg2.OperationalError:
-            self.mw.con = None
+            self.mc.con = None
             self.ok_btn.setEnabled(False)
             self.stat_bar.showMessage(u'Connection failed.', msg_dur)
         finally:
@@ -239,7 +239,7 @@ class ConDlg(QDialog):
         """
 
         for con_str, con_val in con_info.iteritems():
-            self.mw.settings.setValue(con_str, con_val)
+            self.mc.settings.setValue(con_str, con_val)
 
     def _enable_wdgs(self, bl):
         """
