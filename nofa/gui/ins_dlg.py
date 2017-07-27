@@ -1656,16 +1656,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the population trend combo box.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "populationTrend" pt
-            FROM        nofa."l_populationTrend"
-            WHERE       "populationTrend" is not null
-            ORDER BY    pt
-            ''')
-        poptrends  = cur.fetchall()
-        poptrend_list = [p[0] for p in poptrends]
+        poptrend_list = db.get_poptrend_list(self.mw.con)
 
         self.poptrend_cb.clear()
         self.poptrend_cb.addItems(poptrend_list)

@@ -693,3 +693,27 @@ def get_occstat_list(con):
     occstat_list = [o[0] for o in occstats]
 
     return occstat_list
+
+def get_poptrend_list(con):
+    """
+    Returns a list of population trends that is used to populate
+    population trend combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list of population trends.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "populationTrend" pt
+        FROM        nofa."l_populationTrend"
+        WHERE       "populationTrend" is not null
+        ORDER BY    pt
+        ''')
+    poptrends  = cur.fetchall()
+    poptrend_list = [p[0] for p in poptrends]
+
+    return poptrend_list
