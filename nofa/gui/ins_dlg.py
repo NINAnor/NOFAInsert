@@ -1643,18 +1643,10 @@ class InsDlg(QDialog, FORM_CLASS):
 
     def _pop_occstat_cb(self):
         """
-        Populates the organism quantity type combo box.
+        Populates the occurrence status combo box.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT    "occurrenceStatus" os
-            FROM      nofa."l_occurrenceStatus"
-            ORDER BY  os
-            ''')
-        occstats  = cur.fetchall()
-        occstat_list = [o[0] for o in occstats]
+        occstat_list = db.get_occstat_list(self.mw.con)
 
         self.occstat_cb.clear()
         self.occstat_cb.addItems(occstat_list)

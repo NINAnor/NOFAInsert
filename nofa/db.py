@@ -670,3 +670,26 @@ def get_oqt_list(con):
     oqt_list = [o[0] for o in oqts]
 
     return oqt_list
+
+def get_occstat_list(con):
+    """
+    Returns a list of occurrence statuses that is used to populate
+    occurrence status combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list of occurrence statuses.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT    "occurrenceStatus" os
+        FROM      nofa."l_occurrenceStatus"
+        ORDER BY  os
+        ''')
+    occstats  = cur.fetchall()
+    occstat_list = [o[0] for o in occstats]
+
+    return occstat_list
