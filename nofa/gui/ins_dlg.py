@@ -1886,6 +1886,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self._clear_occ_le_wdgs()
         self._clear_occ_cb_wdgs()
+        self._clear_occ_de_wdgs()
 
         self._upd_occ_row()        
 
@@ -1904,6 +1905,14 @@ class InsDlg(QDialog, FORM_CLASS):
 
         for occ_cb_wdg in self.occ_cb_wdgs:
             occ_cb_wdg.setCurrentIndex(0)
+
+    def _clear_occ_de_wdgs(self):
+        """
+        Clears occurrence date edit widgets.
+        """
+
+        for occ_cb_wdg in self.occ_de_wdgs:
+            occ_cb_wdg.setDate(self.nxt_week)
 
     def _rst_all_occ_rows(self):
         """
