@@ -1340,13 +1340,13 @@ class InsDlg(QDialog, FORM_CLASS):
         :type dtst_id_name: str.
         """
 
+        if not dtst_id_name:
+            dtst_id_name = self.settings.value('dataset_id_name')
+
         if dtst_id_name:
             dtst_cb_index = self.dtst_cb.findText(dtst_id_name)
             self.dtst_cb.setCurrentIndex(dtst_cb_index)
         else:
-            dtst_id_name = self.settings.value('dataset_id_name')
-
-        if not dtst_id_name:
             dtst_id_name = self.dtst_cb.currentText()
 
         self._upd_dtst_lw(dtst_id_name)
@@ -1401,13 +1401,13 @@ class InsDlg(QDialog, FORM_CLASS):
         :type prj_org_no_name: str.
         """
 
+        if not prj_org_no_name:
+            prj_org_no_name = self.settings.value('project_org_no_name')
+
         if prj_org_no_name:
             proj_cb_index = self.prj_cb.findText(prj_org_no_name)
             self.prj_cb.setCurrentIndex(proj_cb_index)
         else:
-            prj_org_no_name = self.settings.value('project_org_no_name')
-
-        if not prj_org_no_name:
             prj_org_no_name = self.prj_cb.currentText()
 
         self._upd_prj_lw(prj_org_no_name)
@@ -1454,13 +1454,13 @@ class InsDlg(QDialog, FORM_CLASS):
         Updates a reference according to the last selected.
         """
 
+        if not ref_au_til_id:
+            ref_au_til_id = self.settings.value('reference_au_til_id')
+
         if ref_au_til_id:
             ref_cb_index = self.ref_cb.findText(ref_au_til_id)
             self.ref_cb.setCurrentIndex(ref_cb_index)
         else:
-            ref_au_til_id = self.settings.value('reference_au_til_id')
-
-        if not ref_au_til_id:
             ref_au_til_id = self.ref_cb.currentText()
 
         self._upd_ref_lw(ref_au_til_id)
