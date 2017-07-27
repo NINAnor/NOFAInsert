@@ -1087,6 +1087,13 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="rstallrows_btn">
+             <property name="text">
+              <string>Reset All Rows</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="ins_btn">
              <property name="focusPolicy">
               <enum>Qt::NoFocus</enum>

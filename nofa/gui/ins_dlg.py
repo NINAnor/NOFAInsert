@@ -244,7 +244,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
 
-        self.rstrow_btn.clicked.connect(self._rst_row)
+        self.rstrow_btn.clicked.connect(self._rst_occ_row)
+        self.rstallrows_btn.clicked.connect(self._rst_all_occ_rows)
         self.ins_btn.clicked.connect(self._ins)
 
         # filter occurrences by username and time interval
@@ -1814,6 +1815,20 @@ class InsDlg(QDialog, FORM_CLASS):
 
         m = self.occ_tbl.currentRow()
 
+        occ_list = self._get_occ_list()
+
+        self._set_occ_row(m, occ_list)
+
+        self.occ_tbl.resizeColumnsToContents()
+
+    def _get_occ_list(self):
+        """
+        Returns a list off occurrence data from occurrence input widgets.
+
+        :returns: A list off occurrence data.
+        :rtype: list.
+        """
+
         occ_list = [
             self.txn_cb.currentText(),
             self.ectp_cb.currentText(),
@@ -1829,14 +1844,24 @@ class InsDlg(QDialog, FORM_CLASS):
             self.vfdby_le.text() if len(self.vfdby_le.text()) != 0 else None,
             self.verdt_de.date().toPyDate()]
 
+        return occ_list
+
+    def _set_occ_row(self, m, occ_list):
+        """
+        Sets data from occurrence list to occurrence row.
+
+        :param m: An occurrence row.
+        :type m: int.
+        :param occ_list: A list off occurrence data.
+        :type occ_list: list.
+        """
+
         for n, elem in enumerate(occ_list):
             try:
                 tbl_item = QTableWidgetItem(elem)
             except TypeError:
                 tbl_item = QTableWidgetItem(str(elem))
             self.occ_tbl.setItem(m, n, tbl_item)
-
-        self.occ_tbl.resizeColumnsToContents()
 
     def _add_occ_row(self):
         """
@@ -1851,11 +1876,11 @@ class InsDlg(QDialog, FORM_CLASS):
         self.occ_tbl.selectRow(m)
         self.occ_tbl.blockSignals(False)
 
-        self._rst_row()
+        self._rst_occ_row()
 
-    def _rst_row(self):
+    def _rst_occ_row(self):
         """
-        Resets an occurrence row in the occurrence table.
+        Resets a current occurrence row in the occurrence table.
         """
 
         self._clear_occ_le_wdgs()
@@ -1878,6 +1903,20 @@ class InsDlg(QDialog, FORM_CLASS):
 
         for occ_cb_wdg in self.occ_cb_wdgs:
             occ_cb_wdg.setCurrentIndex(0)
+
+    def _rst_all_occ_rows(self):
+        """
+        Resets all occurrence rows.
+        """
+
+        self._rst_occ_row()
+
+        for m in range(self.occ_tbl.rowCount()):
+            occ_list = self._get_occ_list()
+
+            self._set_occ_row(m, occ_list)
+
+        self.occ_tbl.resizeColumnsToContents()
 
     def _upd_occ_gb_at_selrow(self, wdg_item):
         """
