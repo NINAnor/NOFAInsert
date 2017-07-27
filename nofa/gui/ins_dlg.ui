@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1298</width>
-    <height>751</height>
+    <height>754</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -699,7 +699,7 @@
               <x>0</x>
               <y>0</y>
               <width>350</width>
-              <height>525</height>
+              <height>528</height>
              </rect>
             </property>
             <attribute name="label">
@@ -767,7 +767,7 @@
               <x>0</x>
               <y>0</y>
               <width>350</width>
-              <height>525</height>
+              <height>528</height>
              </rect>
             </property>
             <attribute name="label">
@@ -796,16 +796,6 @@
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="smpsv_le">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
                  </property>
                 </widget>
                </item>
@@ -842,16 +832,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="smpsv_lbl">
-                 <property name="text">
-                  <string>sampleSizeValue</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
                <item row="6" column="0">
                 <widget class="QLabel" name="rcdby_lbl">
                  <property name="text">
@@ -882,29 +862,6 @@
                  </property>
                  <property name="calendarPopup">
                   <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QComboBox" name="smpsu_cb">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="sizeAdjustPolicy">
-                  <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="smpsu_lbl">
-                 <property name="text">
-                  <string>sampleSizeUnit</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                  </property>
                 </widget>
                </item>
@@ -980,6 +937,49 @@
                  </property>
                 </widget>
                </item>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="smpsu_cb">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="sizeAdjustPolicy">
+                  <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="smpsu_lbl">
+                 <property name="text">
+                  <string>sampleSizeUnit</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="smpsv_lbl">
+                 <property name="text">
+                  <string>sampleSizeValue</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLineEdit" name="smpsv_le">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </item>
              <item row="1" column="0">
@@ -1002,8 +1002,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>350</width>
-              <height>525</height>
+              <width>191</width>
+              <height>134</height>
              </rect>
             </property>
             <attribute name="label">
@@ -1057,8 +1057,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>350</width>
-              <height>525</height>
+              <width>187</width>
+              <height>134</height>
              </rect>
             </property>
             <attribute name="label">
@@ -1112,8 +1112,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>350</width>
-              <height>525</height>
+              <width>203</width>
+              <height>134</height>
              </rect>
             </property>
             <attribute name="label">
