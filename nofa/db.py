@@ -740,3 +740,26 @@ def get_estbms_list(con):
     estbms_list = [e[0] for e in estbms]
 
     return estbms_list
+
+def get_smpp_list(con):
+    """
+    Returns a list of sampling protocols that is used to populate
+    sampling protocol combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :returns: A list of sampling protocols.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "samplingProtocol" sp
+        FROM        nofa."l_samplingProtocol"
+        ORDER BY    sp
+        ''')
+    smpps  = cur.fetchall()
+    smpp_list = [s[0] for s in smpps]
+
+    return smpp_list

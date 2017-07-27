@@ -1676,15 +1676,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the sampling protocol combo box.
         """
 
-        cur = self._get_db_cur()
-        cur.execute(
-            '''
-            SELECT      "samplingProtocol" sp
-            FROM        nofa."l_samplingProtocol"
-            ORDER BY    sp
-            ''')
-        smpps  = cur.fetchall()
-        smpp_list = [s[0] for s in smpps]
+        smpp_list = db.get_smpp_list(self.mw.con)
 
         self.smpp_cb.clear()
         self.smpp_cb.addItems(smpp_list)
