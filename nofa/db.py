@@ -1162,3 +1162,138 @@ def ins_ref(con, ttl, au, yr, isbn, issn, tp, jrn, vol, pg):
     id = cur.fetchone()[0]
 
     return id
+
+def get_pt_str(utme, utmn):
+    """
+    Returns a point string with the given UTM easting and northing.
+
+    :param utme: UTM easting.
+    :type utme: float.
+    :param utmn: UTM northing.
+    :type utmn: float.
+    :returns: A point string.
+    :rtype: str.
+    """
+
+    pt_str = 'POINT({} {})'.format(utme, utmn)
+
+    return pt_str
+
+def get_utm33_geom(con, geom_str, srid):
+    """
+    Returns a geometry in UTM33 (EPSG: 25833).
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param geom_str: A geometry string.
+    :type geom_str: str.
+    :param srid: SRID.
+    :type srid: int.
+    :returns: A geometry in UTM33 (EPSG: 25833).
+    :rtype: str.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      ST_Transform(
+                        ST_GeomFromText(%s, %s),
+                        25833)
+        ''',
+        (geom_str, srid,))
+
+    utm33_geom = cur.fetchone()[0]
+
+    return utm33_geom
+
+def get_nrst_loc_id(con, utm33_geom, max_dist):
+    """
+    Returns an ID of the nearest location.
+    First it searches for a lake within the given distance and then it joins
+    it to location table to get ID of the location.
+    When there is no lake with the given distance, then it returns None.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param utm33_geom: A geometry.
+    :type utm33_geom: str.
+    :param max_dist: A maximum distance in meters.
+    :type max_dist: int.
+    :returns: A location ID. None where there is no lake within
+        the given distance.
+    :rtype: uuid.UUID.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        WITH nl AS (
+            SELECT      l.id AS id,
+                        l.geom AS geom,
+                        ST_Distance(l.geom, %(utm33_geom)s) AS dist
+            FROM        nofa."lake" l
+            WHERE       ST_DWithin(geom, %(utm33_geom)s, %(max_dist)s)
+            ORDER BY    geom <-> %(utm33_geom)s
+            LIMIT       1)
+        SELECT      l."locationID"
+        FROM        nofa."location" l
+                    JOIN
+                    nl ON nl.id = l."waterBodyID"
+        ''',
+        {'utm33_geom': utm33_geom,
+         'max_dist': max_dist})
+
+    try:
+        loc_id = cur.fetchone()[0]
+    except TypeError:
+        loc_id = None
+
+    return loc_id
+
+def ins_new_loc(con, loc_id, utm33_geom, loc_name):
+    """
+    Insert a new location and returns its location ID.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param loc_id: A location ID.
+    :type loc_id:uuid.UUID.
+    :param utm33_geom: A geometry in UTM33 (EPSG: 25833).
+    :type utm33_geom: str.
+    :param loc_name: A location name.
+    :type loc_name: str.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        INSERT INTO     nofa.location (
+                            "locationID",
+                            "locationType",
+                            "geom",
+                            "waterBody")
+        VALUES          (   %(locationID)s,
+                            %(locationType)s,
+                            %(geom)s,
+                            %(waterBody)s)
+        ''',
+        {'locationID': loc_id,
+         'locationType': 'samplingPoint lake',
+         'geom': utm33_geom,
+         'waterBody': loc_name})
+
+def get_mpt_str(utme, utmn):
+    """
+    Returns a multi point string with the given UTM easting and northing.
+
+    :param utme: UTM easting.
+    :type utme: float.
+    :param utmn: UTM northing.
+    :type utmn: float.
+    :returns: A multi point string.
+    :rtype: str.
+    """
+
+    mpt_str = 'MULTIPOINT({} {})'.format(utme, utmn)
+
+    return mpt_str

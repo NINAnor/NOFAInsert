@@ -690,37 +690,37 @@ class InsDlg(QDialog, FORM_CLASS):
 
         try:
             loc_id_list = self._get_loc()
-    
+
             event_list = self._get_event_list()
-    
+
             dtst_id = self._get_dtst_id()
             prj_id = self._get_prj_id()
-    
+
             for loc_id in loc_id_list:
                 event_id = uuid.uuid4()
-    
+
                 db.ins_event(
                     self.mc.con, loc_id, event_id, event_list, dtst_id, prj_id)
-    
+
                 # OS.NINA
                 # does not work now
                 # self._ins_txncvg(event_id)
-    
+
                 for m in range(self.occ_tbl.rowCount()):
                     occ_id = uuid.uuid4()
-    
+
                     occ_row_list = self._get_occ_row_list(m)
-    
+
                     txn =  occ_row_list[0]
                     txn_id = db.get_txn_id(self.mc.con, txn)
-    
+
                     ectp = occ_row_list[1]    
                     ectp_id = db.get_ectp_id(self.mc.con, ectp)
-    
+
                     db.ins_occ(
                         self.mc.con,
                         occ_id, txn_id, ectp_id, occ_row_list, event_id)
-    
+
             QMessageBox.information(self, u'Saved', u'Data correctly saved.')
         except NoLocationException:
             QMessageBox.warning(self, u'No Location', u'Enter a location.')
@@ -829,166 +829,37 @@ class InsDlg(QDialog, FORM_CLASS):
         # add other location types
         if loctp == 'Norwegian VatnLnr':
             loc_id_list = db.get_loc_id_list(self.mc.con, locs_tpl)
+        else:
+            loc_id_list = []
+
+            for loc in locs_tpl:
+                split_loc = loc.split(u' ')
+                utme = float(split_loc[0])
+                utmn = float(split_loc[1])
+                loc_name = split_loc[2]
+
+                srid = self.loctp_dict[loctp]
+
+                pt_str = db.get_pt_str(utme, utmn)
+
+                utm33_geom = db.get_utm33_geom(self.mc.con, pt_str, srid)
+
+                # OS.NINA
+                # is 10 meters alright?
+                loc_id = db.get_nrst_loc_id(self.mc.con, utm33_geom, 10)
+
+                if not loc_id:
+                    loc_id = uuid.uuid4()
+
+                    mpt_str = db.get_mpt_str(utme, utmn)
+                    utm33_geom = db.get_utm33_geom(self.mc.con, mpt_str, srid)
+
+                    loc_id = db.ins_new_loc(
+                        self.mc.con, loc_id, utm33_geom, loc_name)
+
+                loc_id_list.append(loc_id)
 
         return loc_id_list
-
-    # OS.NINA
-    # it is left here because other location types need to be implemented
-    def get_location(self):
-
-        # initialise data and metadata containers:
-        self.locations = {'location_ID': [],
-                          'location': [],
-                          'loc_type': 'Select',
-                          'loc_names': [],
-                          'x': [],
-                          'y': []
-                          }
-
-        self.new_locs = []
-
-
-        locs = self.loc_le.text()
-        location_type = self.loctp_cb.currentText()
-        #QMessageBox.information(None, "DEBUG:", locations)
-        #QMessageBox.information(None, "DEBUG:", location_type)
-
-        #Manage the case of Norwegian VatLnr coordinates input
-        if location_type == 'Norwegian VatnLnr':
-            locations = locs.split(',')
-            col = self.loctp_dict[location_type]
-
-            # Fetch locationIDs (From Stefan's code)
-            cur = self._get_db_cur()
-            try:
-                cur.execute(
-                u'SELECT DISTINCT ON ({0}) "locationID", {0}, "waterBody", "decimalLongitude", "decimalLatitude" FROM nofa.location WHERE {0} IN ({1}) ORDER BY {0}, "locationType";'.format(
-                    col, u','.join(unicode(l) for l in locations)))
-            except:
-                QMessageBox.information(None, "DEBUG:", unicode("WARNING - DB ERROR. Did you select the correct type of location identifier?"))
-            fetched_locs = cur.fetchall()
-            # Create a python-list from query result
-            loc_list = [l[1] for l in fetched_locs]
-            locID_list = [l[0] for l in fetched_locs]
-            loc_names = [l[2] for l in fetched_locs]
-            longitudes = [l[3] for l in fetched_locs]
-            latitudes = [l[4] for l in fetched_locs]
-            #QMessageBox.information(None, "DEBUG:", str(loc_list))
-            #QMessageBox.information(None, "DEBUG:", str(locID_list))
-            #QMessageBox.information(None, "DEBUG:", str(loc_names))
-
-            coords = []
-            #QMessageBox.information(None, "DEBUG:", str("this is loc_list: " + str(loc_list)))
-            if len(loc_list) == len(locations):
-                for i, loc in enumerate(loc_list):
-                    if loc_names[i] is None:
-                        loc_names[i] = 'None'
-                    self.locations['location_ID'].append(locID_list[i])
-                    self.locations['loc_names'].append(loc_names[i])
-                    self.locations['x'].append(longitudes[i])
-                    self.locations['y'].append(latitudes[i])
-
-                    coords.append(loc_names[i] + ' (' + unicode(longitudes[i]) + ', ' + unicode(latitudes[i]) + ')')
-
-                self.locations['location'] = coords
-
-            else:
-                QMessageBox.information(None, "DEBUG:", unicode("WARNING, DB FETCHING ISSUE!"))
-
-        # manage the case of UTM33 coordinates
-        elif location_type.startswith('coordinates'):
-            type = self.loctp_dict[location_type]
-            self.locations['loc_type'] = type
-            #QMessageBox.information(None, "DEBUG:", str(type))
-
-            if ';' in locs:
-                frags = locs.split(';')
-                #QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(frags))
-            elif ',' in locs:
-                frags = locs.split(',')
-                #QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(frags))
-            else:
-                # make list out of single string in order to stick to the data structure
-                frags = [locs]
-
-            coords = []
-            # storing the ID of the locations which are exact matches of existing ones
-            self.places = []
-
-
-            #QMessageBox.information(None, "DEBUG:", 'frags = ' + str(frags))
-
-            #walk through all the locations
-            for i, elem in enumerate(frags):
-                if elem not in (None, ""):
-                    #QMessageBox.information(None, "DEBUG:", 'elem is : ' + str(elem))
-                    elems = elem.split()
-                    #all the locations need to be as: "easting northing location_name"
-                    try:
-                        easting = elems[0]
-                        northing = elems[1]
-
-                        self.locations['x'].append(easting)
-                        self.locations['y'].append(northing)
-
-                        x = float(easting)
-                        y = float(northing)
-                    except:
-                        QMessageBox.information(None, "DEBUG:", unicode("WARNIG - problem with easting and northing?"))
-
-                    name = elems[2:]
-                    loc_name = ' '.join(name)
-
-                    self.locations['loc_names'].append(loc_name)
-                    #coords.append(coordinates)
-
-                    coords.append(loc_name + ' (' + easting + ', ' + northing + ')')
-                    #QMessageBox.information(None, "DEBUG:", str(self.locations['x'][i]))
-
-                    cur = self._get_db_cur()
-                    srid = type
-
-                    point = "ST_Transform(ST_GeomFromText('POINT({0} {1})', {2}), 25833)".format(x, y, srid)
-
-                    # Query to get the location ID of already existing locations, using distance
-                    cur.execute("""SELECT x, y, distance, cat, b."locationID" FROM
-                    (SELECT {0} AS x,  {1}  AS y,
-                    ST_Distance(geom, {2}) AS distance,
-                    * FROM temporary.lakes_nosefi
-                    WHERE ST_DWithin(geom, {2}, 0)
-                    ORDER BY
-                    geom <-> {2}
-                    LIMIT 1) AS a,
-                    nofa.location AS b
-                    WHERE cat = b."waterBodyID"
-                    ORDER
-                    BY
-                    b.geom <-> {2};
-                    """.format(x, y, point))
-
-                    loc = cur.fetchone()
-
-                    # Check if a location is already registered in the db. If it is, just get the location ID, and append it to ad-hoc variable, and the locations dict.
-                    if loc and loc[2] <= 10 and loc[4]:
-                        #QMessageBox.information(None, "DEBUG:", str(loc[4]))
-                        self.locations['location_ID'].append(loc[4])
-                        self.places.append(loc)
-                        placesID = loc[4]
-                        #QMessageBox.information(None, "DEBUG:", str(placesID))
-
-                    else:
-
-                        locationID = uuid.uuid4()
-                        # location ID added to the locations dict
-                        self.locations['location_ID'].append(locationID)
-
-                        #geom = 'MULTIPOINT({0} {1})'.format(x, y)
-                        #geom = u"""ST_Transform(ST_GeomFromText('MULTIPOINT({0} {1})', {2}), 25833)""".format(x, y, srid)
-                        waterbody = loc_name
-
-                        self.new_locs.append([locationID, x, y, srid, waterbody])
-
-            self.locations['location'] = coords
 
     # OS.NINA
     # it is left here because adding new location needs to be implemented
