@@ -604,29 +604,32 @@ def get_ref_list(con):
         '''
         SELECT      "referenceID",
                     "author",
-                    "titel"
+                    "titel",
+                    "year"
         FROM        nofa."m_reference"
         ORDER BY    "author", "titel"
         ''')
     refs = cur.fetchall()
 
-    ref_list = [get_ref_str(r[1], r[2], r[0]) for r in refs]
+    ref_list = [get_ref_str(r[1], r[2], r[3], r[0]) for r in refs]
 
     return ref_list
 
-def get_ref_str(au, ttl, id):
+def get_ref_str(au, ttl, yr, id):
     """
-    Returns a reference string "<author>: <title> @<id>".
+    Returns a reference string "<author>: <title> (<year>) @<ID>".
 
     :param au: A reference author.
     :type au: str.
     :param ttl: A reference title.
     :type ttl: str.
+    :param yr: A reference year.
+    :type yr: int.
     :param id: A reference ID.
     :type id: str.
     """
 
-    ref_str = u'{}: {} @{}'.format(au, ttl, id)
+    ref_str = u'{}: {} ({}) @{}'.format(au, ttl, yr, id)
     
     return ref_str
 

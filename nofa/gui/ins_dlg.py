@@ -1577,36 +1577,39 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.settings.setValue('prj_str', prj_str)
 
-    def upd_ref(self, ref_au_til_id=None):
+    def upd_ref(self, ref_str=None):
         """
         Updates a reference according to the last selected.
         """
 
-        if not ref_au_til_id:
-            ref_au_til_id = self.settings.value('reference_au_til_id')
+        if not ref_str:
+            ref_str = self.settings.value('ref_str')
 
-        if ref_au_til_id:
-            ref_cb_index = self.ref_cb.findText(ref_au_til_id)
+        if ref_str:
+            ref_cb_index = self.ref_cb.findText(ref_str)
             self.ref_cb.setCurrentIndex(ref_cb_index)
         else:
-            ref_au_til_id = self.ref_cb.currentText()
+            ref_str = self.ref_cb.currentText()
 
-        self._upd_ref_lw(ref_au_til_id)
+        self._upd_ref_lw(ref_str)
 
-    def _upd_ref_lw(self, ref_au_til_id):
+    def _upd_ref_lw(self, ref_str):
         """
         Updates the reference list widget according to the current or last
         reference.
         
-        :param ref_au_til_id: A reference author title and ID
-            "<author>: <title> @<ID>".
-        :type ref_au_til_id: str.
+        :param ref_str: A reference author title and ID
+            "<author>: <title> (<year>) @<ID>".
+        :type ref_str: str.
         """
 
-        if isinstance(ref_au_til_id, int):
-            ref_au_til_id = self.ref_cb.currentText()
+        if isinstance(ref_str, int):
+            ref_str = self.ref_cb.currentText()
 
-        ref_id = ref_au_til_id.split(self.at_split_str)[1]
+        ref_au = ref_str.split(u': ')[0]
+        ref_yr = ref_str.split(u' (')[1].split(u') ')[0]
+        ref_ttl = ref_str.split(u': ')[1].split(u' (')[0]
+        ref_id = ref_str.split(self.at_split_str)[1]
 
         self.ref_lw.clear()
 
@@ -1619,9 +1622,16 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self._set_mtdt_item_text(
             4,
-            u'{}{}{}'.format(self.ref_str, self.dash_split_str, ref[4]))
+            u'{}{}{}{}{}{}{}'.format(
+                self.ref_str,
+                self.dash_split_str,
+                ref_au,
+                self.dash_split_str,
+                ref_yr,
+                self.dash_split_str,
+                ref_ttl))
 
-        self.settings.setValue('reference_au_til_id', ref_au_til_id)
+        self.settings.setValue('ref_str', ref_str)
 
     def _get_db_cur(self):
         """

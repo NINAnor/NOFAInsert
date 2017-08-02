@@ -233,4 +233,4 @@ class RefDlg(QDialog):
         self.stat_bar.showMessage(u'Reference saved.', 10000)
 
         self.iw.pop_ref_cb()
-        self.iw.upd_ref(db.get_ref_str(au, ttl, id))
+        self.iw.upd_ref(db.get_ref_str(au, ttl, yr, id))
