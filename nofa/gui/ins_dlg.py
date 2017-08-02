@@ -21,11 +21,12 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QSettings, QCoreApplication, Qt, QObject, QDate
+from PyQt4.QtCore import (
+    QSettings, QCoreApplication, Qt, QObject, QDate, QObject, QSignalMapper)
 from PyQt4.QtGui import (
     QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget,
     QTableWidgetItem, QDialog, QDoubleValidator, QIntValidator, QComboBox,
-    QLineEdit, QDateEdit)
+    QLineEdit, QDateEdit, QAbstractItemView)
 
 from qgis.core import QgsApplication, QgsMessageLog
 
@@ -41,13 +42,73 @@ import dtst_dlg, prj_dlg, ref_dlg
 from .. import db
 
 
-class NoLocationException(Exception):
+class NoLocExc(Exception):
     """
     A custom exception when no location is provided.
     """
 
     pass
 
+
+class NvlLocTextExc(Exception):
+    """
+    A custom exception when there is a problem
+    with format of 'Norwegian VatLnr' location text.
+    """
+
+    pass
+
+
+class UtmLocTextExc(Exception):
+    """
+    A custom exception when there is a problem
+    with format of 'UTM' location text.
+    """
+
+    pass
+
+
+class NvlLocTblExc(Exception):
+    """
+    A custom exception when there is a problem
+    with data format in 'Norwegian VatLnr' location table.
+    """
+
+    pass
+
+
+class UtmLocTblNeExc(Exception):
+    """
+    A custom exception when easting or northing is missing
+    in 'Norwegian VatLnr' location table.
+    """
+
+    pass
+
+
+class UtmLocTblExc(Exception):
+    """
+    A custom exception when there is a problem
+    with data format in 'UTM' location table.
+    """
+
+    pass
+
+
+class NvlNfExc(Exception):
+    """
+    A custom exception when not all 'Norwegian VatLnr' were found.
+    """
+
+    def __init__(self, nf_nvl):
+        """
+        Constructor.
+
+        :param nf_nvl: Not found 'Norwegian VatLnr'.
+        :type nf_nvl: tuple
+        """
+
+        self.nf_nvl = nf_nvl
 
 
 from PyQt4 import QtGui, uic
@@ -226,10 +287,21 @@ class InsDlg(QDialog, FORM_CLASS):
         self.ref_cb.activated.connect(self._upd_ref_lw)
 
         self.occ_tbl.currentItemChanged.connect(self._upd_occ_gb_at_selrow)
-        self.rowup_btn.clicked.connect(self._sel_row_up)
-        self.rowdwn_btn.clicked.connect(self._sel_row_dwn)
-        self.addocc_btn.clicked.connect(self._add_occ_row)
-        self.delocc_btn.clicked.connect(self._del_occ_row)
+        self.occ_rowup_btn.clicked.connect(self._sel_row_up)
+        self.occ_rowdwn_btn.clicked.connect(self._sel_row_dwn)
+        self.occ_addrow_btn.clicked.connect(self._add_row)
+        self.occ_delrow_btn.clicked.connect(self._del_row)
+        self.occ_rstrow_btn.clicked.connect(self._rst_occ_row)
+        self.occ_rstallrows_btn.clicked.connect(self._rst_all_occ_rows)
+        self.occ_del_btn.clicked.connect(self._del_all_occ_rows)
+
+        self.loc_rowup_btn.clicked.connect(self._sel_row_up)
+        self.loc_rowdwn_btn.clicked.connect(self._sel_row_dwn)
+        self.loc_addrow_btn.clicked.connect(self._add_row)
+        self.loc_delrow_btn.clicked.connect(self._del_row)
+        self.loc_rstrow_btn.clicked.connect(self._rst_loc_row)
+        self.loc_rstallrows_btn.clicked.connect(self._rst_all_loc_rows)
+        self.loc_del_btn.clicked.connect(self._del_all_loc_rows)
 
         # trigger action when history tabs are clicked
         self.main_tabwdg.currentChanged.connect(self.history_tab_clicked)
@@ -245,9 +317,6 @@ class InsDlg(QDialog, FORM_CLASS):
         self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
 
         self.ins_btn.clicked.connect(self._ins)
-        self.rstrow_btn.clicked.connect(self._rst_occ_row)
-        self.rstallrows_btn.clicked.connect(self._rst_all_occ_rows)
-        self.del_btn.clicked.connect(self._del_all_rows)
 
         # filter occurrences by username and time interval
         self.username_filter_button.clicked.connect(self.filter_occurrences_by_username)
@@ -305,6 +374,52 @@ class InsDlg(QDialog, FORM_CLASS):
         for occ_de_wdg in self.occ_de_wdgs:
             occ_de_wdg.dateChanged.connect(self._upd_occ_row)
 
+        self.occ_tbl_hdrs = [
+            u'taxon',
+            u'ecotype',
+            u'organismQuantityType',
+            u'organismQuantity',
+            u'occurrenceStatus',
+            u'populationTrend',
+            u'occurrenceRemarks',
+            u'establishmentMeans',
+            u'establishmentRemarks',
+            u'spawningCondition',
+            u'spawningLocation',
+            u'verifiedBy',
+            u'verifiedDate']
+
+        self.loctp_cb.currentIndexChanged.connect(self._set_loc_tbl)
+
+        self.nvl_tbl_hdrs = [
+            u'Norwegian VatnLnr']
+
+        self._create_tbl(self.nvl_tbl, self.nvl_tbl_hdrs)
+
+        self.utm_tbl_hdrs = [
+            u'easting',
+            u'northing',
+            u'name (optional)']
+
+        self._create_tbl(self.utm_tbl, self.utm_tbl_hdrs)
+
+        self.occ_tbl.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+        self.nvl_tbl.itemChanged.connect(self.nvl_tbl.resizeColumnsToContents)
+        self.utm_tbl.itemChanged.connect(self.utm_tbl.resizeColumnsToContents)
+
+        self.loc_input_sm = QSignalMapper(self)
+
+        self.loc_tbl_rb.clicked.connect(self.loc_input_sm.map)
+        self.loc_input_sm.setMapping(self.loc_tbl_rb, 0)
+
+        self.loc_pte_rb.clicked.connect(self.loc_input_sm.map)
+        self.loc_input_sm.setMapping(self.loc_pte_rb, 1)
+
+        self.loc_input_sm.mapped.connect(self.loc_sw.setCurrentIndex)
+
+        self.loc_tbl_rb.click()
+
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
 
@@ -318,6 +433,20 @@ class InsDlg(QDialog, FORM_CLASS):
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('NOFAInsert', message)
+
+    def _set_loc_tbl(self, cb_idx):
+        """
+        Sets a location table according to the combo box index.
+        When location input method is set to text, nothing happens.
+
+        :param cb_idx: A combo box index.
+        :type cb_idx: int.
+        """
+
+        if cb_idx == 0:
+            self.loc_tbl_sw.setCurrentIndex(0)
+        else:
+            self.loc_tbl_sw.setCurrentIndex(1)
 
     def history_tab_clicked(self):
         #QMessageBox.information(None, "DEBUG:",  str(self.main_tabwdg.currentIndex()))
@@ -722,8 +851,49 @@ class InsDlg(QDialog, FORM_CLASS):
                         occ_id, txn_id, ectp_id, occ_row_list, event_id)
 
             QMessageBox.information(self, u'Saved', u'Data correctly saved.')
-        except NoLocationException:
-            QMessageBox.warning(self, u'No Location', u'Enter a location.')
+        except NoLocExc:
+            QMessageBox.warning(
+                self, u'No Location', u'Enter at least one location.')
+        except NvlLocTextExc:
+            QMessageBox.warning(
+                self,
+                u'Norwegian VatLnr',
+                u'Enter integers separated by commas.\n'
+                u'For example:\n'
+                u'3067, 5616, 5627')
+        except UtmLocTextExc:
+            QMessageBox.warning(
+                self,
+                u'UTM',
+                u'Enter location in this format separated by commas '
+                u'(location name is optional):\n'
+                u'"<easting> <northing> <location_name>"\n'
+                u'For example:\n'
+                u'601404.85 6644928.24 Hovinbk, '
+                u'580033.012 6633807.99 Drengsrudbk')
+        except NvlLocTblExc:
+            QMessageBox.warning(
+                self,
+                u'Norwegian VatLnr',
+                u'Enter integers.\n'
+                u'For example:\n'
+                u'3067')
+        except UtmLocTblNeExc:
+            QMessageBox.warning(
+                self,
+                u'UTM',
+                u'Enter both easting and northing.')
+        except UtmLocTblExc:
+            QMessageBox.warning(
+                self,
+                u'UTM',
+                u'Both easting and northing must be decimals.')
+        except NvlNfExc as e:
+            QMessageBox.warning(
+                self,
+                u'Norwegian VatLnr',
+                u'The following Norwegian VatLnr codes were not found:\n'
+                u'{}\n'.format(u', '.join(str(n) for n in e.nf_nvl)))
 
     def _get_event_list(self):
         """
@@ -818,25 +988,34 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         loctp = self.loctp_cb.currentText()
-        # OS.NINA
-        # add string check
-        if len(self.loc_le.text()) != 0:
-            locs_tpl = tuple(self.loc_le.text().split(u','))
-        else:
-            raise NoLocationException()
 
-        # OS.NINA
-        # add other location types
+        loc_input_list = self._get_loc_input_list(loctp)
+
         if loctp == 'Norwegian VatnLnr':
-            loc_id_list = db.get_loc_id_list(self.mc.con, locs_tpl)
+            locs_tpl = tuple([nvl for loc in loc_input_list for nvl in loc])
+
+            loc_id_nvl_list = db.get_loc_id_nvl_list(self.mc.con, locs_tpl)
+
+            # check if all codes were found
+            if len(loc_id_nvl_list) != len(locs_tpl):
+                loc_nvl_list = [l[1] for l in loc_id_nvl_list]
+
+                nf_nvl = tuple(set(locs_tpl) - set(loc_nvl_list))
+
+                raise NvlNfExc(nf_nvl)
+
+            loc_id_list = [l[0] for l in loc_id_nvl_list]
         else:
             loc_id_list = []
 
-            for loc in locs_tpl:
-                split_loc = loc.split(u' ')
-                utme = float(split_loc[0])
-                utmn = float(split_loc[1])
-                loc_name = split_loc[2]
+            for loc in loc_input_list:
+                utme = loc[0]
+                utmn = loc[1]
+
+                try:
+                    loc_name = loc[2]
+                except IndexError:
+                    loc_name = None
 
                 srid = self.loctp_dict[loctp]
 
@@ -860,6 +1039,87 @@ class InsDlg(QDialog, FORM_CLASS):
                 loc_id_list.append(loc_id)
 
         return loc_id_list
+
+    def _get_loc_input_list(self, loctp):
+        """
+        Return a list of location inputs.
+
+        :param loctp: A location type.
+        :type loctp: str.
+        :returns: A list of location inputs.
+        :rtype: list.
+        """
+
+        loc_input_list = []
+
+        # get data from table
+        if self.loc_tbl_rb.isChecked():
+            loc_input_list = []
+
+            tbl = self.loc_tbl_sw.currentWidget().findChild(QTableWidget)
+
+            mty_row_idx = []
+
+            for m in range(tbl.rowCount()):
+                row_data = self._get_row_data(tbl, m)
+
+                if all(item is None for item in row_data) \
+                    and tbl.rowCount() != 1:
+                    mty_row_idx.append(m)
+                else:
+                    loc_input_list.append(row_data)
+
+            mty_row_idx.sort(reverse=True)
+
+            # remove empty rows
+            for m in mty_row_idx:
+                if tbl.rowCount() != 1:
+                    tbl.removeRow(m)
+
+            if all(item is None for row in loc_input_list for item in row):
+                raise NoLocExc()
+
+            if loctp == 'Norwegian VatnLnr':
+                for m in range(len(loc_input_list)):
+                    try:
+                        loc_input_list[m][0] = int(loc_input_list[m][0])
+                    except ValueError:
+                        raise NvlLocTblExc()
+            else:
+                for m in range(len(loc_input_list)):
+                    if None in loc_input_list[m][:2]:
+                        raise UtmLocTblNeExc()
+                    for n in range(2):
+                        try:
+                            loc_input_list[m][n] = float(loc_input_list[m][n])
+                        except ValueError:
+                            raise UtmLocTblExc()
+        # get data from plain text edit
+        else:
+            loc_text = self.loc_pte.toPlainText()
+
+            if len(loc_text) == 0:
+                raise NoLocExc()
+
+            if loctp == 'Norwegian VatnLnr':
+                loc_input_list = loc_text.split(',')
+
+                for i, nvl in enumerate(loc_input_list):
+                    try:
+                        loc_input_list[i] = [int(nvl)]
+                    except ValueError:
+                        raise NvlLocTextExc()
+            else:
+                loc_input_list = [loc.split(' ') for loc in loc_text.split(',')]
+
+                for m in range(len(loc_input_list)):
+                    for n in range(2):
+                        try:
+                            loc_input_list[m][n] = float(loc_input_list[m][n])
+                        except ValueError:
+                            raise UtmLocTextExc()
+
+        return loc_input_list
 
     # OS.NINA
     # it is left here because adding new location needs to be implemented
@@ -1626,58 +1886,55 @@ class InsDlg(QDialog, FORM_CLASS):
         self.loctp_cb.addItems(loctp_list)
         self.loctp_cb.setCurrentIndex(loctp_list.index('Norwegian VatnLnr'))
 
-        # OS.NINA
-        # other location types are disabled for now
-        self.loctp_cb.model().item(1).setEnabled(False)
-        self.loctp_cb.model().item(2).setEnabled(False)
-
     def create_occ_tbl(self):
         """
         Creates an occurrence table with one row.
         """
 
-        self.occ_tbl_hdrs = (
-            'taxon',
-            'ecotype',
-            'organismQuantityType',
-            'organismQuantity',
-            'occurrenceStatus',
-            'populationTrend',
-            'occurrenceRemarks',
-            'establishmentMeans',
-            'establishmentRemarks',
-            'spawningCondition',
-            'spawningLocation',
-            'verifiedBy',
-            'verifiedDate')
+        self._create_tbl(self.occ_tbl, self.occ_tbl_hdrs)
+        self._upd_occ_row()
+
+    def _create_tbl(self, tbl, tbl_hdrs):
+        """
+        Creates a table with one row.
+        
+        :param tbl: A table widget.
+        :type tbl: QTableWidget.
+        :param tbl_hdrs: Table headers.
+        :type tbl_hdrs: tuple.
+        """
   
-        self.occ_tbl.setColumnCount(len(self.occ_tbl_hdrs))
-        self.occ_tbl.setSelectionBehavior(QTableWidget.SelectRows)
-        self.occ_tbl.setSelectionMode(QTableWidget.SingleSelection)
-        self.occ_tbl.setHorizontalHeaderLabels(self.occ_tbl_hdrs)
-        self.occ_tbl.setRowCount(1)
+        tbl.setColumnCount(len(tbl_hdrs))
+        tbl.setSelectionBehavior(QTableWidget.SelectRows)
+        tbl.setSelectionMode(QTableWidget.SingleSelection)
+        tbl.setHorizontalHeaderLabels(tbl_hdrs)
+        tbl.setRowCount(1)
 
         m = 0
 
-        self._add_mty_occ_row_items(m)
+        self._add_mty_row_items(tbl, tbl_hdrs, m)
 
-        self.occ_tbl.blockSignals(True)
-        self.occ_tbl.selectRow(m)
-        self.occ_tbl.blockSignals(False)
+        tbl.blockSignals(True)
+        tbl.selectRow(m)
+        tbl.blockSignals(False)
 
-        self._upd_occ_row()
+        tbl.resizeColumnsToContents()
 
-    def _add_mty_occ_row_items(self, m):
+    def _add_mty_row_items(self, tbl, tbl_hdrs, m):
         """
-        Adds a row at the given position with empty items.
+        Adds a row at the given position of a table with empty items.
         
+        :param tbl: A table widget.
+        :type tbl: QTableWidget.
+        :param tbl_hdrs: Table headers.
+        :type tbl_hdrs: tuple.
         :param m: A row number.
         :type m: int.
         """
 
-        for n, elem in enumerate(self.occ_tbl_hdrs):
+        for n, tbl_hdr in enumerate(tbl_hdrs):
             tbl_item = QTableWidgetItem(None)
-            self.occ_tbl.setItem(m, n, tbl_item)
+            tbl.setItem(m, n, tbl_item)
 
     def _upd_occ_row(self):
         """
@@ -1722,7 +1979,7 @@ class InsDlg(QDialog, FORM_CLASS):
         """
         Sets data from occurrence list to occurrence row.
 
-        :param m: An occurrence row.
+        :param m: An occurrence row number.
         :type m: int.
         :param occ_list: A list off occurrence data.
         :type occ_list: list.
@@ -1735,20 +1992,26 @@ class InsDlg(QDialog, FORM_CLASS):
                 tbl_item = QTableWidgetItem(str(elem))
             self.occ_tbl.setItem(m, n, tbl_item)
 
-    def _add_occ_row(self):
+    def _add_row(self):
         """
-        Adds an occurrence row.
+        Adds a table row.
         """
 
-        m = self.occ_tbl.currentRow() + 1
-        self.occ_tbl.insertRow(m)
-        self._add_mty_occ_row_items(m)
+        sndr = self.sender()
+
+        tbl = self._get_tbl(sndr)
+        tbl_hdrs = self._get_tbl_hdrs(sndr)
+
+        m = tbl.currentRow() + 1
+        tbl.insertRow(m)
+        self._add_mty_row_items(tbl, tbl_hdrs, m)
 
         self.occ_tbl.blockSignals(True)
-        self.occ_tbl.selectRow(m)
+        tbl.selectRow(m)
         self.occ_tbl.blockSignals(False)
 
-        self._rst_occ_row()
+        if self._check_occ_tbl(tbl):
+            self._rst_occ_row()
 
     def _rst_occ_row(self):
         """
@@ -1820,39 +2083,79 @@ class InsDlg(QDialog, FORM_CLASS):
             elif isinstance(wdg, QDateEdit):
                 wdg.setDate(QDate.fromString(text, 'yyyy-MM-dd'))
 
+    def _rst_loc_row(self):
+        """
+        Resets the current row in the current location table.
+        """
+
+        tbl = self._get_tbl(self.sender())
+
+        m = tbl.currentRow()
+
+        self._clear_row(tbl, m)
+
+    def _rst_all_loc_rows(self):
+        """
+        Resets all rows in the current location table.
+        """
+
+        tbl = self._get_tbl(self.sender())
+
+        for m in range(tbl.rowCount()):
+            self._clear_row(tbl, m)
+
+    def _clear_row(self, tbl, m):
+        """
+        Clears the given row in the given table.
+
+        :param tbl: A table.
+        :type tbl: QTableWidget.
+        :param m: A location row number.
+        :type m: int.
+        """
+
+        for n in range(tbl.columnCount()):
+            tbl.item(m, n).setText(None)
+
     def _sel_row_up(self):
         """
-        Select one row up in the occurrences table.
+        Select one row up in a table.
         """
 
-        m = self.occ_tbl.currentRow()
+        tbl = self._get_tbl(self.sender())
+
+        m = tbl.currentRow()
 
         if m > 0:
-            self.occ_tbl.selectRow(m - 1)
+            tbl.selectRow(m - 1)
 
     def _sel_row_dwn(self):
         """
-        Select one row down in the occurrences table.
+        Select one row down in a table.
         """
 
-        m = self.occ_tbl.currentRow()
+        tbl = self._get_tbl(self.sender())
 
-        if m < (self.occ_tbl.rowCount() - 1):
-            self.occ_tbl.selectRow(m + 1)
+        m = tbl.currentRow()
 
-    def _del_occ_row(self):
+        if m < (tbl.rowCount() - 1):
+            tbl.selectRow(m + 1)
+
+    def _del_row(self):
         """
-        Delete a row from the occurrence table.
+        Delete a row from a table.
         """
 
-        m = self.occ_tbl.currentRow()
+        tbl = self._get_tbl(self.sender())
 
-        if self.occ_tbl.rowCount() > 1:
-            self.occ_tbl.removeRow(m)
+        m = tbl.currentRow()
 
-    def _del_all_rows(self):
+        if tbl.rowCount() > 1:
+            tbl.removeRow(m)
+
+    def _del_all_occ_rows(self):
         """
-        Deletes all rows except the currently selected one.
+        Deletes all occurrence rows except the currently selected one.
         """
 
         occ_list = self._get_occ_list()
@@ -1862,3 +2165,118 @@ class InsDlg(QDialog, FORM_CLASS):
         self.occ_tbl.blockSignals(False)
 
         self._set_occ_row(0, occ_list)
+
+    def _del_all_loc_rows(self):
+        """
+        Deletes all location rows except the currently selected one.
+        """
+
+        tbl = self._get_tbl(self.sender())
+
+        m = tbl.currentRow()
+
+        row_data = self._get_row_data(tbl, m)
+
+        tbl.setRowCount(1)
+
+        self._set_row_data(tbl, tbl.currentRow(), row_data)
+
+    def _get_row_data(self, tbl, m):
+        """
+        Returns data from the given table in the given row.
+
+        :param tbl: A table.
+        :type tbl: QTableWidget.
+        :param m: A row number.
+        :type m: int.
+        :returns: Data from the given table in the given row.
+        :rtype: list.
+        """
+
+        row_data = []
+
+        for n in range(tbl.columnCount()):
+            row_item = tbl.item(m, n).text() \
+                if len(tbl.item(m, n).text()) != 0 else None
+
+            row_data.append(row_item)
+
+        return row_data
+
+    def _set_row_data(self, tbl, m, row_data):
+        """
+        Sets data to the given row in the given table.
+
+        :param tbl: A table.
+        :type tbl: QTableWidget.
+        :param m: A row number.
+        :type m: int.
+        :param row_data: A data to be written. It has to have the same length
+            as number of columns in the table.
+        :type row_data:
+        """
+
+        for n in range(tbl.columnCount()):
+            item = tbl.item(m, n).setText(row_data[n])
+
+    def _get_tbl(self, sndr):
+        """
+        Returns a table the sender works with.
+
+        :param sndr: A sender push button.
+        :type sndr: QPushButton.
+        :returns: A table the sender works with.
+        :rtype: QTableWidget.
+        """
+
+        sndr_name = sndr.objectName()
+
+        if sndr_name.startswith(u'occ_'):
+            tbl = self.occ_tbl
+        else:
+            tbl = self.loc_tbl_sw.currentWidget().findChild(QTableWidget)
+
+        return tbl
+
+    def _get_tbl_hdrs(self, sndr):
+        """
+        Returns table headers the sender works with.
+
+        :param sndr: A sender push button.
+        :type sndr: QPushButton.
+        :returns: Table headers the sender works with.
+        :rtype: list.
+        """
+
+        sndr_name = sndr.objectName()
+
+        if sndr_name.startswith(u'occ_'):
+            tbl_hdrs = self.occ_tbl_hdrs
+        else:
+            tbl_name = self.loc_tbl_sw.currentWidget()\
+                .findChild(QTableWidget).objectName()
+
+            if tbl_name == u'nvl_tbl':
+                tbl_hdrs = self.nvl_tbl_hdrs
+            else:
+                tbl_hdrs = self.utm_tbl_hdrs
+
+        return tbl_hdrs
+
+    def _check_occ_tbl(self, tbl):
+        """
+        Checks if the given table is the occurrence table.
+
+        :param tbl: A table.
+        :type tbl: QTableWidget.
+        :returns: True when the given table is the occurrence table,
+            False otherwise.
+        :rtype: bool.
+        """
+
+        if tbl.objectName() == u'occ_tbl':
+            occ_tbl = True
+        else:
+            occ_tbl = False
+
+        return occ_tbl

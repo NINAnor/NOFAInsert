@@ -296,32 +296,31 @@ def ins_txncvg(con, txn_id, event_id):
         ''',
         (txn_id, event_id))
 
-def get_loc_id_list(con, locs_tpl):
+def get_loc_id_nvl_list(con, locs_tpl):
     """
-    Returns a list of location IDs.
+    Returns a list of location IDs and 'Norwegian VatLnr'.
 
     :param con: A connection.
     :type con: psycopg2.connection.
     :param locs_tpl: A tuple of locations.
     :type locs_tpl: tuple.
-    :returns: A list of locations IDs.
+    :returns: A list of locations IDs and 'Norwegian VatLnr'.
     :rtype: list.
     """
 
     cur = _get_db_cur(con)
     cur.execute(
         '''
-        SELECT      distinct "locationID" lid
+        SELECT      "locationID" lid,
+                    "no_vatn_lnr"
         FROM        nofa.location
         WHERE       "no_vatn_lnr" IN %s
         ORDER BY    lid
         ''',
         (locs_tpl,))
-    loc_ids = cur.fetchall()
+    loc_id_nvl_list = cur.fetchall()
 
-    loc_id_list = [l[0] for l in loc_ids]
-
-    return loc_id_list
+    return loc_id_nvl_list
 
 def get_dtst_info(con, dtst_id):
     """
