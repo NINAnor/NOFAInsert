@@ -132,9 +132,13 @@ class InsDlg(QDialog, FORM_CLASS):
         self.mc = mc
 
         self.org = u'NINA'
-        self.app_name = u'NOFAInsert'
+        self.app_name = u'NOFAInsert - InsDlg'
 
         self.settings = QSettings(self.org, self.app_name)
+
+        # OS.NINA
+        # clear setting for development purposes
+        self.settings.clear()
 
         self.sel_str = u'Select'
         self.none_str = str(None)
@@ -1475,7 +1479,7 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         if not dtst_id_name:
-            dtst_id_name = self.settings.value('dataset_id_name')
+            dtst_id_name = self.settings.value('dtst_str')
 
         if dtst_id_name:
             dtst_cb_index = self.dtst_cb.findText(dtst_id_name)
@@ -1512,7 +1516,7 @@ class InsDlg(QDialog, FORM_CLASS):
             2,
             u'{}{}{}'.format(self.dtst_str, self.dash_split_str, dtst[1]))
 
-        self.settings.setValue('dataset_id_name', dtst_id_name)
+        self.settings.setValue('dtst_str', dtst_id_name)
 
     def _set_mtdt_item_text(self, item_index, text):
         """
