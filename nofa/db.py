@@ -355,19 +355,17 @@ def get_dtst_info(con, dtst_id):
 
     return (cur, dtst)
 
-def get_prj_info(con, prj_org, prj_no, prj_name):
+def get_prj_info(con, prj_name, prj_org):
     """
-    Returns information about a project with the given organization,
-    project number and project name.
+    Returns information about a project with the given project name
+    and organization.
 
     :param con: A connection.
     :type con: psycopg2.connection.
-    :param prj_org: A project ogranization.
-    :type prj_org: str.
-    :param prj_no: A project number.
-    :type prj_no: str.
     :param prj_name: A project name.
     :type prj_name: str.
+    :param prj_org: A project organization.
+    :type prj_org: str.
     :returns: A tuple containing cursor and a list of information
         about the project.
     :rtype: tuple.
@@ -387,13 +385,11 @@ def get_prj_info(con, prj_org, prj_no, prj_name):
                     "remarks",
                     "projectID"
         FROM        nofa."m_project"
-        WHERE       "organisation" = %s
+        WHERE       "projectName" = %s
                     AND
-                    "projectNumber" = %s
-                    AND
-                    "projectName" = %s
+                    "organisation" = %s
         ''',
-        (prj_org, prj_no, prj_name,))
+        (prj_name, prj_org,))
     prj = cur.fetchone()
 
     return (cur, prj)
@@ -514,45 +510,64 @@ def get_prj_list(con):
     cur = _get_db_cur(con)
     cur.execute(
         '''
-        SELECT      "organisation" o,
-                    "projectNumber" pno,
-                    "projectName" pn
+        SELECT      "projectName" pn,
+                    "organisation" o
         FROM        nofa."m_project"
-        ORDER BY    o, pno, pn
+        ORDER BY    pn, o
         ''')
     prjs = cur.fetchall()
 
-    prj_list = [get_prj_str(p[0], p[1], p[2]) for p in prjs]
+    prj_list = [get_prj_str(p[0], p[1]) for p in prjs]
 
     return prj_list
 
-def get_prj_str(org, no, name):
+def get_prj_str(name, org):
     """
-    Returns a project string "<organisation> - <number> - <name>".
+    Returns a project string "<name> - <organisation>".
 
-    :param org: A project organization.
-    :type org: str.
-    :param no: A project number.
-    :type no: str.
     :param name: A project name.
     :type name: str.
+    :param org: A project organization.
+    :type org: str.
+    :returns: A project string "<name> - <organisation>".
+    :rtype: str.
     """
 
-    prj_str = u'{}{}{}{}{}'.format(
-        org,
+    prj_str = u'{}{}{}'.format(
+        name,
         DASH_SPLIT_STR,
-        no,
-        DASH_SPLIT_STR,
-        name)
+        org)
 
     return prj_str
 
-def get_prj_id(con, prj_org, prj_no, prj_name):
+def get_prj_name_org_from_str(prj_str):
+    """
+    Returns a project name and organization from the given project string
+    "<name> - <organization>".
+
+    :param prj_str: A project string "<name> - <organization>".
+    :type prj_str: str.
+    :returns: A project name and organization.
+    :rtype: tuple.
+    """
+
+    split_prj_str = prj_str.split(DASH_SPLIT_STR)
+
+    name = split_prj_str[0]
+    org = split_prj_str[1]
+
+    return (name, org)
+
+def get_prj_id(con, prj_name, prj_org):
     """
     Returns a project ID with the given organization number and name.
 
     :param con: A connection.
     :type con: psycopg2.connection.
+    :param prj_name: A project name.
+    :type prj_name: str.
+    :param prj_org: A project organization.
+    :type prj_org: str.
     :returns: A project ID with the given organization number and name.
     :rtype: int.
     """
@@ -562,13 +577,12 @@ def get_prj_id(con, prj_org, prj_no, prj_name):
         '''
         SELECT      "projectID" o
         FROM        nofa."m_project"
-        WHERE       "organisation" = %s
+        WHERE       "projectName" = %s
                     AND
-                    "projectNumber" = %s
-                    AND
-                    "projectName" = %s
+                    "organisation" = %s
+
         ''',
-        (prj_org, prj_no, prj_name,))
+        (prj_name, prj_org,))
 
     prj_id = cur.fetchone()[0]
 

@@ -1526,48 +1526,42 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.main_tb.setItemText(item_index, text)
 
-    def upd_prj(self, prj_org_no_name=None):
+    def upd_prj(self, prj_str=None):
         """
         Updates a project according to the last selected.
         
-        :param prj_org_no_name: A project ID number and name
-            "<organisation> - <number> - <name>".
-        :type prj_org_no_name: str.
+        :param prj_str: A project string "<name> - <organisation>".
+        :type prj_str: str.
         """
 
-        if not prj_org_no_name:
-            prj_org_no_name = self.settings.value('project_org_no_name')
+        if not prj_str:
+            prj_str = self.settings.value('prj_str')
 
-        if prj_org_no_name:
-            proj_cb_index = self.prj_cb.findText(prj_org_no_name)
+        if prj_str:
+            proj_cb_index = self.prj_cb.findText(prj_str)
             self.prj_cb.setCurrentIndex(proj_cb_index)
         else:
-            prj_org_no_name = self.prj_cb.currentText()
+            prj_str = self.prj_cb.currentText()
 
-        self._upd_prj_lw(prj_org_no_name)
+        self._upd_prj_lw(prj_str)
 
-    def _upd_prj_lw(self, prj_org_no_name):
+    def _upd_prj_lw(self, prj_str):
         """
         Updates the project list widget according to the current or last
         project.
         
-        :param prj_org_no_name: A project ID number and name
-            "<organisation> - <number> - <name>".
-        :type prj_org_no_name: str.
+        :param prj_str: A project string "<name> - <organisation>".
+        :type prj_str: str.
         """
 
-        if isinstance(prj_org_no_name, int):
-            prj_org_no_name = self.prj_cb.currentText()
+        if isinstance(prj_str, int):
+            prj_str = self.prj_cb.currentText()
 
         self.prj_lw.clear()
 
-        split_prj_org_no_name = prj_org_no_name.split(self.dash_split_str)
+        prj_name, prj_org = db.get_prj_name_org_from_str(prj_str)
 
-        prj_org = split_prj_org_no_name[0]
-        prj_no = split_prj_org_no_name[1]
-        prj_name = split_prj_org_no_name[2]
-
-        cur, prj = db.get_prj_info(self.mc.con, prj_org, prj_no, prj_name)
+        cur, prj = db.get_prj_info(self.mc.con, prj_name, prj_org)
 
         for idx, prj_data in enumerate(prj):
             prj_item = QListWidgetItem(
@@ -1579,9 +1573,9 @@ class InsDlg(QDialog, FORM_CLASS):
             u'{}{}{}'.format(
                 self.prj_str,
                 self.dash_split_str,
-                prj_org_no_name))
+                prj_str))
 
-        self.settings.setValue('project_org_no_name', prj_org_no_name)
+        self.settings.setValue('prj_str', prj_str)
 
     def upd_ref(self, ref_au_til_id=None):
         """
@@ -1731,21 +1725,17 @@ class InsDlg(QDialog, FORM_CLASS):
 
     def _get_prj_id(self):
         """
-        Returns a project ID based on organization number and name.
+        Returns a project ID based on name and organization.
 
         :returns: A project ID.
         :rtype: str.
         """
 
-        prj_org_no_name = self.prj_cb.currentText()
+        prj_str = self.prj_cb.currentText()
 
-        split_prj_org_no_name = prj_org_no_name.split(self.dash_split_str)
+        prj_name, prj_org = db.get_prj_name_org_from_str(prj_str)
 
-        prj_org = split_prj_org_no_name[0]
-        prj_no = split_prj_org_no_name[1]
-        prj_name = split_prj_org_no_name[2]
-
-        prj_id = db.get_prj_id(self.mc.con, prj_org, prj_no, prj_name)
+        prj_id = db.get_prj_id(self.mc.con, prj_name, prj_org)
 
         return prj_id
 

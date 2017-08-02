@@ -235,4 +235,4 @@ class PrjDlg(QDialog):
         self.stat_bar.showMessage(u'Project saved.', 10000)
 
         self.iw.pop_prj_cb()
-        self.iw.upd_prj(db.get_prj_str(org, no, name))
+        self.iw.upd_prj(db.get_prj_str(name, org))
