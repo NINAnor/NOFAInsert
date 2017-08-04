@@ -49,6 +49,7 @@ def _get_db_cur(con):
     
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A database cursor.
     :rtype: psycopg2.cursor.
     """
@@ -61,6 +62,7 @@ def check_nofa_tbls(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: True when database is NOFA, False otherwise.
     :rtype: bool.
     """
@@ -154,6 +156,7 @@ def get_txn_id(con, txn):
     :type con: psycopg2.connection.
     :param txn: A taxon scientific name.
     :type txn: str.
+
     :returns: A taxon ID.
     :rtype: int.
     """
@@ -179,6 +182,7 @@ def get_ectp_id(con, ectp):
     :type con: psycopg2.connection.
     :param txn: An ecotype vernacular name.
     :type txn: str.
+
     :returns: An ecotype ID, None when there is no ecotype.
     :rtype: int.
     """
@@ -212,6 +216,7 @@ def ins_occ(con, occ_id, txn_id, ectp_id, occ_row_list, event_id):
     :type occ_row_list: list.
     :param event_id: An event ID.
     :type event_id: uuid.UUID.
+
     :returns: An ecotype ID, None when there is no ecotype.
     :rtype: int.
     """
@@ -304,6 +309,7 @@ def get_loc_id_nvl_list(con, locs_tpl):
     :type con: psycopg2.connection.
     :param locs_tpl: A tuple of locations.
     :type locs_tpl: tuple.
+
     :returns: A list of locations IDs and 'Norwegian VatLnr'.
     :rtype: list.
     """
@@ -330,6 +336,7 @@ def get_dtst_info(con, dtst_id):
     :type con: psycopg2.connection.
     :param dtst_id: A dataset ID.
     :type dtst_id: str.
+
     :returns: A tuple containing cursor and a list of information
         about the dataset.
     :rtype: tuple.
@@ -366,6 +373,7 @@ def get_prj_info(con, prj_name, prj_org):
     :type prj_name: str.
     :param prj_org: A project organization.
     :type prj_org: str.
+
     :returns: A tuple containing cursor and a list of information
         about the project.
     :rtype: tuple.
@@ -402,6 +410,7 @@ def get_ref_info(con, ref_id):
     :type con: psycopg2.connection.
     :param ref_id: A reference ID.
     :type ref_id: str.
+
     :returns: A tuple containing cursor and a list of information
         about the reference.
     :rtype: tuple.
@@ -434,6 +443,7 @@ def get_fam_dict(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A defaultdict with families as keys and taxons as values.
     :rtype: collections.defaultdict.
     """
@@ -464,6 +474,7 @@ def get_dtst_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list with information about datasets.
     :rtype: list.
     """
@@ -503,6 +514,7 @@ def get_prj_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list with information about projects.
     :rtype: list.
     """
@@ -529,6 +541,7 @@ def get_prj_str(name, org):
     :type name: str.
     :param org: A project organization.
     :type org: str.
+
     :returns: A project string "<name> - <organisation>".
     :rtype: str.
     """
@@ -547,6 +560,7 @@ def get_prj_name_org_from_str(prj_str):
 
     :param prj_str: A project string "<name> - <organization>".
     :type prj_str: str.
+
     :returns: A project name and organization.
     :rtype: tuple.
     """
@@ -568,6 +582,7 @@ def get_prj_id(con, prj_name, prj_org):
     :type prj_name: str.
     :param prj_org: A project organization.
     :type prj_org: str.
+
     :returns: A project ID with the given organization number and name.
     :rtype: int.
     """
@@ -595,6 +610,7 @@ def get_ref_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list with information about references.
     :rtype: list.
     """
@@ -639,6 +655,7 @@ def get_txn_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list of taxons.
     :rtype: list.
     """
@@ -665,6 +682,7 @@ def get_ectp_list(con, txn_name):
     :type con: psycopg2.connection.
     :param txn_name: A taxon name.
     :type txn_name: str.
+
     :returns: A list of ecotypes.
     :rtype: list.
     """
@@ -693,6 +711,7 @@ def get_oqt_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list of organism quantity types.
     :rtype: list.
     """
@@ -716,6 +735,7 @@ def get_occstat_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list of occurrence statuses.
     :rtype: list.
     """
@@ -739,6 +759,7 @@ def get_poptrend_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list of population trends.
     :rtype: list.
     """
@@ -763,6 +784,7 @@ def get_estbms_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list of establishment means.
     :rtype: list.
     """
@@ -786,6 +808,7 @@ def get_smpp_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list of sampling protocols.
     :rtype: list.
     """
@@ -809,6 +832,7 @@ def get_reliab_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list of reliabilities.
     :rtype: list.
     """
@@ -832,6 +856,7 @@ def get_smpsu_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list of sample size units.
     :rtype: list.
     """
@@ -855,6 +880,7 @@ def get_spwnc_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list of spawning conditions.
     :rtype: list.
     """
@@ -878,6 +904,7 @@ def get_spwnl_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list of spawning locations.
     :rtype: list.
     """
@@ -901,6 +928,7 @@ def get_inst_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list of institutions.
     :rtype: list.
     """
@@ -925,6 +953,7 @@ def get_acs_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list of access rights.
     :rtype: list.
     """
@@ -950,6 +979,7 @@ def get_dtst_cnt(con, id):
     :type con: psycopg2.connection.
     :param id: A dataset ID.
     :type id: str.
+
     :returns: A number of datasets with the given ID.
     :rtype: int.
     """
@@ -1097,6 +1127,7 @@ def get_reftp_list(con):
 
     :param con: A connection.
     :type con: psycopg2.connection.
+
     :returns: A list of reference types.
     :rtype: list.
     """
@@ -1138,6 +1169,7 @@ def ins_ref(con, ttl, au, yr, isbn, issn, tp, jrn, vol, pg):
     :type vol: str.
     :param pg: A page(s).
     :type pg: str.
+
     :returns: A reference ID.
     :rtype: int.
     """
@@ -1187,6 +1219,7 @@ def get_pt_str(utme, utmn):
     :type utme: float.
     :param utmn: UTM northing.
     :type utmn: float.
+
     :returns: A point string.
     :rtype: str.
     """
@@ -1205,6 +1238,7 @@ def get_utm33_geom(con, geom_str, srid):
     :type geom_str: str.
     :param srid: SRID.
     :type srid: int.
+
     :returns: A geometry in UTM33 (EPSG: 25833).
     :rtype: str.
     """
@@ -1235,6 +1269,7 @@ def get_nrst_loc_id(con, utm33_geom, max_dist):
     :type utm33_geom: str.
     :param max_dist: A maximum distance in meters.
     :type max_dist: int.
+
     :returns: A location ID. None where there is no lake within
         the given distance.
     :rtype: uuid.UUID.
@@ -1306,6 +1341,7 @@ def get_mpt_str(utme, utmn):
     :type utme: float.
     :param utmn: UTM northing.
     :type utmn: float.
+
     :returns: A multi point string.
     :rtype: str.
     """

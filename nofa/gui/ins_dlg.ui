@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1298</width>
+    <width>1108</width>
     <height>761</height>
    </rect>
   </property>
@@ -53,7 +53,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>344</width>
+             <width>278</width>
              <height>537</height>
             </rect>
            </property>
@@ -105,7 +105,7 @@
                      <number>0</number>
                     </property>
                     <item row="0" column="0">
-                     <layout class="QGridLayout" name="loc_tbl_glyt" rowstretch="0,1">
+                     <layout class="QGridLayout" name="loc_tbl_glyt" rowstretch="0,0">
                       <item row="0" column="0">
                        <layout class="QVBoxLayout" name="loc_tbl_btn_vlyt">
                         <property name="spacing">
@@ -404,12 +404,41 @@
                           </property>
                          </widget>
                         </item>
+                        <item>
+                         <widget class="QPushButton" name="coord_cnvs_btn">
+                          <property name="minimumSize">
+                           <size>
+                            <width>30</width>
+                            <height>30</height>
+                           </size>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>30</width>
+                            <height>30</height>
+                           </size>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>15</pointsize>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="focusPolicy">
+                           <enum>Qt::NoFocus</enum>
+                          </property>
+                          <property name="text">
+                           <string>◉</string>
+                          </property>
+                         </widget>
+                        </item>
                        </layout>
                       </item>
                       <item row="0" column="1" rowspan="2">
                        <widget class="QStackedWidget" name="loc_tbl_sw">
                         <property name="currentIndex">
-                         <number>0</number>
+                         <number>1</number>
                         </property>
                         <widget class="QWidget" name="nvl_w">
                          <layout class="QGridLayout" name="gridLayout_8">
@@ -516,7 +545,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>344</width>
+             <width>278</width>
              <height>537</height>
             </rect>
            </property>
@@ -752,7 +781,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>344</width>
+             <width>278</width>
              <height>537</height>
             </rect>
            </property>
@@ -807,7 +836,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>344</width>
+             <width>278</width>
              <height>537</height>
             </rect>
            </property>
@@ -862,7 +891,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>344</width>
+             <width>278</width>
              <height>537</height>
             </rect>
            </property>
@@ -921,10 +950,16 @@
           </widget>
          </widget>
          <widget class="QSplitter" name="sec_spltr">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QGridLayout" name="occ_tbl_grid_lyt" rowstretch="0,0">
             <property name="sizeConstraint">
              <enum>QLayout::SetMinimumSize</enum>
@@ -1273,7 +1308,7 @@
            </property>
            <widget class="QGroupBox" name="txncvg_gb">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -1294,6 +1329,12 @@
             <layout class="QGridLayout" name="gridLayout_3">
              <item row="0" column="0">
               <widget class="QTreeWidget" name="txncvg_tw">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="contextMenuPolicy">
                 <enum>Qt::ActionsContextMenu</enum>
                </property>
@@ -1312,12 +1353,12 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="">
+           <widget class="QWidget" name="layoutWidget">
             <layout class="QVBoxLayout" name="occ_ins_vlyt">
              <item>
               <widget class="QGroupBox" name="occ_gb">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
@@ -1337,9 +1378,9 @@
                </property>
                <layout class="QGridLayout" name="gridLayout_12">
                 <item row="0" column="0">
-                 <layout class="QGridLayout" name="occ_grid_lyt" columnstretch="0,0,0,0">
+                 <layout class="QGridLayout" name="occ_grid_lyt" columnstretch="0,1,0,1">
                   <property name="sizeConstraint">
-                   <enum>QLayout::SetMinimumSize</enum>
+                   <enum>QLayout::SetDefaultConstraint</enum>
                   </property>
                   <item row="4" column="0">
                    <widget class="QLabel" name="estm_lbl">

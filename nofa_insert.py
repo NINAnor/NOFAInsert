@@ -116,6 +116,7 @@ class NOFAInsert:
         self.iface.removePluginMenu(self.app_name, self.nofa_act)
         self.iface.removePluginMenu(self.app_name, self.con_act)
         self.iface.removeToolBarIcon(self.nofa_act)
+        self.ins_dlg.dsc_from_iface()
 
     def _get_con_info(self):
         """

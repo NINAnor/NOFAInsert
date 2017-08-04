@@ -29,6 +29,7 @@ from PyQt4.QtGui import (
     QLineEdit, QDateEdit, QAbstractItemView)
 
 from qgis.core import QgsApplication, QgsMessageLog
+from qgis.gui import QgsMapToolEmitPoint
 
 from collections import defaultdict
 import os
@@ -36,6 +37,7 @@ import psycopg2, psycopg2.extras
 import datetime
 import uuid
 import sys
+import pyproj
 
 import dtst_dlg, prj_dlg, ref_dlg
 
@@ -424,6 +426,13 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.loc_tbl_rb.click()
 
+        # tool for setting coordinates by left mouse click
+        self.cnvs = self.iface.mapCanvas()
+        self.coord_cnvs_tool = QgsMapToolEmitPoint(self.cnvs)
+        self.coord_cnvs_tool.canvasClicked.connect(
+            self._set_coord_cnvs_to_utm_tbl)
+        self.coord_cnvs_btn.clicked.connect(self._act_coord_cnvs_tool)
+
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
 
@@ -438,6 +447,76 @@ class InsDlg(QDialog, FORM_CLASS):
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('NOFAInsert', message)
 
+    def dsc_from_iface(self):
+        """
+        Disconnects the plugin from the QGIS interface.
+        """
+
+        if self.iface.mapCanvas().mapTool() == self.coord_cnvs_tool:
+            self.iface.mapCanvas().unsetMapTool(self.coord_cnvs_tool)
+            self.iface.mapCanvas().setMapTool(self.last_map_tool)
+
+    def _act_coord_cnvs_tool(self):
+        """
+        Activates a tool that allows user to set coordinates by mouse click.
+        """
+
+        self.last_map_tool = self.iface.mapCanvas().mapTool()
+        self.iface.mapCanvas().setMapTool(self.coord_cnvs_tool)
+
+    def _set_coord_cnvs_to_utm_tbl(self, pnt, btn):
+        """
+        Sets canvas coordinates to the current row in the UTM table.
+        It transforms coordinates to the current UTM system.
+        Coordinates are set only on left mouse click.
+
+        :param pnt: A point.
+        :type pnt: QgsPoint.
+        :param btn: A mouse button.
+        :type btn: QtCore.MouseButton.
+        """
+
+        if btn == Qt.LeftButton:
+            in_authid = self.cnvs.mapSettings().destinationCrs().authid()
+    
+            loctp = self.loctp_cb.currentText()
+            out_authid = 'EPSG:{}'.format(self.loctp_dict[loctp])
+    
+            in_x = pnt.x()
+            in_y = pnt.y()
+    
+            out_x, out_y = self._trf_coord(in_authid, out_authid, in_x, in_y)
+    
+            m = self.utm_tbl.currentRow()
+    
+            self.utm_tbl.item(m, 0).setText(str(out_x))
+            self.utm_tbl.item(m, 1).setText(str(out_y))
+
+    def _trf_coord(self, in_authid, out_authid, in_x, in_y):
+        """
+        Transforms the given X and Y coordinates from the input CRS
+        to the output CRS.
+
+        :param in_authid: An input CRS.
+        :type in_authid: str.
+        :param out_authid: An Output CRS.
+        :type out_authid: str.
+        :param in_x: An input X coordinate.
+        :type in_x: float.
+        :param in_y: An input Y coordinate.
+        :type in_y: float.
+
+        :returns: X and Y coordinates in the output CRS.
+        :rtype: tuple.
+        """
+
+        in_proj = pyproj.Proj(init=in_authid)
+        out_proj = pyproj.Proj(init=out_authid)
+
+        out_x, out_y = pyproj.transform(in_proj, out_proj, in_x, in_y)
+
+        return (out_x, out_y)
+
     def _set_loc_tbl(self, cb_idx):
         """
         Sets a location table according to the combo box index.
@@ -449,8 +528,10 @@ class InsDlg(QDialog, FORM_CLASS):
 
         if cb_idx == 0:
             self.loc_tbl_sw.setCurrentIndex(0)
+            self.coord_cnvs_btn.setEnabled(False)
         else:
             self.loc_tbl_sw.setCurrentIndex(1)
+            self.coord_cnvs_btn.setEnabled(True)
 
     def history_tab_clicked(self):
         #QMessageBox.information(None, "DEBUG:",  str(self.main_tabwdg.currentIndex()))
@@ -932,6 +1013,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         :param m: A row number.
         :type m: int.
+
         :returns: A list of data in the given row in the occurrence table.
         :rtype: list.
         """
@@ -1050,6 +1132,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         :param loctp: A location type.
         :type loctp: str.
+
         :returns: A list of location inputs.
         :rtype: list.
         """
@@ -2193,6 +2276,7 @@ class InsDlg(QDialog, FORM_CLASS):
         :type tbl: QTableWidget.
         :param m: A row number.
         :type m: int.
+
         :returns: Data from the given table in the given row.
         :rtype: list.
         """
@@ -2221,7 +2305,7 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         for n in range(tbl.columnCount()):
-            item = tbl.item(m, n).setText(row_data[n])
+            tbl.item(m, n).setText(row_data[n])
 
     def _get_tbl(self, sndr):
         """
@@ -2229,6 +2313,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         :param sndr: A sender push button.
         :type sndr: QPushButton.
+
         :returns: A table the sender works with.
         :rtype: QTableWidget.
         """
@@ -2248,6 +2333,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         :param sndr: A sender push button.
         :type sndr: QPushButton.
+
         :returns: Table headers the sender works with.
         :rtype: list.
         """
@@ -2273,6 +2359,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         :param tbl: A table.
         :type tbl: QTableWidget.
+
         :returns: True when the given table is the occurrence table,
             False otherwise.
         :rtype: bool.
