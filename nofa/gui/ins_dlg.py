@@ -39,7 +39,6 @@ import psycopg2, psycopg2.extras
 import datetime
 import uuid
 import sys
-import pyproj
 
 import dtst_dlg, prj_dlg, ref_dlg
 
