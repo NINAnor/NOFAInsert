@@ -28,7 +28,9 @@ from PyQt4.QtGui import (
     QTableWidgetItem, QDialog, QDoubleValidator, QIntValidator, QComboBox,
     QLineEdit, QDateEdit, QAbstractItemView)
 
-from qgis.core import QgsApplication, QgsMessageLog
+from qgis.core import (
+    QgsApplication, QgsMessageLog, QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform, QgsPoint)
 from qgis.gui import QgsMapToolEmitPoint
 
 from collections import defaultdict
@@ -510,10 +512,12 @@ class InsDlg(QDialog, FORM_CLASS):
         :rtype: tuple.
         """
 
-        in_proj = pyproj.Proj(init=in_authid)
-        out_proj = pyproj.Proj(init=out_authid)
+        in_proj = QgsCoordinateReferenceSystem(in_authid)
+        out_proj = QgsCoordinateReferenceSystem(out_authid)
 
-        out_x, out_y = pyproj.transform(in_proj, out_proj, in_x, in_y)
+        trf = QgsCoordinateTransform(in_proj, out_proj)
+
+        out_x, out_y = trf.transform(QgsPoint(in_x, in_y))
 
         return (out_x, out_y)
 
