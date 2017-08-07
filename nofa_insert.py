@@ -118,7 +118,7 @@ class NOFAInsert:
         self.iface.removeToolBarIcon(self.nofa_act)
         self.ins_dlg.dsc_from_iface()
 
-    def _get_con_info(self):
+    def get_con_info(self):
         """
         Returns a connection information from QSettings.
 
@@ -144,7 +144,7 @@ class NOFAInsert:
         """
 
         if not con_info:
-            con_info = self._get_con_info()
+            con_info = self.get_con_info()
 
         self.con_dlg = con_dlg.ConDlg(self, con_info, u'Set up connection.')
         self.con_dlg.exec_()
@@ -155,7 +155,7 @@ class NOFAInsert:
         self.con = None
 
         try:
-            con_info = self._get_con_info()
+            con_info = self.get_con_info()
             self.con = db.get_con(con_info)
 
             if not db.check_nofa_tbls(self.con):

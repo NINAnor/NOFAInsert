@@ -30,7 +30,8 @@ from PyQt4.QtGui import (
 
 from qgis.core import (
     QgsApplication, QgsMessageLog, QgsCoordinateReferenceSystem,
-    QgsCoordinateTransform, QgsPoint, QgsRasterLayer, QgsMapLayerRegistry)
+    QgsCoordinateTransform, QgsPoint, QgsRasterLayer, QgsMapLayerRegistry,
+    QgsVectorLayer, QgsDataSourceURI)
 from qgis.gui import QgsMapToolEmitPoint
 
 from collections import defaultdict
@@ -437,6 +438,12 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.osm_basemap_btn.clicked.connect(self._add_osm_wms_lyr)
 
+        self.lake_name_srch_btn.clicked.connect(self._srch_loc)
+        self.lake_name_le.returnPressed.connect(self._srch_loc)
+
+        self.lake_name_load_btn.setEnabled(False)
+        self.lake_name_load_btn.clicked.connect(self._load_loc_layer)
+
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
 
@@ -461,7 +468,66 @@ class InsDlg(QDialog, FORM_CLASS):
         lyr = QgsRasterLayer(xml_fp, 'OSM')
 
         if lyr.isValid():
-            QgsMapLayerRegistry.instance().addMapLayers([lyr])
+            QgsMapLayerRegistry.instance().addMapLayer(lyr)
+
+    def _srch_loc(self):
+        """
+        Searches for location by the string in the lake name line edit.
+        """
+
+        wb_name = self.lake_name_le.text()
+
+        self.lake_name_load_btn.setEnabled(False)
+
+        if len(wb_name) == 0:
+            self.lake_name_statlbl.setText(
+                u'Enter lake name.')
+        else:
+            locid_list = db.get_loc_by_wb_name(self.mc.con, wb_name)
+    
+            loc_count = len(locid_list)
+    
+            if loc_count != 0:
+                self.lake_name_load_btn.setEnabled(True)
+
+                self.locid_list = locid_list
+            else:
+                self.lake_name_load_btn.setEnabled(False)
+    
+            self.lake_name_statlbl.setText(
+                u'Found {} location(s).'.format(loc_count))
+
+    def _load_loc_layer(self):
+        """
+        Loads a layer of found locations.
+        """
+
+        uri = QgsDataSourceURI()
+
+        con_info = self.mc.get_con_info()
+
+        uri.setConnection(
+            con_info[self.mc.host_str],
+            con_info[self.mc.port_str],
+            con_info[self.mc.db_str],
+            con_info[self.mc.usr_str],
+            con_info[self.mc.pwd_str])
+
+        uri.setDataSource(
+            'nofa',
+            'location',
+            'geom',
+            '"locationID" IN ({})'.format(
+                ', '.join(['\'{}\''.format(str(l)) for l in self.locid_list])),
+            'locationID')
+
+        lyr = QgsVectorLayer(
+            uri.uri(),
+            'location-{}'.format(self.lake_name_le.text()),
+            'postgres')
+
+        if lyr.isValid():
+            QgsMapLayerRegistry.instance().addMapLayer(lyr)
 
     def dsc_from_iface(self):
         """

@@ -1349,3 +1349,30 @@ def get_mpt_str(utme, utmn):
     mpt_str = 'MULTIPOINT({} {})'.format(utme, utmn)
 
     return mpt_str
+
+def get_loc_by_wb_name(con, wb_name):
+    """
+    Returns location IDs with the given water body name.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param wb_name: A water body name.
+    :type wb_name: str.
+
+    :returns: A list of location IDs.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "locationID"
+        FROM        nofa.location loc
+        WHERE       "waterBody" LIKE %s
+        ''',
+        ('%' + wb_name + '%',))
+    locids = cur.fetchall()
+
+    locid_list = [l[0] for l in locids]
+
+    return locid_list

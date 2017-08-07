@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1108</width>
+    <width>1229</width>
     <height>761</height>
    </rect>
   </property>
@@ -48,12 +48,18 @@
             <height>16777215</height>
            </size>
           </property>
+          <property name="baseSize">
+           <size>
+            <width>150</width>
+            <height>0</height>
+           </size>
+          </property>
           <widget class="QWidget" name="loc_wdg">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>278</width>
+             <width>310</width>
              <height>537</height>
             </rect>
            </property>
@@ -62,7 +68,20 @@
            </attribute>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0">
-             <layout class="QGridLayout" name="loc_grid_lyt" rowstretch="0,0,0,0,0">
+             <layout class="QGridLayout" name="loc_grid_lyt" rowstretch="0,0,0,0,0,0,0,0,0">
+              <item row="3" column="1">
+               <widget class="QLabel" name="lake_name_statlbl">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Search location by lake name.</string>
+                </property>
+               </widget>
+              </item>
               <item row="0" column="0">
                <widget class="QLabel" name="loctp_lbl">
                 <property name="sizePolicy">
@@ -86,7 +105,7 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="0" colspan="2">
+              <item row="8" column="0" colspan="2">
                <layout class="QGridLayout" name="loc_tbl_grid_lyt" rowstretch="0,0">
                 <property name="spacing">
                  <number>0</number>
@@ -505,7 +524,7 @@
                 </item>
                </layout>
               </item>
-              <item row="2" column="1">
+              <item row="7" column="1">
                <layout class="QHBoxLayout" name="loc_input_hlyt">
                 <property name="sizeConstraint">
                  <enum>QLayout::SetMinimumSize</enum>
@@ -529,7 +548,7 @@
                 </item>
                </layout>
               </item>
-              <item row="2" column="0">
+              <item row="7" column="0">
                <widget class="QLabel" name="loc_input_lbl">
                 <property name="text">
                  <string>input</string>
@@ -539,7 +558,72 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="1">
+              <item row="2" column="0">
+               <widget class="QLabel" name="lake_name_lbl">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>lake name</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <layout class="QHBoxLayout" name="lake_name_hlyt">
+                <property name="sizeConstraint">
+                 <enum>QLayout::SetMinimumSize</enum>
+                </property>
+                <item>
+                 <widget class="QPushButton" name="lake_name_srch_btn">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="focusPolicy">
+                   <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="text">
+                   <string>Search</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="lake_name_load_btn">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="focusPolicy">
+                   <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="text">
+                   <string>Load</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="lake_name_le">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
                <widget class="QPushButton" name="osm_basemap_btn">
                 <property name="focusPolicy">
                  <enum>Qt::NoFocus</enum>
@@ -549,13 +633,27 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
+              <item row="5" column="0">
                <widget class="QLabel" name="basemap_lbl">
                 <property name="text">
                  <string>basemap</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0" colspan="2">
+               <widget class="Line" name="line_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0" colspan="2">
+               <widget class="Line" name="line">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
                 </property>
                </widget>
               </item>
@@ -568,7 +666,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>278</width>
+             <width>310</width>
              <height>537</height>
             </rect>
            </property>
@@ -804,7 +902,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>278</width>
+             <width>310</width>
              <height>537</height>
             </rect>
            </property>
@@ -859,7 +957,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>278</width>
+             <width>310</width>
              <height>537</height>
             </rect>
            </property>
@@ -914,7 +1012,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>278</width>
+             <width>310</width>
              <height>537</height>
             </rect>
            </property>
