@@ -106,7 +106,7 @@ class NOFAInsert:
         self.con_act.triggered.connect(self._open_con_dlg)
         self.iface.addPluginToMenu(self.app_name, self.con_act)
 
-        self.ins_dlg = ins_dlg.InsDlg(self.iface, self)
+        self.ins_dlg = ins_dlg.InsDlg(self.iface, self, self.plugin_dir)
 
     def unload(self):
         """

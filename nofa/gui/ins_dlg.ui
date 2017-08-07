@@ -62,7 +62,7 @@
            </attribute>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0">
-             <layout class="QGridLayout" name="loc_grid_lyt" rowstretch="0,0,1">
+             <layout class="QGridLayout" name="loc_grid_lyt" rowstretch="0,0,0,0,0">
               <item row="0" column="0">
                <widget class="QLabel" name="loctp_lbl">
                 <property name="sizePolicy">
@@ -86,7 +86,7 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0" colspan="2">
+              <item row="4" column="0" colspan="2">
                <layout class="QGridLayout" name="loc_tbl_grid_lyt" rowstretch="0,0">
                 <property name="spacing">
                  <number>0</number>
@@ -505,7 +505,7 @@
                 </item>
                </layout>
               </item>
-              <item row="1" column="1">
+              <item row="2" column="1">
                <layout class="QHBoxLayout" name="loc_input_hlyt">
                 <property name="sizeConstraint">
                  <enum>QLayout::SetMinimumSize</enum>
@@ -529,10 +529,30 @@
                 </item>
                </layout>
               </item>
-              <item row="1" column="0">
+              <item row="2" column="0">
                <widget class="QLabel" name="loc_input_lbl">
                 <property name="text">
                  <string>input</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="osm_basemap_btn">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="text">
+                 <string>Add OSM</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="basemap_lbl">
+                <property name="text">
+                 <string>basemap</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

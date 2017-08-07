@@ -30,7 +30,7 @@ from PyQt4.QtGui import (
 
 from qgis.core import (
     QgsApplication, QgsMessageLog, QgsCoordinateReferenceSystem,
-    QgsCoordinateTransform, QgsPoint)
+    QgsCoordinateTransform, QgsPoint, QgsRasterLayer, QgsMapLayerRegistry)
 from qgis.gui import QgsMapToolEmitPoint
 
 from collections import defaultdict
@@ -121,7 +121,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class InsDlg(QDialog, FORM_CLASS):
-    def __init__(self, iface, mc):
+    def __init__(self, iface, mc, plugin_dir):
         """Constructor."""
         super(InsDlg, self).__init__()
         # Set up the user interface from Designer.
@@ -133,6 +133,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.iface = iface
         self.mc = mc
+        self.plugin_dir = plugin_dir
 
         self.org = u'NINA'
         self.app_name = u'NOFAInsert - InsDlg'
@@ -434,6 +435,8 @@ class InsDlg(QDialog, FORM_CLASS):
             self._set_coord_cnvs_to_utm_tbl)
         self.coord_cnvs_btn.clicked.connect(self._act_coord_cnvs_tool)
 
+        self.osm_basemap_btn.clicked.connect(self._add_osm_wms_lyr)
+
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
 
@@ -447,6 +450,18 @@ class InsDlg(QDialog, FORM_CLASS):
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('NOFAInsert', message)
+
+    def _add_osm_wms_lyr(self):
+        """
+        Adds OpenStreetMap WMS layer.
+        """
+
+        xml_fp = os.path.join(self.plugin_dir, 'nofa', 'wms', 'osm.xml')
+
+        lyr = QgsRasterLayer(xml_fp, 'OSM')
+
+        if lyr.isValid():
+            QgsMapLayerRegistry.instance().addMapLayers([lyr])
 
     def dsc_from_iface(self):
         """
