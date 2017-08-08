@@ -1090,6 +1090,9 @@ def ins_prj(con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk):
     :type fncr: str.
     :param rmk: Project remarks.
     :type rmk: str.
+
+    :returns: A project ID.
+    :rtype: int.
     """
 
     cur = _get_db_cur(con)
@@ -1114,6 +1117,7 @@ def ins_prj(con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk):
                             %(projectMembers)s,
                             %(financer)s,
                             %(remarks)s)
+        RETURNING       "projectID"
         ''',
         {'organisation': org,
          'projectNumber': no,
@@ -1124,6 +1128,10 @@ def ins_prj(con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk):
          'projectMembers': mbr,
          'financer': fncr,
          'remarks': rmk})
+
+    id = cur.fetchone()[0]
+
+    return id
 
 def get_reftp_list(con):
     """
@@ -1212,6 +1220,7 @@ def ins_ref(con, ttl, au, yr, isbn, issn, tp, jrn, vol, pg):
          'journalName': jrn,
          'volume': vol,
          'page': pg})
+
     id = cur.fetchone()[0]
 
     return id
@@ -1453,4 +1462,28 @@ def ins_dtst_log(con, id, usr):
                             %(username)s)
         ''',
         {'dataset_id': id,
+         'username': usr})
+
+def ins_prj_log(con, id, usr):
+    """
+    Insert a project log to the database.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param id: A project ID.
+    :type id: str.
+    :param usr: An username.
+    :type usr: str.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        INSERT INTO     plugin.project_log(
+                            project_id,
+                            username)
+        VALUES          (   %(project_id)s,
+                            %(username)s)
+        ''',
+        {'project_id': id,
          'username': usr})

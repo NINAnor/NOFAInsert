@@ -230,7 +230,10 @@ class PrjDlg(QDialog):
         rmk = self.rmk_pte.toPlainText() \
             if len(self.rmk_pte.toPlainText()) != 0 else None
 
-        db.ins_prj(self.mc.con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk)
+        id = db.ins_prj(
+            self.mc.con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk)
+
+        db.ins_prj_log(self.mc.con, id, self.mc.get_con_info()[self.mc.usr_str])
 
         self.stat_bar.showMessage(u'Project saved.', 10000)
 
