@@ -163,39 +163,6 @@ class InsDlg(QDialog, FORM_CLASS):
         self.dtend_de.setDate(self.today)
         self.verdt_de.setDate(self.nxt_week)
 
-        self.dataset_name = "none"
-
-        self.insert_location = \
-            """
-            INSERT INTO     nofa.location (
-                                locationID,
-                                "locationType",
-                                geom,
-                                "waterBody",
-                                "locationRemarks")
-            VALUES          (%s, %s, %s, %s, %s);
-            """
-
-        self.insert_taxonomic_coverage = \
-            """
-            INSERT INTO     nofa.taxonomicCoverage(
-                                "taxonID_l_taxon",
-                                "eventID_observationEvent")
-            VALUES          (%s, %s);
-            """
-
-        self.insert_log_project_columns = u""" "project_id", "test", "username" """
-
-        self.insert_log_reference_columns = u""" "reference_id", "test", "username" """
-
-        self.insert_log_location_columns = u""" "location_id", "test", "username", "location_name" """
-
-        self.log_project_values = u'(%s,%s,%s)'
-
-        self.log_reference_values = u'(%s,%s,%s)'
-
-        self.log_location_values = u'(%s,%s,%s,%s)'
-
         self.language = 'Latin'
 
         self.species_names = {
