@@ -184,15 +184,11 @@ class InsDlg(QDialog, FORM_CLASS):
             VALUES          (%s, %s);
             """
 
-        self.insert_log_dataset_columns = u""" "dataset_id", "test", "username" """
-
         self.insert_log_project_columns = u""" "project_id", "test", "username" """
 
         self.insert_log_reference_columns = u""" "reference_id", "test", "username" """
 
         self.insert_log_location_columns = u""" "location_id", "test", "username", "location_name" """
-
-        self.log_dataset_values = u'(%s,%s,%s)'
 
         self.log_project_values = u'(%s,%s,%s)'
 
