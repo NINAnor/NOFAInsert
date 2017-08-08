@@ -1189,8 +1189,13 @@ class InsDlg(QDialog, FORM_CLASS):
                     mpt_str = db.get_mpt_str(utme, utmn)
                     utm33_geom = db.get_utm33_geom(self.mc.con, mpt_str, srid)
 
-                    loc_id = db.ins_new_loc(
-                        self.mc.con, loc_id, utm33_geom, loc_name)
+                    db.ins_new_loc(self.mc.con, loc_id, utm33_geom, loc_name)
+
+                    db.ins_loc_log(
+                        self.mc.con,
+                        loc_id,
+                        loc_name,
+                        self.mc.get_con_info()[self.mc.usr_str])
 
                 loc_id_list.append(loc_id)
 

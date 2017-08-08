@@ -1487,3 +1487,32 @@ def ins_prj_log(con, id, usr):
         ''',
         {'project_id': id,
          'username': usr})
+
+def ins_loc_log(con, id, name, usr):
+    """
+    Insert a location log to the database.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param id: A location ID.
+    :type id: str.
+    :param name: A location name.
+    :type name: str.
+    :param usr: An username.
+    :type usr: str.
+    """
+
+    cur = _get_db_cur(con)
+    insert_location_log = cur.execute(
+        '''
+        INSERT INTO     plugin.location_log(
+                            location_id,
+                            location_name,
+                            username)
+        VALUES          (   %(location_id)s,
+                            %(location_name)s,
+                            %(username)s)
+        ''',
+        {'location_id': id,
+         'location_name': name,
+         'username': usr})
