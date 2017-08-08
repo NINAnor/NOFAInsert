@@ -85,7 +85,7 @@ def check_nofa_tbls(con):
 
     return resp
 
-def ins_event(con, loc_id, event_id, event_list, dtst_id, prj_id):
+def ins_event(con, loc_id, event_id, event_list, dtst_id, prj_id, ref_id):
     """
     Insert an event to the database.
 
@@ -101,6 +101,8 @@ def ins_event(con, loc_id, event_id, event_list, dtst_id, prj_id):
     :type dtst_id: str.
     :param prj_id: A project ID.
     :type prj_id: str.
+    :param ref_id: A reference ID.
+    :type ref_id: int.
     """
 
     cur = _get_db_cur(con)
@@ -119,7 +121,8 @@ def ins_event(con, loc_id, event_id, event_list, dtst_id, prj_id):
                            "eventRemarks",
                            "reliability",
                            "datasetID",
-                           "projectID")
+                           "projectID",
+                           "referenceID")
         VALUES         (   %(locationID)s,
                            %(eventID)s,
                            %(samplingProtocol)s,
@@ -132,7 +135,8 @@ def ins_event(con, loc_id, event_id, event_list, dtst_id, prj_id):
                            %(eventRemarks)s,
                            %(reliability)s,
                            %(datasetID)s,
-                           %(projectID)s)
+                           %(projectID)s,
+                           %(referenceID)s)
         ''',
         {'locationID': loc_id,
          'eventID': event_id,
@@ -146,7 +150,8 @@ def ins_event(con, loc_id, event_id, event_list, dtst_id, prj_id):
          'eventRemarks': event_list[7],
          'reliability': event_list[8],
          'datasetID': dtst_id,
-         'projectID': prj_id})
+         'projectID': prj_id,
+         'referenceID': ref_id})
 
 def get_txn_id(con, txn):
     """
@@ -206,7 +211,7 @@ def ins_occ(con, occ_id, txn_id, ectp_id, occ_row_list, event_id):
 
     :param con: A connection.
     :type con: psycopg2.connection.
-    :param occ_id: A occurrence ID.
+    :param occ_id: An occurrence ID.
     :type occ_id: uuid.UUID.
     :param txn_id: A taxon ID.
     :type txn_id: int.
@@ -1376,3 +1381,52 @@ def get_loc_by_wb_name(con, wb_name):
     locid_list = [l[0] for l in locids]
 
     return locid_list
+
+def ins_occ_log(con, occ_id, event_id, dtst_id, prj_id, ref_id, loc_id, usr):
+    """
+    Insert an occurrence log to the database.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param occ_id: An occurrence ID.
+    :type occ_id: uuid.UUID.
+    :param event_id: An event ID.
+    :type event_id: uuid.UUID.
+    :param dtst_id: A dataset ID.
+    :type dtst_id: str.
+    :param prj_id: A project ID.
+    :type prj_id: str.
+    :param ref_id: A reference ID.
+    :type ref_id: int.
+    :param loc_id: A location ID.
+    :type loc_id: uuid.UUID.
+    :param usr: An username.
+    :type usr: str.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        INSERT INTO     plugin.occurrence_log (
+                            "occurrence_id",
+                            "event_id",
+                            "dataset_id",
+                            "project_id",
+                            "reference_id",
+                            "location_id",
+                            "username")
+        VALUES          (   %(occurrence_id)s,
+                            %(event_id)s,
+                            %(dataset_id)s,
+                            %(project_id)s,
+                            %(reference_id)s,
+                            %(location_id)s,
+                            %(username)s)
+        ''',
+        {'occurrence_id': occ_id,
+         'event_id': event_id,
+         'dataset_id': dtst_id,
+         'project_id': prj_id,
+         'reference_id': ref_id,
+         'location_id': loc_id,
+         'username': usr})

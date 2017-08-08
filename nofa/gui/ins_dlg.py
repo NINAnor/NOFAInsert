@@ -183,21 +183,6 @@ class InsDlg(QDialog, FORM_CLASS):
                                 "eventID_observationEvent")
             VALUES          (%s, %s);
             """
-        # creating the string for event data insertion to nofa.event table. fieldNotes is used just for testing purposes
-
-        self.insert_log_occurrence = \
-            """
-            INSERT INTO     nofa.plugin_occurrence_log (
-                                "occurrence_id",
-                                "event_id",
-                                "dataset_id",
-                                "project_id",
-                                "reference_id",
-                                "location_id",
-                                "test",
-                                "username")
-            VALUES\n
-            """
 
         self.insert_log_dataset_columns = u""" "dataset_id", "test", "username" """
 
@@ -206,8 +191,6 @@ class InsDlg(QDialog, FORM_CLASS):
         self.insert_log_reference_columns = u""" "reference_id", "test", "username" """
 
         self.insert_log_location_columns = u""" "location_id", "test", "username", "location_name" """
-
-        self.log_occurrence_values = u'(%s,%s,%s,%s,%s,%s,%s,%s)'
 
         self.log_dataset_values = u'(%s,%s,%s)'
 
@@ -993,12 +976,14 @@ class InsDlg(QDialog, FORM_CLASS):
 
             dtst_id = self._get_dtst_id()
             prj_id = self._get_prj_id()
+            ref_id = self._get_ref_id()
 
             for loc_id in loc_id_list:
                 event_id = uuid.uuid4()
 
                 db.ins_event(
-                    self.mc.con, loc_id, event_id, event_list, dtst_id, prj_id)
+                    self.mc.con,
+                    loc_id, event_id, event_list, dtst_id, prj_id, ref_id)
 
                 # OS.NINA
                 # does not work now
@@ -1018,6 +1003,11 @@ class InsDlg(QDialog, FORM_CLASS):
                     db.ins_occ(
                         self.mc.con,
                         occ_id, txn_id, ectp_id, occ_row_list, event_id)
+
+                    db.ins_occ_log(
+                        self.mc.con,
+                        occ_id, event_id, dtst_id, prj_id, ref_id, loc_id,
+                        self.mc.get_con_info()[self.mc.usr_str])
 
             QMessageBox.information(self, u'Saved', u'Data correctly saved.')
         except NoLocExc:
@@ -1882,7 +1872,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
     def _get_dtst_id(self):
         """
-        Returns a dataset id from the dataset combo box.
+        Returns a dataset ID from the dataset combo box.
 
         :returns: A dataset ID.
         :rtype: str.
@@ -1929,6 +1919,20 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.ref_cb.clear()
         self.ref_cb.addItems(ref_list)
+
+    def _get_ref_id(self):
+        """
+        Returns a reference ID from the reference combo box.
+
+        :returns: A reference ID.
+        :rtype: str.
+        """
+
+        ref_str = self.ref_cb.currentText()
+
+        id = int(ref_str.split(self.at_split_str)[1])
+
+        return id
 
     def _pop_txn_cb(self):
         """
