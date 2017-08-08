@@ -81,7 +81,7 @@ print u'table "plugin.dataset_log"created'
 cur.execute(
     """
     CREATE TABLE    plugin.project_log(
-                        project_id integer NOT NULL,
+                        project_id character varying(255) NOT NULL,
                         test boolean DEFAULT False,
                         username text NOT NULL,
                         insert_timestamp timestamp without time zone

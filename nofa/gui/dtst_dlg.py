@@ -284,6 +284,9 @@ class DtstDlg(QDialog):
         db.ins_dtst(
             self.mc.con, name, id, inst, rght, lic, acs, cit, cmnt, info, dtgen)
 
+        db.ins_dtst_log(
+            self.mc.con, id, self.mc.get_con_info()[self.mc.usr_str])
+
         self.stat_bar.showMessage(u'Dataset saved.', 10000)
 
         self.iw.pop_dtst_cb()

@@ -1053,7 +1053,7 @@ def ins_dtst(con, name, id, inst, rght, lic, acs, cit, cmnt, info, dtgen):
                             %(bibliographicCitation)s,
                             %(datasetComment)s,
                             %(informationWithheld)s,
-                            %(dataGeneralizations)s);
+                            %(dataGeneralizations)s)
         ''',
         {'datasetName': name,
          'datasetID': id,
@@ -1408,13 +1408,13 @@ def ins_occ_log(con, occ_id, event_id, dtst_id, prj_id, ref_id, loc_id, usr):
     cur.execute(
         '''
         INSERT INTO     plugin.occurrence_log (
-                            "occurrence_id",
-                            "event_id",
-                            "dataset_id",
-                            "project_id",
-                            "reference_id",
-                            "location_id",
-                            "username")
+                            occurrence_id,
+                            event_id,
+                            dataset_id,
+                            project_id,
+                            reference_id,
+                            location_id,
+                            username)
         VALUES          (   %(occurrence_id)s,
                             %(event_id)s,
                             %(dataset_id)s,
@@ -1429,4 +1429,28 @@ def ins_occ_log(con, occ_id, event_id, dtst_id, prj_id, ref_id, loc_id, usr):
          'project_id': prj_id,
          'reference_id': ref_id,
          'location_id': loc_id,
+         'username': usr})
+
+def ins_dtst_log(con, id, usr):
+    """
+    Insert a dataset log to the database.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param id: A dataset ID.
+    :type id: str.
+    :param usr: An username.
+    :type usr: str.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        INSERT INTO     plugin.dataset_log(
+                            dataset_id,
+                            username)
+        VALUES          (   %(dataset_id)s,
+                            %(username)s)
+        ''',
+        {'dataset_id': id,
          'username': usr})
