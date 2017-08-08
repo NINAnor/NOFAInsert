@@ -230,6 +230,8 @@ class RefDlg(QDialog):
 
         id = db.ins_ref(self.mc.con, ttl, au, yr, isbn, issn, tp, jrn, vol, pg)
 
+        db.ins_ref_log(self.mc.con, id, self.mc.get_con_info()[self.mc.usr_str])
+
         self.stat_bar.showMessage(u'Reference saved.', 10000)
 
         self.iw.pop_ref_cb()

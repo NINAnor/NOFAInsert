@@ -1516,3 +1516,27 @@ def ins_loc_log(con, id, name, usr):
         {'location_id': id,
          'location_name': name,
          'username': usr})
+
+def ins_ref_log(con, id, usr):
+    """
+    Insert a reference log to the database.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param id: A reference ID.
+    :type id: str.
+    :param usr: An username.
+    :type usr: str.
+    """
+
+    cur = _get_db_cur(con)
+    insert_location_log = cur.execute(
+        '''
+        INSERT INTO     plugin.reference_log(
+                            reference_id,
+                            username)
+        VALUES          (   %(reference_id)s,
+                            %(username)s)
+        ''',
+        {'reference_id': id,
+         'username': usr})
