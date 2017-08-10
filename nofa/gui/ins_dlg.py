@@ -384,6 +384,11 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.ins_btn.clicked.connect(self._ins)
 
+        self.main_hspltr.setStretchFactor(0, 1)
+        self.main_hspltr.setStretchFactor(1, 2)
+        self.occ_hspltr.setStretchFactor(0, 1)
+        self.occ_hspltr.setStretchFactor(1, 2)
+
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
 
