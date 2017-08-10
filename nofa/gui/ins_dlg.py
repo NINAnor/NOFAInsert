@@ -128,16 +128,19 @@ class InsDlg(QDialog, FORM_CLASS):
     def __init__(self, iface, mc, plugin_dir):
         """Constructor."""
         super(InsDlg, self).__init__()
-        # Set up the user interface from Designer.
-        # After setupUI you can access any designer object by doing
-        # self.<objectname>, and you can use autoconnect slots - see
-        # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
-        # #widgets-and-dialogs-with-auto-connect
+        # set up the user interface from Designer.
         self.setupUi(self)
 
         self.iface = iface
         self.mc = mc
         self.plugin_dir = plugin_dir
+
+        self._setup_self()
+
+    def _setup_self(self):
+        """
+        Sets up self.
+        """
 
         self.org = u'NINA'
         self.app_name = u'NOFAInsert - InsDlg'
@@ -147,30 +150,6 @@ class InsDlg(QDialog, FORM_CLASS):
         # OS.NINA
         # clear setting for development purposes
         self.settings.clear()
-
-        self.sel_str = u'Select'
-        self.none_str = str(None)
-
-        # Declare instance attributes
-        self.actions = []
-        self.menu = self.tr(u'&NOFAInsert')
-
-        # TODO: We are going to let the user set this up in a future iteration
-        self.toolbar = self.iface.addToolBar(self.app_name)
-        self.toolbar.setObjectName(self.app_name)
-
-        self.today = datetime.datetime.today().date()
-        self.year = datetime.datetime.today().year
-        self.nxt_week = self.today + datetime.timedelta(days=7)
-        self.fltr_str_dt = datetime.datetime(2017, 1, 1)
-
-        self.dtstrt_de.setDate(self.today)
-        self.dtend_de.setDate(self.today)
-        self.verdt_de.setDate(self.nxt_week)
-        self.hist_ins_dtstrt_de.setDate(self.fltr_str_dt)
-        self.hist_ins_dtend_de.setDate(self.today)
-        self.hist_upd_dtstrt_de.setDate(self.fltr_str_dt)
-        self.hist_upd_dtend_de.setDate(self.today)
 
         self.language = 'Latin'
 
@@ -191,11 +170,55 @@ class InsDlg(QDialog, FORM_CLASS):
             'coordinates UTM32',
             'coordinates UTM33']
 
+        self.occ_tbl_hdrs = [
+            u'taxon',
+            u'ecotype',
+            u'organismQuantityType',
+            u'organismQuantity',
+            u'occurrenceStatus',
+            u'populationTrend',
+            u'occurrenceRemarks',
+            u'establishmentMeans',
+            u'establishmentRemarks',
+            u'spawningCondition',
+            u'spawningLocation',
+            u'verifiedBy',
+            u'verifiedDate']
+
+        self.utm_tbl_hdrs = [
+            u'easting',
+            u'northing',
+            u'name (optional)']
+
+        self.nvl_tbl_hdrs = [
+            u'Norwegian VatnLnr']
+
+        self.sel_str = u'Select'
+        self.none_str = str(None)
         self.dash_split_str = u' - '
         self.at_split_str = u'@'
         self.dtst_str = u'Dataset'
         self.prj_str = u'Project'
         self.ref_str = u'Reference'
+
+        self.today_dt = datetime.datetime.today().date()
+        self.nxt_week_dt = self.today_dt + datetime.timedelta(days=7)
+        self.fltr_str_dt = datetime.datetime(2017, 1, 1)
+
+        self._build_wdgs()
+
+    def _build_wdgs(self):
+        """
+        Builds and sets up own widgets.
+        """
+
+        self.dtstrt_de.setDate(self.today_dt)
+        self.dtend_de.setDate(self.today_dt)
+        self.verdt_de.setDate(self.nxt_week_dt)
+        self.hist_ins_dtstrt_de.setDate(self.fltr_str_dt)
+        self.hist_ins_dtend_de.setDate(self.today_dt)
+        self.hist_upd_dtstrt_de.setDate(self.fltr_str_dt)
+        self.hist_upd_dtend_de.setDate(self.today_dt)
 
         self.adddtst_btn.clicked.connect(self._open_dtst_dlg)
         self.addprj_btn.clicked.connect(self._open_prj_dlg)
@@ -222,26 +245,12 @@ class InsDlg(QDialog, FORM_CLASS):
         self.loc_rstallrows_btn.clicked.connect(self._rst_all_loc_rows)
         self.loc_del_btn.clicked.connect(self._del_all_loc_rows)
 
-        # trigger action when history tabs are clicked
         self.main_tabwdg.setCurrentIndex(0)
         self.main_tabwdg.currentChanged.connect(self._fetch_schema)
-        # self.tabWidget_history.currentChanged.connect(self.history_tab_clicked)
 
         self.txncvg_tw.itemChanged.connect(self._upd_txncvg_tw_chldn)
 
-        # OS.NINA
-        # there are not neccessary tables in the new db
-        # history tab is disabled
-        # self.main_tabwdg.setTabEnabled(1, False)
-
         self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
-
-        self.ins_btn.clicked.connect(self._ins)
-
-        # filter occurrences by username and time interval
-#         self.username_filter_button.clicked.connect(self.filter_occurrences_by_username)
-#         self.time_filter_button.clicked.connect(self.filter_occurrence_by_time)
-#         self.combined_filter_button.clicked.connect(self.filter_by_user_and_time)
 
         self.smpsv_le.setValidator(QIntValidator(None))
         self.smpe_le.setValidator(QIntValidator(None))
@@ -294,33 +303,9 @@ class InsDlg(QDialog, FORM_CLASS):
         for occ_de_wdg in self.occ_de_wdgs:
             occ_de_wdg.dateChanged.connect(self._upd_occ_row)
 
-        self.occ_tbl_hdrs = [
-            u'taxon',
-            u'ecotype',
-            u'organismQuantityType',
-            u'organismQuantity',
-            u'occurrenceStatus',
-            u'populationTrend',
-            u'occurrenceRemarks',
-            u'establishmentMeans',
-            u'establishmentRemarks',
-            u'spawningCondition',
-            u'spawningLocation',
-            u'verifiedBy',
-            u'verifiedDate']
-
         self.loctp_cb.currentIndexChanged.connect(self._set_loc_tbl)
 
-        self.nvl_tbl_hdrs = [
-            u'Norwegian VatnLnr']
-
         self._create_tbl_main_tab(self.nvl_tbl, self.nvl_tbl_hdrs)
-
-        self.utm_tbl_hdrs = [
-            u'easting',
-            u'northing',
-            u'name (optional)']
-
         self._create_tbl_main_tab(self.utm_tbl, self.utm_tbl_hdrs)
 
         self.occ_tbl.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -374,6 +359,8 @@ class InsDlg(QDialog, FORM_CLASS):
                 wdg.currentIndexChanged.connect(self._fill_hist_tbls)
             elif isinstance(wdg, QDateEdit):
                 wdg.dateChanged.connect(self._fill_hist_tbls)
+
+        self.ins_btn.clicked.connect(self._ins)
 
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -1600,7 +1587,7 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         for occ_cb_wdg in self.occ_de_wdgs:
-            occ_cb_wdg.setDate(self.nxt_week)
+            occ_cb_wdg.setDate(self.nxt_week_dt)
 
     def _rst_all_occ_rows(self):
         """

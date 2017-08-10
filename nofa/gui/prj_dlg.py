@@ -114,12 +114,12 @@ class PrjDlg(QDialog):
         self.styr_lbl.setText(u'startYear')
         self.grid_lyt.addWidget(self.styr_lbl, 3, 0, 1, 1)
 
-        today_date = QDate.currentDate()
+        today_dt = QDate.currentDate()
 
         self.styr_de = QDateEdit(self)
         self.styr_de.setObjectName(u'styr_de')
         self.styr_de.setDisplayFormat('yyyy')
-        self.styr_de.setDate(today_date)
+        self.styr_de.setDate(today_dt)
         self.grid_lyt.addWidget(self.styr_de, 3, 1, 1, 1)
 
         self.endyr_lbl = QLabel(self)
@@ -131,7 +131,7 @@ class PrjDlg(QDialog):
         self.endyr_de = QDateEdit(self)
         self.endyr_de.setObjectName(u'endyr_de')
         self.endyr_de.setDisplayFormat('yyyy')
-        self.endyr_de.setDate(today_date)
+        self.endyr_de.setDate(today_dt)
         self.grid_lyt.addWidget(self.endyr_de, 4, 1, 1, 1)
 
         self.ldr_lbl = QLabel(self)

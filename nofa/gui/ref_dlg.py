@@ -102,12 +102,12 @@ class RefDlg(QDialog):
         self.yr_lbl.setText(u'year*')
         self.grid_lyt.addWidget(self.yr_lbl, 2, 0, 1, 1)
 
-        today_date = QDate.currentDate()
+        today_dt = QDate.currentDate()
 
         self.yr_de = QDateEdit(self)
         self.yr_de.setObjectName(u'yr_de')
         self.yr_de.setDisplayFormat('yyyy')
-        self.yr_de.setDate(today_date)
+        self.yr_de.setDate(today_dt)
         self.grid_lyt.addWidget(self.yr_de, 2, 1, 1, 1)
 
         self.isbn_lbl = QLabel(self)
