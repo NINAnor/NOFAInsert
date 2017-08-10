@@ -23,7 +23,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-
+from PyQt4 import QtGui, uic
 from PyQt4.QtCore import (
     QSettings, QCoreApplication, Qt, QObject, QDate, QObject, QSignalMapper)
 from PyQt4.QtGui import (
@@ -118,16 +118,29 @@ class NvlNfExc(Exception):
         self.nf_nvl = nf_nvl
 
 
-from PyQt4 import QtGui, uic
-
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'ins_dlg.ui'))
 
 
 class InsDlg(QDialog, FORM_CLASS):
+    """
+    A dialog for inserting data into NOFA database.
+    """
+
     def __init__(self, iface, mc, plugin_dir):
-        """Constructor."""
+        """
+        Constructor.
+
+        :param iface: A reference to the QgisInterface.
+        :type iface: QgisInterface.
+        :param mc: A reference to the main class.
+        :type mc: object.
+        :param plugin_dir: A plugin directory.
+        :type plugin_dir: str.
+        """
+
         super(InsDlg, self).__init__()
+
         # set up the user interface from Designer.
         self.setupUi(self)
 
