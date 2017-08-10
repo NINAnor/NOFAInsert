@@ -225,6 +225,15 @@ class InsDlg(QDialog, FORM_CLASS):
         Builds and sets up own widgets.
         """
 
+        self.hist_ins_dtstrt_de.dateChanged.connect(
+            self.hist_ins_dtend_de.setMinimumDate)
+        self.hist_ins_dtend_de.dateChanged.connect(
+            self.hist_ins_dtstrt_de.setMaximumDate)
+        self.hist_upd_dtstrt_de.dateChanged.connect(
+            self.hist_upd_dtend_de.setMinimumDate)
+        self.hist_upd_dtend_de.dateChanged.connect(
+            self.hist_upd_dtstrt_de.setMaximumDate)
+
         self.dtstrt_de.setDate(self.today_dt)
         self.dtend_de.setDate(self.today_dt)
         self.verdt_de.setDate(self.nxt_week_dt)
