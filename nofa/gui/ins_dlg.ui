@@ -91,7 +91,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>locationType</string>
+                 <string>locationIdentifier</string>
                 </property>
                </widget>
               </item>
@@ -567,7 +567,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>lake name</string>
+                 <string>waterBody</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
