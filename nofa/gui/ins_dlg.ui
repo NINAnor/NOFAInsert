@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1229</width>
-    <height>761</height>
+    <height>846</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -60,7 +60,7 @@
              <x>0</x>
              <y>0</y>
              <width>310</width>
-             <height>537</height>
+             <height>622</height>
             </rect>
            </property>
            <attribute name="label">
@@ -667,7 +667,7 @@
              <x>0</x>
              <y>0</y>
              <width>310</width>
-             <height>537</height>
+             <height>622</height>
             </rect>
            </property>
            <attribute name="label">
@@ -903,7 +903,7 @@
              <x>0</x>
              <y>0</y>
              <width>310</width>
-             <height>537</height>
+             <height>622</height>
             </rect>
            </property>
            <attribute name="label">
@@ -958,7 +958,7 @@
              <x>0</x>
              <y>0</y>
              <width>310</width>
-             <height>537</height>
+             <height>622</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1013,7 +1013,7 @@
              <x>0</x>
              <y>0</y>
              <width>310</width>
-             <height>537</height>
+             <height>622</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1813,232 +1813,218 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_history">
+     <widget class="QWidget" name="hist_tab">
       <attribute name="title">
        <string>History</string>
       </attribute>
-      <widget class="QTabWidget" name="tabWidget_history">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>0</y>
-         <width>1071</width>
-         <height>621</height>
-        </rect>
-       </property>
-       <property name="currentIndex">
-        <number>0</number>
-       </property>
-       <widget class="QWidget" name="occurrences_tab">
-        <attribute name="title">
-         <string>Occurrences</string>
-        </attribute>
-        <widget class="QLabel" name="label">
-         <property name="geometry">
-          <rect>
-           <x>60</x>
-           <y>490</y>
-           <width>141</width>
-           <height>21</height>
-          </rect>
+      <layout class="QGridLayout" name="gridLayout_20">
+       <item row="0" column="0">
+        <widget class="QTabWidget" name="hist_tabwdg">
+         <property name="currentIndex">
+          <number>2</number>
          </property>
-         <property name="text">
-          <string>Filter by username</string>
-         </property>
+         <widget class="QWidget" name="hist_occ_tab">
+          <attribute name="title">
+           <string>Occurrences</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_13">
+           <item row="0" column="0">
+            <widget class="QTableWidget" name="hist_occ_tbl"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="hist_loc_tab">
+          <attribute name="title">
+           <string>Locations</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_14">
+           <item row="0" column="0">
+            <widget class="QTableWidget" name="hist_loc_tbl"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="hist_dtst_tab">
+          <attribute name="title">
+           <string>Datasets</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_15">
+           <item row="0" column="0">
+            <widget class="QTableWidget" name="hist_dtst_tbl"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="hist_prj_tab">
+          <attribute name="title">
+           <string>Projects</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_17">
+           <item row="0" column="0">
+            <widget class="QTableWidget" name="hist_prj_tbl"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="hist_ref_tab">
+          <attribute name="title">
+           <string>References</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_18">
+           <item row="0" column="0">
+            <widget class="QTableWidget" name="hist_ref_tbl"/>
+           </item>
+          </layout>
+         </widget>
         </widget>
-        <widget class="QTableWidget" name="tableWidget_occurrences">
-         <property name="geometry">
-          <rect>
-           <x>50</x>
-           <y>20</y>
-           <width>931</width>
-           <height>441</height>
-          </rect>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="username_filter_button">
-         <property name="geometry">
-          <rect>
-           <x>50</x>
-           <y>520</y>
-           <width>151</width>
-           <height>23</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>User filter</string>
-         </property>
-        </widget>
-        <widget class="QComboBox" name="usernames">
-         <property name="geometry">
-          <rect>
-           <x>50</x>
-           <y>550</y>
-           <width>151</width>
-           <height>22</height>
-          </rect>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_2">
-         <property name="geometry">
-          <rect>
-           <x>350</x>
-           <y>490</y>
-           <width>151</width>
-           <height>21</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Filter by insert time</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="time_filter_button">
-         <property name="geometry">
-          <rect>
-           <x>290</x>
-           <y>520</y>
-           <width>301</width>
-           <height>23</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Time filter</string>
-         </property>
-        </widget>
-        <widget class="QDateEdit" name="date_from">
-         <property name="geometry">
-          <rect>
-           <x>330</x>
-           <y>550</y>
-           <width>110</width>
-           <height>22</height>
-          </rect>
-         </property>
-        </widget>
-        <widget class="QDateEdit" name="date_to">
-         <property name="geometry">
-          <rect>
-           <x>480</x>
-           <y>550</y>
-           <width>110</width>
-           <height>22</height>
-          </rect>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_5">
-         <property name="geometry">
-          <rect>
-           <x>290</x>
-           <y>550</y>
-           <width>41</width>
-           <height>21</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>from</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_6">
-         <property name="geometry">
-          <rect>
-           <x>450</x>
-           <y>550</y>
-           <width>21</width>
-           <height>21</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>to</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_7">
-         <property name="geometry">
-          <rect>
-           <x>760</x>
-           <y>490</y>
-           <width>171</width>
-           <height>21</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Filter by user and time</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="combined_filter_button">
-         <property name="geometry">
-          <rect>
-           <x>680</x>
-           <y>520</y>
-           <width>301</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>combined Filter</string>
-         </property>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="locations_tab">
-        <attribute name="title">
-         <string>Locations</string>
-        </attribute>
-        <widget class="QTableWidget" name="tableWidget_locations">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>10</y>
-           <width>561</width>
-           <height>581</height>
-          </rect>
-         </property>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="datasets_tab">
-        <attribute name="title">
-         <string>Datasets</string>
-        </attribute>
-        <widget class="QTableWidget" name="tableWidget_datasets">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>10</y>
-           <width>491</width>
-           <height>581</height>
-          </rect>
-         </property>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="projects_tab">
-        <attribute name="title">
-         <string>Projects</string>
-        </attribute>
-        <widget class="QTableWidget" name="tableWidget_projects">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>10</y>
-           <width>491</width>
-           <height>581</height>
-          </rect>
-         </property>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="references_tab">
-        <attribute name="title">
-         <string>References</string>
-        </attribute>
-        <widget class="QTableWidget" name="tableWidget_references">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>10</y>
-           <width>491</width>
-           <height>581</height>
-          </rect>
-         </property>
-        </widget>
-       </widget>
-      </widget>
+       </item>
+       <item row="1" column="0">
+        <layout class="QGridLayout" name="hist_fltr_grid_lyt" columnstretch="0,1,0,0,1,0,0,1">
+         <item row="1" column="6">
+          <widget class="QLabel" name="usr_lbl">
+           <property name="text">
+            <string>user</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="4">
+          <widget class="QDateEdit" name="hist_upd_dtend_de">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="displayFormat">
+            <string>yyyy-MM-dd</string>
+           </property>
+           <property name="calendarPopup">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLabel" name="hist_upd_dtstrt_lbl">
+           <property name="text">
+            <string>from</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QLabel" name="hist_ins_main_lbl">
+           <property name="text">
+            <string>insert date</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4">
+          <widget class="QDateEdit" name="hist_upd_dtstrt_de">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="displayFormat">
+            <string>yyyy-MM-dd</string>
+           </property>
+           <property name="calendarPopup">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="hist_ins_dtstrt_lbl">
+           <property name="text">
+            <string>from</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QDateEdit" name="hist_ins_dtstrt_de">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="displayFormat">
+            <string>yyyy-MM-dd</string>
+           </property>
+           <property name="calendarPopup">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QDateEdit" name="hist_ins_dtend_de">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="displayFormat">
+            <string>yyyy-MM-dd</string>
+           </property>
+           <property name="calendarPopup">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="QLabel" name="hist_upd_dtend_lbl">
+           <property name="text">
+            <string>to</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3" colspan="2">
+          <widget class="QLabel" name="hist_upd_main_lbl">
+           <property name="text">
+            <string>update date</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="7">
+          <widget class="QComboBox" name="usr_cb"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="hist_ins_dtend_lbl">
+           <property name="text">
+            <string>to</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2" rowspan="3">
+          <widget class="Line" name="hist_vline_1">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5" rowspan="3">
+          <widget class="Line" name="hist_vline_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>

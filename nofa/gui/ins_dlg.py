@@ -151,6 +151,7 @@ class InsDlg(QDialog, FORM_CLASS):
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&NOFAInsert')
+
         # TODO: We are going to let the user set this up in a future iteration
         self.toolbar = self.iface.addToolBar(self.app_name)
         self.toolbar.setObjectName(self.app_name)
@@ -158,10 +159,15 @@ class InsDlg(QDialog, FORM_CLASS):
         self.today = datetime.datetime.today().date()
         self.year = datetime.datetime.today().year
         self.nxt_week = self.today + datetime.timedelta(days=7)
+        self.fltr_str_dt = datetime.datetime(2017, 1, 1)
 
         self.dtstrt_de.setDate(self.today)
         self.dtend_de.setDate(self.today)
         self.verdt_de.setDate(self.nxt_week)
+        self.hist_ins_dtstrt_de.setDate(self.fltr_str_dt)
+        self.hist_ins_dtend_de.setDate(self.today)
+        self.hist_upd_dtstrt_de.setDate(self.fltr_str_dt)
+        self.hist_upd_dtend_de.setDate(self.today)
 
         self.language = 'Latin'
 
@@ -172,15 +178,6 @@ class InsDlg(QDialog, FORM_CLASS):
             'Swedish': 'vernacularName_SE',
             'Finish': 'vernacularName_FI'}
 
-        # Country codes not used for the moment
-        '''countryCodes = {
-            'Latin': None,
-            'English': None,
-            'Norwegian': 'NO',
-            'Swedish': 'SE',
-            'Finish': 'FI'}'''
-
-        # TODO the remaining location types should be added here
         self.loctp_dict = {
             'Norwegian VatnLnr': 'no_vatn_lnr',
             'coordinates UTM32': 25832,
@@ -190,42 +187,6 @@ class InsDlg(QDialog, FORM_CLASS):
             'Norwegian VatnLnr',
             'coordinates UTM32',
             'coordinates UTM33']
-
-        self.occ_hdrs = [
-            "occurrence_id",
-            "event_id",
-            "dataset_id",
-            "project_id",
-            "reference_id",
-            "location_id",
-            "username",
-            "insert_time",
-            "update_time"]
-
-        self.loc_hdrs = [
-            "dataset_id",
-            "username",
-            "location_name",
-            "insert_time",
-            "update_time"]
-
-        self.dtst_hdrs = [
-            "dataset_id",
-            "username",
-            "insert_time",
-            "update_time"]
-
-        self.prj_hdrs = [
-            "project_id",
-            "username",
-            "insert_time",
-            "update_time"]
-
-        self.ref_hdrs = [
-            "reference_id",
-            "username",
-            "insert_time",
-            "update_time"]
 
         self.dash_split_str = u' - '
         self.at_split_str = u'@'
@@ -259,24 +220,25 @@ class InsDlg(QDialog, FORM_CLASS):
         self.loc_del_btn.clicked.connect(self._del_all_loc_rows)
 
         # trigger action when history tabs are clicked
-        self.main_tabwdg.currentChanged.connect(self.history_tab_clicked)
-        self.tabWidget_history.currentChanged.connect(self.history_tab_clicked)
+        self.main_tabwdg.setCurrentIndex(0)
+        self.main_tabwdg.currentChanged.connect(self._fetch_schema)
+        # self.tabWidget_history.currentChanged.connect(self.history_tab_clicked)
 
         self.txncvg_tw.itemChanged.connect(self._upd_txncvg_tw_chldn)
 
         # OS.NINA
         # there are not neccessary tables in the new db
         # history tab is disabled
-        self.main_tabwdg.setTabEnabled(1, False)
+        # self.main_tabwdg.setTabEnabled(1, False)
 
         self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
 
         self.ins_btn.clicked.connect(self._ins)
 
         # filter occurrences by username and time interval
-        self.username_filter_button.clicked.connect(self.filter_occurrences_by_username)
-        self.time_filter_button.clicked.connect(self.filter_occurrence_by_time)
-        self.combined_filter_button.clicked.connect(self.filter_by_user_and_time)
+#         self.username_filter_button.clicked.connect(self.filter_occurrences_by_username)
+#         self.time_filter_button.clicked.connect(self.filter_occurrence_by_time)
+#         self.combined_filter_button.clicked.connect(self.filter_by_user_and_time)
 
         self.smpsv_le.setValidator(QIntValidator(None))
         self.smpe_le.setValidator(QIntValidator(None))
@@ -349,14 +311,14 @@ class InsDlg(QDialog, FORM_CLASS):
         self.nvl_tbl_hdrs = [
             u'Norwegian VatnLnr']
 
-        self._create_tbl(self.nvl_tbl, self.nvl_tbl_hdrs)
+        self._create_tbl_main_tab(self.nvl_tbl, self.nvl_tbl_hdrs)
 
         self.utm_tbl_hdrs = [
             u'easting',
             u'northing',
             u'name (optional)']
 
-        self._create_tbl(self.utm_tbl, self.utm_tbl_hdrs)
+        self._create_tbl_main_tab(self.utm_tbl, self.utm_tbl_hdrs)
 
         self.occ_tbl.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
@@ -389,6 +351,26 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.lake_name_load_btn.setEnabled(False)
         self.lake_name_load_btn.clicked.connect(self._load_loc_layer)
+
+        self.hist_tbls_meth_dict = {
+            self.hist_occ_tbl: db.get_hist_occ_list,
+            self.hist_loc_tbl: db.get_hist_loc_list,
+            self.hist_dtst_tbl: db.get_hist_dtst_list,
+            self.hist_prj_tbl: db.get_hist_prj_list,
+            self.hist_ref_tbl: db.get_hist_ref_list}
+
+        self.hist_input_wdgs = [
+            self.usr_cb,
+            self.hist_ins_dtstrt_de,
+            self.hist_ins_dtend_de,
+            self.hist_upd_dtstrt_de,
+            self.hist_upd_dtend_de]
+
+        for wdg in self.hist_input_wdgs:
+            if isinstance(wdg, QComboBox):
+                wdg.currentIndexChanged.connect(self._fill_hist_tbls)
+            elif isinstance(wdg, QDateEdit):
+                wdg.dateChanged.connect(self._fill_hist_tbls)
 
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -563,328 +545,73 @@ class InsDlg(QDialog, FORM_CLASS):
             self.loc_tbl_sw.setCurrentIndex(1)
             self.coord_cnvs_btn.setEnabled(True)
 
-    def history_tab_clicked(self):
-        #QMessageBox.information(None, "DEBUG:",  str(self.main_tabwdg.currentIndex()))
-
-        if self.tabWidget_history.currentIndex() == 0:
-            #QMessageBox.information(None, "DEBUG:", str(self.main_tabwdg.currentIndex()))
-
-            self.date_from.setDate(self.today)
-            self.date_to.setDate(self.today)
-
-            cur = self._get_db_cur()
-            try:
-                cur.execute(
-                    u'SELECT  DISTINCT "username" FROM nofa.plugin_occurrence_log')
-            except:
-                QMessageBox.information(
-                    None, "DEBUG:",
-                    unicode(
-                        "WARNING - DB ERROR. occurrences not fetched from db"))
-
-            usernames_fetched = cur.fetchall()
-
-            username_list = [s[0] for s in usernames_fetched]
-
-            # Inject sorted python-list for spawningCondition into UI
-            username_list.sort()
-            self.usernames.clear()
-            self.usernames.addItems(username_list)
-
-
-
-            self.row = 0
-
-            self.occ_tbl_occurrences.setSelectionBehavior(QTableWidget.SelectRows)
-
-            #  populate tableWidget
-
-            cur = self._get_db_cur()
-            try:
-                cur.execute(u'SELECT  "occurrence_id", "event_id", "dataset_id", "project_id", "reference_id", "location_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_occurrence_log')
-            except:
-                QMessageBox.information(None, "DEBUG:", unicode(
-                    "WARNING - DB ERROR. occurrences not fetched from db"))
-
-            fetched_occ = cur.fetchall()
-
-            lim = len(fetched_occ)
-
-            self.occ_tbl_occurrences.setRowCount(lim)
-            self.occ_tbl_occurrences.setColumnCount(9)
-
-            self.occ_tbl_occurrences.setHorizontalHeaderLabels(
-                self.occ_hdrs)
-
-            for l in range(lim):
-                occurrence = fetched_occ[l]
-                for n, item in enumerate(occurrence):
-
-
-                    newitem = QTableWidgetItem(unicode(occurrence[n]))
-
-                        # setItem(row, column, QTableWidgetItem)
-                    self.occ_tbl_occurrences.setItem(l, n, newitem)
-
-        elif self.tabWidget_history.currentIndex() == 1:
-            # add locations log entries to history -> locations
-            self.occ_tbl_locations.setSelectionBehavior(QTableWidget.SelectRows)
-
-            cur = self._get_db_cur()
-            try:
-                cur.execute(
-                    u'SELECT  "location_id", "username", "location_name", "insert_timestamp", "update_timestamp" FROM nofa.plugin_location_log')
-            except:
-                QMessageBox.information(None, "DEBUG:", unicode(
-                    "WARNING - DB ERROR. location logs not fetched from db"))
-
-            fetched_location_logs = cur.fetchall()
-
-            lim = len(fetched_location_logs)
-
-            self.occ_tbl_locations.setRowCount(lim)
-            self.occ_tbl_locations.setColumnCount(5)
-
-            self.occ_tbl_locations.setHorizontalHeaderLabels(
-                self.loc_hdrs)
-
-            for l in range(lim):
-                locations = fetched_location_logs[l]
-                for n, item in enumerate(locations):
-
-                    newitem = QTableWidgetItem(unicode(locations[n]))
-
-                        # setItem(row, column, QTableWidgetItem)
-                    self.occ_tbl_locations.setItem(l, n, newitem)
-
-        elif self.tabWidget_history.currentIndex() == 2:
-            self.occ_tbl_datasets.setSelectionBehavior(QTableWidget.SelectRows)
-
-            cur = self._get_db_cur()
-            try:
-                cur.execute(
-                    u'SELECT  "dataset_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_dataset_log')
-            except:
-                QMessageBox.information(None, "DEBUG:", unicode(
-                    "WARNING - DB ERROR. datasets not fetched from db"))
-
-            fetched_datasets = cur.fetchall()
-
-            lim = len(fetched_datasets)
-
-            self.occ_tbl_datasets.setRowCount(lim)
-            self.occ_tbl_datasets.setColumnCount(4)
-
-            self.occ_tbl_datasets.setHorizontalHeaderLabels(
-                self.dtst_hdrs)
-
-            for l in range(lim):
-                dataset = fetched_datasets[l]
-                for n, item in enumerate(dataset):
-
-                    newitem = QTableWidgetItem(unicode(dataset[n]))
-
-                        # setItem(row, column, QTableWidgetItem)
-                    self.occ_tbl_datasets.setItem(l, n, newitem)
-
-        elif self.tabWidget_history.currentIndex() == 3:
-
-            self.occ_tbl_projects.setSelectionBehavior(QTableWidget.SelectRows)
-
-            cur = self._get_db_cur()
-            try:
-                cur.execute(
-                    u'SELECT  "project_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_project_log')
-            except:
-                QMessageBox.information(None, "DEBUG:", unicode(
-                    "WARNING - DB ERROR. projects not fetched from db"))
-
-            fetched_projects = cur.fetchall()
-
-            lim = len(fetched_projects)
-
-            self.occ_tbl_projects.setRowCount(lim)
-            self.occ_tbl_projects.setColumnCount(4)
-
-            self.occ_tbl_projects.setHorizontalHeaderLabels(
-                self.prj_hdrs)
-
-            for l in range(lim):
-                projects = fetched_projects[l]
-                for n, item in enumerate(projects):
-                    newitem = QTableWidgetItem(unicode(projects[n]))
-
-                    # setItem(row, column, QTableWidgetItem)
-                    self.occ_tbl_projects.setItem(l, n, newitem)
-
-        elif self.tabWidget_history.currentIndex() == 4:
-
-            self.occ_tbl_references.setSelectionBehavior(QTableWidget.SelectRows)
-
-            cur = self._get_db_cur()
-            try:
-                cur.execute(
-                    u'SELECT  "reference_id", "username", "insert_timestamp", "update_timestamp" FROM nofa.plugin_reference_log')
-            except:
-                pass
-
-            fetched_references = cur.fetchall()
-
-            lim = len(fetched_references)
-
-            self.occ_tbl_references.setRowCount(lim)
-            self.occ_tbl_references.setColumnCount(4)
-
-            self.occ_tbl_references.setHorizontalHeaderLabels(
-                self.ref_hdrs)
-
-            for l in range(lim):
-                references = fetched_references[l]
-                for n, item in enumerate(references):
-                    newitem = QTableWidgetItem(unicode(references[n]))
-
-                    # setItem(row, column, QTableWidgetItem)
-                    self.occ_tbl_references.setItem(l, n, newitem)
-
-    def filter_occurrences_by_username(self):
-
-        username = self.usernames.currentText()
-
-        cur = self._get_db_cur()
-
-        try:
-            cur.execute(
-                '''
-                SELECT      "occurrence_id",
-                            "event_id",
-                            "dataset_id",
-                            "project_id",
-                            "reference_id",
-                            "location_id",
-                            "username",
-                            "insert_timestamp",
-                            "update_timestamp"
-                FROM         nofa.plugin_occurrence_log
-                WHERE        "username" = %s
-                ''',
-                (username,))
-        except:
-            QMessageBox.information(
-                None, "DEBUG:",
-                unicode("WARNING - DB ERROR. occurrences not fetched from db"))
-
-        fetched_occ = cur.fetchall()
-
-        lim = len(fetched_occ)
-
-        self.occ_tbl_occurrences.setRowCount(lim)
-        self.occ_tbl_occurrences.setColumnCount(9)
-
-        self.occ_tbl_occurrences.setHorizontalHeaderLabels(
-            self.occ_hdrs)
-
-        for l in range(lim):
-            occurrence = fetched_occ[l]
-            for n, item in enumerate(occurrence):
-                newitem = QTableWidgetItem(unicode(occurrence[n]))
-
-                # setItem(row, column, QTableWidgetItem)
-                self.occ_tbl_occurrences.setItem(l, n, newitem)
-
-    def filter_occurrence_by_time(self):
-
-        time_from = self.date_from.date()
-        time_to = self.date_to.date()
-
-        cur = self._get_db_cur()
-
-        try:
-            cur.execute(
-                '''
-                SELECT      "occurrence_id",
-                            "event_id",
-                            "dataset_id",
-                            "project_id",
-                            "reference_id",
-                            "location_id",
-                            "username",
-                            "insert_timestamp",
-                            "update_timestamp"
-                FROM        nofa.plugin_occurrence_log
-                WHERE       "insert_timestamp" BETWEEN %s AND %s
-                ''',
-                (time_from.toPyDate(), time_to.toPyDate(),))
-        except:
-            QMessageBox.information(
-                None, "DEBUG:",
-                unicode("WARNING - DB ERROR. occurrences not fetched from db"))
-
-        fetched_occ = cur.fetchall()
-
-        lim = len(fetched_occ)
-
-        self.occ_tbl_occurrences.setRowCount(lim)
-        self.occ_tbl_occurrences.setColumnCount(9)
-
-        self.occ_tbl_occurrences.setHorizontalHeaderLabels(
-            self.occ_hdrs)
-
-        for l in range(lim):
-            occurrence = fetched_occ[l]
-            for n, item in enumerate(occurrence):
-                newitem = QTableWidgetItem(unicode(occurrence[n]))
-
-                # setItem(row, column, QTableWidgetItem)
-                self.occ_tbl_occurrences.setItem(l, n, newitem)
-
-    def filter_by_user_and_time(self):
-
-        username = self.usernames.currentText()
-
-        time_from = self.date_from.date()
-        time_to = self.date_to.date()
-
-        cur = self._get_db_cur()
-
-        try:
-            cur.execute(
-                '''
-                SELECT      "occurrence_id",
-                            "event_id",
-                            "dataset_id",
-                            "project_id",
-                            "reference_id",
-                            "location_id",
-                            "username",
-                            "insert_timestamp",
-                            "update_timestamp" '
-                FROM        nofa.plugin_occurrence_log
-                WHERE       "username" = %s AND "insert_timestamp"
-                            BETWEEN %s AND %s
-                ''',
-                (username, time_from.toPyDate(), time_to.toPyDate(),))
-        except:
-            QMessageBox.information(
-                None, "DEBUG:",
-                unicode("WARNING - DB ERROR. occurrences not fetched from db"))
-
-        fetched_occ = cur.fetchall()
-
-        lim = len(fetched_occ)
-
-        self.occ_tbl_occurrences.setRowCount(lim)
-        self.occ_tbl_occurrences.setColumnCount(9)
-
-        self.occ_tbl_occurrences.setHorizontalHeaderLabels(
-            self.occ_hdrs)
-
-        for l in range(lim):
-            occurrence = fetched_occ[l]
-            for n, item in enumerate(occurrence):
-                newitem = QTableWidgetItem(unicode(occurrence[n]))
-
-                # setItem(row, column, QTableWidgetItem)
-                self.occ_tbl_occurrences.setItem(l, n, newitem)
+    def _fetch_schema(self):
+        """
+        Fetches a schema based on what tab is active.
+        If the main tab is active it fetches data from NOFA schema,
+        otherwise it fetches data from plugin schema.
+        """
+
+        idx = self.main_tabwdg.currentIndex()
+
+        if idx == 0:
+            self.fetch_nofa_schema()
+        elif idx == 1:
+            self._fetch_plugin_schema()
+
+    def _fetch_plugin_schema(self):
+        """
+        Fetches data from the plugin schema and populates tables.
+        """
+
+        self._pop_usr_cb()
+
+        self._fill_hist_tbls()
+
+    def _pop_usr_cb(self):
+        """
+        Populates the user combo box.
+        """
+
+        usr_list = db.get_usr_list(self.mc.con)
+
+        self.usr_cb.clear()
+        self.usr_cb.addItems(usr_list)
+        self.usr_cb.setCurrentIndex(
+            usr_list.index(self.mc.get_con_info()[self.mc.usr_str]))
+
+    def _fill_hist_tbls(self):
+        """
+        Fills all history tables.
+        """
+
+        usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end = \
+            self._get_fltr_restrs()
+
+        for tbl, meth in self.hist_tbls_meth_dict.items():
+            tbl_list, tbl_hdrs = meth(
+                self.mc.con,
+                usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end)
+            self._create_tbl_hist_tab(tbl, tbl_list, tbl_hdrs)
+
+        self.hist_tabwdg.setCurrentIndex(0)
+
+    def _get_fltr_restrs(self):
+        """
+        Returns filter restrictions.
+
+        :returns: A tuple containing user, insert start date, insert end date,
+            update start date and update end date.
+        :rtype: tuple.
+        """
+
+        usr = self.usr_cb.currentText()
+        ins_dt_strt = self.hist_ins_dtstrt_de.date().toPyDate()
+        ins_dt_end = self.hist_ins_dtend_de.date().toPyDate()
+        upd_dt_strt = self.hist_upd_dtstrt_de.date().toPyDate()
+        upd_dt_end = self.hist_upd_dtend_de.date().toPyDate()
+
+        return (usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end)
 
     def _open_dtst_dlg(self):
         """
@@ -1250,351 +977,6 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return loc_input_list
 
-    # OS.NINA
-    # it is left here because adding new location needs to be implemented
-    def confirmed(self):
-        """
-        This method sends the occurrences, events and locations information to NOFA DB
-        """
-
-        #QMessageBox.information(None, "DEBUG:", str("new_locs = " + self.new_locs))
-
-        #insert the new location points, if any,  to the db in nofa.location
-        if self.new_locs:
-            for i, loc in enumerate(self.new_locs):
-                cur = self._get_db_cur()
-                location_type = 'samplingPoint'
-
-                point = "MULTIPOINT({0} {1})".format(loc[1], loc[2])
-                geom_orig = "ST_GeometryFromText('{0}', {1})".format(point, unicode(loc[3]))
-                geom = "ST_Transform({}, 25833)".format(geom_orig)
-
-                location_columns = u""" "locationID", "locationType", geom, "waterBody", "locationRemarks" """
-                #location_values = '%s, %s, %s, %s, %s'
-
-                insert_location = cur.mogrify(u"""INSERT INTO nofa.location ({0}) VALUES ('{1}', '{2}', {3}::geometry, '{4}', '{5}');""".format(
-                    location_columns,
-                    loc[0],
-                    location_type,
-                    geom,
-                    unicode(loc[4]),
-                    'test'))
-
-                #QMessageBox.information(None, "DEBUG:", insert_location)
-                cur.execute(insert_location)
-
-                try:
-                    cur = self._get_db_cur()
-                    insert_location_log = cur.mogrify("INSERT INTO nofa.plugin_location_log({}) VALUES {}".format(
-                        self.insert_log_location_columns,
-                        self.log_location_values,
-                    ), (loc[0], True, self.username, loc[4]))
-
-                    cur.execute(insert_location_log)
-
-                    #QMessageBox.information(None, "DEBUG:", "new location log record correctly stored in NOFA db")
-                except:
-                    QMessageBox.information(None, "DEBUG:", unicode('problem inserting the new locations to location log db'))
-
-        # add a new event to nofa.events fore each location
-        for i, loc in enumerate(self.locations['location_ID']):
-            event_id = uuid.uuid4()
-
-            if self.event['protocol_remarks'] is None:
-                QMessageBox.information(None, "DEBUG:", "protocol remarks is empty")
-                self.event['protocol_remarks'] = 'None'
-
-            if self.event['size_value'] is None:
-                self.event['size_value'] = 0
-                size_value = 0
-            elif isinstance(self.event['size_value'], unicode):
-                if self.event['size_value'] == '':
-                    self.event['size_value'] = 0
-                    size_value = 0
-                else:
-                    size_value = int(self.event['size_value'])
-            else:
-                size_value = 0
-
-            if self.event['recorded_by'] is None:
-                self.event['recorded_by'] = 'None'
-
-            if self.event['protocol'] is None:
-                self.event['protocol'] = 'None'
-
-            if self.event['event_remarks'] is None:
-                self.event['event_remarks'] = 'None'
-
-            start_date = self.event['date_start'].toPyDate()
-            end_date = self.event['date_end'].toPyDate()
-            #QMessageBox.information(None, "DEBUG:", 'effort type is: ' + str(type(self.event['effort'])))
-
-            if self.event['effort'] is None:
-                self.event['effort'] = 0
-                effort = self.event['effort']
-            elif isinstance(self.event['effort'], unicode):
-                try:
-                    effort = int(self.event['effort'])
-                except:
-                    self.event['effort'] = 0
-                    effort = self.event['effort']
-            elif isinstance(self.event['effort'], unicode):
-                try:
-                    effort = int(self.event['effort'])
-                except:
-                    self.event['effort'] = 0
-                    effort = self.event['effort']
-            else:
-                self.event['effort'] = 0
-                effort = 0
-
-            dataset = self.dataset['dataset_id']
-
-            # reference is optional. If not existing, defaults to zero
-            try:
-                reference = int(self.reference['reference_id'])
-            except:
-                reference = 0
-
-
-
-            # check project ID type, and convert to int
-            if isinstance(self.project['project_id'], int):
-                project = self.project['project_id']
-            elif isinstance(self.project['project_id'], unicode):
-
-                try:
-                    project = int(self.project['project_id'])
-                except:
-                    QMessageBox.information(
-                        None, "DEBUG:",
-                        'The type of project id is wrong. Should be integer')
-                    return
-
-            elif isinstance(self.project['project_id'], unicode):
-                try:
-                    project = int(self.project['project_id'])
-                except:
-                    QMessageBox.information(
-                        None, "DEBUG:", 'Problem with project id')
-                    # self.project['project_id'] = 0
-                    #project = int(self.project['project_id'])
-            #elif self.project['project_id'] is None:
-            #   QMessageBox.information(None, "DEBUG:", 'Please select a project')
-            #   return
-
-            # get the reliability index from reliability text
-            # cur = self._get_db_cur()
-            # cur.execute(u'SELECT "reliabilityID" FROM nofa."l_reliability" WHERE "reliability" = %s;',  (self.event['reliability'],))
-            # rel = cur.fetchone()
-            # QMessageBox.information(None, "DEBUG:", 'reliability index is: ' + str(rel))
-
-            # OS.NINA
-            # deleted "samplingProtocolRemarks", associatedReferences"
-            insert_event_tmpl = (
-                '''
-                INSERT INTO    nofa.event (
-                                   "locationID",
-                                   "eventID",
-                                   "sampleSizeValue",
-                                   "recordedBy",
-                                   "samplingProtocol",
-                                   "reliability",
-                                   "dateStart",
-                                   "dateEnd",
-                                   "eventRemarks",
-                                   "sampleSizeUnit",
-                                   "samplingEffort",
-                                   "datasetID",
-                                   "projectID",
-                                   "fieldNotes")
-                VALUES         (   %(locationID)s,
-                                   %(eventID)s,
-                                   %(sampleSizeValue)s,
-                                   %(recordedBy)s,
-                                   %(samplingProtocol)s,
-                                   %(reliability)s,
-                                   %(dateStart)s,
-                                   %(dateEnd)s,
-                                   %(eventRemarks)s,
-                                   %(sampleSizeUnit)s,
-                                   %(samplingEffort)s,
-                                   %(datasetID)s,
-                                   %(projectID)s,
-                                   %(fieldNotes)s)
-                ''')
-
-            cur = self._get_db_cur()
-            # OS.NINA
-            # unused values are commented
-            insert_event = cur.mogrify(
-                insert_event_tmpl,
-                {'locationID': loc,
-                 'eventID': event_id,
-                 'sampleSizeValue': size_value,
-                 # 'samplingProtocolRemarks': self.event['protocol_remarks'],
-                 'recordedBy': self.event['recorded_by'],
-                 'samplingProtocol': self.event['protocol'],
-                 'reliability': self.event['reliability'],
-                 'dateStart': start_date,
-                 'dateEnd': end_date,
-                 'eventRemarks': self.event['event_remarks'],
-                 'sampleSizeUnit': self.event['size_unit'],
-                 'samplingEffort': effort,
-                 'datasetID': dataset,
-                 # 'associatedReferences': reference,
-                 'projectID': project,
-                 'fieldNotes': 'test'})
-
-            #QMessageBox.information(None, "DEBUG:", str(insert_event))
-            #QMessageBox.information(None, "DEBUG:", str(type(loc)) + str(type(event_id))+ str(type(self.event['size_value']))+ str(type(self.event['protocol_remarks']))+ str(type(self.event['recorded_by']))+ str(type(self.event['protocol']))+ str(type(self.event['reliability'])) + str(type(self.event['date_start']))+ str(type(self.event['date_end']))+str(type( self.event['event_remarks']))+ str(type(self.event['size_unit'])) + str(type(effort)) + str(type(dataset)) + str(type(reference)) + str(type(project)) + str(type('text')))
-
-            # Adding taxonomic coverage for a given event
-
-            for tax in self.taxonomicc:
-                cur.execute(
-                    u"""SELECT "taxonID" FROM nofa."l_taxon" WHERE "%s" = '%s';""",
-                    (self.species_names[self.language], tax,))
-                taxon = cur.fetchone()
-                #QMessageBox.information(None, "DEBUG:", 'taxon is: ' + str(taxon[0]))
-                cur = self._get_db_cur()
-                cur.execute(self.insert_taxonomic_coverage, (taxon, event_id))
-
-
-            cur = self._get_db_cur()
-            # insert the new event record to nofa.event
-
-            cur.execute(insert_event)
-
-            for m, occ in enumerate(self.occurrence['taxon']):
-                #QMessageBox.information(None, "DEBUG:", str(self.occurrence))
-                occurrence_id = uuid.uuid4()
-
-                ectp = self.ectp_cb.currentText()
-
-                if ectp == self.sel_str:
-                    ecotype_id = None
-                else:
-                    cur = self._get_db_cur()
-                    cur.execute = (
-                        """
-                        SELECT      "ecotypeID"
-                        FROM        nofa."l_ecotype"
-                        WHERE       "vernacularName" = %s;
-                        """,
-                        (ectp,))
-
-                    ecotype_id = cur.fetchone()[0]
-
-                if self.occurrence['taxon'][m] == 'Select':
-                    #QMessageBox.information(None, "DEBUG:", 'Please select a a taxon ID for your occurrence entry')
-                    return
-                else:
-                    #QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(type(str(self.occurrence['taxon'][m]))))
-                    try:
-                        #QMessageBox.information(None, "DEBUG:", self.occurrence['taxon'][m])
-                        cur = self._get_db_cur()
-                        query = u"""SELECT "taxonID" FROM nofa."l_taxon" WHERE "{}" = %s;""".format(
-                            self.species_names[self.language])
-                        cur.execute(query, (self.occurrence['taxon'][m],))
-                    except:
-                        e = sys.exc_info()[1]
-                        QMessageBox.information(None, "DEBUG:", "<p>Error: %s</p>" % e)
-
-
-                    taxon = cur.fetchone()[0]
-                    #QMessageBox.information(None, "DEBUG:", 'occurrence taxon is: ' + str(taxon))
-
-                verified_date = self.occurrence['verified_date'][m].toPyDate()
-
-                # WARNING - this is a temporary placeholder value. It should be sniffed from the occurrence form (to be developed)
-                if self.occurrence['metric'][m] == 'None':
-                    organismquantity_metric = None
-                else:
-                    organismquantity_metric = self.occurrence['metric'][m]
-                #QMessageBox.information(None, "DEBUG:", str(self.occurrence['quantity'][m]))
-
-                # OS.NINA
-                # deleted "yearPrecisionRemarks"
-                insert_occurrence_tmpl = (
-                    '''
-                    INSERT INTO    nofa.occurrence (
-                                       "occurrenceID",
-                                       "ecotypeID",
-                                       "establishmentMeans",
-                                       "verifiedBy",
-                                       "verifiedDate",
-                                       "taxonID",
-                                       "spawningLocation",
-                                       "spawningCondition",
-                                       "occurrenceStatus",
-                                       "populationTrend",
-                                       "organismQuantityType",
-                                       "occurrenceRemarks",
-                                       "modified",
-                                       "establishmentRemarks",
-                                       "eventID",
-                                       "organismQuantity",
-                                       "fieldNumber")
-                    VALUES         (   %(occurrenceID)s,
-                                       %(ecotypeID)s,
-                                       %(establishmentMeans)s,
-                                       %(verifiedBy)s,
-                                       %(verifiedDate)s,
-                                       %(taxonID)s,
-                                       %(spawningLocation)s,
-                                       %(spawningCondition)s,
-                                       %(occurrenceStatus)s,
-                                       %(populationTrend)s,
-                                       %(organismQuantityType)s,
-                                       %(occurrenceRemarks)s,
-                                       %(modified)s,
-                                       %(establishmentRemarks)s,
-                                       %(eventID)s,
-                                       %(organismQuantity)s,
-                                       %(fieldNumber)s)
-                    ''')
-
-                cur = self._get_db_cur()
-                insert_occurrence = cur.mogrify(
-                    insert_occurrence_tmpl,
-                    {'occurrenceID': occurrence_id,
-                     'ecotypeID': ecotype_id,
-                     'establishmentMeans': self.occurrence['est_means'][m],
-                     'verifiedBy': self.occurrence['verified_by'][m],
-                     'verifiedDate': verified_date,
-                     'taxonID': taxon,
-                     'spawningLocation': self.occurrence['spawn_loc'][m],
-                     'spawningCondition': self.occurrence['spawn_con'][m],
-                     'occurrenceStatus': self.occurrence['status'][m],
-                     'populationTrend': self.occurrence['trend'][m],
-                     'organismQuantityType': self.occurrence['quantity'][m],
-                     'occurrenceRemarks': self.occurrence['oc_remarks'][m],
-                     'modified': self.today,
-                     'establishmentRemarks': self.occurrence['est_remarks'][m],
-                     'eventID': event_id,
-                     'organismQuantity': organismquantity_metric,
-                     'fieldNumber': 'test'})
-
-                #QMessageBox.information(None, "DEBUG:", str(insert_occurrence))
-
-
-                # insert the new occurrence record to nofa.occurrence
-                cur.execute(insert_occurrence)
-
-                # OS.NINA
-                # commented inserting to log tables
-                # storing memory of insertion to db to log tables
-                # cur = self._get_db_cur()
-                # insert_log_occurrence = self.insert_log_occurrence
-                # insert_log_occurrence += cur.mogrify(self.log_occurrence_values,
-                #                                  (unicode(occurrence_id), unicode(event_id), self.dataset['dataset_id'], self.project['project_id'],
-                #                                   self.reference['reference_id'], loc, True, self.username,
-                #                                   ))
-                # cur.execute(insert_log_occurrence)
-
-        QMessageBox.information(None, "DEBUG:", "occurrences correctly stored in NOFA db")
-
     def upd_dtst(self, dtst_id_name=None):
         """
         Updates a dataset according to the last selected.
@@ -1772,9 +1154,9 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return self.mc.con.cursor()
 
-    def fetch_db(self):
+    def fetch_nofa_schema(self):
         """
-        Fetches data from the database and populates widgets.
+        Fetches data from the NOFA schema and populates widgets.
         """
 
         self.row = 0
@@ -2034,12 +1416,13 @@ class InsDlg(QDialog, FORM_CLASS):
         Creates an occurrence table with one row.
         """
 
-        self._create_tbl(self.occ_tbl, self.occ_tbl_hdrs)
+        self._create_tbl_main_tab(self.occ_tbl, self.occ_tbl_hdrs)
         self._upd_occ_row()
 
-    def _create_tbl(self, tbl, tbl_hdrs):
+    def _create_tbl_main_tab(self, tbl, tbl_hdrs):
         """
         Creates a table with one row.
+        This method is used for creating tables in the main tab.
         
         :param tbl: A table widget.
         :type tbl: QTableWidget.
@@ -2060,6 +1443,31 @@ class InsDlg(QDialog, FORM_CLASS):
         tbl.blockSignals(True)
         tbl.selectRow(m)
         tbl.blockSignals(False)
+
+        tbl.resizeColumnsToContents()
+
+    def _create_tbl_hist_tab(self, tbl, tbl_items, tbl_hdrs):
+        """
+        Creates a table with one row.
+        This method is used for creating tables in the history tab.
+        
+        :param tbl: A table widget.
+        :type tbl: QTableWidget.
+        :param tbl_hdrs: Table headers.
+        :type tbl_hdrs: tuple.
+        """
+  
+        tbl.setColumnCount(len(tbl_hdrs))
+        tbl.setSelectionBehavior(QTableWidget.SelectItems)
+        tbl.setSelectionMode(QTableWidget.ExtendedSelection)
+        tbl.setHorizontalHeaderLabels(tbl_hdrs)
+        tbl.setRowCount(len(tbl_items))
+
+        for m, row in enumerate(tbl_items):
+            for n, item in enumerate(row):
+                tbl_item = QTableWidgetItem(unicode(item))
+
+                tbl.setItem(m, n, tbl_item)
 
         tbl.resizeColumnsToContents()
 

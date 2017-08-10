@@ -1540,3 +1540,304 @@ def ins_ref_log(con, id, usr):
         ''',
         {'reference_id': id,
          'username': usr})
+
+def get_hist_occ_list(
+        con, usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end):
+    """
+    Returns a list of history occurrences that is used to populate
+    occurrence history table.
+    Also returns a list of history occurrences headers.
+    Data are filtered based on input values.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param usr: An username.
+    :type usr: str.
+    :param ins_dt_strt: Insert date start.
+    :type ins_dt_strt: datetime.date.
+    :param ins_dt_end: Insert date end.
+    :type ins_dt_end: datetime.date.
+    :param upd_dt_strt: Update date start.
+    :type upd_dt_strt: datetime.date.
+    :param upd_dt_end: Update date end.
+    :type upd_dt_end: datetime.date.
+
+    :returns: A tuple containing a list of history occurrences
+        and a list of history occurrences headers.
+    :rtype: tuple.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      occurrence_id,
+                    event_id,
+                    dataset_id,
+                    project_id,
+                    reference_id,
+                    location_id,
+                    username,
+                    insert_timestamp,
+                    update_timestamp
+        FROM        plugin.occurrence_log
+        WHERE       username = %(username)s
+                    AND
+                    date(insert_timestamp)
+                        BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s
+                    AND
+                    date(update_timestamp)
+                        BETWEEN %(upd_dt_strt)s AND %(upd_dt_end)s
+        ''',
+        {'username': usr,
+         'ins_dt_strt': ins_dt_strt,
+         'ins_dt_end': ins_dt_end,
+         'upd_dt_strt': upd_dt_strt,
+         'upd_dt_end': upd_dt_end})
+
+    hist_occ_list = cur.fetchall()
+
+    hist_occ_hdrs = [d[0] for d in cur.description]
+
+    return (hist_occ_list, hist_occ_hdrs)
+
+def get_hist_loc_list(
+        con, usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end):
+    """
+    Returns a list of history locations that is used to populate
+    location history table.
+    Also returns a list of history locations headers.
+    Data are filtered based on input values.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param usr: An username.
+    :type usr: str.
+    :param ins_dt_strt: Insert date start.
+    :type ins_dt_strt: datetime.date.
+    :param ins_dt_end: Insert date end.
+    :type ins_dt_end: datetime.date.
+    :param upd_dt_strt: Update date start.
+    :type upd_dt_strt: datetime.date.
+    :param upd_dt_end: Update date end.
+    :type upd_dt_end: datetime.date.
+
+    :returns: A tuple containing a list of history locations
+        and a list of history locations headers.
+    :rtype: tuple.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      location_id,
+                    location_name,
+                    username,
+                    insert_timestamp,
+                    update_timestamp
+        FROM        plugin.location_log
+        WHERE       username = %(username)s
+                    AND
+                    date(insert_timestamp)
+                        BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s
+                    AND
+                    date(update_timestamp)
+                        BETWEEN %(upd_dt_strt)s AND %(upd_dt_end)s
+        ''',
+        {'username': usr,
+         'ins_dt_strt': ins_dt_strt,
+         'ins_dt_end': ins_dt_end,
+         'upd_dt_strt': upd_dt_strt,
+         'upd_dt_end': upd_dt_end})
+
+    hist_loc_list = cur.fetchall()
+
+    hist_loc_hdrs = [d[0] for d in cur.description]
+
+    return (hist_loc_list, hist_loc_hdrs)
+
+def get_hist_dtst_list(
+        con, usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end):
+    """
+    Returns a list of history datasets that is used to populate
+    dataset history table.
+    Also returns a list of history datasets headers.
+    Data are filtered based on input values.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param usr: An username.
+    :type usr: str.
+    :param ins_dt_strt: Insert date start.
+    :type ins_dt_strt: datetime.date.
+    :param ins_dt_end: Insert date end.
+    :type ins_dt_end: datetime.date.
+    :param upd_dt_strt: Update date start.
+    :type upd_dt_strt: datetime.date.
+    :param upd_dt_end: Update date end.
+    :type upd_dt_end: datetime.date.
+
+    :returns: A tuple containing a list of history datasets
+        and a list of history datasets headers.
+    :rtype: tuple.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      dataset_id,
+                    username,
+                    insert_timestamp,
+                    update_timestamp
+        FROM        plugin.dataset_log
+        WHERE       username = %(username)s
+                    AND
+                    date(insert_timestamp)
+                        BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s
+                    AND
+                    date(update_timestamp)
+                        BETWEEN %(upd_dt_strt)s AND %(upd_dt_end)s
+        ''',
+        {'username': usr,
+         'ins_dt_strt': ins_dt_strt,
+         'ins_dt_end': ins_dt_end,
+         'upd_dt_strt': upd_dt_strt,
+         'upd_dt_end': upd_dt_end})
+
+    hist_dtst_list = cur.fetchall()
+
+    hist_dtst_hdrs = [d[0] for d in cur.description]
+
+    return (hist_dtst_list, hist_dtst_hdrs)
+
+def get_hist_prj_list(
+        con, usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end):
+    """
+    Returns a list of history projects that is used to populate
+    project history table.
+    Also returns a list of history projects headers.
+    Data are filtered based on input values.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param usr: An username.
+    :type usr: str.
+    :param ins_dt_strt: Insert date start.
+    :type ins_dt_strt: datetime.date.
+    :param ins_dt_end: Insert date end.
+    :type ins_dt_end: datetime.date.
+    :param upd_dt_strt: Update date start.
+    :type upd_dt_strt: datetime.date.
+    :param upd_dt_end: Update date end.
+    :type upd_dt_end: datetime.date.
+
+    :returns: A tuple containing a list of history projects
+        and a list of history projects headers.
+    :rtype: tuple.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      project_id,
+                    username,
+                    insert_timestamp,
+                    update_timestamp
+        FROM        plugin.project_log
+        WHERE       username = %(username)s
+                    AND
+                    date(insert_timestamp)
+                        BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s
+                    AND
+                    date(update_timestamp)
+                        BETWEEN %(upd_dt_strt)s AND %(upd_dt_end)s
+        ''',
+        {'username': usr,
+         'ins_dt_strt': ins_dt_strt,
+         'ins_dt_end': ins_dt_end,
+         'upd_dt_strt': upd_dt_strt,
+         'upd_dt_end': upd_dt_end})
+
+    hist_prj_list = cur.fetchall()
+
+    hist_prj_hdrs = [d[0] for d in cur.description]
+
+    return (hist_prj_list, hist_prj_hdrs)
+
+def get_hist_ref_list(
+        con, usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end):
+    """
+    Returns a list of history references that is used to populate
+    reference history table.
+    Also returns a list of history references headers.
+    Data are filtered based on input values.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param usr: An username.
+    :type usr: str.
+    :param ins_dt_strt: Insert date start.
+    :type ins_dt_strt: datetime.date.
+    :param ins_dt_end: Insert date end.
+    :type ins_dt_end: datetime.date.
+    :param upd_dt_strt: Update date start.
+    :type upd_dt_strt: datetime.date.
+    :param upd_dt_end: Update date end.
+    :type upd_dt_end: datetime.date.
+
+    :returns: A tuple containing a list of history references
+        and a list of history references headers.
+    :rtype: tuple.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      reference_id,
+                    username,
+                    insert_timestamp,
+                    update_timestamp
+        FROM        plugin.reference_log
+        WHERE       username = %(username)s
+                    AND
+                    date(insert_timestamp)
+                        BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s
+                    AND
+                    date(update_timestamp)
+                        BETWEEN %(upd_dt_strt)s AND %(upd_dt_end)s
+        ''',
+        {'username': usr,
+         'ins_dt_strt': ins_dt_strt,
+         'ins_dt_end': ins_dt_end,
+         'upd_dt_strt': upd_dt_strt,
+         'upd_dt_end': upd_dt_end})
+
+    hist_ref_list = cur.fetchall()
+
+    hist_ref_hdrs = [d[0] for d in cur.description]
+
+    return (hist_ref_list, hist_ref_hdrs)
+
+def get_usr_list(con):
+    """
+    Returns a list of users whose accounts are active.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+
+    :returns: A list of users whose accounts are active.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      usename u
+        FROM        pg_catalog.pg_user
+        WHERE       CURRENT_TIMESTAMP < valuntil
+        ORDER BY    u
+        ''')
+    usrs = cur.fetchall()
+
+    usr_list = [u[0] for u in usrs]
+
+    return usr_list
