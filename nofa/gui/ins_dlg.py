@@ -8,7 +8,10 @@
         begin                : 2017-01-09
         git sha              : $Format:%H$
         copyright            : (C) 2017 by NINA
-        email                : matteo.destefano@nina.no
+        contributors         : stefan.blumentrath@nina.no
+                               matteo.destefano@nina.no
+                               jakob.miksch@nina.no
+                               ondrej.svoboda@nina.no
  ***************************************************************************/
 
 /***************************************************************************

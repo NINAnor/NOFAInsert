@@ -11,6 +11,7 @@
         contributors         : stefan.blumentrath@nina.no
                                matteo.destefano@nina.no
                                jakob.miksch@nina.no
+                               ondrej.svoboda@nina.no
  ***************************************************************************/
 
 /***************************************************************************
