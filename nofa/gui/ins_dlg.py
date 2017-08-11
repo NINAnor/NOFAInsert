@@ -213,6 +213,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.dtst_str = u'Dataset'
         self.prj_str = u'Project'
         self.ref_str = u'Reference'
+        self.all_str = u'<all>'
 
         self.today_dt = datetime.datetime.today().date()
         self.nxt_week_dt = self.today_dt + datetime.timedelta(days=7)
@@ -424,10 +425,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Data are filtered based on information in widgets.
         """
 
-        wb = self._get_wb()
-        cntry_code = self._get_cntry_code()
-        cnty = self._get_cnty()
-        muni = self._get_muni()
+        wb, cntry_code, cnty, muni = self._get_loc_fltrs()
 
         self.lake_name_load_btn.setEnabled(False)
 
@@ -446,6 +444,42 @@ class InsDlg(QDialog, FORM_CLASS):
         self.lake_name_statlbl.setText(
             u'Found {} location(s).'.format(loc_count))
 
+    def _get_fltr(self, txt):
+        """
+        Returns a filter.
+
+        :param txt: A filter.
+        :type txt: str.
+
+        :returns: A filter, None when text is equal to <all> string
+            or when length of text is zero.
+        :rtype: str.
+        """
+
+        if txt == self.all_str or len(txt) == 0:
+            fltr = None
+        else:
+            fltr = txt
+
+        return fltr
+
+    def _get_loc_fltrs(self):
+        """
+        Returns location filters.
+        It is used to filter locations.
+
+        :returns: A tuple containing water body, country code, county
+            and municipality.
+        :rtype: tuple.
+        """
+
+        wb = self._get_wb()
+        cntry_code = self._get_cntry_code()
+        cnty = self._get_cnty()
+        muni = self._get_muni()
+
+        return (wb, cntry_code, cnty, muni)
+
     def _get_wb(self):
         """
         Returns a water body from water body line edit.
@@ -463,42 +497,45 @@ class InsDlg(QDialog, FORM_CLASS):
     def _get_cntry_code(self):
         """
         Returns a country code from country code combo box.
-        Returns None when there is no text in the combo box.
 
-        :returns: A country code, None when there is no text in the combo box.
+        :returns: A country code, None when text is equal to <all> string
+            or when length of text is zero.
         :rtype: str.
         """
 
-        cntry_code = self.cntry_code_cb.currentText() \
-            if len(self.cntry_code_cb.currentText()) != 0 else None
+        txt = self.cntry_code_cb.currentText()
+
+        cntry_code = self._get_fltr(txt)
 
         return cntry_code
 
     def _get_cnty(self):
         """
         Returns a county from county combo box.
-        Returns None when there is no text in the combo box.
 
-        :returns: A county, None when there is no text in the combo box.
+        :returns: A county, None when text is equal to <all> string
+            or when length of text is zero.
         :rtype: str.
         """
 
-        cnty = self.cnty_cb.currentText() \
-            if len(self.cnty_cb.currentText()) != 0 else None
+        txt = self.cnty_cb.currentText()
+
+        cnty = self._get_fltr(txt)
 
         return cnty
 
     def _get_muni(self):
         """
         Returns a municipality from municipality combo box.
-        Returns None when there is no text in the combo box.
 
-        :returns: A municipality, None when there is no text in the combo box.
+        :returns: A municipality, None when text is equal to <all> string
+            or when length of text is zero.
         :rtype: str.
         """
 
-        muni = self.muni_cb.currentText() \
-            if len(self.muni_cb.currentText()) != 0 else None
+        txt = self.muni_cb.currentText()
+
+        muni = self._get_fltr(txt)
 
         return muni
 
@@ -526,10 +563,7 @@ class InsDlg(QDialog, FORM_CLASS):
                 ', '.join(['\'{}\''.format(str(l)) for l in self.locid_list])),
             'locationID')
 
-        wb = self._get_wb()
-        cntry_code = self._get_cntry_code()
-        cnty = self._get_cnty()
-        muni = self._get_muni()
+        wb, cntry_code, cnty, muni = self._get_loc_fltrs()
 
         lyr = QgsVectorLayer(
             uri.uri(),
@@ -668,7 +702,7 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end = \
-            self._get_fltr_restrs()
+            self._get_hist_fltrs()
 
         for tbl, meth in self.hist_tbls_meth_dict.items():
             tbl_list, tbl_hdrs = meth(
@@ -678,9 +712,10 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.hist_tabwdg.setCurrentIndex(0)
 
-    def _get_fltr_restrs(self):
+    def _get_hist_fltrs(self):
         """
-        Returns filter restrictions.
+        Returns history filters.
+        It is used to filter entries in history tab.
 
         :returns: A tuple containing user, insert start date, insert end date,
             update start date and update end date.
@@ -1300,6 +1335,7 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         cntry_code_list = db.get_cntry_code_list(self.mc.con)
+        cntry_code_list.insert(0, self.all_str)
 
         self.cntry_code_cb.clear()
         self.cntry_code_cb.addItems(cntry_code_list)
@@ -1309,9 +1345,10 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the county combo box.
         """
 
-        cntry_code = self.cntry_code_cb.currentText()
+        cntry_code = self._get_cntry_code()
 
         cnty_list = db.get_cnty_list(self.mc.con, cntry_code)
+        cnty_list.insert(0, self.all_str)
 
         self.cnty_cb.clear()
         self.cnty_cb.addItems(cnty_list)
@@ -1321,10 +1358,11 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the municipality combo box.
         """
 
-        cntry_code = self.cntry_code_cb.currentText()
-        cnty = self.cnty_cb.currentText()
+        cntry_code = self._get_cntry_code()
+        cnty = self._get_cnty()
 
         muni_list = db.get_muni_list(self.mc.con, cntry_code, cnty)
+        muni_list.insert(0, self.all_str)
 
         self.muni_cb.clear()
         self.muni_cb.addItems(muni_list)
