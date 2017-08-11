@@ -1689,7 +1689,7 @@ def get_hist_occ_list(
                     insert_timestamp,
                     update_timestamp
         FROM        plugin.occurrence_log
-        WHERE       username = %(username)s
+        WHERE       (%(username)s IS NULL OR "username" LIKE %(username)s)
                     AND
                     date(insert_timestamp)
                         BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s
@@ -1744,7 +1744,7 @@ def get_hist_loc_list(
                     insert_timestamp,
                     update_timestamp
         FROM        plugin.location_log
-        WHERE       username = %(username)s
+        WHERE       (%(username)s IS NULL OR "username" LIKE %(username)s)
                     AND
                     date(insert_timestamp)
                         BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s
@@ -1798,7 +1798,7 @@ def get_hist_dtst_list(
                     insert_timestamp,
                     update_timestamp
         FROM        plugin.dataset_log
-        WHERE       username = %(username)s
+        WHERE       (%(username)s IS NULL OR "username" LIKE %(username)s)
                     AND
                     date(insert_timestamp)
                         BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s
@@ -1852,7 +1852,7 @@ def get_hist_prj_list(
                     insert_timestamp,
                     update_timestamp
         FROM        plugin.project_log
-        WHERE       username = %(username)s
+        WHERE       (%(username)s IS NULL OR "username" LIKE %(username)s)
                     AND
                     date(insert_timestamp)
                         BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s
@@ -1906,7 +1906,7 @@ def get_hist_ref_list(
                     insert_timestamp,
                     update_timestamp
         FROM        plugin.reference_log
-        WHERE       username = %(username)s
+        WHERE       (%(username)s IS NULL OR "username" LIKE %(username)s)
                     AND
                     date(insert_timestamp)
                         BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s

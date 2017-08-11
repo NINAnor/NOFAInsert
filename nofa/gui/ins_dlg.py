@@ -489,10 +489,11 @@ class InsDlg(QDialog, FORM_CLASS):
         :rtype: str.
         """
 
-        wb_name = self.wb_le.text() \
-            if len(self.wb_le.text()) != 0 else None
+        txt = self.wb_le.text()
 
-        return wb_name
+        wb = self._get_fltr(txt)
+
+        return wb
 
     def _get_cntry_code(self):
         """
@@ -684,12 +685,15 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self._fill_hist_tbls()
 
+        self.hist_tabwdg.setCurrentIndex(0)
+
     def _pop_usr_cb(self):
         """
         Populates the user combo box.
         """
 
         usr_list = db.get_usr_list(self.mc.con)
+        usr_list.insert(0, self.all_str)
 
         self.usr_cb.clear()
         self.usr_cb.addItems(usr_list)
@@ -710,8 +714,6 @@ class InsDlg(QDialog, FORM_CLASS):
                 usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end)
             self._create_tbl_hist_tab(tbl, tbl_list, tbl_hdrs)
 
-        self.hist_tabwdg.setCurrentIndex(0)
-
     def _get_hist_fltrs(self):
         """
         Returns history filters.
@@ -722,7 +724,9 @@ class InsDlg(QDialog, FORM_CLASS):
         :rtype: tuple.
         """
 
-        usr = self.usr_cb.currentText()
+        usr_txt = self.usr_cb.currentText()
+        usr = self._get_fltr(usr_txt)
+        
         ins_dt_strt = self.hist_ins_dtstrt_de.date().toPyDate()
         ins_dt_end = self.hist_ins_dtend_de.date().toPyDate()
         upd_dt_strt = self.hist_upd_dtstrt_de.date().toPyDate()
