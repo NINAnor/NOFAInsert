@@ -517,7 +517,7 @@ def get_cnty_list(con, cntry_code):
         '''
         SELECT      DISTINCT "county" c
         FROM        nofa."location"
-        WHERE       %(countryCode)s IS NULL OR %(countryCode)s = "countryCode"
+        WHERE       %(countryCode)s IS NULL OR "countryCode" = %(countryCode)s 
         ORDER BY    c
         ''',
         {'countryCode': cntry_code})
@@ -549,9 +549,9 @@ def get_muni_list(con, cntry_code, cnty):
         '''
         SELECT      DISTINCT "municipality" m
         FROM        nofa."location"
-        WHERE       (%(countryCode)s IS NULL OR %(countryCode)s = "countryCode")
+        WHERE       (%(countryCode)s IS NULL OR "countryCode" = %(countryCode)s)
                     AND
-                    (%(county)s IS NULL OR %(county)s = "county")
+                    (%(county)s IS NULL OR "county" = %(county)s)
         ORDER BY    m
         ''',
         {'countryCode': cntry_code,
@@ -1479,15 +1479,15 @@ def get_loc_by_fltrs(con, wb, cntry_code, cnty, muni):
         '''
         SELECT      "locationID"
         FROM        nofa.location loc
-        WHERE       (%(waterBody)s IS NULL OR %(waterBody)s LIKE "waterBody")
+        WHERE       (%(waterBody)s IS NULL OR "waterBody" LIKE %(waterBody)s)
                     AND
-                    (%(countryCode)s IS NULL OR %(countryCode)s = "countryCode")
+                    (%(countryCode)s IS NULL OR "countryCode" = %(countryCode)s)
                     AND
-                    (%(county)s IS NULL OR %(county)s = "county")
+                    (%(county)s IS NULL OR "county" = %(county)s)
                     AND
                     (   %(municipality)s IS NULL
                         OR
-                        %(municipality)s = "municipality")
+                        "municipality" = %(municipality)s)
         ''',
         {'waterBody': '%' + wb + '%' if wb else wb,
          'countryCode': cntry_code,
