@@ -243,25 +243,25 @@
                           </property>
                           <property name="minimumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="baseSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <pointsize>16</pointsize>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
@@ -287,25 +287,25 @@
                           </property>
                           <property name="minimumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="baseSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <pointsize>16</pointsize>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
@@ -331,19 +331,25 @@
                           </property>
                           <property name="minimumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
+                           </size>
+                          </property>
+                          <property name="baseSize">
+                           <size>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <pointsize>16</pointsize>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
@@ -369,25 +375,25 @@
                           </property>
                           <property name="minimumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="baseSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <pointsize>16</pointsize>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
@@ -413,25 +419,25 @@
                           </property>
                           <property name="minimumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="baseSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <pointsize>16</pointsize>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
@@ -451,25 +457,25 @@
                          <widget class="QPushButton" name="loc_rstallrows_btn">
                           <property name="minimumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="baseSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <pointsize>16</pointsize>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
@@ -489,25 +495,25 @@
                          <widget class="QPushButton" name="loc_del_btn">
                           <property name="minimumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="baseSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <pointsize>16</pointsize>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
@@ -527,19 +533,25 @@
                          <widget class="QPushButton" name="coord_cnvs_btn">
                           <property name="minimumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
-                            <width>30</width>
-                            <height>30</height>
+                            <width>28</width>
+                            <height>28</height>
+                           </size>
+                          </property>
+                          <property name="baseSize">
+                           <size>
+                            <width>28</width>
+                            <height>28</height>
                            </size>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <pointsize>16</pointsize>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
@@ -1171,20 +1183,20 @@
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="baseSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="font">
@@ -1215,20 +1227,20 @@
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="baseSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="font">
@@ -1259,20 +1271,20 @@
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="baseSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="font">
@@ -1309,20 +1321,20 @@
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="baseSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="font">
@@ -1359,20 +1371,20 @@
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="baseSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="font">
@@ -1401,20 +1413,20 @@
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="baseSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="font">
@@ -1443,20 +1455,20 @@
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="baseSize">
                     <size>
-                     <width>42</width>
-                     <height>42</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                    <property name="font">
