@@ -34,7 +34,7 @@ from PyQt4.QtGui import (
 from qgis.core import (
     QgsApplication, QgsMessageLog, QgsCoordinateReferenceSystem,
     QgsCoordinateTransform, QgsPoint, QgsRasterLayer, QgsMapLayerRegistry,
-    QgsVectorLayer, QgsDataSourceURI)
+    QgsVectorLayer, QgsDataSourceURI, QgsProject)
 from qgis.gui import QgsMapToolEmitPoint
 
 from collections import defaultdict
@@ -417,7 +417,12 @@ class InsDlg(QDialog, FORM_CLASS):
         lyr = QgsRasterLayer(xml_fp, 'OSM')
 
         if lyr.isValid():
-            QgsMapLayerRegistry.instance().addMapLayer(lyr)
+            QgsMapLayerRegistry.instance().addMapLayer(lyr, False)
+
+            lyr_count = QgsMapLayerRegistry.instance().count()
+
+            lyr_root = QgsProject.instance().layerTreeRoot()
+            lyr_root.insertLayer(lyr_count, lyr)
 
     def _srch_loc(self):
         """
