@@ -225,6 +225,9 @@ class InsDlg(QDialog, FORM_CLASS):
         Builds and sets up own widgets.
         """
 
+        self.cntry_code_cb.currentIndexChanged.connect(self._pop_cnty_cb)
+        self.cnty_cb.currentIndexChanged.connect(self._pop_muni_cb)
+
         self.hist_ins_dtstrt_de.dateChanged.connect(
             self.hist_ins_dtend_de.setMinimumDate)
         self.hist_ins_dtend_de.dateChanged.connect(
@@ -357,7 +360,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.osm_basemap_btn.clicked.connect(self._add_osm_wms_lyr)
 
         self.lake_name_srch_btn.clicked.connect(self._srch_loc)
-        self.lake_name_le.returnPressed.connect(self._srch_loc)
+        self.wb_le.returnPressed.connect(self._srch_loc)
 
         self.lake_name_load_btn.setEnabled(False)
         self.lake_name_load_btn.clicked.connect(self._load_loc_layer)
@@ -417,30 +420,87 @@ class InsDlg(QDialog, FORM_CLASS):
 
     def _srch_loc(self):
         """
-        Searches for location by the string in the lake name line edit.
+        Searches for location.
+        Data are filtered based on information in widgets.
         """
 
-        wb_name = self.lake_name_le.text()
+        wb = self._get_wb()
+        cntry_code = self._get_cntry_code()
+        cnty = self._get_cnty()
+        muni = self._get_muni()
 
         self.lake_name_load_btn.setEnabled(False)
 
-        if len(wb_name) == 0:
-            self.lake_name_statlbl.setText(
-                u'Enter lake name.')
-        else:
-            locid_list = db.get_loc_by_wb_name(self.mc.con, wb_name)
-    
-            loc_count = len(locid_list)
-    
-            if loc_count != 0:
-                self.lake_name_load_btn.setEnabled(True)
+        locid_list = db.get_loc_by_fltrs(
+            self.mc.con, wb, cntry_code, cnty, muni)
 
-                self.locid_list = locid_list
-            else:
-                self.lake_name_load_btn.setEnabled(False)
-    
-            self.lake_name_statlbl.setText(
-                u'Found {} location(s).'.format(loc_count))
+        loc_count = len(locid_list)
+
+        if loc_count != 0:
+            self.lake_name_load_btn.setEnabled(True)
+
+            self.locid_list = locid_list
+        else:
+            self.lake_name_load_btn.setEnabled(False)
+
+        self.lake_name_statlbl.setText(
+            u'Found {} location(s).'.format(loc_count))
+
+    def _get_wb(self):
+        """
+        Returns a water body from water body line edit.
+        Returns None when there is no text in the line edit.
+
+        :returns: A water body, None when there is no text in the line edit.
+        :rtype: str.
+        """
+
+        wb_name = self.wb_le.text() \
+            if len(self.wb_le.text()) != 0 else None
+
+        return wb_name
+
+    def _get_cntry_code(self):
+        """
+        Returns a country code from country code combo box.
+        Returns None when there is no text in the combo box.
+
+        :returns: A country code, None when there is no text in the combo box.
+        :rtype: str.
+        """
+
+        cntry_code = self.cntry_code_cb.currentText() \
+            if len(self.cntry_code_cb.currentText()) != 0 else None
+
+        return cntry_code
+
+    def _get_cnty(self):
+        """
+        Returns a county from county combo box.
+        Returns None when there is no text in the combo box.
+
+        :returns: A county, None when there is no text in the combo box.
+        :rtype: str.
+        """
+
+        cnty = self.cnty_cb.currentText() \
+            if len(self.cnty_cb.currentText()) != 0 else None
+
+        return cnty
+
+    def _get_muni(self):
+        """
+        Returns a municipality from municipality combo box.
+        Returns None when there is no text in the combo box.
+
+        :returns: A municipality, None when there is no text in the combo box.
+        :rtype: str.
+        """
+
+        muni = self.muni_cb.currentText() \
+            if len(self.muni_cb.currentText()) != 0 else None
+
+        return muni
 
     def _load_loc_layer(self):
         """
@@ -466,9 +526,14 @@ class InsDlg(QDialog, FORM_CLASS):
                 ', '.join(['\'{}\''.format(str(l)) for l in self.locid_list])),
             'locationID')
 
+        wb = self._get_wb()
+        cntry_code = self._get_cntry_code()
+        cnty = self._get_cnty()
+        muni = self._get_muni()
+
         lyr = QgsVectorLayer(
             uri.uri(),
-            'location-{}'.format(self.lake_name_le.text()),
+            u'location-{}-{}-{}-{}'.format(wb, cntry_code, cnty, muni),
             'postgres')
 
         if lyr.isValid():
@@ -1178,6 +1243,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.row = 0
 
+        self._pop_cntry_code_cb()
+
         self.pop_dtst_cb()
         QgsApplication.processEvents()
         self.upd_dtst()
@@ -1226,6 +1293,41 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.txncvg_tw.sortByColumn(0, Qt.AscendingOrder)
         self.txncvg_tw.expandToDepth(0)
+
+    def _pop_cntry_code_cb(self):
+        """
+        Populates the country code combo box.
+        """
+
+        cntry_code_list = db.get_cntry_code_list(self.mc.con)
+
+        self.cntry_code_cb.clear()
+        self.cntry_code_cb.addItems(cntry_code_list)
+
+    def _pop_cnty_cb(self):
+        """
+        Populates the county combo box.
+        """
+
+        cntry_code = self.cntry_code_cb.currentText()
+
+        cnty_list = db.get_cnty_list(self.mc.con, cntry_code)
+
+        self.cnty_cb.clear()
+        self.cnty_cb.addItems(cnty_list)
+
+    def _pop_muni_cb(self):
+        """
+        Populates the municipality combo box.
+        """
+
+        cntry_code = self.cntry_code_cb.currentText()
+        cnty = self.cnty_cb.currentText()
+
+        muni_list = db.get_muni_list(self.mc.con, cntry_code, cnty)
+
+        self.muni_cb.clear()
+        self.muni_cb.addItems(muni_list)
 
     def pop_dtst_cb(self):
         """

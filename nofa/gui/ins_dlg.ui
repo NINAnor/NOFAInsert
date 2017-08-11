@@ -59,7 +59,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>305</width>
+             <width>310</width>
              <height>622</height>
             </rect>
            </property>
@@ -68,8 +68,107 @@
            </attribute>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0">
-             <layout class="QGridLayout" name="loc_grid_lyt" rowstretch="0,0,0,0,0,0,0,0,0">
-              <item row="3" column="1">
+             <layout class="QGridLayout" name="loc_grid_lyt" rowstretch="0,0,0,0,0,0,0,0,0,0,0,0">
+              <item row="4" column="0">
+               <widget class="QLabel" name="cnty_lbl">
+                <property name="text">
+                 <string>county</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="wb_lbl">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>waterBody</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0" colspan="2">
+               <widget class="Line" name="line">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
+               <layout class="QHBoxLayout" name="lake_name_hlyt">
+                <property name="sizeConstraint">
+                 <enum>QLayout::SetMinimumSize</enum>
+                </property>
+                <item>
+                 <widget class="QPushButton" name="lake_name_srch_btn">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="focusPolicy">
+                   <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="text">
+                   <string>Search</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="lake_name_load_btn">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="focusPolicy">
+                   <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="text">
+                   <string>Load</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="9" column="0" colspan="2">
+               <widget class="Line" name="line_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="basemap_lbl">
+                <property name="text">
+                 <string>basemap</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="wb_le">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
                <widget class="QLabel" name="lake_name_statlbl">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -78,34 +177,35 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Search location by lake name.</string>
+                 <string>Search for locations.</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="loctp_lbl">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
+              <item row="10" column="1">
+               <layout class="QHBoxLayout" name="loc_input_hlyt">
+                <property name="sizeConstraint">
+                 <enum>QLayout::SetMinimumSize</enum>
                 </property>
-                <property name="text">
-                 <string>locationIdentifier</string>
-                </property>
-               </widget>
+                <item>
+                 <widget class="QRadioButton" name="loc_tbl_rb">
+                  <property name="text">
+                   <string>table</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="loc_pte_rb">
+                  <property name="text">
+                   <string>text</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
-              <item row="0" column="1">
-               <widget class="QComboBox" name="loctp_cb">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="0" colspan="2">
+              <item row="11" column="0" colspan="2">
                <layout class="QGridLayout" name="loc_tbl_grid_lyt" rowstretch="0,0">
                 <property name="spacing">
                  <number>0</number>
@@ -524,31 +624,30 @@
                 </item>
                </layout>
               </item>
-              <item row="7" column="1">
-               <layout class="QHBoxLayout" name="loc_input_hlyt">
-                <property name="sizeConstraint">
-                 <enum>QLayout::SetMinimumSize</enum>
+              <item row="0" column="0">
+               <widget class="QLabel" name="loctp_lbl">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
-                <item>
-                 <widget class="QRadioButton" name="loc_tbl_rb">
-                  <property name="text">
-                   <string>table</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="loc_pte_rb">
-                  <property name="text">
-                   <string>text</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+                <property name="text">
+                 <string>locationIdentifier</string>
+                </property>
+               </widget>
               </item>
-              <item row="7" column="0">
+              <item row="0" column="1">
+               <widget class="QComboBox" name="loctp_cb">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="0">
                <widget class="QLabel" name="loc_input_lbl">
                 <property name="text">
                  <string>input</string>
@@ -558,72 +657,7 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="lake_name_lbl">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>waterBody</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <layout class="QHBoxLayout" name="lake_name_hlyt">
-                <property name="sizeConstraint">
-                 <enum>QLayout::SetMinimumSize</enum>
-                </property>
-                <item>
-                 <widget class="QPushButton" name="lake_name_srch_btn">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="focusPolicy">
-                   <enum>Qt::NoFocus</enum>
-                  </property>
-                  <property name="text">
-                   <string>Search</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="lake_name_load_btn">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="focusPolicy">
-                   <enum>Qt::NoFocus</enum>
-                  </property>
-                  <property name="text">
-                   <string>Load</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="lake_name_le">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
+              <item row="8" column="1">
                <widget class="QPushButton" name="osm_basemap_btn">
                 <property name="focusPolicy">
                  <enum>Qt::NoFocus</enum>
@@ -633,29 +667,34 @@
                 </property>
                </widget>
               </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="basemap_lbl">
+              <item row="3" column="1">
+               <widget class="QComboBox" name="cntry_code_cb"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="cntry_code_lbl">
                 <property name="text">
-                 <string>basemap</string>
+                 <string>countryCode</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
-              <item row="6" column="0" colspan="2">
-               <widget class="Line" name="line_2">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+              <item row="4" column="1">
+               <widget class="QComboBox" name="cnty_cb"/>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="muni_lbl">
+                <property name="text">
+                 <string>municipality</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
-              <item row="1" column="0" colspan="2">
-               <widget class="Line" name="line">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
+              <item row="5" column="1">
+               <widget class="QComboBox" name="muni_cb"/>
               </item>
              </layout>
             </item>
@@ -666,7 +705,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>305</width>
+             <width>310</width>
              <height>622</height>
             </rect>
            </property>
@@ -902,7 +941,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>305</width>
+             <width>310</width>
              <height>622</height>
             </rect>
            </property>
@@ -960,7 +999,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>305</width>
+             <width>310</width>
              <height>622</height>
             </rect>
            </property>
@@ -1018,7 +1057,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>305</width>
+             <width>310</width>
              <height>622</height>
             </rect>
            </property>
@@ -1101,8 +1140,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>878</width>
-              <height>346</height>
+              <width>873</width>
+              <height>343</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_21">
@@ -1477,8 +1516,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>174</width>
-               <height>425</height>
+               <width>273</width>
+               <height>428</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_19">
@@ -1555,8 +1594,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>698</width>
-               <height>425</height>
+               <width>614</width>
+               <height>413</height>
               </rect>
              </property>
              <property name="sizePolicy">

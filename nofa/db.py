@@ -473,6 +473,96 @@ def get_fam_dict(con):
 
     return fam_dict
 
+def get_cntry_code_list(con):
+    """
+    Returns a list of country codes that is used to populate
+    country code combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+
+    :returns: A list of country codes.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      DISTINCT "countryCode" cc
+        FROM        nofa."location"
+        ORDER BY    cc
+        ''')
+    cntry_codes = cur.fetchall()
+
+    cntry_code_list = [c[0] for c in cntry_codes]
+
+    return cntry_code_list
+
+def get_cnty_list(con, cntry_code):
+    """
+    Returns a list of counties that is used to populate
+    county combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param cntry_code: A country code.
+    :type cntry_code: str.
+
+    :returns: A list of counties.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      DISTINCT "county" c
+        FROM        nofa."location"
+        WHERE       %(countryCode)s IS NULL OR %(countryCode)s = "countryCode"
+        ORDER BY    c
+        ''',
+        {'countryCode': cntry_code})
+
+    cntys = cur.fetchall()
+
+    cnty_list = [c[0] for c in cntys]
+
+    return cnty_list
+
+def get_muni_list(con, cntry_code, cnty):
+    """
+    Returns a list of municipalities that is used to populate
+    municipality combo box.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param cntry_code: A country code.
+    :type cntry_code: str.
+    :param cnty: A county.
+    :type cnty: str.
+
+    :returns: A list of municipalities.
+    :rtype: list.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      DISTINCT "municipality" m
+        FROM        nofa."location"
+        WHERE       (%(countryCode)s IS NULL OR %(countryCode)s = "countryCode")
+                    AND
+                    (%(county)s IS NULL OR %(county)s = "county")
+        ORDER BY    m
+        ''',
+        {'countryCode': cntry_code,
+         'county': cnty})
+
+    munis = cur.fetchall()
+
+    muni_list = [m[0] for m in munis]
+
+    return muni_list
+
 def get_dtst_list(con):
     """
     Returns a list with information about datasets that is used to populate
@@ -1365,14 +1455,20 @@ def get_mpt_str(utme, utmn):
 
     return mpt_str
 
-def get_loc_by_wb_name(con, wb_name):
+def get_loc_by_fltrs(con, wb, cntry_code, cnty, muni):
     """
-    Returns location IDs with the given water body name.
+    Returns location IDs with the given filters.
 
     :param con: A connection.
     :type con: psycopg2.connection.
-    :param wb_name: A water body name.
-    :type wb_name: str.
+    :param wb: A water body.
+    :type wb: str.
+    :param cntry_code: A country code.
+    :type cntry_code: str.
+    :param cnty: A county.
+    :type cnty: str.
+    :param muni: A municipality.
+    :type muni: str.
 
     :returns: A list of location IDs.
     :rtype: list.
@@ -1383,9 +1479,21 @@ def get_loc_by_wb_name(con, wb_name):
         '''
         SELECT      "locationID"
         FROM        nofa.location loc
-        WHERE       "waterBody" LIKE %s
+        WHERE       (%(waterBody)s IS NULL OR %(waterBody)s LIKE "waterBody")
+                    AND
+                    (%(countryCode)s IS NULL OR %(countryCode)s = "countryCode")
+                    AND
+                    (%(county)s IS NULL OR %(county)s = "county")
+                    AND
+                    (   %(municipality)s IS NULL
+                        OR
+                        %(municipality)s = "municipality")
         ''',
-        ('%' + wb_name + '%',))
+        {'waterBody': '%' + wb + '%' if wb else wb,
+         'countryCode': cntry_code,
+         'county': cnty,
+         'municipality': muni})
+
     locids = cur.fetchall()
 
     locid_list = [l[0] for l in locids]
