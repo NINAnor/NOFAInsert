@@ -1427,16 +1427,16 @@ def ins_new_loc(con, loc_id, utm33_geom, loc_name):
                             "locationID",
                             "locationType",
                             "geom",
-                            "waterBody")
+                            "verbatimLocality")
         VALUES          (   %(locationID)s,
                             %(locationType)s,
                             %(geom)s,
-                            %(waterBody)s)
+                            %(verbatimLocality)s)
         ''',
         {'locationID': loc_id,
          'locationType': 'samplingPoint lake',
          'geom': utm33_geom,
-         'waterBody': loc_name})
+         'verbatimLocality': loc_name})
 
 def get_mpt_str(utme, utmn):
     """

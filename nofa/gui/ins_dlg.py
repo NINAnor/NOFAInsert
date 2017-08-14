@@ -201,7 +201,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.utm_tbl_hdrs = [
             u'easting',
             u'northing',
-            u'name (optional)']
+            u'verbatimLocality (optional)']
 
         self.nvl_tbl_hdrs = [
             u'Norwegian VatnLnr']
