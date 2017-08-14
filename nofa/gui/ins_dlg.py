@@ -156,13 +156,16 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         self.org = u'NINA'
-        self.app_name = u'NOFAInsert - InsDlg'
+        self.app_name = u'NOFAInsert - {}'.format(
+            self.mc.get_con_info()[self.mc.db_str])
 
         self.settings = QSettings(self.org, self.app_name)
 
         # OS.NINA
         # clear setting for development purposes
         self.settings.clear()
+
+        self.setWindowTitle(self.app_name)
 
         self.language = 'Latin'
 
