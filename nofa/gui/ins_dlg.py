@@ -23,13 +23,14 @@
  *                                                                         *
  ***************************************************************************/
 """
+
 from PyQt4 import QtGui, uic
 from PyQt4.QtCore import (
     QSettings, QCoreApplication, Qt, QObject, QDate, QObject, QSignalMapper)
 from PyQt4.QtGui import (
     QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget,
     QTableWidgetItem, QDialog, QDoubleValidator, QIntValidator, QComboBox,
-    QLineEdit, QDateEdit, QAbstractItemView)
+    QLineEdit, QDateEdit, QAbstractItemView, QValidator, QBrush, QColor)
 
 from qgis.core import (
     QgsApplication, QgsMessageLog, QgsCoordinateReferenceSystem,
@@ -44,9 +45,17 @@ import datetime
 import uuid
 import sys
 
-import dtst_dlg, prj_dlg, ref_dlg
+import dtst_dlg, prj_dlg, ref_dlg, vald
 
 from .. import db
+
+
+class NotFldExc(Exception):
+    """
+    A custom exception when mandatory widget is not filled.
+    """
+
+    pass
 
 
 class NoLocExc(Exception):
@@ -177,9 +186,9 @@ class InsDlg(QDialog, FORM_CLASS):
             'Finish': 'vernacularName_FI'}
 
         self.loctp_dict = {
-            'Norwegian VatnLnr': 'no_vatn_lnr',
-            'coordinates UTM32': 25832,
-            'coordinates UTM33': 25833,}
+            u'Norwegian VatnLnr': 'no_vatn_lnr',
+            u'coordinates UTM32': 25832,
+            u'coordinates UTM33': 25833,}
 
         self.loctp_list = [
             'Norwegian VatnLnr',
@@ -209,18 +218,28 @@ class InsDlg(QDialog, FORM_CLASS):
         self.nvl_tbl_hdrs = [
             u'Norwegian VatnLnr']
 
-        self.sel_str = u'Select'
-        self.none_str = str(None)
         self.dash_split_str = u' - '
         self.at_split_str = u'@'
         self.dtst_str = u'Dataset'
         self.prj_str = u'Project'
         self.ref_str = u'Reference'
+
+        self.mty_str = u''
         self.all_str = u'<all>'
+        self.sel_str = u'<select>'
+
+        self.forbi_str_list = [
+            self.mty_str,
+            self.sel_str]
 
         self.today_dt = datetime.datetime.today().date()
         self.nxt_week_dt = self.today_dt + datetime.timedelta(days=7)
         self.fltr_str_dt = datetime.datetime(2017, 1, 1)
+
+        self.def_clr = self.ins_btn.palette().background().color()
+        self.grn_clr = QColor(177, 234, 177)
+        self.red_clr = QColor(234, 177, 177)
+        self.yel_clr = QColor(234, 234, 177)
 
         self._build_wdgs()
 
@@ -311,26 +330,13 @@ class InsDlg(QDialog, FORM_CLASS):
             self.vfdby_le,
             self.verdt_de]
 
-        self.occ_le_wdgs = []
-        self.occ_cb_wdgs = []
-        self.occ_de_wdgs = []
-
         for wdg in self.occ_input_wdgs:
             if isinstance(wdg, QLineEdit):
-                self.occ_le_wdgs.append(wdg)
+                wdg.textChanged.connect(self._upd_occ_row)
             elif isinstance(wdg, QComboBox):
-                self.occ_cb_wdgs.append(wdg)
+                wdg.activated.connect(self._upd_occ_row)
             elif isinstance(wdg, QDateEdit):
-                self.occ_de_wdgs.append(wdg)
-
-        for occ_le_wdg in self.occ_le_wdgs:
-            occ_le_wdg.textChanged.connect(self._upd_occ_row)
-
-        for occ_cb_wdg in self.occ_cb_wdgs:
-            occ_cb_wdg.activated.connect(self._upd_occ_row)
-
-        for occ_de_wdg in self.occ_de_wdgs:
-            occ_de_wdg.dateChanged.connect(self._upd_occ_row)
+                wdg.dateChanged.connect(self._upd_occ_row)
 
         self.loctp_cb.currentIndexChanged.connect(self._set_loc_tbl)
 
@@ -369,7 +375,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.lake_name_load_btn.setEnabled(False)
         self.lake_name_load_btn.clicked.connect(self._load_loc_layer)
 
-        self.hist_tbls_meth_dict = {
+        self.hist_tbls_fnc_dict = {
             self.hist_occ_tbl: db.get_hist_occ_list,
             self.hist_loc_tbl: db.get_hist_loc_list,
             self.hist_dtst_tbl: db.get_hist_dtst_list,
@@ -391,10 +397,82 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.ins_btn.clicked.connect(self._ins)
 
-        self.main_hspltr.setStretchFactor(0, 1)
-        self.main_hspltr.setStretchFactor(1, 2)
+        self.occ_mand_wdgs = [
+            self.rcdby_le,
+            self.smpp_cb,
+            self.dtend_de,
+            self.txn_cb,
+            self.occstat_cb]
+
+        self.all_mand_wdgs = self.occ_mand_wdgs + [
+            self.dtst_cb,
+            self.prj_cb,
+            self.ref_cb]
+ 
+        for wdg in self.all_mand_wdgs:
+            if isinstance(wdg, QLineEdit):
+                wdg.setValidator(vald.LenVald(wdg))
+                wdg.textChanged.connect(self._chck_state_text)
+                wdg.textChanged.emit(wdg.text())
+            elif isinstance(wdg, QComboBox):
+                wdg.currentIndexChanged.connect(self._chck_state_text)
+            elif isinstance(wdg, QDateEdit):
+                wdg.setStyleSheet(
+                    "background-color: {}".format(self.yel_clr.name()))
+                wdg.editingFinished.connect(self._chck_state_text)
+
+        # self.main_hspltr.setStretchFactor(0, 1)
+        # self.main_hspltr.setStretchFactor(1, 2)
         self.occ_hspltr.setStretchFactor(0, 1)
         self.occ_hspltr.setStretchFactor(1, 2)
+
+    def _chck_state_text(self):
+        """
+        Checks a sender's state or text and sets its background color
+        accordingly.
+        """
+
+        sndr = self.sender()
+
+        if isinstance(sndr, QLineEdit):
+            valr = sndr.validator()
+            state = valr.validate(sndr.text(), 0)[0]
+        elif isinstance(sndr, QComboBox):
+            txt = sndr.currentText()
+            if txt == self.sel_str:
+                state = QValidator.Invalid
+            else:
+                state = QValidator.Acceptable
+        elif isinstance(sndr, QDateEdit):
+            state = QValidator.Acceptable
+
+        if state == QValidator.Intermediate or state == QValidator.Invalid:
+            clr = self.red_clr
+            stl = 'background-color: {}'.format(clr.name())
+        else:
+            stl = ''
+
+        sndr.setStyleSheet(stl)
+
+    def _chck_mand_wdgs(self, mand_wdgs):
+        """
+        Check if the given mandatory widgets are filled.
+
+        :param mand_wdgs: A list of mandatory widgets.
+        :type mand_wdgs: list.
+        """
+
+        for wdg in mand_wdgs:
+            if isinstance(wdg, QLineEdit):
+                valr = wdg.validator()
+                if valr.validate(wdg.text(), 0)[0] != QValidator.Acceptable:
+                    raise NotFldExc()
+            elif isinstance(wdg, QComboBox):
+                if wdg.currentText() == self.sel_str:
+                    raise NotFldExc()
+            elif isinstance(wdg, QDateEdit):
+                if wdg.styleSheet() != self.mty_str:
+                    raise NotFldExc()
 
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -405,7 +483,7 @@ class InsDlg(QDialog, FORM_CLASS):
         :type message: str, QString
 
         :returns: Translated version of message.
-        :rtype: QString
+        :rtype: QString.
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('NOFAInsert', message)
@@ -452,24 +530,24 @@ class InsDlg(QDialog, FORM_CLASS):
         self.lake_name_statlbl.setText(
             u'Found {} location(s).'.format(loc_count))
 
-    def _get_fltr(self, txt):
+    def _get_val_txt(self, txt):
         """
-        Returns a filter.
+        Returns a validated text.
 
-        :param txt: A filter.
+        :param txt: A text.
         :type txt: str.
 
-        :returns: A filter, None when text is equal to <all> string
+        :returns: A filter, None when text is in list of forbidden strings
             or when length of text is zero.
         :rtype: str.
         """
 
-        if txt == self.all_str or len(txt) == 0:
-            fltr = None
+        if txt in self.forbi_str_list or len(txt) == 0:
+            val_txt = None
         else:
-            fltr = txt
+            val_txt = txt
 
-        return fltr
+        return val_txt
 
     def _get_loc_fltrs(self):
         """
@@ -499,7 +577,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         txt = self.wb_le.text()
 
-        wb = self._get_fltr(txt)
+        wb = self._get_val_txt(txt)
 
         return wb
 
@@ -514,7 +592,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         txt = self.cntry_code_cb.currentText()
 
-        cntry_code = self._get_fltr(txt)
+        cntry_code = self._get_val_txt(txt)
 
         return cntry_code
 
@@ -529,7 +607,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         txt = self.cnty_cb.currentText()
 
-        cnty = self._get_fltr(txt)
+        cnty = self._get_val_txt(txt)
 
         return cnty
 
@@ -544,9 +622,24 @@ class InsDlg(QDialog, FORM_CLASS):
 
         txt = self.muni_cb.currentText()
 
-        muni = self._get_fltr(txt)
+        muni = self._get_val_txt(txt)
 
         return muni
+
+    def _get_txn(self):
+        """
+        Returns a taxon from taxon combo box.
+
+        :returns: A taxon, None when text is equal to <all> string
+            or when length of text is zero.
+        :rtype: str.
+        """
+
+        txt = self.txn_cb.currentText()
+
+        txn = self._get_val_txt(txt)
+
+        return txn
 
     def _load_loc_layer(self):
         """
@@ -716,8 +809,8 @@ class InsDlg(QDialog, FORM_CLASS):
         usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end = \
             self._get_hist_fltrs()
 
-        for tbl, meth in self.hist_tbls_meth_dict.items():
-            tbl_list, tbl_hdrs = meth(
+        for tbl, fnc in self.hist_tbls_fnc_dict.items():
+            tbl_list, tbl_hdrs = fnc(
                 self.mc.con,
                 usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end)
             self._create_tbl_hist_tab(tbl, tbl_list, tbl_hdrs)
@@ -733,7 +826,7 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         usr_txt = self.usr_cb.currentText()
-        usr = self._get_fltr(usr_txt)
+        usr = self._get_val_txt(usr_txt)
         
         ins_dt_strt = self.hist_ins_dtstrt_de.date().toPyDate()
         ins_dt_end = self.hist_ins_dtend_de.date().toPyDate()
@@ -791,6 +884,8 @@ class InsDlg(QDialog, FORM_CLASS):
         try:
             loc_id_list = self._get_loc()
 
+            self._chck_mand_wdgs(self.all_mand_wdgs)
+
             event_list = self._get_event_list()
 
             dtst_id = self._get_dtst_id()
@@ -812,6 +907,7 @@ class InsDlg(QDialog, FORM_CLASS):
                     occ_id = uuid.uuid4()
 
                     occ_row_list = self._get_occ_row_list(m)
+                    QgsMessageLog.logMessage(str(occ_row_list), 'test')
 
                     txn =  occ_row_list[0]
                     txn_id = db.get_txn_id(self.mc.con, txn)
@@ -872,6 +968,9 @@ class InsDlg(QDialog, FORM_CLASS):
                 u'Norwegian VatLnr',
                 u'The following Norwegian VatLnr codes were not found:\n'
                 u'{}\n'.format(u', '.join(str(n) for n in e.nf_nvl)))
+        except NotFldExc:
+            QMessageBox.warning(
+                self, u'Mandatory Data', u'Please fill all mandatory data.')
 
     def _get_event_list(self):
         """
@@ -884,15 +983,12 @@ class InsDlg(QDialog, FORM_CLASS):
         event_list = []
 
         for wdg in self.event_input_wdgs:
-
             if isinstance(wdg, QLineEdit):
-                if isinstance(wdg.validator, QIntValidator):
-                    event_data = int(wdg.text()) \
-                        if len(wdg.text()) != 0 else None
-                else:
-                    event_data = wdg.text() if len(wdg.text()) != 0 else None
+                txt = wdg.text()
+                event_data = self._get_val_txt(txt)
             elif isinstance(wdg, QComboBox):
-                event_data = wdg.currentText()
+                txt = wdg.currentText()
+                event_data = self._get_val_txt(txt)
             elif isinstance(wdg, QDateEdit):
                 event_data = wdg.date().toPyDate()
 
@@ -916,9 +1012,10 @@ class InsDlg(QDialog, FORM_CLASS):
         # OS.NINA
         # depends on the order in the table
         for n in range(self.occ_tbl.columnCount()):
-            text = self.occ_tbl.item(m, n).text()
+            txt = self.occ_tbl.item(m, n).text()
+            val_txt = self._get_val_txt(txt)
 
-            occ_row_list.append(text)
+            occ_row_list.append(val_txt)
 
         return occ_row_list
 
@@ -1137,20 +1234,24 @@ class InsDlg(QDialog, FORM_CLASS):
         if isinstance(dtst_id_name, int):
             dtst_id_name = self.dtst_cb.currentText()
 
-        dtst_id = dtst_id_name.split(self.dash_split_str)[0]
-
         self.dtst_lw.clear()
 
-        cur, dtst = db.get_dtst_info(self.mc.con, dtst_id)
+        if dtst_id_name in self.forbi_str_list:
+            dtst_txt = dtst_id_name
+        else:
+            dtst_id = dtst_id_name.split(self.dash_split_str)[0]
 
-        for idx, dtst_data in enumerate(dtst):
-            dtst_item = QListWidgetItem(
-                u'{}: {}'.format(cur.description[idx][0], dtst_data))
-            self.dtst_lw.addItem(dtst_item)
+            cur, dtst = db.get_dtst_info(self.mc.con, dtst_id)
 
+            for idx, dtst_data in enumerate(dtst):
+                dtst_item = QListWidgetItem(
+                    u'{}: {}'.format(cur.description[idx][0], dtst_data))
+                self.dtst_lw.addItem(dtst_item)
+
+            dtst_txt = dtst[1]
+    
         self._set_mtdt_item_text(
-            2,
-            u'{}{}{}'.format(self.dtst_str, self.dash_split_str, dtst[1]))
+            2, u'{}{}{}'.format(self.dtst_str, self.dash_split_str, dtst_txt))
 
         self.settings.setValue('dtst_str', dtst_id_name)
 
@@ -1199,21 +1300,22 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.prj_lw.clear()
 
-        prj_name, prj_org = db.get_prj_name_org_from_str(prj_str)
+        if prj_str in self.forbi_str_list:
+            mtdt_txt = prj_str
+        else:
+            prj_name, prj_org = db.get_prj_name_org_from_str(prj_str)
 
-        cur, prj = db.get_prj_info(self.mc.con, prj_name, prj_org)
+            cur, prj = db.get_prj_info(self.mc.con, prj_name, prj_org)
 
-        for idx, prj_data in enumerate(prj):
-            prj_item = QListWidgetItem(
-                u'{}: {}'.format(cur.description[idx][0], prj_data))
-            self.prj_lw.addItem(prj_item)
+            for idx, prj_data in enumerate(prj):
+                prj_item = QListWidgetItem(
+                    u'{}: {}'.format(cur.description[idx][0], prj_data))
+                self.prj_lw.addItem(prj_item)
+
+            mtdt_txt = prj_str
 
         self._set_mtdt_item_text(
-            3,
-            u'{}{}{}'.format(
-                self.prj_str,
-                self.dash_split_str,
-                prj_str))
+            3, u'{}{}{}'.format(self.prj_str, self.dash_split_str, mtdt_txt))
 
         self.settings.setValue('prj_str', prj_str)
 
@@ -1246,30 +1348,32 @@ class InsDlg(QDialog, FORM_CLASS):
         if isinstance(ref_str, int):
             ref_str = self.ref_cb.currentText()
 
-        ref_au = ref_str.split(u': ')[0]
-        ref_yr = ref_str.split(u' (')[1].split(u') ')[0]
-        ref_ttl = ref_str.split(u': ')[1].split(u' (')[0]
-        ref_id = ref_str.split(self.at_split_str)[1]
-
         self.ref_lw.clear()
 
-        cur, ref = db.get_ref_info(self.mc.con, ref_id)
+        if ref_str in self.forbi_str_list:
+            mtdt_txt = ref_str
+        else:
+            ref_au = ref_str.split(u': ')[0]
+            ref_yr = ref_str.split(u' (')[1].split(u') ')[0]
+            ref_ttl = ref_str.split(u': ')[1].split(u' (')[0]
+            ref_id = ref_str.split(self.at_split_str)[1]
 
-        for idx, ref_data in enumerate(ref):
-            ref_item = QListWidgetItem(
-                u'{}: {}'.format(cur.description[idx][0], ref_data))
-            self.ref_lw.addItem(ref_item)
+            cur, ref = db.get_ref_info(self.mc.con, ref_id)
 
-        self._set_mtdt_item_text(
-            4,
-            u'{}{}{}{}{}{}{}'.format(
-                self.ref_str,
-                self.dash_split_str,
+            for idx, ref_data in enumerate(ref):
+                ref_item = QListWidgetItem(
+                    u'{}: {}'.format(cur.description[idx][0], ref_data))
+                self.ref_lw.addItem(ref_item)
+
+            mtdt_txt = u'{}{}{}{}{}'.format(
                 ref_au,
                 self.dash_split_str,
                 ref_yr,
                 self.dash_split_str,
-                ref_ttl))
+                ref_ttl)
+
+        self._set_mtdt_item_text(
+            4, u'{}{}{}'.format(self.ref_str, self.dash_split_str, mtdt_txt))
 
         self.settings.setValue('ref_str', ref_str)
 
@@ -1288,34 +1392,236 @@ class InsDlg(QDialog, FORM_CLASS):
         Fetches data from the NOFA schema and populates widgets.
         """
 
-        self.row = 0
+        nofa_cb_dict = self._get_nofa_cb_dict()
 
-        self._pop_cntry_code_cb()
+        self._pop_cb(nofa_cb_dict)
 
-        self.pop_dtst_cb()
-        QgsApplication.processEvents()
         self.upd_dtst()
-
-        self.pop_prj_cb()
-        QgsApplication.processEvents()
         self.upd_prj()
-
-        self.pop_ref_cb()
-        QgsApplication.processEvents()
         self.upd_ref()
-        
-        self._pop_txn_cb()
-        self._pop_oqt_cb()
-        self._pop_occstat_cb()
-        self._pop_poptrend_cb()
-        self._pop_estbms_cb()
-        self._pop_smpp_cb()
-        self._pop_reliab_cb()
-        self._pop_smpsu_cb()
-        self._pop_spwnc_cb()
-        self._pop_spwnl_cb()
-        self._pop_loctp_cb()
-        self._pop_txncvg_tw()
+
+    def _pop_cb(self, cb_dict):
+        """
+        Populates combo boxes.
+
+        :param cb_dict: A combo box dictionary.
+            - key - combo_box_name
+            - value - [fill_method, [arguments], default_value]
+        :type cb_dict:
+        """
+
+        for cb, cb_list in cb_dict.items():
+            fnc = cb_list[0]
+            args = cb_list[1]
+            def_val = cb_list[2]
+
+            item_list = fnc(*args)
+
+            if def_val not in item_list:
+                item_list.insert(0, def_val)
+
+            self._add_cb_items(cb, item_list)
+
+            cb.setCurrentIndex(item_list.index(def_val))
+
+    def _pop_cnty_cb(self):
+        """
+        Populates the county combo box according to the currently selected
+        country.
+        """
+
+        cnty_cb_dict = self._get_cnty_cb_dict()
+
+        self._pop_cb(cnty_cb_dict)
+
+    def _pop_muni_cb(self):
+        """
+        Populates the municipality combo box according to the currently
+        selected country and county.
+        """
+
+        muni_cb_dict = self._get_muni_cb_dict()
+
+        self._pop_cb(muni_cb_dict)
+
+    def _pop_ectp_cb(self):
+        """
+        Populates the ecotype combo box according to the currently selected
+        taxon.
+        """
+
+        ectp_cb_dict = self._get_ectp_cb_dict()
+
+        self._pop_cb(ectp_cb_dict)
+
+    def _add_cb_items(self, cb, item_list):
+        """
+        Adds items from the item list to the combo box.
+        Color of items whose text is in the list of forbidden strings
+        is set to red.
+
+        :param cb:
+        :type cb:
+        :param item_list:
+        :type item_list:
+        """
+
+        cb.clear()
+
+        for i, item in enumerate(item_list):
+            cb.addItem(item)
+
+            if item in self.forbi_str_list:
+                clr = self.red_clr
+                cb.setItemData(i, QBrush(clr), Qt.BackgroundRole)
+
+    def _get_nofa_cb_dict(self):
+        """
+        Return a nofa combo box dictionary.
+
+        :returns: A nofa combo box dictionary.
+            - key - combo_box_name
+            - value - [fill_method, [arguments], default_value]
+        :rtype: dict.
+        """
+
+        nofa_cb_dict = {
+            self.loctp_cb: [
+                self._get_loctp_list,
+                [],
+                'Norwegian VatnLnr'],
+            self.cntry_code_cb:[
+                db.get_cntry_code_list,
+                [self.mc.con],
+                self.all_str],
+            self.smpp_cb: [
+                db.get_smpp_list,
+                [self.mc.con],
+                self.sel_str],
+            self.smpsu_cb: [
+                db.get_smpsu_list,
+                [self.mc.con],
+                self.sel_str],
+            self.relia_cb: [
+                db.get_reliab_list,
+                [self.mc.con],
+                self.mty_str],
+            self.dtst_cb: [
+                db.get_dtst_list,
+                [self.mc.con],
+                self.sel_str],
+            self.prj_cb: [
+                db.get_prj_list,
+                [self.mc.con],
+                self.sel_str],
+            self.ref_cb: [
+                db.get_ref_list,
+                [self.mc.con],
+                self.sel_str],
+            self.txn_cb: [
+                db.get_txn_list,
+                [self.mc.con],
+                self.sel_str],
+            self.oqt_cb: [
+                db.get_oqt_list,
+                [self.mc.con],
+                self.mty_str],
+            self.occstat_cb: [
+                db.get_occstat_list,
+                [self.mc.con],
+                u'present'],
+            self.poptrend_cb: [
+                db.get_poptrend_list,
+                [self.mc.con],
+                self.mty_str],
+            self.estm_cb: [
+                db.get_estbms_list,
+                [self.mc.con],
+                u'unknown'],
+            self.spwnc_cb: [
+                db.get_spwnc_list,
+                [self.mc.con],
+                self.mty_str],
+            self.spwnl_cb: [
+                db.get_spwnl_list,
+                [self.mc.con],
+                self.mty_str]}
+
+        cnty_cb_dict = self._get_cnty_cb_dict()
+        muni_cb_dict = self._get_muni_cb_dict()
+        ectp_dict = self._get_ectp_cb_dict()
+
+        nofa_cb_dict = self._get_mrgd_dict(
+            nofa_cb_dict, cnty_cb_dict, muni_cb_dict, ectp_dict)
+
+        return nofa_cb_dict
+
+    def _get_mrgd_dict(self, *dicts):
+        """
+        Returns a merged dictionary of all given dictionaries.
+        """
+
+        mrgd_dict = {}
+
+        for dict in dicts:
+            for key, val in dict.items():
+                mrgd_dict[key] = val
+    
+        return mrgd_dict
+
+    def _get_cnty_cb_dict(self):
+        """
+        Returns a county combo box dictionary.
+
+        :returns: A county combo box dictionary.
+            - key - combo_box_name
+            - value - [fill_method, [arguments], default_value]
+        :rtype: dict.
+        """
+
+        cnty_cb_dict = {
+            self.cnty_cb: [
+                db.get_cnty_list,
+                [self.mc.con, self._get_cntry_code()],
+                self.all_str]}
+
+        return cnty_cb_dict
+
+    def _get_muni_cb_dict(self):
+        """
+        Returns a municipality combo box dictionary.
+
+        :returns: A municipality combo box dictionary.
+            - key - combo_box_name
+            - value - [fill_method, [arguments], default_value]
+        :rtype: dict.
+        """
+
+        muni_cb_dict = {
+            self.muni_cb: [
+                db.get_muni_list,
+                [self.mc.con, self._get_cntry_code(), self._get_cnty()],
+                self.all_str]}
+
+        return muni_cb_dict
+
+    def _get_ectp_cb_dict(self):
+        """
+        Returns an ecotype combo box dictionary.
+
+        :returns: An ecotype combo box dictionary.
+            - key - combo_box_name
+            - value - [fill_method, [arguments], default_value]
+        :rtype: dict.
+        """
+
+        ectp_cb_dict = {
+            self.ectp_cb: [
+                db.get_ectp_list,
+                [self.mc.con, self._get_txn()],
+                self.mty_str]}
+
+        return ectp_cb_dict
 
     def _pop_txncvg_tw(self):
         """
@@ -1341,54 +1647,6 @@ class InsDlg(QDialog, FORM_CLASS):
         self.txncvg_tw.sortByColumn(0, Qt.AscendingOrder)
         self.txncvg_tw.expandToDepth(0)
 
-    def _pop_cntry_code_cb(self):
-        """
-        Populates the country code combo box.
-        """
-
-        cntry_code_list = db.get_cntry_code_list(self.mc.con)
-        cntry_code_list.insert(0, self.all_str)
-
-        self.cntry_code_cb.clear()
-        self.cntry_code_cb.addItems(cntry_code_list)
-
-    def _pop_cnty_cb(self):
-        """
-        Populates the county combo box.
-        """
-
-        cntry_code = self._get_cntry_code()
-
-        cnty_list = db.get_cnty_list(self.mc.con, cntry_code)
-        cnty_list.insert(0, self.all_str)
-
-        self.cnty_cb.clear()
-        self.cnty_cb.addItems(cnty_list)
-
-    def _pop_muni_cb(self):
-        """
-        Populates the municipality combo box.
-        """
-
-        cntry_code = self._get_cntry_code()
-        cnty = self._get_cnty()
-
-        muni_list = db.get_muni_list(self.mc.con, cntry_code, cnty)
-        muni_list.insert(0, self.all_str)
-
-        self.muni_cb.clear()
-        self.muni_cb.addItems(muni_list)
-
-    def pop_dtst_cb(self):
-        """
-        Populates the dataset combo box.
-        """
-
-        dtst_list = db.get_dtst_list(self.mc.con)
-
-        self.dtst_cb.clear()
-        self.dtst_cb.addItems(dtst_list)
-
     def _get_dtst_id(self):
         """
         Returns a dataset ID from the dataset combo box.
@@ -1402,16 +1660,6 @@ class InsDlg(QDialog, FORM_CLASS):
         id = dtst_str.split(self.dash_split_str)[0]
 
         return id
-
-    def pop_prj_cb(self):
-        """
-        Populates the project combo box.
-        """
-
-        prj_list = db.get_prj_list(self.mc.con)
-
-        self.prj_cb.clear()
-        self.prj_cb.addItems(prj_list)
 
     def _get_prj_id(self):
         """
@@ -1429,16 +1677,6 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return prj_id
 
-    def pop_ref_cb(self):
-        """
-        Populates the reference combo box.
-        """
-
-        ref_list = db.get_ref_list(self.mc.con)
-
-        self.ref_cb.clear()
-        self.ref_cb.addItems(ref_list)
-
     def _get_ref_id(self):
         """
         Returns a reference ID from the reference combo box.
@@ -1453,121 +1691,12 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return id
 
-    def _pop_txn_cb(self):
+    def _get_loctp_list(self):
         """
-        Populates the taxon combo box.
-        """
+        Returns a list of location types.
 
-        txn_list = db.get_txn_list(self.mc.con)
-
-        self.txn_cb.clear()
-        self.txn_cb.addItems(txn_list)
-
-    def _pop_ectp_cb(self):
-        """
-        Populates the ecotype combo box.
-        """
-
-        txn_name = self.txn_cb.currentText()
-
-        ectp_list = db.get_ectp_list(self.mc.con, txn_name)
-
-        self.ectp_cb.clear()
-        self.ectp_cb.addItems(ectp_list)
-
-    def _pop_oqt_cb(self):
-        """
-        Populates the organism quantity type combo box.
-        """
-
-        oqt_list = db.get_oqt_list(self.mc.con)
-
-        self.oqt_cb.clear()
-        self.oqt_cb.addItems(oqt_list)
-
-    def _pop_occstat_cb(self):
-        """
-        Populates the occurrence status combo box.
-        """
-
-        occstat_list = db.get_occstat_list(self.mc.con)
-
-        self.occstat_cb.clear()
-        self.occstat_cb.addItems(occstat_list)
-
-    def _pop_poptrend_cb(self):
-        """
-        Populates the population trend combo box.
-        """
-
-        poptrend_list = db.get_poptrend_list(self.mc.con)
-
-        self.poptrend_cb.clear()
-        self.poptrend_cb.addItems(poptrend_list)
-
-    def _pop_estbms_cb(self):
-        """
-        Populates the establishment means combo box.
-        """
-
-        estbms_list = db.get_estbms_list(self.mc.con)
-
-        self.estm_cb.clear()
-        self.estm_cb.addItems(estbms_list)
-
-    def _pop_smpp_cb(self):
-        """
-        Populates the sampling protocol combo box.
-        """
-
-        smpp_list = db.get_smpp_list(self.mc.con)
-
-        self.smpp_cb.clear()
-        self.smpp_cb.addItems(smpp_list)
-
-    def _pop_reliab_cb(self):
-        """
-        Populates the reliability combo box.
-        """
-
-        relia_list = db.get_reliab_list(self.mc.con)
-
-        self.relia_cb.clear()
-        self.relia_cb.addItems(relia_list)
-
-    def _pop_smpsu_cb(self):
-        """
-        Populates the sample size unit combo box.
-        """
-
-        smpsu_list = db.get_smpsu_list(self.mc.con)
-
-        self.smpsu_cb.clear()
-        self.smpsu_cb.addItems(smpsu_list)
-
-    def _pop_spwnc_cb(self):
-        """
-        Populates the spawning condition combo box.
-        """
-
-        spwnc_list = db.get_spwnc_list(self.mc.con)
-
-        self.spwnc_cb.clear()
-        self.spwnc_cb.addItems(spwnc_list)
-
-    def _pop_spwnl_cb(self):
-        """
-        Populates the spawning location combo box.
-        """
-
-        spwnl_list = db.get_spwnl_list(self.mc.con)
-
-        self.spwnl_cb.clear()
-        self.spwnl_cb.addItems(spwnl_list)
-
-    def _pop_loctp_cb(self):
-        """
-        Populates the location type combo box.
+        :returns: A list of location types.
+        :rtype: list.
         """
 
         # OS.NINA
@@ -1576,9 +1705,7 @@ class InsDlg(QDialog, FORM_CLASS):
         loctp_list = self.loctp_list
         loctp_list.sort()
 
-        self.loctp_cb.clear()
-        self.loctp_cb.addItems(loctp_list)
-        self.loctp_cb.setCurrentIndex(loctp_list.index('Norwegian VatnLnr'))
+        return loctp_list
 
     def create_occ_tbl(self):
         """
@@ -1738,35 +1865,15 @@ class InsDlg(QDialog, FORM_CLASS):
         Resets a current occurrence row in the occurrence table.
         """
 
-        self._clear_occ_le_wdgs()
-        self._clear_occ_cb_wdgs()
-        self._clear_occ_de_wdgs()
+        for wdg in self.occ_input_wdgs:
+            if isinstance(wdg, QLineEdit):
+                wdg.clear()
+            elif isinstance(wdg, QComboBox):
+                wdg.setCurrentIndex(0)
+            elif isinstance(wdg, QDateEdit):
+                wdg.setDate(self.nxt_week_dt)
 
-        self._upd_occ_row()        
-
-    def _clear_occ_le_wdgs(self):
-        """
-        Clears occurrence line edit widgets.
-        """
-
-        for occ_le_wdg in self.occ_le_wdgs:
-            occ_le_wdg.clear()
-
-    def _clear_occ_cb_wdgs(self):
-        """
-        Clears occurrence combo box widgets.
-        """
-
-        for occ_cb_wdg in self.occ_cb_wdgs:
-            occ_cb_wdg.setCurrentIndex(0)
-
-    def _clear_occ_de_wdgs(self):
-        """
-        Clears occurrence date edit widgets.
-        """
-
-        for occ_cb_wdg in self.occ_de_wdgs:
-            occ_cb_wdg.setDate(self.nxt_week_dt)
+        self._upd_occ_row()
 
     def _rst_all_occ_rows(self):
         """

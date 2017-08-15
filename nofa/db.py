@@ -268,8 +268,7 @@ def ins_occ(con, occ_id, txn_id, ectp_id, occ_row_list, event_id):
          'taxonID': txn_id,
          'ecotypeID': ectp_id,
          'organismQuantityType': occ_row_list[2],
-         'organismQuantity': float(occ_row_list[3]) \
-            if len(occ_row_list[3]) != 0 else None,
+         'organismQuantity': occ_row_list[3],
          'occurrenceStatus': occ_row_list[4],
          'populationTrend': occ_row_list[5],
          'occurrenceRemarks': occ_row_list[6],
