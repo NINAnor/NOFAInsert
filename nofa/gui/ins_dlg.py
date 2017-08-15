@@ -50,9 +50,17 @@ import dtst_dlg, prj_dlg, ref_dlg, vald
 from .. import db
 
 
-class NotFldExc(Exception):
+class MtdtNotFldExc(Exception):
     """
-    A custom exception when mandatory widget is not filled.
+    A custom exception when a metadata mandatory widget is not filled.
+    """
+
+    pass
+
+
+class OccNotFldExc(Exception):
+    """
+    A custom exception when a mandatory field in occurrence row is not filled.
     """
 
     pass
@@ -398,16 +406,19 @@ class InsDlg(QDialog, FORM_CLASS):
         self.ins_btn.clicked.connect(self._ins)
 
         self.occ_mand_wdgs = [
+            self.txn_cb,
+            self.occstat_cb,
+            self.estm_cb]
+
+        self.mtdt_mand_wdgs = [
             self.rcdby_le,
             self.smpp_cb,
             self.dtend_de,
-            self.txn_cb,
-            self.occstat_cb]
-
-        self.all_mand_wdgs = self.occ_mand_wdgs + [
             self.dtst_cb,
             self.prj_cb,
             self.ref_cb]
+
+        self.all_mand_wdgs = self.occ_mand_wdgs + self.mtdt_mand_wdgs
  
         for wdg in self.all_mand_wdgs:
             if isinstance(wdg, QLineEdit):
@@ -454,25 +465,27 @@ class InsDlg(QDialog, FORM_CLASS):
 
         sndr.setStyleSheet(stl)
 
-    def _chck_mand_wdgs(self, mand_wdgs):
+    def _chck_mand_wdgs(self, mand_wdgs, exc):
         """
         Check if the given mandatory widgets are filled.
 
         :param mand_wdgs: A list of mandatory widgets.
         :type mand_wdgs: list.
+        :param exc: An exception that should be raised.
+        :type exc: Exception.
         """
 
         for wdg in mand_wdgs:
             if isinstance(wdg, QLineEdit):
                 valr = wdg.validator()
                 if valr.validate(wdg.text(), 0)[0] != QValidator.Acceptable:
-                    raise NotFldExc()
+                    raise exc()
             elif isinstance(wdg, QComboBox):
                 if wdg.currentText() == self.sel_str:
-                    raise NotFldExc()
+                    raise exc()
             elif isinstance(wdg, QDateEdit):
                 if wdg.styleSheet() != self.mty_str:
-                    raise NotFldExc()
+                    raise exc()
 
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -884,7 +897,8 @@ class InsDlg(QDialog, FORM_CLASS):
         try:
             loc_id_list = self._get_loc()
 
-            self._chck_mand_wdgs(self.all_mand_wdgs)
+            self._chck_mand_wdgs(self.mtdt_mand_wdgs, MtdtNotFldExc)
+            self._chck_mand_wdgs(self.mtdt_mand_wdgs, OccNotFldExc)
 
             event_list = self._get_event_list()
 
@@ -907,9 +921,13 @@ class InsDlg(QDialog, FORM_CLASS):
                     occ_id = uuid.uuid4()
 
                     occ_row_list = self._get_occ_row_list(m)
-                    QgsMessageLog.logMessage(str(occ_row_list), 'test')
 
                     txn =  occ_row_list[0]
+
+                    if txn == None:
+                        self.occ_tbl.selectRow(m)
+                        raise OccNotFldExc()
+
                     txn_id = db.get_txn_id(self.mc.con, txn)
 
                     ectp = occ_row_list[1]    
@@ -968,9 +986,15 @@ class InsDlg(QDialog, FORM_CLASS):
                 u'Norwegian VatLnr',
                 u'The following Norwegian VatLnr codes were not found:\n'
                 u'{}\n'.format(u', '.join(str(n) for n in e.nf_nvl)))
-        except NotFldExc:
+        except MtdtNotFldExc:
             QMessageBox.warning(
-                self, u'Mandatory Data', u'Please fill all mandatory data.')
+                self,
+                u'Mandatory Metadata Fields',
+                u'Fill/select all mandatory metadata fields.')
+        except OccNotFldExc:
+            # message contains only information about taxon
+            QMessageBox.warning(
+                self, u'Taxon', u'Select taxon.')
 
     def _get_event_list(self):
         """
@@ -1518,26 +1542,14 @@ class InsDlg(QDialog, FORM_CLASS):
                 db.get_ref_list,
                 [self.mc.con],
                 self.sel_str],
-            self.txn_cb: [
-                db.get_txn_list,
-                [self.mc.con],
-                self.sel_str],
             self.oqt_cb: [
                 db.get_oqt_list,
                 [self.mc.con],
                 self.mty_str],
-            self.occstat_cb: [
-                db.get_occstat_list,
-                [self.mc.con],
-                u'present'],
             self.poptrend_cb: [
                 db.get_poptrend_list,
                 [self.mc.con],
                 self.mty_str],
-            self.estm_cb: [
-                db.get_estbms_list,
-                [self.mc.con],
-                u'unknown'],
             self.spwnc_cb: [
                 db.get_spwnc_list,
                 [self.mc.con],
@@ -1550,9 +1562,14 @@ class InsDlg(QDialog, FORM_CLASS):
         cnty_cb_dict = self._get_cnty_cb_dict()
         muni_cb_dict = self._get_muni_cb_dict()
         ectp_dict = self._get_ectp_cb_dict()
+        occ_mand_cb_dict = self._get_occ_mand_cb_dict()
 
         nofa_cb_dict = self._get_mrgd_dict(
-            nofa_cb_dict, cnty_cb_dict, muni_cb_dict, ectp_dict)
+            nofa_cb_dict,
+            cnty_cb_dict,
+            muni_cb_dict,
+            ectp_dict,
+            occ_mand_cb_dict)
 
         return nofa_cb_dict
 
@@ -1622,6 +1639,32 @@ class InsDlg(QDialog, FORM_CLASS):
                 self.mty_str]}
 
         return ectp_cb_dict
+
+    def _get_occ_mand_cb_dict(self):
+        """
+        Returns an occurrence mandatory combo box dictionary.
+
+        :returns: An occurrence mandatory combo box dictionary.
+            - key - combo_box_name
+            - value - [fill_method, [arguments], default_value]
+        :rtype: dict.
+        """
+
+        occ_mand_cb_dict = {
+            self.txn_cb: [
+                db.get_txn_list,
+                [self.mc.con],
+                self.sel_str],
+            self.occstat_cb: [
+                db.get_occstat_list,
+                [self.mc.con],
+                u'present'],
+            self.estm_cb: [
+                db.get_estbms_list,
+                [self.mc.con],
+                u'unknown']}
+
+        return occ_mand_cb_dict
 
     def _pop_txncvg_tw(self):
         """
@@ -1858,7 +1901,8 @@ class InsDlg(QDialog, FORM_CLASS):
         self.occ_tbl.blockSignals(False)
 
         if self._check_occ_tbl(tbl):
-            self._rst_occ_row()
+            self._rst_occ_mand_cb()
+            self._upd_occ_row()
 
     def _rst_occ_row(self):
         """
@@ -1869,11 +1913,21 @@ class InsDlg(QDialog, FORM_CLASS):
             if isinstance(wdg, QLineEdit):
                 wdg.clear()
             elif isinstance(wdg, QComboBox):
-                wdg.setCurrentIndex(0)
+                self._rst_occ_mand_cb()
             elif isinstance(wdg, QDateEdit):
                 wdg.setDate(self.nxt_week_dt)
 
         self._upd_occ_row()
+
+    def _rst_occ_mand_cb(self):
+        """
+        Resets occurrence mandatory combo boxes.
+        """
+
+        occ_mand_cb_dict = self._get_occ_mand_cb_dict()
+        for cb, cb_list in occ_mand_cb_dict.items():
+            def_val = cb_list[2]
+            cb.setCurrentIndex(cb.findText(def_val))
 
     def _rst_all_occ_rows(self):
         """
