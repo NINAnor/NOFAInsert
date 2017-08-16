@@ -284,18 +284,14 @@ class DtstDlg(QDialog):
 
             id = dtst_list[1]
 
-            # check if ID is provided
-            if not id:
-                dtst_list[1] = uuid.uuid4()
-            else:
-                dtst_cnt = db.get_dtst_cnt(self.mc.con, id)
+            dtst_cnt = db.get_dtst_cnt(self.mc.con, id)
 
-                if dtst_cnt != 0:
-                    self.stat_bar.showMessage(
-                        u'datasetID "{}" is already in the table. '
-                        u'Enter different datasetID.'.format(id),
-                        10000)
-                    return
+            if dtst_cnt != 0:
+                self.stat_bar.showMessage(
+                    u'datasetID "{}" is already in the table. '
+                    u'Enter different datasetID.'.format(id),
+                    10000)
+                return
 
             db.ins_dtst(self.mc.con, dtst_list)
 
