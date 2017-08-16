@@ -30,7 +30,8 @@ from PyQt4.QtCore import (
 from PyQt4.QtGui import (
     QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget,
     QTableWidgetItem, QDialog, QDoubleValidator, QIntValidator, QComboBox,
-    QLineEdit, QDateEdit, QAbstractItemView, QValidator, QBrush, QColor)
+    QLineEdit, QDateEdit, QAbstractItemView, QValidator, QBrush, QColor,
+    QPlainTextEdit)
 
 from qgis.core import (
     QgsApplication, QgsMessageLog, QgsCoordinateReferenceSystem,
@@ -407,7 +408,27 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.all_mand_wdgs = self.occ_mand_wdgs + self.mtdt_mand_wdgs
  
-        for wdg in self.all_mand_wdgs:
+        self.set_mand_wdgs(self.all_mand_wdgs)
+
+        # self.main_hspltr.setStretchFactor(0, 1)
+        # self.main_hspltr.setStretchFactor(1, 2)
+        self.occ_hspltr.setStretchFactor(0, 1)
+        self.occ_hspltr.setStretchFactor(1, 2)
+
+    def set_mand_wdgs(self, wdgs):
+        """
+        Sets mandatory widgets. Mandatory widgets have predefined color
+        when they are not filled/selected.
+            - line edit - must contain at least one
+            - combo box - selected value can not be in list of forbidden
+                          strings
+            - date edit - user must edit (click) on it at least once
+        
+        :param wdgs: A list of widgets to be set as mandatory.
+        :type wdgs: list.
+        """
+
+        for wdg in wdgs:
             if isinstance(wdg, QLineEdit):
                 wdg.setValidator(vald.LenVald(wdg))
                 wdg.textChanged.connect(self._chck_state_text)
@@ -418,11 +439,6 @@ class InsDlg(QDialog, FORM_CLASS):
                 wdg.setStyleSheet(
                     "background-color: {}".format(self.yel_clr.name()))
                 wdg.editingFinished.connect(self._chck_state_text)
-
-        # self.main_hspltr.setStretchFactor(0, 1)
-        # self.main_hspltr.setStretchFactor(1, 2)
-        self.occ_hspltr.setStretchFactor(0, 1)
-        self.occ_hspltr.setStretchFactor(1, 2)
 
     def _chck_state_text(self):
         """
@@ -452,7 +468,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         sndr.setStyleSheet(stl)
 
-    def _chck_mand_wdgs(self, mand_wdgs, exc):
+    def chck_mand_wdgs(self, mand_wdgs, exc):
         """
         Check if the given mandatory widgets are filled.
 
@@ -888,10 +904,10 @@ class InsDlg(QDialog, FORM_CLASS):
         try:
             loc_id_list = self._get_loc()
 
-            self._chck_mand_wdgs(self.mtdt_mand_wdgs, MtdtNotFldExc)
+            self.chck_mand_wdgs(self.mtdt_mand_wdgs, MtdtNotFldExc)
             self._chck_occ_tbl()
 
-            event_list = self._get_wdg_list(self.event_input_wdgs, False)
+            event_list = self.get_wdg_list(self.event_input_wdgs)
 
             dtst_id = self._get_dtst_id()
             prj_id = self._get_prj_id()
@@ -986,7 +1002,7 @@ class InsDlg(QDialog, FORM_CLASS):
             QMessageBox.warning(
                 self, u'Taxon', u'Select taxon.')
 
-    def _get_wdg_list(self, wdgs, forbi=True):
+    def get_wdg_list(self, wdgs, forbi=False):
         """
         Returns the data from the given list of widgets.
 
@@ -1010,6 +1026,9 @@ class InsDlg(QDialog, FORM_CLASS):
                 wdg_data = self._get_val_txt(txt, forbi)
             elif isinstance(wdg, QDateEdit):
                 wdg_data = wdg.date().toPyDate()
+            elif isinstance(wdg, QPlainTextEdit):
+                txt = wdg.toPlainText()
+                wdg_data = self._get_val_txt(txt, forbi)
 
             wdg_list.append(wdg_data)
 
@@ -1425,13 +1444,13 @@ class InsDlg(QDialog, FORM_CLASS):
 
         nofa_cb_dict = self._get_nofa_cb_dict()
 
-        self._pop_cb(nofa_cb_dict)
+        self.pop_cb(nofa_cb_dict)
 
         self.upd_dtst()
         self.upd_prj()
         self.upd_ref()
 
-    def _pop_cb(self, cb_dict):
+    def pop_cb(self, cb_dict):
         """
         Populates combo boxes.
 
@@ -1463,7 +1482,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         cnty_cb_dict = self._get_cnty_cb_dict()
 
-        self._pop_cb(cnty_cb_dict)
+        self.pop_cb(cnty_cb_dict)
 
     def _pop_muni_cb(self):
         """
@@ -1473,7 +1492,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         muni_cb_dict = self._get_muni_cb_dict()
 
-        self._pop_cb(muni_cb_dict)
+        self.pop_cb(muni_cb_dict)
 
     def _pop_ectp_cb(self):
         """
@@ -1483,7 +1502,16 @@ class InsDlg(QDialog, FORM_CLASS):
 
         ectp_cb_dict = self._get_ectp_cb_dict()
 
-        self._pop_cb(ectp_cb_dict)
+        self.pop_cb(ectp_cb_dict)
+
+    def pop_dtst_cb(self):
+        """
+        Populates the dataset combo box.
+        """
+
+        dtst_cb_dict = self._get_dtst_cb_dict()
+
+        self.pop_cb(dtst_cb_dict)
 
     def _add_cb_items(self, cb, item_list):
         """
@@ -1537,10 +1565,6 @@ class InsDlg(QDialog, FORM_CLASS):
                 db.get_reliab_list,
                 [self.mc.con],
                 self.mty_str],
-            self.dtst_cb: [
-                db.get_dtst_list,
-                [self.mc.con],
-                self.sel_str],
             self.prj_cb: [
                 db.get_prj_list,
                 [self.mc.con],
@@ -1566,17 +1590,13 @@ class InsDlg(QDialog, FORM_CLASS):
                 [self.mc.con],
                 self.mty_str]}
 
-        cnty_cb_dict = self._get_cnty_cb_dict()
-        muni_cb_dict = self._get_muni_cb_dict()
-        ectp_dict = self._get_ectp_cb_dict()
-        occ_mand_cb_dict = self._get_occ_mand_cb_dict()
-
         nofa_cb_dict = self._get_mrgd_dict(
             nofa_cb_dict,
-            cnty_cb_dict,
-            muni_cb_dict,
-            ectp_dict,
-            occ_mand_cb_dict)
+            self._get_cnty_cb_dict(),
+            self._get_muni_cb_dict(),
+            self._get_ectp_cb_dict(),
+            self._get_dtst_cb_dict(),
+            self._get_occ_mand_cb_dict())
 
         return nofa_cb_dict
 
@@ -1646,6 +1666,24 @@ class InsDlg(QDialog, FORM_CLASS):
                 self.mty_str]}
 
         return ectp_cb_dict
+
+    def _get_dtst_cb_dict(self):
+        """
+        Returns a dataset combo box dictionary.
+
+        :returns: An dataset combo box dictionary.
+            - key - combo_box_name
+            - value - [fill_method, [arguments], default_value]
+        :rtype: dict.
+        """
+
+        dtst_cb_dict = {
+            self.dtst_cb: [
+                db.get_dtst_list,
+                [self.mc.con],
+                self.sel_str]}
+
+        return dtst_cb_dict
 
     def _get_occ_mand_cb_dict(self):
         """
@@ -1842,7 +1880,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         m = self.occ_tbl.currentRow()
 
-        occ_list = self._get_wdg_list(self.occ_tbl_hdrs_wdg_dict.values())
+        occ_list = self.get_wdg_list(self.occ_tbl_hdrs_wdg_dict.values(), True)
 
         self._set_occ_row(m, occ_list)
 
@@ -1896,10 +1934,11 @@ class InsDlg(QDialog, FORM_CLASS):
             if isinstance(wdg, QLineEdit):
                 wdg.clear()
             elif isinstance(wdg, QComboBox):
-                self._rst_occ_mand_cb()
+                wdg.setCurrentIndex(0)
             elif isinstance(wdg, QDateEdit):
                 wdg.setDate(self.nxt_week_dt)
 
+        self._rst_occ_mand_cb()
         self._upd_occ_row()
 
     def _rst_occ_mand_cb(self):
@@ -1908,6 +1947,7 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         occ_mand_cb_dict = self._get_occ_mand_cb_dict()
+
         for cb, cb_list in occ_mand_cb_dict.items():
             def_val = cb_list[2]
             cb.setCurrentIndex(cb.findText(def_val))
@@ -1920,7 +1960,8 @@ class InsDlg(QDialog, FORM_CLASS):
         self._rst_occ_row()
 
         for m in range(self.occ_tbl.rowCount()):
-            occ_list = self._get_wdg_list(self.occ_tbl_hdrs_wdg_dict.values())
+            occ_list = self.get_wdg_list(
+                self.occ_tbl_hdrs_wdg_dict.values(), True)
             self._set_occ_row(m, occ_list)
 
         self.occ_tbl.resizeColumnsToContents()
@@ -2021,7 +2062,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Deletes all occurrence rows except the currently selected one.
         """
 
-        occ_list = self._get_wdg_list(self.occ_tbl_hdrs_wdg_dict.values())
+        occ_list = self.get_wdg_list(self.occ_tbl_hdrs_wdg_dict.values(), True)
 
         self.occ_tbl.blockSignals(True)
         self.occ_tbl.setRowCount(1)

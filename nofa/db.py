@@ -1095,32 +1095,14 @@ def get_dtst_cnt(con, id):
 
     return dtst_cnt
 
-def ins_dtst(con, name, id, inst, rght, lic, acs, cit, cmnt, info, dtgen):
+def ins_dtst(con, dtst_list):
     """
     Insert an event to the database.
 
     :param con: A connection.
     :type con: psycopg2.connection.
-    :param name: A dataset name.
-    :type name: str.
-    :param id: A dataset ID.
-    :type id: uuid.UUID.
-    :param inst: An institution.
-    :type inst: str.
-    :param rght: A rights holder.
-    :type rght: str.
-    :param lic: A license.
-    :type lic: str.
-    :param acs: An access rights.
-    :type acs: str.
-    :param cit: A bibliographic citation.
-    :type cit: str.
-    :param cmnt: A comment.
-    :type cmnt: str.
-    :param info: An information withheld.
-    :type info: str.
-    :param dtgen: A data generalizations.
-    :type dtgen: str.
+    :param dtst_list: A dataset list.
+    :type dtst_list: list.
     """
 
     cur = _get_db_cur(con)
@@ -1148,16 +1130,16 @@ def ins_dtst(con, name, id, inst, rght, lic, acs, cit, cmnt, info, dtgen):
                             %(informationWithheld)s,
                             %(dataGeneralizations)s)
         ''',
-        {'datasetName': name,
-         'datasetID': id,
-         'ownerInstitutionCode': inst,
-         'rightsHolder': rght,
-         'license': lic,
-         'accessRights': acs,
-         'bibliographicCitation': cit,
-         'datasetComment': cmnt,
-         'informationWithheld': info,
-         'dataGeneralizations': dtgen})
+        {'datasetName': dtst_list[0],
+         'datasetID': dtst_list[1],
+         'ownerInstitutionCode': dtst_list[2],
+         'rightsHolder': dtst_list[3],
+         'license': dtst_list[4],
+         'accessRights': dtst_list[5],
+         'bibliographicCitation': dtst_list[6],
+         'datasetComment': dtst_list[7],
+         'informationWithheld': dtst_list[8],
+         'dataGeneralizations': dtst_list[9]})
 
 def ins_prj(con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk):
     """

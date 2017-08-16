@@ -27,10 +27,11 @@
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import (
     QDialog, QGridLayout, QSizePolicy, QLabel, QLineEdit, QComboBox,
-    QPlainTextEdit, QHBoxLayout, QPushButton, QStatusBar)
+    QPlainTextEdit, QHBoxLayout, QPushButton, QStatusBar, QMessageBox)
 
 import uuid
 
+import exc
 from .. import db
 
 
@@ -80,7 +81,7 @@ class DtstDlg(QDialog):
         self.name_lbl = QLabel(self)
         self.name_lbl.setObjectName(u'name_lbl')
         self.name_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
-        self.name_lbl.setText(u'datasetName*')
+        self.name_lbl.setText(u'datasetName')
         self.grid_lyt.addWidget(self.name_lbl, 0, 0, 1, 1)
 
         self.name_le = QLineEdit(self)
@@ -105,7 +106,6 @@ class DtstDlg(QDialog):
 
         self.inst_cb = QComboBox(self)
         self.inst_cb.setObjectName(u'inst_cb')
-        self._pop_inst_cb()
         self.grid_lyt.addWidget(self.inst_cb, 2, 1, 1, 1)
 
         self.rght_lbl = QLabel(self)
@@ -116,7 +116,6 @@ class DtstDlg(QDialog):
 
         self.rght_cb = QComboBox(self)
         self.rght_cb.setObjectName(u'rght_cb')
-        self._pop_rght_cb()
         self.grid_lyt.addWidget(self.rght_cb, 3, 1, 1, 1)
 
         self.lic_lbl = QLabel(self)
@@ -127,7 +126,6 @@ class DtstDlg(QDialog):
 
         self.lic_cb = QComboBox(self)
         self.lic_cb.setObjectName(u'lic_cb')
-        self._pop_lic_cb()
         self.grid_lyt.addWidget(self.lic_cb, 4, 1, 1, 1)
 
         self.acs_lbl = QLabel(self)
@@ -138,7 +136,6 @@ class DtstDlg(QDialog):
 
         self.acs_cb = QComboBox(self)
         self.acs_cb.setObjectName(u'acs_cb')
-        self._pop_acs_cb()
         self.grid_lyt.addWidget(self.acs_cb, 5, 1, 1, 1)
 
         self.cit_lbl = QLabel(self)
@@ -181,6 +178,29 @@ class DtstDlg(QDialog):
         self.dtgen_pte.setObjectName(u'dtgen_pte')
         self.grid_lyt.addWidget(self.dtgen_pte, 9, 1, 1, 1)
 
+        self.mand_wdgs = [
+            self.name_le,
+            self.id_le,
+            self.inst_cb,
+            self.rght_cb,
+            self.acs_cb]
+
+        self.iw.set_mand_wdgs(self.mand_wdgs)
+        self._fetch_dtst_data()
+
+        # to keep order
+        self.input_wdgs = [
+            self.name_le,
+            self.id_le,
+            self.inst_cb,
+            self.rght_cb,
+            self.lic_cb,
+            self.acs_cb,
+            self.cit_pte,
+            self.cmnt_pte,
+            self.info_pte,
+            self.dtgen_pte]
+
         self.btn_lyt = QHBoxLayout(self)
         self.grid_lyt.addLayout(self.btn_lyt, 10, 1, 1, 1)
 
@@ -200,95 +220,91 @@ class DtstDlg(QDialog):
         self.stat_bar.setObjectName(u'stat_bar')
         self.grid_lyt.addWidget(self.stat_bar, 11, 0, 1, 2)
 
-    def _pop_inst_cb(self):
+    def _fetch_dtst_data(self):
+
+        dtst_cb_dict = self._get_dtst_cb_dict()
+
+        self.iw.pop_cb(dtst_cb_dict)
+
+    def _get_dtst_cb_dict(self):
         """
-        Populates the institution combo box.
-        """
+        Return a dataset combo box dictionary.
 
-        inst_list = db.get_inst_list(self.mc.con)
-
-        self.inst_cb.clear()
-        self.inst_cb.addItems(inst_list)
-
-    def _pop_rght_cb(self):
-        """
-        Populates the rights combo box.
-        """
-
-        inst_list = db.get_inst_list(self.mc.con)
-
-        self.rght_cb.clear()
-        self.rght_cb.addItems(inst_list)
-
-    def _pop_lic_cb(self):
-        """
-        Populates the license combo box.
+        :returns: A dataset combo box dictionary.
+            - key - combo_box_name
+            - value - [fill_method, [arguments], default_value]
+        :rtype: dict.
         """
 
-        # OS.NINA
-        # licenses are hard-coded
-        lic_tpl = ('NLOD', 'CC-0', 'CC-BY 4.0')
+        dtst_cb_dict = {
+            self.inst_cb: [
+                db.get_inst_list,
+                [self.mc.con],
+                self.iw.sel_str],
+            self.rght_cb: [
+                db.get_inst_list,
+                [self.mc.con],
+                self.iw.sel_str],
+            self.lic_cb: [
+                self._get_lic_list,
+                [],
+                self.iw.mty_str],
+            self.acs_cb: [
+                db.get_acs_list,
+                [self.mc.con],
+                self.iw.sel_str]}
 
-        self.lic_cb.clear()
-        self.lic_cb.addItems(sorted(lic_tpl))
+        return dtst_cb_dict
 
-    def _pop_acs_cb(self):
+    def _get_lic_list(self):
         """
-        Populates the access rights combo box.
+        Returns a list of licenses.
+
+        :returns: A list of licenses.
+        :rtype: list.
         """
 
-        acs_rght_list = db.get_acs_list(self.mc.con)
+        lic_list = ['NLOD', 'CC-0', 'CC-BY 4.0']
+        lic_list.sort()
 
-        self.acs_cb.clear()
-        self.acs_cb.addItems(acs_rght_list)
+        return lic_list
 
     def _save_dtst(self):
         """
         Saves a dataset into the database.
         """
 
-        if len(self.name_le.text()) != 0:
-            name = self.name_le.text()
-        else:
-            self.stat_bar.showMessage(u'Enter a dataset name.', 10000)
-            return
-        id = self.id_le.text()
-        inst = self.inst_cb.currentText() \
-            if len(self.inst_cb.currentText()) != 0 else None
-        rght = self.rght_cb.currentText() \
-            if len(self.rght_cb.currentText()) != 0 else None
-        lic = self.lic_cb.currentText() \
-            if len(self.lic_cb.currentText()) != 0 else None
-        acs = self.acs_cb.currentText() \
-            if len(self.acs_cb.currentText()) != 0 else None
-        cit = self.cit_pte.toPlainText() \
-            if len(self.cit_pte.toPlainText()) != 0 else None
-        cmnt = self.cmnt_pte.toPlainText() \
-            if len(self.cmnt_pte.toPlainText()) != 0 else None
-        info = self.info_pte.toPlainText() \
-            if len(self.info_pte.toPlainText()) != 0 else None
-        dtgen = self.dtgen_pte.toPlainText() \
-            if len(self.dtgen_pte.toPlainText()) != 0 else None
+        try:
+            self.iw.chck_mand_wdgs(self.mand_wdgs, exc.MandNotFldExc)
 
-        if len(id) == 0:
-            id = uuid.uuid4()
-        else:
-            dtst_cnt = db.get_dtst_cnt(self.mc.con, id)
+            dtst_list = self.iw.get_wdg_list(self.input_wdgs)
 
-            if dtst_cnt != 0:
-                self.stat_bar.showMessage(
-                    u'datasetID "{}" is already in the table. '
-                    u'You can leave it empty.'.format(id),
-                    10000)
-                return
+            id = dtst_list[1]
 
-        db.ins_dtst(
-            self.mc.con, name, id, inst, rght, lic, acs, cit, cmnt, info, dtgen)
+            # check if ID is provided
+            if not id:
+                dtst_list[1] = uuid.uuid4()
+            else:
+                dtst_cnt = db.get_dtst_cnt(self.mc.con, id)
 
-        db.ins_dtst_log(
-            self.mc.con, id, self.mc.get_con_info()[self.mc.usr_str])
+                if dtst_cnt != 0:
+                    self.stat_bar.showMessage(
+                        u'datasetID "{}" is already in the table. '
+                        u'Enter different datasetID.'.format(id),
+                        10000)
+                    return
 
-        self.stat_bar.showMessage(u'Dataset saved.', 10000)
+            db.ins_dtst(self.mc.con, dtst_list)
 
-        self.iw.pop_dtst_cb()
-        self.iw.upd_dtst(db.get_dtst_str(id, name))
+            db.ins_dtst_log(
+                self.mc.con, id, self.mc.get_con_info()[self.mc.usr_str])
+
+            self.stat_bar.showMessage(u'Dataset saved.', 10000)
+
+            self.iw.pop_dtst_cb()
+            self.iw.upd_dtst(db.get_dtst_str(id, dtst_list[0]))
+        except exc.MandNotFldExc:
+            QMessageBox.warning(
+                self,
+                u'Mandatory Fields',
+                u'Fill/select all mandatory fields.')
