@@ -28,7 +28,7 @@ from PyQt4.QtCore import Qt, QDate
 from PyQt4.QtGui import (
     QDialog, QGridLayout, QSizePolicy, QLabel, QLineEdit, QComboBox,
     QPlainTextEdit, QHBoxLayout, QPushButton, QStatusBar, QDateEdit,
-    QIntValidator, QMessageBox)
+    QMessageBox)
 
 import exc
 import vald
@@ -96,7 +96,6 @@ class PrjDlg(QDialog):
 
         self.no_le = QLineEdit(self)
         self.no_le.setObjectName(u'no_le')
-        self.no_le.setValidator(QIntValidator(None))
         self.grid_lyt.addWidget(self.no_le, 1, 1, 1, 1)
 
         self.name_lbl = QLabel(self)
@@ -232,7 +231,7 @@ class PrjDlg(QDialog):
 
     def _get_prj_cb_dict(self):
         """
-        Return a project combo box dictionary.
+        Returns a project combo box dictionary.
 
         :returns: A project combo box dictionary.
             - key - combo_box_name
