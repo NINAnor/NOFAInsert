@@ -29,8 +29,6 @@ from PyQt4.QtGui import (
     QDialog, QGridLayout, QSizePolicy, QLabel, QLineEdit, QComboBox,
     QPlainTextEdit, QHBoxLayout, QPushButton, QStatusBar, QDateEdit,
     QIntValidator, QMessageBox)
-from qgis.core import (
-    QgsApplication, QgsMessageLog)
 
 import exc
 import vald
