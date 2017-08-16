@@ -221,6 +221,9 @@ class DtstDlg(QDialog):
         self.grid_lyt.addWidget(self.stat_bar, 11, 0, 1, 2)
 
     def _fetch_dtst_data(self):
+        """
+        Fetches data from the NOFA database and populates widgets.
+        """
 
         dtst_cb_dict = self._get_dtst_cb_dict()
 
