@@ -1451,6 +1451,8 @@ class InsDlg(QDialog, FORM_CLASS):
         self.upd_prj()
         self.upd_ref()
 
+        self._pop_txncvg_tw()
+
     def pop_cb(self, cb_dict):
         """
         Populates combo boxes.
