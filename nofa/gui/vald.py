@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- LenVald
                                  A QGIS plugin
  Insert fish occurrence data to NOFA DB
                              -------------------
@@ -27,7 +26,7 @@
 from PyQt4.QtGui import QValidator
 
 
-class LenVald(QValidator):
+class LenTxtVald(QValidator):
     """
     A custom validator that check if text length is zero.
     """
@@ -40,7 +39,7 @@ class LenVald(QValidator):
         :type par: QWidget.
         """
 
-        super(LenVald, self).__init__(par)
+        super(LenTxtVald, self).__init__(par)
 
     def validate(self, txt, pos):
         """
@@ -57,6 +56,55 @@ class LenVald(QValidator):
 
         if len(txt) == 0:
             return (QValidator.Intermediate, txt, pos)
+
+        return (QValidator.Acceptable, txt, pos)
+
+    def fixup(self, txt):
+        """
+        Corrects the given text.
+
+        :param txt: A text.
+        :type txt: str.
+        """
+
+        pass
+
+
+class LenIntVald(QValidator):
+    """
+    A custom validator that check if text length is zero and integer.
+    """
+
+    def __init__(self, par):
+        """
+        Constructor.
+
+        :param par: A parent widget.
+        :type par: QWidget.
+        """
+
+        super(LenIntVald, self).__init__(par)
+
+    def validate(self, txt, pos):
+        """
+        Validates the given text.
+
+        :param txt: A text.
+        :type txt: str.
+        :param pos: A position.
+        :type pos: int.
+
+        :returns: A tuple that contains validator, text and position.
+        :rtype: tuple
+        """
+
+        if len(txt) == 0:
+            return (QValidator.Intermediate, txt, pos)
+        else:
+            try:
+                int(txt)
+            except ValueError:
+                return (QValidator.Invalid, txt, pos)
 
         return (QValidator.Acceptable, txt, pos)
 

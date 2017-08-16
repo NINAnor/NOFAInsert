@@ -1141,30 +1141,14 @@ def ins_dtst(con, dtst_list):
          'informationWithheld': dtst_list[8],
          'dataGeneralizations': dtst_list[9]})
 
-def ins_prj(con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk):
+def ins_prj(con, prj_list):
     """
     Insert an event to the database.
 
     :param con: A connection.
     :type con: psycopg2.connection.
-    :param org: A organization.
-    :type org: str.
-    :param no: A project number.
-    :type no: int.
-    :param name: A project name.
-    :type name: str.
-    :param styr: A start year.
-    :type styr: int.
-    :param endyr: An end year.
-    :type endyr: int.
-    :param ldr: A project leader.
-    :type ldr: str.
-    :param mbr: Project members.
-    :type mbr: str.
-    :param fncr: A financer.
-    :type fncr: str.
-    :param rmk: Project remarks.
-    :type rmk: str.
+    :param prj_list: A project list.
+    :type prj_list: list.
 
     :returns: A project ID.
     :rtype: int.
@@ -1194,15 +1178,15 @@ def ins_prj(con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk):
                             %(remarks)s)
         RETURNING       "projectID"
         ''',
-        {'organisation': org,
-         'projectNumber': no,
-         'projectName': name,
-         'startYear': styr,
-         'endYear': endyr,
-         'projectLeader': ldr,
-         'projectMembers': mbr,
-         'financer': fncr,
-         'remarks': rmk})
+        {'organisation': prj_list[0],
+         'projectNumber': prj_list[1],
+         'projectName': prj_list[2],
+         'startYear': prj_list[3],
+         'endYear': prj_list[4],
+         'projectLeader': prj_list[5],
+         'projectMembers': prj_list[6],
+         'financer': prj_list[7],
+         'remarks': prj_list[8]})
 
     id = cur.fetchone()[0]
 

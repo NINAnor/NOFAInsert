@@ -28,8 +28,12 @@ from PyQt4.QtCore import Qt, QDate
 from PyQt4.QtGui import (
     QDialog, QGridLayout, QSizePolicy, QLabel, QLineEdit, QComboBox,
     QPlainTextEdit, QHBoxLayout, QPushButton, QStatusBar, QDateEdit,
-    QIntValidator)
+    QIntValidator, QMessageBox)
+from qgis.core import (
+    QgsApplication, QgsMessageLog)
 
+import exc
+import vald
 from .. import db
 
 
@@ -79,18 +83,17 @@ class PrjDlg(QDialog):
         self.org_lbl = QLabel(self)
         self.org_lbl.setObjectName(u'org_lbl')
         self.org_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
-        self.org_lbl.setText(u'organization*')
+        self.org_lbl.setText(u'organization')
         self.grid_lyt.addWidget(self.org_lbl, 0, 0, 1, 1)
 
         self.org_cb = QComboBox(self)
         self.org_cb.setObjectName(u'org_cb')
-        self._pop_org_cb()
         self.grid_lyt.addWidget(self.org_cb, 0, 1, 1, 1)
 
         self.no_lbl = QLabel(self)
         self.no_lbl.setObjectName(u'no_lbl')
         self.no_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
-        self.no_lbl.setText(u'projectNumber*')
+        self.no_lbl.setText(u'projectNumber')
         self.grid_lyt.addWidget(self.no_lbl, 1, 0, 1, 1)
 
         self.no_le = QLineEdit(self)
@@ -101,7 +104,7 @@ class PrjDlg(QDialog):
         self.name_lbl = QLabel(self)
         self.name_lbl.setObjectName(u'name_lbl')
         self.name_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
-        self.name_lbl.setText(u'projectName*')
+        self.name_lbl.setText(u'projectName')
         self.grid_lyt.addWidget(self.name_lbl, 2, 0, 1, 1)
 
         self.name_le = QLineEdit(self)
@@ -174,6 +177,33 @@ class PrjDlg(QDialog):
         self.rmk_pte.setObjectName(u'rmk_pte')
         self.grid_lyt.addWidget(self.rmk_pte, 8, 1, 1, 1)
 
+        self.mand_wdgs = [
+            self.org_cb,
+            self.no_le,
+            self.name_le,
+            self.styr_de,
+            self.ldr_le,
+            self.fncr_le]
+
+        self.iw.set_mand_wdgs(self.mand_wdgs)
+
+        # temporary workaround
+        self.no_le.setValidator(vald.LenIntVald(self.no_le))
+
+        self._fetch_prj_data()
+
+        # to keep order
+        self.input_wdgs = [
+            self.org_cb,
+            self.no_le,
+            self.name_le,
+            self.styr_de,
+            self.endyr_de,
+            self.ldr_le,
+            self.mbr_pte,
+            self.fncr_le,
+            self.rmk_pte]
+
         self.btn_lyt = QHBoxLayout(self)
         self.grid_lyt.addLayout(self.btn_lyt, 9, 1, 1, 1)
 
@@ -193,50 +223,58 @@ class PrjDlg(QDialog):
         self.stat_bar.setObjectName(u'stat_bar')
         self.grid_lyt.addWidget(self.stat_bar, 10, 0, 1, 2)
 
-    def _pop_org_cb(self):
+    def _fetch_prj_data(self):
         """
-        Populates the organization combo box.
+        Fetches data from the NOFA database and populates widgets.
         """
 
-        org_list = db.get_inst_list(self.mc.con)
+        prj_cb_dict = self._get_prj_cb_dict()
 
-        self.org_cb.clear()
-        self.org_cb.addItems(org_list)
+        self.iw.pop_cb(prj_cb_dict)
+
+    def _get_prj_cb_dict(self):
+        """
+        Return a project combo box dictionary.
+
+        :returns: A project combo box dictionary.
+            - key - combo_box_name
+            - value - [fill_method, [arguments], default_value]
+        :rtype: dict.
+        """
+
+        dtst_cb_dict = {
+            self.org_cb: [
+                db.get_inst_list,
+                [self.mc.con],
+                self.iw.sel_str]}
+
+        return dtst_cb_dict
 
     def _save_prj(self):
         """
         Saves a project into the database.
         """
 
-        org = self.org_cb.currentText() \
-            if len(self.org_cb.currentText()) != 0 else None
-        if len(self.no_le.text()) != 0:
-            no = int(self.no_le.text())
-        else:
-            self.stat_bar.showMessage(u'Enter a project number.', 10000)
-            return
-        if len(self.name_le.text()) != 0:
-            name = self.name_le.text()
-        else:
-            self.stat_bar.showMessage(u'Enter a project name.', 10000)
-            return
-        styr = self.styr_de.date().year()
-        endyr = self.endyr_de.date().year()
-        ldr = self.ldr_le.text() \
-            if len(self.ldr_le.text()) != 0 else None
-        mbr = self.mbr_pte.toPlainText() \
-            if len(self.mbr_pte.toPlainText()) != 0 else None
-        fncr = self.fncr_le.text() \
-            if len(self.fncr_le.text()) != 0 else None
-        rmk = self.rmk_pte.toPlainText() \
-            if len(self.rmk_pte.toPlainText()) != 0 else None
+        try:
+            self.iw.chck_mand_wdgs(self.mand_wdgs, exc.MandNotFldExc)
 
-        id = db.ins_prj(
-            self.mc.con, org, no, name, styr, endyr, ldr, mbr, fncr, rmk)
+            prj_list = self.iw.get_wdg_list(self.input_wdgs)
 
-        db.ins_prj_log(self.mc.con, id, self.mc.get_con_info()[self.mc.usr_str])
+            # temporary fix
+            prj_list[3] = prj_list[3].year
+            prj_list[4] = prj_list[4].year
 
-        self.stat_bar.showMessage(u'Project saved.', 10000)
+            id = db.ins_prj(self.mc.con, prj_list)
 
-        self.iw.pop_prj_cb()
-        self.iw.upd_prj(db.get_prj_str(name, org))
+            db.ins_prj_log(
+                self.mc.con, id, self.mc.get_con_info()[self.mc.usr_str])
+
+            self.stat_bar.showMessage(u'Project saved.', 10000)
+
+            self.iw.pop_prj_cb()
+            self.iw.upd_prj(db.get_prj_str(prj_list[2], prj_list[0]))
+        except exc.MandNotFldExc:
+            QMessageBox.warning(
+                self,
+                u'Mandatory Fields',
+                u'Fill/select all mandatory fields.')
