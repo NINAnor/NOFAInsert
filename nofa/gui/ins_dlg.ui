@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1229</width>
+    <width>1269</width>
     <height>846</height>
    </rect>
   </property>
@@ -59,7 +59,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>310</width>
+             <width>309</width>
              <height>622</height>
             </rect>
            </property>
@@ -717,7 +717,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>310</width>
+             <width>319</width>
              <height>622</height>
             </rect>
            </property>
@@ -953,7 +953,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>310</width>
+             <width>309</width>
              <height>622</height>
             </rect>
            </property>
@@ -1011,7 +1011,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>310</width>
+             <width>309</width>
              <height>622</height>
             </rect>
            </property>
@@ -1069,7 +1069,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>310</width>
+             <width>309</width>
              <height>622</height>
             </rect>
            </property>
@@ -1152,8 +1152,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>873</width>
-              <height>343</height>
+              <width>904</width>
+              <height>310</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_21">
@@ -1528,8 +1528,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>273</width>
-               <height>428</height>
+               <width>283</width>
+               <height>461</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_19">
@@ -1606,8 +1606,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>614</width>
-               <height>413</height>
+               <width>615</width>
+               <height>461</height>
               </rect>
              </property>
              <property name="sizePolicy">
@@ -1649,7 +1649,7 @@
                      <property name="sizeConstraint">
                       <enum>QLayout::SetDefaultConstraint</enum>
                      </property>
-                     <item row="4" column="0">
+                     <item row="5" column="0">
                       <widget class="QLabel" name="estm_lbl">
                        <property name="text">
                         <string>establishmentMeans</string>
@@ -1669,7 +1669,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="5" column="0">
+                     <item row="6" column="0">
                       <widget class="QLabel" name="estrmk_lbl">
                        <property name="text">
                         <string>establishmentRemarks</string>
@@ -1689,7 +1689,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="3" column="0">
+                     <item row="4" column="0">
                       <widget class="QLabel" name="occrmk_lbl">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1705,7 +1705,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="7" column="1">
+                     <item row="8" column="1">
                       <widget class="QLineEdit" name="vfdby_le">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1715,7 +1715,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="6" column="1">
+                     <item row="7" column="1">
                       <widget class="QComboBox" name="spwnc_cb">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1738,7 +1738,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="4" column="1" colspan="3">
+                     <item row="5" column="1" colspan="3">
                       <widget class="QComboBox" name="estm_cb">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1748,7 +1748,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="6" column="2">
+                     <item row="7" column="2">
                       <widget class="QLabel" name="spwnl_lbl">
                        <property name="text">
                         <string>spawningLocation</string>
@@ -1758,7 +1758,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="6" column="3">
+                     <item row="7" column="3">
                       <widget class="QComboBox" name="spwnl_cb">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1781,7 +1781,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="7" column="0">
+                     <item row="8" column="0">
                       <widget class="QLabel" name="vfdby_lbl">
                        <property name="text">
                         <string>verifiedBy</string>
@@ -1791,7 +1791,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="6" column="0">
+                     <item row="7" column="0">
                       <widget class="QLabel" name="spwnc_lbl">
                        <property name="text">
                         <string>spawningCondition</string>
@@ -1801,7 +1801,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="5" column="1" colspan="3">
+                     <item row="6" column="1" colspan="3">
                       <widget class="QLineEdit" name="estrmk_le">
                        <property name="minimumSize">
                         <size>
@@ -1811,7 +1811,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="7" column="2">
+                     <item row="8" column="2">
                       <widget class="QLabel" name="verdt_lbl">
                        <property name="text">
                         <string>verifiedDate</string>
@@ -1851,7 +1851,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="3" column="1" colspan="3">
+                     <item row="4" column="1" colspan="3">
                       <widget class="QLineEdit" name="occrmk_le">
                        <property name="minimumSize">
                         <size>
@@ -1904,7 +1904,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="7" column="3">
+                     <item row="8" column="3">
                       <widget class="QDateEdit" name="verdt_de">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1933,6 +1933,26 @@
                        </property>
                        <property name="sizeAdjustPolicy">
                         <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="recnum_lbl">
+                       <property name="text">
+                        <string>recordNumber</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="1" colspan="3">
+                      <widget class="QLineEdit" name="recnum_le">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
                        </property>
                       </widget>
                      </item>

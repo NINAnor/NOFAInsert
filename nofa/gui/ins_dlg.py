@@ -38,7 +38,7 @@ from qgis.core import (
     QgsVectorLayer, QgsDataSourceURI, QgsProject)
 from qgis.gui import QgsMapToolEmitPoint
 
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 import os
 import psycopg2, psycopg2.extras
 import datetime
@@ -203,21 +203,6 @@ class InsDlg(QDialog, FORM_CLASS):
             'coordinates UTM32',
             'coordinates UTM33']
 
-        self.occ_tbl_hdrs = [
-            u'taxon',
-            u'ecotype',
-            u'organismQuantityType',
-            u'organismQuantity',
-            u'occurrenceStatus',
-            u'populationTrend',
-            u'occurrenceRemarks',
-            u'establishmentMeans',
-            u'establishmentRemarks',
-            u'spawningCondition',
-            u'spawningLocation',
-            u'verifiedBy',
-            u'verifiedDate']
-
         self.utm_tbl_hdrs = [
             u'easting',
             u'northing',
@@ -323,22 +308,24 @@ class InsDlg(QDialog, FORM_CLASS):
             self.eventrmk_le,
             self.relia_cb]
 
-        self.occ_input_wdgs = [
-            self.txn_cb,
-            self.ectp_cb,
-            self.oqt_cb,
-            self.oq_le,
-            self.occstat_cb,
-            self.poptrend_cb,
-            self.occrmk_le,
-            self.estm_cb,
-            self.estrmk_le,
-            self.spwnc_cb,
-            self.spwnl_cb,
-            self.vfdby_le,
-            self.verdt_de]
+        # to keep order
+        self.occ_tbl_hdrs_wdg_dict = OrderedDict([
+            (u'taxon', self.txn_cb),
+            (u'ecotype', self.ectp_cb),
+            (u'organismQuantityType', self.oqt_cb),
+            (u'organismQuantity', self.oq_le),
+            (u'occurrenceStatus', self.occstat_cb),
+            (u'populationTrend', self.poptrend_cb),
+            (u'recordNumber', self.recnum_le),
+            (u'occurrenceRemarks', self.occrmk_le),
+            (u'establishmentMeans', self.estm_cb),
+            (u'establishmentRemarks', self.estrmk_le),
+            (u'spawningCondition', self.spwnc_cb),
+            (u'spawningLocation', self.spwnl_cb),
+            (u'verifiedBy', self.vfdby_le),
+            (u'verifiedDate', self.verdt_de)])
 
-        for wdg in self.occ_input_wdgs:
+        for wdg in self.occ_tbl_hdrs_wdg_dict.values():
             if isinstance(wdg, QLineEdit):
                 wdg.textChanged.connect(self._upd_occ_row)
             elif isinstance(wdg, QComboBox):
@@ -543,19 +530,23 @@ class InsDlg(QDialog, FORM_CLASS):
         self.lake_name_statlbl.setText(
             u'Found {} location(s).'.format(loc_count))
 
-    def _get_val_txt(self, txt):
+    def _get_val_txt(self, txt, forbi=False):
         """
         Returns a validated text.
 
         :param txt: A text.
         :type txt: str.
+        :param forbi: True to allow forbidden text, False otherwise.
+        :type forbi: bool.
 
         :returns: A filter, None when text is in list of forbidden strings
             or when length of text is zero.
         :rtype: str.
         """
 
-        if txt in self.forbi_str_list or len(txt) == 0:
+        if forbi == False and txt in self.forbi_str_list:
+            val_txt = None
+        elif len(txt) == 0:
             val_txt = None
         else:
             val_txt = txt
@@ -900,7 +891,7 @@ class InsDlg(QDialog, FORM_CLASS):
             self._chck_mand_wdgs(self.mtdt_mand_wdgs, MtdtNotFldExc)
             self._chck_occ_tbl()
 
-            event_list = self._get_event_list()
+            event_list = self._get_wdg_list(self.event_input_wdgs, False)
 
             dtst_id = self._get_dtst_id()
             prj_id = self._get_prj_id()
@@ -995,29 +986,34 @@ class InsDlg(QDialog, FORM_CLASS):
             QMessageBox.warning(
                 self, u'Taxon', u'Select taxon.')
 
-    def _get_event_list(self):
+    def _get_wdg_list(self, wdgs, forbi=True):
         """
-        Returns the data from event input widgets.
+        Returns the data from the given list of widgets.
+
+        :param wdgs: A list of widgets whose data should be returned.
+        :type wdgs: list.
+        :param forbi: True to allow forbidden text, False otherwise.
+        :type forbi: bool.
 
         :returns: A list of data from event input widgets.
         :rtype: list.
         """
 
-        event_list = []
+        wdg_list = []
 
-        for wdg in self.event_input_wdgs:
+        for wdg in wdgs:
             if isinstance(wdg, QLineEdit):
                 txt = wdg.text()
-                event_data = self._get_val_txt(txt)
+                wdg_data = self._get_val_txt(txt, forbi)
             elif isinstance(wdg, QComboBox):
                 txt = wdg.currentText()
-                event_data = self._get_val_txt(txt)
+                wdg_data = self._get_val_txt(txt, forbi)
             elif isinstance(wdg, QDateEdit):
-                event_data = wdg.date().toPyDate()
+                wdg_data = wdg.date().toPyDate()
 
-            event_list.append(event_data)
+            wdg_list.append(wdg_data)
 
-        return event_list
+        return wdg_list
 
     def _get_occ_row_list(self, m):
         """
@@ -1766,7 +1762,8 @@ class InsDlg(QDialog, FORM_CLASS):
         Creates an occurrence table with one row.
         """
 
-        self._create_tbl_main_tab(self.occ_tbl, self.occ_tbl_hdrs)
+        self._create_tbl_main_tab(
+            self.occ_tbl, self.occ_tbl_hdrs_wdg_dict.keys())
         self._upd_occ_row()
 
     def _create_tbl_main_tab(self, tbl, tbl_hdrs):
@@ -1845,36 +1842,11 @@ class InsDlg(QDialog, FORM_CLASS):
 
         m = self.occ_tbl.currentRow()
 
-        occ_list = self._get_occ_list()
+        occ_list = self._get_wdg_list(self.occ_tbl_hdrs_wdg_dict.values())
 
         self._set_occ_row(m, occ_list)
 
         self.occ_tbl.resizeColumnsToContents()
-
-    def _get_occ_list(self):
-        """
-        Returns a list off occurrence data from occurrence input widgets.
-
-        :returns: A list off occurrence data.
-        :rtype: list.
-        """
-
-        occ_list = [
-            self.txn_cb.currentText(),
-            self.ectp_cb.currentText(),
-            self.oqt_cb.currentText(),
-            self.oq_le.text() if len(self.oq_le.text()) != 0 else 0,
-            self.occstat_cb.currentText(),
-            self.poptrend_cb.currentText(),
-            self.occrmk_le.text() if len(self.occrmk_le.text()) != 0 else None,
-            self.estm_cb.currentText(),
-            self.estrmk_le.text() if len(self.estrmk_le.text()) != 0 else None,
-            self.spwnc_cb.currentText(),
-            self.spwnl_cb.currentText(),
-            self.vfdby_le.text() if len(self.vfdby_le.text()) != 0 else None,
-            self.verdt_de.date().toPyDate()]
-
-        return occ_list
 
     def _set_occ_row(self, m, occ_list):
         """
@@ -1920,7 +1892,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Resets a current occurrence row in the occurrence table.
         """
 
-        for wdg in self.occ_input_wdgs:
+        for wdg in self.occ_tbl_hdrs_wdg_dict.values():
             if isinstance(wdg, QLineEdit):
                 wdg.clear()
             elif isinstance(wdg, QComboBox):
@@ -1948,8 +1920,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self._rst_occ_row()
 
         for m in range(self.occ_tbl.rowCount()):
-            occ_list = self._get_occ_list()
-
+            occ_list = self._get_wdg_list(self.occ_tbl_hdrs_wdg_dict.values())
             self._set_occ_row(m, occ_list)
 
         self.occ_tbl.resizeColumnsToContents()
@@ -1964,7 +1935,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         m = self.occ_tbl.currentRow()
 
-        for n, wdg in enumerate(self.occ_input_wdgs):
+        for n, wdg in enumerate(self.occ_tbl_hdrs_wdg_dict.values()):
             text = self.occ_tbl.item(m, n).text()
 
             if isinstance(wdg, QLineEdit):
@@ -2050,7 +2021,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Deletes all occurrence rows except the currently selected one.
         """
 
-        occ_list = self._get_occ_list()
+        occ_list = self._get_wdg_list(self.occ_tbl_hdrs_wdg_dict.values())
 
         self.occ_tbl.blockSignals(True)
         self.occ_tbl.setRowCount(1)
@@ -2146,7 +2117,7 @@ class InsDlg(QDialog, FORM_CLASS):
         sndr_name = sndr.objectName()
 
         if sndr_name.startswith(u'occ_'):
-            tbl_hdrs = self.occ_tbl_hdrs
+            tbl_hdrs = self.occ_tbl_hdrs_wdg_dict.keys()
         else:
             tbl_name = self.loc_tbl_sw.currentWidget()\
                 .findChild(QTableWidget).objectName()
