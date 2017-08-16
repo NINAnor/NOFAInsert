@@ -898,7 +898,7 @@ class InsDlg(QDialog, FORM_CLASS):
             loc_id_list = self._get_loc()
 
             self._chck_mand_wdgs(self.mtdt_mand_wdgs, MtdtNotFldExc)
-            self._chck_mand_wdgs(self.mtdt_mand_wdgs, OccNotFldExc)
+            self._chck_occ_tbl()
 
             event_list = self._get_event_list()
 
@@ -992,7 +992,6 @@ class InsDlg(QDialog, FORM_CLASS):
                 u'Mandatory Metadata Fields',
                 u'Fill/select all mandatory metadata fields.')
         except OccNotFldExc:
-            # message contains only information about taxon
             QMessageBox.warning(
                 self, u'Taxon', u'Select taxon.')
 
@@ -1226,6 +1225,18 @@ class InsDlg(QDialog, FORM_CLASS):
                             raise UtmLocTextExc()
 
         return loc_input_list
+
+    def _chck_occ_tbl(self):
+        """
+        Checks if all rows in the occurrence are filled.
+        """
+
+        for m in range(self.occ_tbl.rowCount()):
+            occ_row_list = self._get_occ_row_list(m)
+
+            if occ_row_list[0] == None:
+                self.occ_tbl.selectRow(m)
+                raise OccNotFldExc()
 
     def upd_dtst(self, dtst_id_name=None):
         """
