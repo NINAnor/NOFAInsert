@@ -25,6 +25,8 @@
 
 from PyQt4.QtGui import QValidator
 
+import sys
+
 
 class LenTxtVald(QValidator):
     """
@@ -75,7 +77,7 @@ class LenIntVald(QValidator):
     A custom validator that check if text length is zero and integer.
     """
 
-    def __init__(self, par):
+    def __init__(self, par, bot=-sys.maxint, top=sys.maxint):
         """
         Constructor.
 
@@ -84,6 +86,9 @@ class LenIntVald(QValidator):
         """
 
         super(LenIntVald, self).__init__(par)
+
+        self.bot = bot
+        self.top = top
 
     def validate(self, txt, pos):
         """
@@ -104,6 +109,9 @@ class LenIntVald(QValidator):
             try:
                 int(txt)
             except ValueError:
+                return (QValidator.Invalid, txt, pos)
+
+            if not self.bot <= int(txt) <= self.top:
                 return (QValidator.Invalid, txt, pos)
 
         return (QValidator.Acceptable, txt, pos)

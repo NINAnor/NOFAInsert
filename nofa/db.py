@@ -1217,30 +1217,14 @@ def get_reftp_list(con):
 
     return reftp_list
 
-def ins_ref(con, ttl, au, yr, isbn, issn, tp, jrn, vol, pg):
+def ins_ref(con, ref_list):
     """
     Insert an event to the database.
 
     :param con: A connection.
     :type con: psycopg2.connection.
-    :param ttl: A reference title.
-    :type ttl: str.
-    :param au: A reference author.
-    :type au: str.
-    :param yr: A reference year.
-    :type yr: int.
-    :param isbn: A reference ISBN.
-    :type isbn: str.
-    :param issn: A reference ISSN.
-    :type issn: str.
-    :param tp: A reference type
-    :type tp: str.
-    :param jrn: A journal.
-    :type jrn: str.
-    :param vol: A volume.
-    :type vol: str.
-    :param pg: A page(s).
-    :type pg: str.
+    :param ref_list: A reference list.
+    :type ref_list: list.
 
     :returns: A reference ID.
     :rtype: int.
@@ -1270,15 +1254,15 @@ def ins_ref(con, ttl, au, yr, isbn, issn, tp, jrn, vol, pg):
                             %(page)s)
         RETURNING       "referenceID"
         ''',
-        {'title': ttl,
-         'author': au,
-         'year': yr,
-         'isbn': isbn,
-         'issn': issn,
-         'referenceType': tp,
-         'journalName': jrn,
-         'volume': vol,
-         'page': pg})
+        {'title': ref_list[0],
+         'author': ref_list[1],
+         'year': ref_list[2],
+         'isbn': ref_list[3],
+         'issn': ref_list[4],
+         'referenceType': ref_list[5],
+         'journalName': ref_list[6],
+         'volume': ref_list[7],
+         'page': ref_list[8]})
 
     id = cur.fetchone()[0]
 

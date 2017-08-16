@@ -28,8 +28,10 @@ from PyQt4.QtCore import Qt, QDate
 from PyQt4.QtGui import (
     QDialog, QGridLayout, QSizePolicy, QLabel, QLineEdit, QComboBox,
     QPlainTextEdit, QHBoxLayout, QPushButton, QStatusBar, QDateEdit,
-    QIntValidator)
+    QMessageBox)
 
+import exc
+import vald
 from .. import db
 
 
@@ -79,7 +81,7 @@ class RefDlg(QDialog):
         self.ttl_lbl = QLabel(self)
         self.ttl_lbl.setObjectName(u'ttl_lbl')
         self.ttl_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
-        self.ttl_lbl.setText(u'title*')
+        self.ttl_lbl.setText(u'title')
         self.grid_lyt.addWidget(self.ttl_lbl, 0, 0, 1, 1)
 
         self.ttl_le = QLineEdit(self)
@@ -89,7 +91,7 @@ class RefDlg(QDialog):
         self.au_lbl = QLabel(self)
         self.au_lbl.setObjectName(u'au_lbl')
         self.au_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
-        self.au_lbl.setText(u'author(s)*')
+        self.au_lbl.setText(u'author(s)')
         self.grid_lyt.addWidget(self.au_lbl, 1, 0, 1, 1)
 
         self.au_le = QLineEdit(self)
@@ -99,7 +101,7 @@ class RefDlg(QDialog):
         self.yr_lbl = QLabel(self)
         self.yr_lbl.setObjectName(u'yr_lbl')
         self.yr_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
-        self.yr_lbl.setText(u'year*')
+        self.yr_lbl.setText(u'year')
         self.grid_lyt.addWidget(self.yr_lbl, 2, 0, 1, 1)
 
         today_dt = QDate.currentDate()
@@ -138,7 +140,6 @@ class RefDlg(QDialog):
 
         self.tp_cb = QComboBox(self)
         self.tp_cb.setObjectName(u'tp_cb')
-        self._pop_reftp_cb()
         self.grid_lyt.addWidget(self.tp_cb, 5, 1, 1, 1)
 
         self.jrn_lbl = QLabel(self)
@@ -159,7 +160,6 @@ class RefDlg(QDialog):
 
         self.vol_le = QLineEdit(self)
         self.vol_le.setObjectName(u'vol_le')
-        self.vol_le.setValidator(QIntValidator(1, 32767, None))
         self.grid_lyt.addWidget(self.vol_le, 7, 1, 1, 1)
 
         self.pg_lbl = QLabel(self)
@@ -171,6 +171,31 @@ class RefDlg(QDialog):
         self.pg_le = QLineEdit(self)
         self.pg_le.setObjectName(u'pg_le')
         self.grid_lyt.addWidget(self.pg_le, 8, 1, 1, 1)
+
+        self.mand_wdgs = [
+            self.ttl_le,
+            self.au_le,
+            self.yr_de,
+            self.tp_cb]
+
+        self.iw.set_mand_wdgs(self.mand_wdgs)
+
+        # temporary workaround
+        self.vol_le.setValidator(vald.LenIntVald(self.vol_le, 1, 32767))
+
+        self._fetch_ref_data()
+
+        # to keep order
+        self.input_wdgs = [
+            self.ttl_le,
+            self.au_le,
+            self.yr_de,
+            self.isbn_le,
+            self.issn_le,
+            self.tp_cb,
+            self.jrn_le,
+            self.vol_le,
+            self.pg_le]
 
         self.btn_lyt = QHBoxLayout(self)
         self.grid_lyt.addLayout(self.btn_lyt, 9, 1, 1, 1)
@@ -191,49 +216,58 @@ class RefDlg(QDialog):
         self.stat_bar.setObjectName(u'stat_bar')
         self.grid_lyt.addWidget(self.stat_bar, 10, 0, 1, 2)
 
-    def _pop_reftp_cb(self):
+    def _fetch_ref_data(self):
         """
-        Populates the reference type combo box.
+        Fetches data from the NOFA database and populates widgets.
         """
 
-        reftp_list = db.get_reftp_list(self.mc.con)
+        ref_cb_dict = self._get_ref_cb_dict()
 
-        self.tp_cb.clear()
-        self.tp_cb.addItems(reftp_list)
+        self.iw.pop_cb(ref_cb_dict)
+
+    def _get_ref_cb_dict(self):
+        """
+        Returns a reference combo box dictionary.
+
+        :returns: A reference combo box dictionary.
+            - key - combo_box_name
+            - value - [fill_method, [arguments], default_value]
+        :rtype: dict.
+        """
+
+        ref_cb_dict = {
+            self.tp_cb: [
+                db.get_reftp_list,
+                [self.mc.con],
+                self.iw.sel_str]}
+
+        return ref_cb_dict
 
     def _save_ref(self):
         """
         Saves a reference into the database.
         """
 
-        if len(self.ttl_le.text()) != 0:
-            ttl = self.ttl_le.text()
-        else:
-            self.stat_bar.showMessage(u'Enter a reference title.', 10000)
-            return
-        if len(self.au_le.text()) != 0:
-            au = self.au_le.text()
-        else:
-            self.stat_bar.showMessage(u'Enter a reference author(s).', 10000)
-            return
-        yr = self.yr_de.date().year()
-        isbn = self.isbn_le.text() \
-            if len(self.isbn_le.text()) != 0 else None
-        issn = self.issn_le.text() \
-            if len(self.issn_le.text()) != 0 else None
-        tp = self.tp_cb.currentText()
-        jrn = self.jrn_le.text() \
-            if len(self.jrn_le.text()) != 0 else None
-        vol = self.vol_le.text() \
-            if len(self.vol_le.text()) != 0 else None
-        pg = self.pg_le.text() \
-            if len(self.pg_le.text()) != 0 else None
+        try:
+            self.iw.chck_mand_wdgs(self.mand_wdgs, exc.MandNotFldExc)
 
-        id = db.ins_ref(self.mc.con, ttl, au, yr, isbn, issn, tp, jrn, vol, pg)
+            ref_list = self.iw.get_wdg_list(self.input_wdgs)
 
-        db.ins_ref_log(self.mc.con, id, self.mc.get_con_info()[self.mc.usr_str])
+            # temporary fix
+            ref_list[2] = ref_list[2].year
 
-        self.stat_bar.showMessage(u'Reference saved.', 10000)
+            id = db.ins_ref(self.mc.con, ref_list)
 
-        self.iw.pop_ref_cb()
-        self.iw.upd_ref(db.get_ref_str(au, ttl, yr, id))
+            db.ins_ref_log(
+                self.mc.con, id, self.mc.get_con_info()[self.mc.usr_str])
+
+            self.stat_bar.showMessage(u'Reference saved.', 10000)
+
+            self.iw.pop_ref_cb()
+            self.iw.upd_ref(
+                db.get_ref_str(ref_list[1], ref_list[0], ref_list[2], id))
+        except exc.MandNotFldExc:
+            QMessageBox.warning(
+                self,
+                u'Mandatory Fields',
+                u'Fill/select all mandatory fields.')

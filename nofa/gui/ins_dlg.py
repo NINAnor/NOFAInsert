@@ -1522,6 +1522,15 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.pop_cb(prj_cb_dict)
 
+    def pop_ref_cb(self):
+        """
+        Populates the reference combo box.
+        """
+
+        ref_cb_dict = self._get_ref_cb_dict()
+
+        self.pop_cb(ref_cb_dict)
+
     def _add_cb_items(self, cb, item_list):
         """
         Adds items from the item list to the combo box.
@@ -1578,10 +1587,6 @@ class InsDlg(QDialog, FORM_CLASS):
                 db.get_prj_list,
                 [self.mc.con],
                 self.sel_str],
-            self.ref_cb: [
-                db.get_ref_list,
-                [self.mc.con],
-                self.sel_str],
             self.oqt_cb: [
                 db.get_oqt_list,
                 [self.mc.con],
@@ -1606,6 +1611,7 @@ class InsDlg(QDialog, FORM_CLASS):
             self._get_ectp_cb_dict(),
             self._get_dtst_cb_dict(),
             self._get_prj_cb_dict(),
+            self._get_ref_cb_dict(),
             self._get_occ_mand_cb_dict())
 
         return nofa_cb_dict
@@ -1712,6 +1718,24 @@ class InsDlg(QDialog, FORM_CLASS):
                 self.sel_str]}
 
         return prj_cb_dict
+
+    def _get_ref_cb_dict(self):
+        """
+        Returns a reference combo box dictionary.
+
+        :returns: An reference combo box dictionary.
+            - key - combo_box_name
+            - value - [fill_method, [arguments], default_value]
+        :rtype: dict.
+        """
+
+        ref_cb_dict = {
+            self.ref_cb: [
+                db.get_ref_list,
+                [self.mc.con],
+                self.sel_str]}
+
+        return ref_cb_dict
 
     def _get_occ_mand_cb_dict(self):
         """
