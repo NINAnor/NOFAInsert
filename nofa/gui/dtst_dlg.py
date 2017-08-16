@@ -231,7 +231,7 @@ class DtstDlg(QDialog):
 
     def _get_dtst_cb_dict(self):
         """
-        Return a dataset combo box dictionary.
+        Returns a dataset combo box dictionary.
 
         :returns: A dataset combo box dictionary.
             - key - combo_box_name
