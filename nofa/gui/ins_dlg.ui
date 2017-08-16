@@ -59,7 +59,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>309</width>
+             <width>319</width>
              <height>622</height>
             </rect>
            </property>
@@ -740,7 +740,7 @@
                 </property>
                </widget>
               </item>
-              <item row="8" column="0">
+              <item row="9" column="0">
                <widget class="QLabel" name="relia_lbl">
                 <property name="text">
                  <string>reliability</string>
@@ -763,7 +763,7 @@
                 </property>
                </widget>
               </item>
-              <item row="6" column="1">
+              <item row="7" column="1">
                <widget class="QLineEdit" name="rcdby_le">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -783,7 +783,7 @@
                 </property>
                </widget>
               </item>
-              <item row="6" column="0">
+              <item row="7" column="0">
                <widget class="QLabel" name="rcdby_lbl">
                 <property name="text">
                  <string>recordedBy</string>
@@ -793,7 +793,7 @@
                 </property>
                </widget>
               </item>
-              <item row="8" column="1">
+              <item row="9" column="1">
                <widget class="QComboBox" name="relia_cb">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -856,7 +856,7 @@
                 </property>
                </widget>
               </item>
-              <item row="7" column="0">
+              <item row="8" column="0">
                <widget class="QLabel" name="eventrmk_lbl">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -872,7 +872,7 @@
                 </property>
                </widget>
               </item>
-              <item row="7" column="1">
+              <item row="8" column="1">
                <widget class="QLineEdit" name="eventrmk_le">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -931,6 +931,19 @@
                 </property>
                </widget>
               </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="fldnum_lbl">
+                <property name="text">
+                 <string>fieldNumber</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QLineEdit" name="fldnum_le"/>
+              </item>
              </layout>
             </item>
             <item row="1" column="0">
@@ -953,7 +966,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>309</width>
+             <width>319</width>
              <height>622</height>
             </rect>
            </property>
@@ -1011,7 +1024,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>309</width>
+             <width>319</width>
              <height>622</height>
             </rect>
            </property>
@@ -1069,7 +1082,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>309</width>
+             <width>319</width>
              <height>622</height>
             </rect>
            </property>

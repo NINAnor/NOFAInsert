@@ -305,6 +305,7 @@ class InsDlg(QDialog, FORM_CLASS):
             self.smpe_le,
             self.dtstrt_de,
             self.dtend_de,
+            self.fldnum_le,
             self.rcdby_le,
             self.eventrmk_le,
             self.relia_cb]
