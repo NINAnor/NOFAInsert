@@ -1799,6 +1799,8 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates the taxon coverage tree widget.
         """
 
+        self.txncvg_tw.clear()
+
         fam_dict = db.get_fam_dict(self.mc.con)
 
         root_item = QTreeWidgetItem(self.txncvg_tw, ["All"])
