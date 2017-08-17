@@ -225,11 +225,10 @@ class PrjDlg(QDialog):
         Fetches data from the NOFA database and populates widgets.
         """
 
-        prj_cb_dict = self._get_prj_cb_dict()
+        self.iw.pop_cb(self._prj_cb_dict)
 
-        self.iw.pop_cb(prj_cb_dict)
-
-    def _get_prj_cb_dict(self):
+    @property
+    def _prj_cb_dict(self):
         """
         Returns a project combo box dictionary.
 
@@ -264,7 +263,7 @@ class PrjDlg(QDialog):
             id = db.ins_prj(self.mc.con, prj_list)
 
             db.ins_prj_log(
-                self.mc.con, id, self.mc.get_con_info()[self.mc.usr_str])
+                self.mc.con, id, self.mc.con_info[self.mc.usr_str])
 
             self.stat_bar.showMessage(u'Project saved.', 10000)
 

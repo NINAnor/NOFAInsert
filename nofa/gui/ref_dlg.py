@@ -221,11 +221,12 @@ class RefDlg(QDialog):
         Fetches data from the NOFA database and populates widgets.
         """
 
-        ref_cb_dict = self._get_ref_cb_dict()
+        ref_cb_dict = self._ref_cb_dict
 
         self.iw.pop_cb(ref_cb_dict)
 
-    def _get_ref_cb_dict(self):
+    @property
+    def _ref_cb_dict(self):
         """
         Returns a reference combo box dictionary.
 
@@ -259,7 +260,7 @@ class RefDlg(QDialog):
             id = db.ins_ref(self.mc.con, ref_list)
 
             db.ins_ref_log(
-                self.mc.con, id, self.mc.get_con_info()[self.mc.usr_str])
+                self.mc.con, id, self.mc.con_info[self.mc.usr_str])
 
             self.stat_bar.showMessage(u'Reference saved.', 10000)
 

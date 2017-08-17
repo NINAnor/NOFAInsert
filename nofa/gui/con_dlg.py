@@ -189,7 +189,7 @@ class ConDlg(QDialog):
 
             QgsApplication.processEvents()
 
-            con_info = self._get_con_info_le()
+            con_info = self._con_info
             self._save_con_info(con_info)
 
             QgsApplication.processEvents()
@@ -216,7 +216,8 @@ class ConDlg(QDialog):
         finally:
             self._enable_wdgs(True)
 
-    def _get_con_info_le(self):
+    @property
+    def _con_info(self):
         """
         Returns a connection information from line edits.
 

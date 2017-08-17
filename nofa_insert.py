@@ -119,7 +119,8 @@ class NOFAInsert:
         self.iface.removeToolBarIcon(self.nofa_act)
         self.ins_dlg.dsc_from_iface()
 
-    def get_con_info(self):
+    @property
+    def con_info(self):
         """
         Returns a connection information from QSettings.
 
@@ -127,14 +128,14 @@ class NOFAInsert:
         :rtype: dict.
         """
 
-        con_info = {}
+        _con_info = {}
 
         for con_str in self.con_str_tpl:
-            con_info[con_str] = self.settings.value(con_str, u'')
+            _con_info[con_str] = self.settings.value(con_str, u'')
 
-        self.username = con_info[self.usr_str]
+        self.username = _con_info[self.usr_str]
 
-        return con_info
+        return _con_info
 
     def _open_con_dlg(self, con_info=None):
         """
@@ -145,7 +146,7 @@ class NOFAInsert:
         """
 
         if not con_info:
-            con_info = self.get_con_info()
+            con_info = self.con_info
 
         self.con_dlg = con_dlg.ConDlg(self, con_info, u'Set up connection.')
         self.con_dlg.exec_()
@@ -156,7 +157,7 @@ class NOFAInsert:
         self.con = None
 
         try:
-            con_info = self.get_con_info()
+            con_info = self.con_info
             self.con = db.get_con(con_info)
 
             if not db.check_nofa_tbls(self.con):

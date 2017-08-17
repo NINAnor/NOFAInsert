@@ -182,7 +182,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.org = u'NINA'
         self.app_name = u'NOFAInsert - {}'.format(
-            self.mc.get_con_info()[self.mc.db_str])
+            self.mc.con_info[self.mc.db_str])
 
         self.settings = QSettings(self.org, self.app_name)
 
@@ -205,11 +205,6 @@ class InsDlg(QDialog, FORM_CLASS):
             u'Norwegian VatnLnr': 'no_vatn_lnr',
             u'coordinates UTM32': 25832,
             u'coordinates UTM33': 25833,}
-
-        self.loctp_list = [
-            'Norwegian VatnLnr',
-            'coordinates UTM32',
-            'coordinates UTM33']
 
         self.utm_tbl_hdrs = [
             u'easting',
@@ -536,7 +531,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Data are filtered based on information in widgets.
         """
 
-        wb, cntry_code, cnty, muni = self._get_loc_fltrs()
+        wb, cntry_code, cnty, muni = self._loc_fltrs
 
         self.lake_name_load_btn.setEnabled(False)
 
@@ -573,7 +568,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         if forbi == False and txt in self.forbi_str_list:
             val_txt = None
-        if all == False and txt == self.all_str:
+        elif all == False and txt == self.all_str:
             val_txt = None
         elif len(txt) == 0:
             val_txt = None
@@ -582,7 +577,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return val_txt
 
-    def _get_loc_fltrs(self):
+    @property
+    def _loc_fltrs(self):
         """
         Returns location filters.
         It is used to filter locations.
@@ -592,14 +588,15 @@ class InsDlg(QDialog, FORM_CLASS):
         :rtype: tuple.
         """
 
-        wb = self._get_wb()
-        cntry_code = self._get_cntry_code()
-        cnty = self._get_cnty()
-        muni = self._get_muni()
+        wb = self._wb
+        cntry_code = self._cntry_code
+        cnty = self._cnty
+        muni = self._muni
 
         return (wb, cntry_code, cnty, muni)
 
-    def _get_wb(self):
+    @property
+    def _wb(self):
         """
         Returns a water body from water body line edit.
         Returns None when there is no text in the line edit.
@@ -614,7 +611,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return wb
 
-    def _get_cntry_code(self):
+    @property
+    def _cntry_code(self):
         """
         Returns a country code from country code combo box.
 
@@ -629,7 +627,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return cntry_code
 
-    def _get_cnty(self):
+    @property
+    def _cnty(self):
         """
         Returns a county from county combo box.
 
@@ -644,7 +643,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return cnty
 
-    def _get_muni(self):
+    @property
+    def _muni(self):
         """
         Returns a municipality from municipality combo box.
 
@@ -659,7 +659,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return muni
 
-    def _get_txn(self):
+    @property
+    def _txn(self):
         """
         Returns a taxon from taxon combo box.
 
@@ -681,7 +682,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         uri = QgsDataSourceURI()
 
-        con_info = self.mc.get_con_info()
+        con_info = self.mc.con_info
 
         uri.setConnection(
             con_info[self.mc.host_str],
@@ -698,7 +699,7 @@ class InsDlg(QDialog, FORM_CLASS):
                 ', '.join(['\'{}\''.format(str(l)) for l in self.locid_list])),
             'locationID')
 
-        wb, cntry_code, cnty, muni = self._get_loc_fltrs()
+        wb, cntry_code, cnty, muni = self._loc_fltrs
 
         lyr = QgsVectorLayer(
             uri.uri(),
@@ -832,23 +833,21 @@ class InsDlg(QDialog, FORM_CLASS):
         self.usr_cb.clear()
         self.usr_cb.addItems(usr_list)
         self.usr_cb.setCurrentIndex(
-            usr_list.index(self.mc.get_con_info()[self.mc.usr_str]))
+            usr_list.index(self.mc.con_info[self.mc.usr_str]))
 
     def _fill_hist_tbls(self):
         """
         Fills all history tables.
         """
 
-        usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end = \
-            self._get_hist_fltrs()
+        hist_fltrs = self._hist_fltrs
 
         for tbl, fnc in self.hist_tbls_fnc_dict.items():
-            tbl_list, tbl_hdrs = fnc(
-                self.mc.con,
-                usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end)
+            tbl_list, tbl_hdrs = fnc(self.mc.con, *hist_fltrs)
             self._create_tbl_hist_tab(tbl, tbl_list, tbl_hdrs)
 
-    def _get_hist_fltrs(self):
+    @property
+    def _hist_fltrs(self):
         """
         Returns history filters.
         It is used to filter entries in history tab.
@@ -922,9 +921,9 @@ class InsDlg(QDialog, FORM_CLASS):
 
             event_list = self.get_wdg_list(self.event_input_wdgs)
 
-            dtst_id = self._get_dtst_id()
-            prj_id = self._get_prj_id()
-            ref_id = self._get_ref_id()
+            dtst_id = self._dtst_id
+            prj_id = self._prj_id
+            ref_id = self._ref_id
 
             for loc_id in loc_id_list:
                 event_id = uuid.uuid4()
@@ -936,7 +935,7 @@ class InsDlg(QDialog, FORM_CLASS):
                 db.ins_event_log(
                     self.mc.con,
                     loc_id, event_id, dtst_id, prj_id, ref_id,
-                    self.mc.get_con_info()[self.mc.usr_str])
+                    self.mc.con_info[self.mc.usr_str])
 
                 # OS.NINA
                 # does not work now
@@ -947,13 +946,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
                     occ_row_list = self._get_occ_row_list(m)
 
-                    txn =  occ_row_list[0]
-
-                    if txn == None:
-                        self.occ_tbl.selectRow(m)
-                        raise OccNotFldExc()
-
-                    txn_id = db.get_txn_id(self.mc.con, txn)
+                    txn_id = db.get_txn_id(self.mc.con, occ_row_list[0])
 
                     ectp = occ_row_list[1]    
                     ectp_id = db.get_ectp_id(self.mc.con, ectp)
@@ -965,7 +958,7 @@ class InsDlg(QDialog, FORM_CLASS):
                     db.ins_occ_log(
                         self.mc.con,
                         occ_id, event_id, dtst_id, prj_id, ref_id, loc_id,
-                        self.mc.get_con_info()[self.mc.usr_str])
+                        self.mc.con_info[self.mc.usr_str])
 
             QMessageBox.information(self, u'Saved', u'Data correctly saved.')
         except NoLocExc:
@@ -1086,12 +1079,13 @@ class InsDlg(QDialog, FORM_CLASS):
         :type event_id: uuid.UUID.
         """
 
-        for txn in self._get_ckd_txns():
+        for txn in self._ckd_txns:
             txn_id = db.get_txn_id(self.mc.con, txn)
 
             db.ins_txncvg(self.mc.con, txn_id, event_id)
 
-    def _get_ckd_txns(self):
+    @property
+    def _ckd_txns(self):
         """
         Returns all checked taxons from the taxon coverage tree widget.
 
@@ -1174,7 +1168,7 @@ class InsDlg(QDialog, FORM_CLASS):
                         self.mc.con,
                         loc_id,
                         loc_name,
-                        self.mc.get_con_info()[self.mc.usr_str])
+                        self.mc.con_info[self.mc.usr_str])
 
                 loc_id_list.append(loc_id)
 
@@ -1448,22 +1442,12 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.settings.setValue('ref_str', ref_str)
 
-    def _get_db_cur(self):
-        """
-        Returns a database cursor.
-        
-        :returns: A database cursor.
-        :rtype: psycopg2.cursor.
-        """
-
-        return self.mc.con.cursor()
-
     def fetch_nofa_schema(self):
         """
         Fetches data from the NOFA schema and populates widgets.
         """
 
-        nofa_cb_dict = self._get_nofa_cb_dict()
+        nofa_cb_dict = self._nofa_cb_dict
 
         self.pop_cb(nofa_cb_dict)
 
@@ -1503,9 +1487,7 @@ class InsDlg(QDialog, FORM_CLASS):
         country.
         """
 
-        cnty_cb_dict = self._get_cnty_cb_dict()
-
-        self.pop_cb(cnty_cb_dict)
+        self.pop_cb(self._cnty_cb_dict)
 
     def _pop_muni_cb(self):
         """
@@ -1513,9 +1495,7 @@ class InsDlg(QDialog, FORM_CLASS):
         selected country and county.
         """
 
-        muni_cb_dict = self._get_muni_cb_dict()
-
-        self.pop_cb(muni_cb_dict)
+        self.pop_cb(self._muni_cb_dict)
 
     def _pop_ectp_cb(self):
         """
@@ -1523,36 +1503,28 @@ class InsDlg(QDialog, FORM_CLASS):
         taxon.
         """
 
-        ectp_cb_dict = self._get_ectp_cb_dict()
-
-        self.pop_cb(ectp_cb_dict)
+        self.pop_cb(self._ectp_cb_dict)
 
     def pop_dtst_cb(self):
         """
         Populates the dataset combo box.
         """
 
-        dtst_cb_dict = self._get_dtst_cb_dict()
-
-        self.pop_cb(dtst_cb_dict)
+        self.pop_cb(self._dtst_cb_dict)
 
     def pop_prj_cb(self):
         """
         Populates the project combo box.
         """
 
-        prj_cb_dict = self._get_prj_cb_dict()
-
-        self.pop_cb(prj_cb_dict)
+        self.pop_cb(self._prj_cb_dict)
 
     def pop_ref_cb(self):
         """
         Populates the reference combo box.
         """
 
-        ref_cb_dict = self._get_ref_cb_dict()
-
-        self.pop_cb(ref_cb_dict)
+        self.pop_cb(self._ref_cb_dict)
 
     def _add_cb_items(self, cb, item_list):
         """
@@ -1575,7 +1547,8 @@ class InsDlg(QDialog, FORM_CLASS):
                 clr = self.red_clr
                 cb.setItemData(i, QBrush(clr), Qt.BackgroundRole)
 
-    def _get_nofa_cb_dict(self):
+    @property
+    def _nofa_cb_dict(self):
         """
         Returns a nofa combo box dictionary.
 
@@ -1601,7 +1574,7 @@ class InsDlg(QDialog, FORM_CLASS):
             self.smpsu_cb: [
                 db.get_smpsu_list,
                 [self.mc.con],
-                self.sel_str],
+                self.mty_str],
             self.relia_cb: [
                 db.get_reliab_list,
                 [self.mc.con],
@@ -1629,13 +1602,13 @@ class InsDlg(QDialog, FORM_CLASS):
 
         nofa_cb_dict = self._get_mrgd_dict(
             nofa_cb_dict,
-            self._get_cnty_cb_dict(),
-            self._get_muni_cb_dict(),
-            self._get_ectp_cb_dict(),
-            self._get_dtst_cb_dict(),
-            self._get_prj_cb_dict(),
-            self._get_ref_cb_dict(),
-            self._get_occ_mand_cb_dict())
+            self._cnty_cb_dict,
+            self._muni_cb_dict,
+            self._ectp_cb_dict,
+            self._dtst_cb_dict,
+            self._prj_cb_dict,
+            self._ref_cb_dict,
+            self._occ_mand_cb_dict)
 
         return nofa_cb_dict
 
@@ -1652,7 +1625,8 @@ class InsDlg(QDialog, FORM_CLASS):
     
         return mrgd_dict
 
-    def _get_cnty_cb_dict(self):
+    @property
+    def _cnty_cb_dict(self):
         """
         Returns a county combo box dictionary.
 
@@ -1665,12 +1639,13 @@ class InsDlg(QDialog, FORM_CLASS):
         cnty_cb_dict = {
             self.cnty_cb: [
                 db.get_cnty_list,
-                [self.mc.con, self._get_cntry_code()],
+                [self.mc.con, self._cntry_code],
                 self.all_str]}
 
         return cnty_cb_dict
 
-    def _get_muni_cb_dict(self):
+    @property
+    def _muni_cb_dict(self):
         """
         Returns a municipality combo box dictionary.
 
@@ -1683,12 +1658,13 @@ class InsDlg(QDialog, FORM_CLASS):
         muni_cb_dict = {
             self.muni_cb: [
                 db.get_muni_list,
-                [self.mc.con, self._get_cntry_code(), self._get_cnty()],
+                [self.mc.con, self._cntry_code, self._cnty],
                 self.all_str]}
 
         return muni_cb_dict
 
-    def _get_ectp_cb_dict(self):
+    @property
+    def _ectp_cb_dict(self):
         """
         Returns an ecotype combo box dictionary.
 
@@ -1701,12 +1677,13 @@ class InsDlg(QDialog, FORM_CLASS):
         ectp_cb_dict = {
             self.ectp_cb: [
                 db.get_ectp_list,
-                [self.mc.con, self._get_txn()],
+                [self.mc.con, self._txn],
                 self.mty_str]}
 
         return ectp_cb_dict
 
-    def _get_dtst_cb_dict(self):
+    @property
+    def _dtst_cb_dict(self):
         """
         Returns a dataset combo box dictionary.
 
@@ -1724,7 +1701,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return dtst_cb_dict
 
-    def _get_prj_cb_dict(self):
+    @property
+    def _prj_cb_dict(self):
         """
         Returns a project combo box dictionary.
 
@@ -1742,7 +1720,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return prj_cb_dict
 
-    def _get_ref_cb_dict(self):
+    @property
+    def _ref_cb_dict(self):
         """
         Returns a reference combo box dictionary.
 
@@ -1760,7 +1739,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return ref_cb_dict
 
-    def _get_occ_mand_cb_dict(self):
+    @property
+    def _occ_mand_cb_dict(self):
         """
         Returns an occurrence mandatory combo box dictionary.
 
@@ -1820,7 +1800,8 @@ class InsDlg(QDialog, FORM_CLASS):
         self.txncvg_tw.sortByColumn(0, Qt.AscendingOrder)
         self.txncvg_tw.expandToDepth(0)
 
-    def _get_dtst_id(self):
+    @property
+    def _dtst_id(self):
         """
         Returns a dataset ID from the dataset combo box.
 
@@ -1834,7 +1815,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return id
 
-    def _get_prj_id(self):
+    @property
+    def _prj_id(self):
         """
         Returns a project ID based on name and organization.
 
@@ -1850,7 +1832,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return prj_id
 
-    def _get_ref_id(self):
+    @property
+    def _ref_id(self):
         """
         Returns a reference ID from the reference combo box.
 
@@ -1875,7 +1858,10 @@ class InsDlg(QDialog, FORM_CLASS):
         # OS.NINA
         # location types are hardcoded
         # could not find a list of location types in db
-        loctp_list = self.loctp_list
+        loctp_list = [
+            'Norwegian VatnLnr',
+            'coordinates UTM32',
+            'coordinates UTM33']
         loctp_list.sort()
 
         return loctp_list
@@ -2031,9 +2017,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Resets occurrence mandatory combo boxes.
         """
 
-        occ_mand_cb_dict = self._get_occ_mand_cb_dict()
-
-        for cb, cb_list in occ_mand_cb_dict.items():
+        for cb, cb_list in self._occ_mand_cb_dict.items():
             def_val = cb_list[2]
             cb.setCurrentIndex(cb.findText(def_val))
 

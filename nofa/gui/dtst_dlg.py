@@ -225,11 +225,10 @@ class DtstDlg(QDialog):
         Fetches data from the NOFA database and populates widgets.
         """
 
-        dtst_cb_dict = self._get_dtst_cb_dict()
+        self.iw.pop_cb(self._dtst_cb_dict)
 
-        self.iw.pop_cb(dtst_cb_dict)
-
-    def _get_dtst_cb_dict(self):
+    @property
+    def _dtst_cb_dict(self):
         """
         Returns a dataset combo box dictionary.
 
@@ -296,7 +295,7 @@ class DtstDlg(QDialog):
             db.ins_dtst(self.mc.con, dtst_list)
 
             db.ins_dtst_log(
-                self.mc.con, id, self.mc.get_con_info()[self.mc.usr_str])
+                self.mc.con, id, self.mc.con_info[self.mc.usr_str])
 
             self.stat_bar.showMessage(u'Dataset saved.', 10000)
 
