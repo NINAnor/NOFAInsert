@@ -375,6 +375,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.hist_tbls_fnc_dict = {
             self.hist_occ_tbl: db.get_hist_occ_list,
             self.hist_loc_tbl: db.get_hist_loc_list,
+            self.hist_event_tbl: db.get_hist_event_list,
             self.hist_dtst_tbl: db.get_hist_dtst_list,
             self.hist_prj_tbl: db.get_hist_prj_list,
             self.hist_ref_tbl: db.get_hist_ref_list}
@@ -920,6 +921,11 @@ class InsDlg(QDialog, FORM_CLASS):
                 db.ins_event(
                     self.mc.con,
                     loc_id, event_id, event_list, dtst_id, prj_id, ref_id)
+
+                db.ins_event_log(
+                    self.mc.con,
+                    loc_id, event_id, dtst_id, prj_id, ref_id,
+                    self.mc.get_con_info()[self.mc.usr_str])
 
                 # OS.NINA
                 # does not work now

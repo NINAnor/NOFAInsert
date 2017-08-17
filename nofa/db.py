@@ -1504,6 +1504,79 @@ def ins_occ_log(con, occ_id, event_id, dtst_id, prj_id, ref_id, loc_id, usr):
          'location_id': loc_id,
          'username': usr})
 
+def ins_loc_log(con, id, name, usr):
+    """
+    Insert a location log to the database.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param id: A location ID.
+    :type id: str.
+    :param name: A location name.
+    :type name: str.
+    :param usr: An username.
+    :type usr: str.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        INSERT INTO     plugin.location_log(
+                            location_id,
+                            location_name,
+                            username)
+        VALUES          (   %(location_id)s,
+                            %(location_name)s,
+                            %(username)s)
+        ''',
+        {'location_id': id,
+         'location_name': name,
+         'username': usr})
+
+def ins_event_log(con, loc_id, event_id, dtst_id, prj_id, ref_id, usr):
+    """
+    Insert an event log to the database.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param loc_id: A location ID.
+    :type loc_id: str.
+    :param event_id: An event ID.
+    :type event_id: uuid.UUID.
+    :param dtst_id: A dataset ID.
+    :type dtst_id: str.
+    :param prj_id: A project ID.
+    :type prj_id: str.
+    :param ref_id: A reference ID.
+    :type ref_id: int
+    :param usr: An username.
+    :type usr: str.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        INSERT INTO     plugin.event_log(
+                            event_id,
+                            location_id,
+                            dataset_id,
+                            project_id,
+                            reference_id,
+                            username)
+        VALUES          (   %(event_id)s,
+                            %(location_id)s,
+                            %(dataset_id)s,
+                            %(project_id)s,
+                            %(reference_id)s,
+                            %(username)s)
+        ''',
+        {'event_id': event_id,
+         'location_id': loc_id,
+         'dataset_id': dtst_id,
+         'project_id': prj_id,
+         'reference_id': ref_id,
+         'username': usr})
+
 def ins_dtst_log(con, id, usr):
     """
     Insert a dataset log to the database.
@@ -1550,35 +1623,6 @@ def ins_prj_log(con, id, usr):
                             %(username)s)
         ''',
         {'project_id': id,
-         'username': usr})
-
-def ins_loc_log(con, id, name, usr):
-    """
-    Insert a location log to the database.
-
-    :param con: A connection.
-    :type con: psycopg2.connection.
-    :param id: A location ID.
-    :type id: str.
-    :param name: A location name.
-    :type name: str.
-    :param usr: An username.
-    :type usr: str.
-    """
-
-    cur = _get_db_cur(con)
-    insert_location_log = cur.execute(
-        '''
-        INSERT INTO     plugin.location_log(
-                            location_id,
-                            location_name,
-                            username)
-        VALUES          (   %(location_id)s,
-                            %(location_name)s,
-                            %(username)s)
-        ''',
-        {'location_id': id,
-         'location_name': name,
          'username': usr})
 
 def ins_ref_log(con, id, usr):
@@ -1718,6 +1762,64 @@ def get_hist_loc_list(
     hist_loc_hdrs = [d[0] for d in cur.description]
 
     return (hist_loc_list, hist_loc_hdrs)
+
+def get_hist_event_list(
+        con, usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end):
+    """
+    Returns a list of history events that is used to populate
+    event history table.
+    Also returns a list of history events headers.
+    Data are filtered based on input values.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param usr: An username.
+    :type usr: str.
+    :param ins_dt_strt: Insert date start.
+    :type ins_dt_strt: datetime.date.
+    :param ins_dt_end: Insert date end.
+    :type ins_dt_end: datetime.date.
+    :param upd_dt_strt: Update date start.
+    :type upd_dt_strt: datetime.date.
+    :param upd_dt_end: Update date end.
+    :type upd_dt_end: datetime.date.
+
+    :returns: A tuple containing a list of history events
+        and a list of history events headers.
+    :rtype: tuple.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      event_id,
+                    location_id,
+                    dataset_id,
+                    project_id,
+                    reference_id,
+                    username,
+                    insert_timestamp,
+                    update_timestamp
+        FROM        plugin.event_log
+        WHERE       (%(username)s IS NULL OR "username" LIKE %(username)s)
+                    AND
+                    date(insert_timestamp)
+                        BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s
+                    AND
+                    date(update_timestamp)
+                        BETWEEN %(upd_dt_strt)s AND %(upd_dt_end)s
+        ''',
+        {'username': usr,
+         'ins_dt_strt': ins_dt_strt,
+         'ins_dt_end': ins_dt_end,
+         'upd_dt_strt': upd_dt_strt,
+         'upd_dt_end': upd_dt_end})
+
+    hist_event_list = cur.fetchall()
+
+    hist_event_hdrs = [d[0] for d in cur.description]
+
+    return (hist_event_list, hist_event_hdrs)
 
 def get_hist_dtst_list(
         con, usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end):

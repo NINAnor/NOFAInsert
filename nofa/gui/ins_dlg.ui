@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1269</width>
-    <height>846</height>
+    <width>1268</width>
+    <height>788</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -60,7 +60,7 @@
              <x>0</x>
              <y>0</y>
              <width>319</width>
-             <height>622</height>
+             <height>564</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1165,8 +1165,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>904</width>
-              <height>310</height>
+              <width>903</width>
+              <height>274</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_21">
@@ -1542,7 +1542,7 @@
                <x>0</x>
                <y>0</y>
                <width>283</width>
-               <height>461</height>
+               <height>439</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_19">
@@ -1619,8 +1619,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>615</width>
-               <height>461</height>
+               <width>614</width>
+               <height>439</height>
               </rect>
              </property>
              <property name="sizePolicy">
@@ -2003,7 +2003,7 @@
        <item row="0" column="0">
         <widget class="QTabWidget" name="hist_tabwdg">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="hist_occ_tab">
           <attribute name="title">
@@ -2022,6 +2022,16 @@
           <layout class="QGridLayout" name="gridLayout_14">
            <item row="0" column="0">
             <widget class="QTableWidget" name="hist_loc_tbl"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="hist_event_tab">
+          <attribute name="title">
+           <string>Events</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_23">
+           <item row="0" column="0">
+            <widget class="QTableWidget" name="hist_event_tbl"/>
            </item>
           </layout>
          </widget>
