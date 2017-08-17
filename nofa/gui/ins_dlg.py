@@ -186,20 +186,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.settings = QSettings(self.org, self.app_name)
 
-        # OS.NINA
-        # clear setting for development purposes
-        self.settings.clear()
-
         self.setWindowTitle(self.app_name)
-
-        self.language = 'Latin'
-
-        self.species_names = {
-            'Latin': 'scientificName',
-            'English': 'vernacularName',
-            'Norwegian': 'vernacularName_NO',
-            'Swedish': 'vernacularName_SE',
-            'Finish': 'vernacularName_FI'}
 
         self.loctp_dict = {
             u'Norwegian VatnLnr': 'no_vatn_lnr',
@@ -219,6 +206,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.dtst_str = u'Dataset'
         self.prj_str = u'Project'
         self.ref_str = u'Reference'
+        self.psql_str = u'postgres'
 
         self.mty_str = u''
         self.all_str = u'<all>'
@@ -704,7 +692,7 @@ class InsDlg(QDialog, FORM_CLASS):
         lyr = QgsVectorLayer(
             uri.uri(),
             u'location-{}-{}-{}-{}'.format(wb, cntry_code, cnty, muni),
-            'postgres')
+            self.psql_str)
 
         if lyr.isValid():
             QgsMapLayerRegistry.instance().addMapLayer(lyr)
