@@ -1900,8 +1900,46 @@ def get_usr_list(con):
         WHERE       CURRENT_TIMESTAMP < valuntil
         ORDER BY    u
         ''')
+
     usrs = cur.fetchall()
 
     usr_list = [u[0] for u in usrs]
 
     return usr_list
+
+def get_col_def_val(con, schema, tbl, col):
+    """
+    Returns a column default value for the given table in the given schema.
+    This function returns a default value with database function or cast.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param schema: A schema.
+    :type schema: str.
+    :param tbl: A table.
+    :type tbl: str.
+    :param col: A column.
+    :type col: str.
+
+    :returns: A column default value.
+    :rtype: str.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      column_default
+        FROM        information_schema.columns
+        WHERE       table_schema = %(schema)s
+                    AND
+                    table_name = %(table)s
+                    AND
+                    column_name = %(column)s
+        ''',
+        {'schema': schema,
+         'table': tbl,
+         'column': col})
+
+    col_def_val = cur.fetchone()[0]
+
+    return col_def_val

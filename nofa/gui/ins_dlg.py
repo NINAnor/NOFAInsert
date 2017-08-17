@@ -1557,7 +1557,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
     def _get_nofa_cb_dict(self):
         """
-        Return a nofa combo box dictionary.
+        Returns a nofa combo box dictionary.
 
         :returns: A nofa combo box dictionary.
             - key - combo_box_name
@@ -1758,11 +1758,19 @@ class InsDlg(QDialog, FORM_CLASS):
             self.occstat_cb: [
                 db.get_occstat_list,
                 [self.mc.con],
-                u'present'],
+                db.get_col_def_val(
+                    self.mc.con,
+                    'nofa',
+                    'occurrence',
+                    'occurrenceStatus').split("'")[1]],
             self.estm_cb: [
                 db.get_estbms_list,
                 [self.mc.con],
-                u'unknown']}
+                db.get_col_def_val(
+                    self.mc.con,
+                    'nofa',
+                    'occurrence',
+                    'establishmentMeans').split("'")[1]]}
 
         return occ_mand_cb_dict
 
