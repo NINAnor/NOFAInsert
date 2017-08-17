@@ -40,7 +40,7 @@ cur.execute(
                         event_id text NOT NULL,
                         dataset_id text NOT NULL,
                         project_id text NOT NULL,
-                        reference_id text NOT NULL,
+                        reference_id integer NOT NULL,
                         location_id text NOT NULL,
                         test boolean DEFAULT False,
                         username text NOT NULL,
@@ -146,7 +146,7 @@ cur.execute(
                         location_id text NOT NULL,
                         dataset_id text NOT NULL,
                         project_id text NOT NULL,
-                        reference_id text NOT NULL,
+                        reference_id integer NOT NULL,
                         test boolean DEFAULT False,
                         username text NOT NULL,
                         insert_timestamp timestamp without time zone
