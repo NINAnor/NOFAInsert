@@ -56,8 +56,15 @@ class MtdtNotFldExc(Exception):
     A custom exception when a metadata mandatory widget is not filled.
     """
 
-    pass
+    def __init__(self, wdg):
+        """
+        Constructor.
 
+        :param nf_nvl: A widget that is not filled/selected.
+        :type nf_nvl: QWidget.
+        """
+
+        self.wdg = wdg
 
 class OccNotFldExc(Exception):
     """
@@ -130,7 +137,7 @@ class NvlNfExc(Exception):
         Constructor.
 
         :param nf_nvl: Not found 'Norwegian VatLnr'.
-        :type nf_nvl: tuple
+        :type nf_nvl: tuple.
         """
 
         self.nf_nvl = nf_nvl
@@ -401,9 +408,9 @@ class InsDlg(QDialog, FORM_CLASS):
             self.estm_cb]
 
         self.mtdt_mand_wdgs = [
-            self.rcdby_le,
             self.smpp_cb,
             self.dtend_de,
+            self.rcdby_le,
             self.dtst_cb,
             self.prj_cb,
             self.ref_cb]
@@ -484,13 +491,13 @@ class InsDlg(QDialog, FORM_CLASS):
             if isinstance(wdg, QLineEdit):
                 valr = wdg.validator()
                 if valr.validate(wdg.text(), 0)[0] != QValidator.Acceptable:
-                    raise exc()
+                    raise exc(wdg)
             elif isinstance(wdg, QComboBox):
                 if wdg.currentText() == self.sel_str:
-                    raise exc()
+                    raise exc(wdg)
             elif isinstance(wdg, QDateEdit):
                 if wdg.styleSheet() != self.mty_str:
-                    raise exc()
+                    raise exc(wdg)
 
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -958,6 +965,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
             QMessageBox.information(self, u'Saved', u'Data correctly saved.')
         except NoLocExc:
+            self.main_tb.setCurrentIndex(0)
             QMessageBox.warning(
                 self, u'No Location', u'Enter at least one location.')
         except NvlLocTextExc:
@@ -1000,7 +1008,9 @@ class InsDlg(QDialog, FORM_CLASS):
                 u'Norwegian VatLnr',
                 u'The following Norwegian VatLnr codes were not found:\n'
                 u'{}\n'.format(u', '.join(str(n) for n in e.nf_nvl)))
-        except MtdtNotFldExc:
+        except MtdtNotFldExc as e:
+            self.main_tb.setCurrentWidget(e.wdg.parent())
+            e.wdg.setFocus()
             QMessageBox.warning(
                 self,
                 u'Mandatory Metadata Fields',

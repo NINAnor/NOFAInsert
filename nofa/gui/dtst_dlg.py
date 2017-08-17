@@ -302,7 +302,8 @@ class DtstDlg(QDialog):
 
             self.iw.pop_dtst_cb()
             self.iw.upd_dtst(db.get_dtst_str(id, dtst_list[0]))
-        except exc.MandNotFldExc:
+        except exc.MandNotFldExc as e:
+            e.wdg.setFocus()
             QMessageBox.warning(
                 self,
                 u'Mandatory Fields',

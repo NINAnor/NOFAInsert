@@ -266,7 +266,8 @@ class RefDlg(QDialog):
             self.iw.pop_ref_cb()
             self.iw.upd_ref(
                 db.get_ref_str(ref_list[1], ref_list[0], ref_list[2], id))
-        except exc.MandNotFldExc:
+        except exc.MandNotFldExc as e:
+            e.wdg.setFocus()
             QMessageBox.warning(
                 self,
                 u'Mandatory Fields',

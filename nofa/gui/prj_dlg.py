@@ -270,7 +270,8 @@ class PrjDlg(QDialog):
 
             self.iw.pop_prj_cb()
             self.iw.upd_prj(db.get_prj_str(prj_list[2], prj_list[0]))
-        except exc.MandNotFldExc:
+        except exc.MandNotFldExc as e:
+            e.wdg.setFocus()
             QMessageBox.warning(
                 self,
                 u'Mandatory Fields',

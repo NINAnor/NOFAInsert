@@ -29,4 +29,12 @@ class MandNotFldExc(Exception):
     A custom exception when a mandatory widget is not filled.
     """
 
-    pass
+    def __init__(self, wdg):
+        """
+        Constructor.
+
+        :param nf_nvl: A widget that is not filled/selected.
+        :type nf_nvl: QWidget.
+        """
+
+        self.wdg = wdg
