@@ -555,7 +555,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.lake_name_statlbl.setText(
             u'Found {} location(s).'.format(loc_count))
 
-    def _get_val_txt(self, txt, forbi=False):
+    def _get_val_txt(self, txt, forbi=False, all=False):
         """
         Returns a validated text.
 
@@ -563,6 +563,8 @@ class InsDlg(QDialog, FORM_CLASS):
         :type txt: str.
         :param forbi: True to allow forbidden text, False otherwise.
         :type forbi: bool.
+        :param all: True to allow all text, False otherwise.
+        :type all: bool
 
         :returns: A filter, None when text is in list of forbidden strings
             or when length of text is zero.
@@ -570,6 +572,8 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         if forbi == False and txt in self.forbi_str_list:
+            val_txt = None
+        if all == False and txt == self.all_str:
             val_txt = None
         elif len(txt) == 0:
             val_txt = None
@@ -606,7 +610,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         txt = self.wb_le.text()
 
-        wb = self._get_val_txt(txt)
+        wb = self._get_val_txt(txt, all=True)
 
         return wb
 
