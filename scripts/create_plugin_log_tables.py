@@ -28,7 +28,7 @@ cur.execute(
 
 con.commit()
 
-print u'schema "plugin"created'
+print u'schema "plugin" created'
 
 
 # create occurrence log table
@@ -54,7 +54,7 @@ cur.execute(
 
 con.commit()
 
-print u'table "plugin.occurrence_log"created'
+print u'table "plugin.occurrence_log" created'
 
 
 # create dataset log table
@@ -74,7 +74,7 @@ cur.execute(
 
 con.commit()
 
-print u'table "plugin.dataset_log"created'
+print u'table "plugin.dataset_log" created'
 
 
 # create project log table
@@ -94,7 +94,7 @@ cur.execute(
 
 con.commit()
 
-print u'table "plugin.project_log"created'
+print u'table "plugin.project_log" created'
 
 
 # create reference log table
@@ -114,7 +114,7 @@ cur.execute(
 
 con.commit()
 
-print u'table "plugin.reference_log"created'
+print u'table "plugin.reference_log" created'
 
 
 # create location log table
@@ -135,7 +135,31 @@ cur.execute(
 
 con.commit()
 
-print u'table "plugin.location_log"created'
+print u'table "plugin.location_log" created'
+
+
+# create event log table
+cur.execute(
+    """
+    CREATE TABLE    plugin.event_log(
+                        event_id uuid NOT NULL,
+                        dataset_id text NOT NULL,
+                        project_id text NOT NULL,
+                        reference_id text NOT NULL,
+                        location_id text NOT NULL,
+                        test boolean DEFAULT False,
+                        username text NOT NULL,
+                        insert_timestamp timestamp without time zone
+                            DEFAULT now(),
+                        update_timestamp timestamp without time zone
+                            DEFAULT now());
+    COMMENT ON TABLE    plugin.location_log
+    IS                  'Log table storing info about all new events inserted by NOFAInsert plugin.';
+    """)
+ 
+con.commit()
+ 
+print u'table "plugin.event_log" created'
 
 
 con.close()
