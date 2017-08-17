@@ -143,17 +143,17 @@ cur.execute(
     """
     CREATE TABLE    plugin.event_log(
                         event_id uuid NOT NULL,
+                        location_id text NOT NULL,
                         dataset_id text NOT NULL,
                         project_id text NOT NULL,
                         reference_id text NOT NULL,
-                        location_id text NOT NULL,
                         test boolean DEFAULT False,
                         username text NOT NULL,
                         insert_timestamp timestamp without time zone
                             DEFAULT now(),
                         update_timestamp timestamp without time zone
                             DEFAULT now());
-    COMMENT ON TABLE    plugin.location_log
+    COMMENT ON TABLE    plugin.event_log
     IS                  'Log table storing info about all new events inserted by NOFAInsert plugin.';
     """)
  
