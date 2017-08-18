@@ -1002,10 +1002,10 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         try:
-            loc_id_list = self._get_loc()
-
             self.chck_mand_wdgs(self.mtdt_mand_wdgs, MtdtNotFldExc)
             self._chck_occ_tbl()
+
+            loc_id_list = self._get_loc()
 
             event_list = self.get_wdg_list(self.event_input_wdgs)
 
@@ -1206,10 +1206,10 @@ class InsDlg(QDialog, FORM_CLASS):
 
         loctp = self.loctp_cb.currentText()
 
-        loc_input_list = self._get_loc_input_list(loctp)
+        loc_input_set = self._get_loc_input_set(loctp)
 
         if loctp == 'Norwegian VatnLnr':
-            locs_tpl = tuple([nvl for loc in loc_input_list for nvl in loc])
+            locs_tpl = tuple([nvl for loc in loc_input_set for nvl in loc])
 
             loc_id_nvl_list = db.get_loc_id_nvl_list(self.mc.con, locs_tpl)
 
@@ -1225,7 +1225,7 @@ class InsDlg(QDialog, FORM_CLASS):
         else:
             loc_id_list = []
 
-            for loc in loc_input_list:
+            for loc in loc_input_set:
                 utme = loc[0]
                 utmn = loc[1]
 
@@ -1262,18 +1262,16 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return loc_id_list
 
-    def _get_loc_input_list(self, loctp):
+    def _get_loc_input_set(self, loctp):
         """
-        Return a list of location inputs.
+        Return a set of location inputs.
 
         :param loctp: A location type.
         :type loctp: str.
 
-        :returns: A list of location inputs.
-        :rtype: list.
+        :returns: A set of location inputs.
+        :rtype: set.
         """
-
-        loc_input_list = []
 
         # get data from table
         if self.loc_tbl_rb.isChecked():
@@ -1342,7 +1340,9 @@ class InsDlg(QDialog, FORM_CLASS):
                         except ValueError:
                             raise UtmLocTextExc()
 
-        return loc_input_list
+        loc_input_set = set(map(tuple, loc_input_list))
+
+        return loc_input_set
 
     def _chck_occ_tbl(self):
         """
