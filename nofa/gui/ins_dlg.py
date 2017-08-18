@@ -31,7 +31,7 @@ from PyQt4.QtGui import (
     QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget,
     QTableWidgetItem, QDialog, QDoubleValidator, QIntValidator, QComboBox,
     QLineEdit, QDateEdit, QAbstractItemView, QValidator, QBrush, QColor,
-    QPlainTextEdit)
+    QPlainTextEdit, QTextCursor)
 
 from qgis.core import (
     QgsApplication, QgsMessageLog, QgsCoordinateReferenceSystem,
@@ -51,6 +51,30 @@ import dtst_dlg, prj_dlg, ref_dlg, vald
 from .. import db
 
 
+class ActLyrExc(Exception):
+    """
+    A custom exception when there is no active layer.
+    """
+
+    pass
+
+
+class LocLyrSrcExc(Exception):
+    """
+    A custom exception when a layer source is not "nofa.location".
+    """
+
+    pass
+
+
+class SelFeatExc(Exception):
+    """
+    A custom exception when there are no selected features.
+    """
+
+    pass
+
+
 class MtdtNotFldExc(Exception):
     """
     A custom exception when a metadata mandatory widget is not filled.
@@ -65,6 +89,7 @@ class MtdtNotFldExc(Exception):
         """
 
         self.wdg = wdg
+
 
 class OccNotFldExc(Exception):
     """
@@ -356,11 +381,11 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.osm_basemap_btn.clicked.connect(self._add_osm_wms_lyr)
 
-        self.lake_name_srch_btn.clicked.connect(self._srch_loc)
+        self.loc_srch_btn.clicked.connect(self._srch_loc)
         self.wb_le.returnPressed.connect(self._srch_loc)
-
-        self.lake_name_load_btn.setEnabled(False)
-        self.lake_name_load_btn.clicked.connect(self._load_loc_layer)
+        self.loc_load_btn.setEnabled(False)
+        self.loc_load_btn.clicked.connect(self._load_loc_layer)
+        self.add_nvl_btn.clicked.connect(self._add_nvl_codes)
 
         self.hist_tbls_fnc_dict = {
             self.hist_occ_tbl: db.get_hist_occ_list,
@@ -402,8 +427,8 @@ class InsDlg(QDialog, FORM_CLASS):
  
         self.set_mand_wdgs(self.all_mand_wdgs)
 
-        # self.main_hspltr.setStretchFactor(0, 1)
-        # self.main_hspltr.setStretchFactor(1, 2)
+        self.main_hspltr.setStretchFactor(0, 1)
+        self.main_hspltr.setStretchFactor(1, 2)
         self.occ_hspltr.setStretchFactor(0, 1)
         self.occ_hspltr.setStretchFactor(1, 2)
 
@@ -521,7 +546,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         wb, cntry_code, cnty, muni = self._loc_fltrs
 
-        self.lake_name_load_btn.setEnabled(False)
+        self.loc_load_btn.setEnabled(False)
 
         locid_list = db.get_loc_by_fltrs(
             self.mc.con, wb, cntry_code, cnty, muni)
@@ -529,11 +554,11 @@ class InsDlg(QDialog, FORM_CLASS):
         loc_count = len(locid_list)
 
         if loc_count != 0:
-            self.lake_name_load_btn.setEnabled(True)
+            self.loc_load_btn.setEnabled(True)
 
             self.locid_list = locid_list
         else:
-            self.lake_name_load_btn.setEnabled(False)
+            self.loc_load_btn.setEnabled(False)
 
         self.lake_name_statlbl.setText(
             u'Found {} location(s).'.format(loc_count))
@@ -697,6 +722,79 @@ class InsDlg(QDialog, FORM_CLASS):
         if lyr.isValid():
             QgsMapLayerRegistry.instance().addMapLayer(lyr)
 
+    def _add_nvl_codes(self):
+        """
+        Adds Norwegian VatLnr codes of selected features
+        to table/plain text edit.
+        """
+
+        try:
+            lyr = self.iface.activeLayer()
+
+            self._chck_lyr(lyr)
+
+            if lyr.selectedFeatureCount() == 0:
+                raise SelFeatExc()
+
+            sel_feats = lyr.selectedFeaturesIterator()
+
+            for feat in sel_feats:
+                nvl = str(feat.attribute('no_vatn_lnr'))
+
+                if nvl.lower() == 'null':
+                    continue
+
+                if self.loc_tbl_rb.isChecked():
+                    row_data = self._get_row_data(
+                        self.nvl_tbl, self.nvl_tbl.currentRow())[0]
+
+                    if row_data:
+                        self.loc_addrow_btn.click()
+
+                    self._set_row_data(
+                        self.nvl_tbl, self.nvl_tbl.currentRow(), [nvl])
+                else:
+                    self.loc_pte.moveCursor(QTextCursor.End)
+
+                    txt = self.loc_pte.toPlainText()
+
+                    if not txt.strip().endswith(u',') and len(txt) != 0:
+                        self.loc_pte.insertPlainText(u', ')
+
+                    self.loc_pte.insertPlainText(nvl)
+                    self.loc_pte.moveCursor(QTextCursor.End)
+        except ActLyrExc:
+            QMessageBox.warning(
+                self,
+                u'No Active Layer',
+                u'There is no active layer.')
+        except LocLyrSrcExc:
+            QMessageBox.warning(
+                self,
+                u'Layer Source',
+                u'Source of active layer is not "nofa.location".')
+        except SelFeatExc:
+            QMessageBox.warning(
+                self,
+                u'Selected Features',
+                u'There are no selected features.')
+
+    def _chck_lyr(self, lyr):
+        """
+        Checks if the given layer is a from nofa.location table.
+        
+        :param lyr: A layer to be checked.
+        :type lyr: QgsVectorLayer.
+        """
+
+        try:
+            uri = QgsDataSourceURI(lyr.source())
+        except AttributeError:
+            raise ActLyrExc()
+
+        if uri.schema() != 'nofa' or uri.table() != 'location':
+            raise LocLyrSrcExc()
+
     def dsc_from_iface(self):
         """
         Disconnects the plugin from the QGIS interface.
@@ -781,9 +879,11 @@ class InsDlg(QDialog, FORM_CLASS):
         if cb_idx == 0:
             self.loc_tbl_sw.setCurrentIndex(0)
             self.coord_cnvs_btn.setEnabled(False)
+            self.add_nvl_btn.setEnabled(True)
         else:
             self.loc_tbl_sw.setCurrentIndex(1)
             self.coord_cnvs_btn.setEnabled(True)
+            self.add_nvl_btn.setEnabled(False)
 
     def _fetch_schema(self):
         """
