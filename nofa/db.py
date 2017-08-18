@@ -299,18 +299,17 @@ def ins_txncvg(con, txn_id, event_id):
     :type event_id: uuid.UUID.
     """
 
-    # OS.NINA
-    # this query does not work
-    # TODO - solve PK 
     cur = _get_db_cur(con)
     cur.execute(
         '''
-        INSERT INTO     nofa."taxonomicCoverage"(
-                            "taxonID_l_taxon",
-                            "eventID_observationEvent")
-        VALUES          (%s, %s)
+        INSERT INTO     nofa."samplingTaxaRange"(
+                            "taxonID",
+                            "eventID")
+        VALUES         (   %(taxonID)s,
+                           %(eventID)s)
         ''',
-        (txn_id, event_id))
+        {'taxonID': txn_id,
+         'eventID': event_id})
 
 def get_loc_id_nvl_list(con, locs_tpl):
     """

@@ -1025,9 +1025,7 @@ class InsDlg(QDialog, FORM_CLASS):
                     loc_id, event_id, dtst_id, prj_id, ref_id,
                     self.mc.con_info[self.mc.usr_str])
 
-                # OS.NINA
-                # does not work now
-                # self._ins_txncvg(event_id)
+                self._ins_txncvg(event_id)
 
                 for m in range(self.occ_tbl.rowCount()):
                     occ_id = uuid.uuid4()
