@@ -293,9 +293,9 @@ class InsDlg(QDialog, FORM_CLASS):
         self.addprj_btn.clicked.connect(self._open_prj_dlg)
         self.addref_btn.clicked.connect(self._open_ref_dlg)
 
-        self.dtst_cb.activated.connect(self._upd_dtst_lw)
-        self.prj_cb.activated.connect(self._upd_prj_lw)
-        self.ref_cb.activated.connect(self._upd_ref_lw)
+        self.dtst_cb.activated.connect(self._upd_mtdt_lw)
+        self.prj_cb.activated.connect(self._upd_mtdt_lw)
+        self.ref_cb.activated.connect(self._upd_mtdt_lw)
 
         self.occ_tbl.currentItemChanged.connect(self._upd_occ_gb_at_selrow)
         self.occ_rowup_btn.clicked.connect(self._sel_row_up)
@@ -1024,9 +1024,9 @@ class InsDlg(QDialog, FORM_CLASS):
 
             event_list = self.get_wdg_list(self.event_input_wdgs)
 
-            dtst_id = self._dtst_id
-            prj_id = self._prj_id
-            ref_id = self._ref_id
+            dtst_id = self._get_dtst_id()
+            prj_id = self._get_prj_id()
+            ref_id = self._get_ref_id()
 
             for loc_id in loc_id_list:
                 event_id = uuid.uuid4()
@@ -1372,59 +1372,87 @@ class InsDlg(QDialog, FORM_CLASS):
                 self.occ_tbl.selectRow(m)
                 raise OccNotFldExc()
 
-    def upd_dtst(self, dtst_id_name=None):
+    def upd_dtst(self, dtst_str=None):
         """
         Updates a dataset according to the last selected.
         
-        :param dtst_id_name: A dataset ID and name "<datasetID> - <name>".
-        :type dtst_id_name: str.
+        :param dtst_str: A dataset string "<ID> - <name>".
+        :type dtst_str: str.
         """
 
-        if not dtst_id_name:
-            dtst_id_name = self.settings.value('dtst_str')
+        self._upd_mtdt(self.dtst_cb, dtst_str)
 
-        if dtst_id_name:
-            dtst_cb_index = self.dtst_cb.findText(dtst_id_name)
-            self.dtst_cb.setCurrentIndex(dtst_cb_index)
+    def upd_prj(self, prj_str=None):
+        """
+        Updates a project according to the last selected.
+        
+        :param prj_str: A project string "<name> - <organisation>".
+        :type prj_str: str.
+        """
+
+        self._upd_mtdt(self.prj_cb, prj_str)
+
+    def upd_ref(self, ref_str=None):
+        """
+        Updates a reference according to the last selected.
+
+        :param ref_str: A reference string "<author>: <title> (<year>) @<ID>".
+        :type ref_str: str.
+        """
+
+        self._upd_mtdt(self.ref_cb, ref_str)
+
+    def _upd_mtdt(self, cb, cb_str=None):
+        """
+        Updates a metadata according to the last selected.
+        """
+
+        if not cb_str:
+            cb_str = self.settings.value(cb.objectName())
+
+        if cb_str:
+            cb_idx = cb.findText(cb_str)
+            cb.setCurrentIndex(cb_idx)
         else:
-            dtst_id_name = self.dtst_cb.currentText()
+            cb_str = cb.currentText()
 
-        self._upd_dtst_lw(dtst_id_name)
+        self._upd_mtdt_lw(cb_str, cb)
 
-    def _upd_dtst_lw(self, dtst_id_name):
+    def _upd_mtdt_lw(self, cb_str, cb=None):
         """
-        Updates the dataset list widget according to the current or last
-        dataset.
+        Updates a metadata list widget.
 
-        :param dtst_id_name: A dataset ID and name "<datasetID> - <name>".
-        :type dtst_id_name: str.
+        :param cb_str: A combob box string.
+        :type cb_str: str.
+        :param cb: A combo box.
+        :type cb: QComboBox.
         """
 
-        if isinstance(dtst_id_name, int):
-            dtst_id_name = self.dtst_cb.currentText()
+        if isinstance(cb_str, int):
+            cb = self.sender()
+            cb_str = cb.currentText()
 
-        self.dtst_lw.clear()
+        idx = self.main_tb.indexOf(cb.parentWidget())
+        mdtd_base_txt = self.main_tb.itemText(idx).split(self.dash_split_str)[0]
 
-        if dtst_id_name in self.forbi_str_list:
-            dtst_txt = dtst_id_name
+        if cb_str in self.forbi_str_list:
+            mtdt_txt = cb_str
         else:
-            dtst_id = dtst_id_name.split(self.dash_split_str)[0]
+            lw, id_met, info_fnc, mtdt_str_fnc = self._mtdt_cb_dict[cb]
 
-            cur, dtst = db.get_dtst_info(self.mc.con, dtst_id)
+            items, hdrs = info_fnc(self.mc.con, id_met())
 
-            for idx, dtst_data in enumerate(dtst):
-                dtst_item = QListWidgetItem(
-                    u'{}: {}'.format(cur.description[idx][0], dtst_data))
-                self.dtst_lw.addItem(dtst_item)
+            lw.clear()
+            self._pop_lw(lw, items, hdrs)
 
-            dtst_txt = dtst[1]
-    
-        self._set_mtdt_item_text(
-            2, u'{}{}{}'.format(self.dtst_str, self.dash_split_str, dtst_txt))
+            mtdt_txt = mtdt_str_fnc(cb_str)
 
-        self.settings.setValue('dtst_str', dtst_id_name)
+        self._set_mtdt_item_txt(
+            idx, u'{}{}{}'.format(mdtd_base_txt, self.dash_split_str, mtdt_txt))
 
-    def _set_mtdt_item_text(self, item_index, text):
+        self.settings.setValue(cb.objectName(), cb_str)
+
+    def _set_mtdt_item_txt(self, item_index, text):
         """
         Sets metadata item text.
 
@@ -1436,115 +1464,55 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.main_tb.setItemText(item_index, text)
 
-    def upd_prj(self, prj_str=None):
+    @property
+    def _mtdt_cb_dict(self):
         """
-        Updates a project according to the last selected.
-        
-        :param prj_str: A project string "<name> - <organisation>".
-        :type prj_str: str.
-        """
+        Returns a metadata combo box dictionary.
 
-        if not prj_str:
-            prj_str = self.settings.value('prj_str')
-
-        if prj_str:
-            proj_cb_index = self.prj_cb.findText(prj_str)
-            self.prj_cb.setCurrentIndex(proj_cb_index)
-        else:
-            prj_str = self.prj_cb.currentText()
-
-        self._upd_prj_lw(prj_str)
-
-    def _upd_prj_lw(self, prj_str):
-        """
-        Updates the project list widget according to the current or last
-        project.
-        
-        :param prj_str: A project string "<name> - <organisation>".
-        :type prj_str: str.
+        :returns: A metadata combo box dictionary.
+            - key - <combo box name>
+            - value - [<list widget>,
+                       <method that returns ID>,
+                       <function that returns information>,
+                       <function that returns metadata string>]
+        :rtype: dict.
         """
 
-        if isinstance(prj_str, int):
-            prj_str = self.prj_cb.currentText()
+        mtdt_cb_dict = {
+            self.dtst_cb: [
+                self.dtst_lw,
+                self._get_dtst_id,
+                db.get_dtst_info,
+                db.get_dtst_mtdt_str],
+            self.prj_cb: [
+                self.prj_lw,
+                self._get_prj_id,
+                db.get_prj_info,
+                db.get_prj_mtdt_str],
+            self.ref_cb: [
+                self.ref_lw,
+                self._get_ref_id,
+                db.get_ref_info,
+                db.get_ref_mtdt_str]}
 
-        self.prj_lw.clear()
+        return mtdt_cb_dict
 
-        if prj_str in self.forbi_str_list:
-            mtdt_txt = prj_str
-        else:
-            prj_name, prj_org = db.get_prj_name_org_from_str(prj_str)
-
-            cur, prj = db.get_prj_info(self.mc.con, prj_name, prj_org)
-
-            for idx, prj_data in enumerate(prj):
-                prj_item = QListWidgetItem(
-                    u'{}: {}'.format(cur.description[idx][0], prj_data))
-                self.prj_lw.addItem(prj_item)
-
-            mtdt_txt = prj_str
-
-        self._set_mtdt_item_text(
-            3, u'{}{}{}'.format(self.prj_str, self.dash_split_str, mtdt_txt))
-
-        self.settings.setValue('prj_str', prj_str)
-
-    def upd_ref(self, ref_str=None):
+    def _pop_lw(self, lw, items, hdrs):
         """
-        Updates a reference according to the last selected.
-        """
+        Populates the given list widget.
+        Adds all items with their corresponding headers "<header>: <item>".
 
-        if not ref_str:
-            ref_str = self.settings.value('ref_str')
-
-        if ref_str:
-            ref_cb_index = self.ref_cb.findText(ref_str)
-            self.ref_cb.setCurrentIndex(ref_cb_index)
-        else:
-            ref_str = self.ref_cb.currentText()
-
-        self._upd_ref_lw(ref_str)
-
-    def _upd_ref_lw(self, ref_str):
-        """
-        Updates the reference list widget according to the current or last
-        reference.
-        
-        :param ref_str: A reference author title and ID
-            "<author>: <title> (<year>) @<ID>".
-        :type ref_str: str.
+        :param lw: A list widget.
+        :type lw: QListWidget.
+        :param items: Items to be added.
+        :type items: list.
+        :param hdrs: Headers to be added.
+        :type hdrs: list.
         """
 
-        if isinstance(ref_str, int):
-            ref_str = self.ref_cb.currentText()
-
-        self.ref_lw.clear()
-
-        if ref_str in self.forbi_str_list:
-            mtdt_txt = ref_str
-        else:
-            ref_au = ref_str.split(u': ')[0]
-            ref_yr = ref_str.split(u' (')[1].split(u') ')[0]
-            ref_ttl = ref_str.split(u': ')[1].split(u' (')[0]
-            ref_id = ref_str.split(self.at_split_str)[1]
-
-            cur, ref = db.get_ref_info(self.mc.con, ref_id)
-
-            for idx, ref_data in enumerate(ref):
-                ref_item = QListWidgetItem(
-                    u'{}: {}'.format(cur.description[idx][0], ref_data))
-                self.ref_lw.addItem(ref_item)
-
-            mtdt_txt = u'{}{}{}{}{}'.format(
-                ref_au,
-                self.dash_split_str,
-                ref_yr,
-                self.dash_split_str,
-                ref_ttl)
-
-        self._set_mtdt_item_text(
-            4, u'{}{}{}'.format(self.ref_str, self.dash_split_str, mtdt_txt))
-
-        self.settings.setValue('ref_str', ref_str)
+        for hdr, item in zip(hdrs, items):
+            lw_item = QListWidgetItem(u'{}: {}'.format(hdr, item))
+            lw.addItem(lw_item)
 
     def fetch_nofa_schema(self):
         """
@@ -1566,8 +1534,8 @@ class InsDlg(QDialog, FORM_CLASS):
         Populates combo boxes.
 
         :param cb_dict: A combo box dictionary.
-            - key - combo_box_name
-            - value - [fill_method, [arguments], default_value]
+            - key - <combo box name>
+            - value - [<fill method>, [<arguments>], <default value>]
         :type cb_dict:
         """
 
@@ -1657,8 +1625,8 @@ class InsDlg(QDialog, FORM_CLASS):
         Returns a nofa combo box dictionary.
 
         :returns: A nofa combo box dictionary.
-            - key - combo_box_name
-            - value - [fill_method, [arguments], default_value]
+            - key - <combo box name>
+            - value - [<fill method>, [<arguments>], <default value>]
         :rtype: dict.
         """
 
@@ -1735,8 +1703,8 @@ class InsDlg(QDialog, FORM_CLASS):
         Returns a county combo box dictionary.
 
         :returns: A county combo box dictionary.
-            - key - combo_box_name
-            - value - [fill_method, [arguments], default_value]
+            - key - <combo box name>
+            - value - [<fill method>, [<arguments>], <default value>]
         :rtype: dict.
         """
 
@@ -1754,8 +1722,8 @@ class InsDlg(QDialog, FORM_CLASS):
         Returns a municipality combo box dictionary.
 
         :returns: A municipality combo box dictionary.
-            - key - combo_box_name
-            - value - [fill_method, [arguments], default_value]
+            - key - <combo box name>
+            - value - [<fill method>, [<arguments>], <default value>]
         :rtype: dict.
         """
 
@@ -1773,8 +1741,8 @@ class InsDlg(QDialog, FORM_CLASS):
         Returns an ecotype combo box dictionary.
 
         :returns: An ecotype combo box dictionary.
-            - key - combo_box_name
-            - value - [fill_method, [arguments], default_value]
+            - key - <combo box name>
+            - value - [<fill method>, [<arguments>], <default value>]
         :rtype: dict.
         """
 
@@ -1792,8 +1760,8 @@ class InsDlg(QDialog, FORM_CLASS):
         Returns a dataset combo box dictionary.
 
         :returns: An dataset combo box dictionary.
-            - key - combo_box_name
-            - value - [fill_method, [arguments], default_value]
+            - key - <combo box name>
+            - value - [<fill method>, [<arguments>], <default value>]
         :rtype: dict.
         """
 
@@ -1811,8 +1779,8 @@ class InsDlg(QDialog, FORM_CLASS):
         Returns a project combo box dictionary.
 
         :returns: An project combo box dictionary.
-            - key - combo_box_name
-            - value - [fill_method, [arguments], default_value]
+            - key - <combo box name>
+            - value - [<fill method>, [<arguments>], <default value>]
         :rtype: dict.
         """
 
@@ -1830,8 +1798,8 @@ class InsDlg(QDialog, FORM_CLASS):
         Returns a reference combo box dictionary.
 
         :returns: An reference combo box dictionary.
-            - key - combo_box_name
-            - value - [fill_method, [arguments], default_value]
+            - key - <combo box name>
+            - value - [<fill method>, [<arguments>], <default value>]
         :rtype: dict.
         """
 
@@ -1849,8 +1817,8 @@ class InsDlg(QDialog, FORM_CLASS):
         Returns an occurrence mandatory combo box dictionary.
 
         :returns: An occurrence mandatory combo box dictionary.
-            - key - combo_box_name
-            - value - [fill_method, [arguments], default_value]
+            - key - <combo box name>
+            - value - [<fill method>, [<arguments>], <default value>]
         :rtype: dict.
         """
 
@@ -1904,8 +1872,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.txncvg_tw.sortByColumn(0, Qt.AscendingOrder)
         self.txncvg_tw.expandToDepth(0)
 
-    @property
-    def _dtst_id(self):
+    def _get_dtst_id(self):
         """
         Returns a dataset ID from the dataset combo box.
 
@@ -1915,12 +1882,11 @@ class InsDlg(QDialog, FORM_CLASS):
 
         dtst_str = self.dtst_cb.currentText()
 
-        id = dtst_str.split(self.dash_split_str)[0]
+        id, name = db.split_dtst_str(dtst_str)
 
         return id
 
-    @property
-    def _prj_id(self):
+    def _get_prj_id(self):
         """
         Returns a project ID based on name and organization.
 
@@ -1930,14 +1896,13 @@ class InsDlg(QDialog, FORM_CLASS):
 
         prj_str = self.prj_cb.currentText()
 
-        prj_name, prj_org = db.get_prj_name_org_from_str(prj_str)
+        prj_name, prj_org = db.split_prj_str(prj_str)
 
         prj_id = db.get_prj_id(self.mc.con, prj_name, prj_org)
 
         return prj_id
 
-    @property
-    def _ref_id(self):
+    def _get_ref_id(self):
         """
         Returns a reference ID from the reference combo box.
 
@@ -1947,7 +1912,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         ref_str = self.ref_cb.currentText()
 
-        id = int(ref_str.split(self.at_split_str)[1])
+        au, ttl, yr, id = db.split_ref_str(ref_str)
 
         return id
 
@@ -2013,8 +1978,10 @@ class InsDlg(QDialog, FORM_CLASS):
         
         :param tbl: A table widget.
         :type tbl: QTableWidget.
+        :param tbl_items: Table items.
+        :type tbl_items: list.
         :param tbl_hdrs: Table headers.
-        :type tbl_hdrs: tuple.
+        :type tbl_hdrs: list.
         """
   
         tbl.setColumnCount(len(tbl_hdrs))

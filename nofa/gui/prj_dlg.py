@@ -181,7 +181,8 @@ class PrjDlg(QDialog):
         self.iw.set_mand_wdgs(self.mand_wdgs)
 
         # temporary workaround
-        self.no_le.setValidator(vald.LenIntVald(self.no_le))
+        self.no_le.setValidator(
+            vald.LenIntVald(self.no_le, -2147483648, 2147483647))
 
         self._fetch_prj_data()
 
@@ -253,8 +254,11 @@ class PrjDlg(QDialog):
             prj_list = self.iw.get_wdg_list(self.input_wdgs)
 
             # temporary fix
-            prj_list[3] = prj_list[3].year
-            prj_list[4] = prj_list[4].year
+            for i in range(3, 5):
+                try:
+                    prj_list[i] = prj_list[i].year
+                except:
+                    pass
 
             id = db.ins_prj(self.mc.con, prj_list)
 

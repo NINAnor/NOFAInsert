@@ -28,9 +28,6 @@ import datetime
 import psycopg2, psycopg2.extras
 
 
-DASH_SPLIT_STR = u' - '
-
-
 def get_con(con_info):
     """
     Returns a connection.
@@ -347,8 +344,8 @@ def get_dtst_info(con, dtst_id):
     :param dtst_id: A dataset ID.
     :type dtst_id: str.
 
-    :returns: A tuple containing cursor and a list of information
-        about the dataset.
+    :returns: A tuple containing a list of dataset items
+        and a list of dataset headers.
     :rtype: tuple.
     """
 
@@ -368,24 +365,25 @@ def get_dtst_info(con, dtst_id):
         WHERE       "datasetID" = %s
         ''',
         (dtst_id,))
-    dtst = cur.fetchone()
 
-    return (cur, dtst)
+    dtst_items = cur.fetchone()
 
-def get_prj_info(con, prj_name, prj_org):
+    dtst_hdrs = [h[0] for h in cur.description]
+
+    return (dtst_items, dtst_hdrs)
+
+def get_prj_info(con, prj_id):
     """
     Returns information about a project with the given project name
     and organization.
 
     :param con: A connection.
     :type con: psycopg2.connection.
-    :param prj_name: A project name.
-    :type prj_name: str.
-    :param prj_org: A project organization.
-    :type prj_org: str.
+    :param prj_id: A project ID.
+    :type prj_id: int.
 
-    :returns: A tuple containing cursor and a list of information
-        about the project.
+    :returns: A tuple containing a list of project items
+        and a list of project headers.
     :rtype: tuple.
     """
 
@@ -403,14 +401,15 @@ def get_prj_info(con, prj_name, prj_org):
                     "remarks",
                     "projectID"
         FROM        nofa."m_project"
-        WHERE       "projectName" = %s
-                    AND
-                    "organisation" = %s
+        WHERE       "projectID" = %s
         ''',
-        (prj_name, prj_org,))
-    prj = cur.fetchone()
+        (prj_id,))
 
-    return (cur, prj)
+    prj_items = cur.fetchone()
+
+    prj_hdrs = [h[0] for h in cur.description]
+
+    return (prj_items, prj_hdrs)
 
 def get_ref_info(con, ref_id):
     """
@@ -421,8 +420,8 @@ def get_ref_info(con, ref_id):
     :param ref_id: A reference ID.
     :type ref_id: str.
 
-    :returns: A tuple containing cursor and a list of information
-        about the reference.
+    :returns: A tuple containing a list of reference items
+        and a list of reference headers.
     :rtype: tuple.
     """
 
@@ -443,9 +442,12 @@ def get_ref_info(con, ref_id):
         WHERE       "referenceID" = %s
         ''',
         (ref_id,))
-    ref = cur.fetchone()
 
-    return (cur, ref)
+    ref_items = cur.fetchone()
+
+    ref_hdrs = [h[0] for h in cur.description]
+
+    return (ref_items, ref_hdrs)
 
 def get_fam_dict(con):
     """
@@ -593,9 +595,26 @@ def get_dtst_list(con):
 
     return dtst_list
 
+def get_dtst_mtdt_str(dtst_str):
+    """
+    Returns a dataset metadata string "Dataset - <name>".
+
+    :param dtst_str: A dataset string "<ID> - <name>".
+    :type dtst_str: str.
+
+    :returns: A dataset metadata string "Dataset - <name>".
+    :rtype: str.
+    """
+
+    name, org = split_dtst_str(dtst_str)
+
+    dtst_mtdt_str = u'{}'.format(name)
+    
+    return dtst_mtdt_str
+
 def get_dtst_str(id, name):
     """
-    Returns a dataset string "<id> - <name>"
+    Returns a dataset string "<ID> - <name>"
 
     :param id: A dataset ID.
     :type id: str.
@@ -603,9 +622,28 @@ def get_dtst_str(id, name):
     :type name: str.
     """
 
-    dtst_str = u'{}{}{}'.format(id, DASH_SPLIT_STR, name)
+    dtst_str = u'{} - {}'.format(id, name)
 
     return dtst_str
+
+def split_dtst_str(dtst_str):
+    """
+    Splits a dataset string "<ID> - <name>" and returns
+    its information.
+
+    :param dtst_str: A dataset string "<ID> - <name>".
+    :type dtst_str: str.
+
+    :returns: Tuple containing dataset ID and name.
+    :rtype: tuple.
+    """
+
+    split_dtst_str = dtst_str.split(u' - ')
+
+    id = split_dtst_str[0]
+    name = split_dtst_str[1]
+
+    return (id, name)
 
 def get_prj_list(con):
     """
@@ -633,6 +671,23 @@ def get_prj_list(con):
 
     return prj_list
 
+def get_prj_mtdt_str(prj_str):
+    """
+    Returns a projects metadata string "Project - <name> - <organisation>".
+
+    :param prj_str: A project string "<name> - <organization>".
+    :type prj_str: str.
+
+    :returns: A projects metadata string "Project - <name> - <organisation>".
+    :rtype: str.
+    """
+
+    name, org = split_prj_str(prj_str)
+
+    prj_mtdt_str = u'{} - {}'.format(name, org)
+    
+    return prj_mtdt_str
+
 def get_prj_str(name, org):
     """
     Returns a project string "<name> - <organisation>".
@@ -646,26 +701,23 @@ def get_prj_str(name, org):
     :rtype: str.
     """
 
-    prj_str = u'{}{}{}'.format(
-        name,
-        DASH_SPLIT_STR,
-        org)
+    prj_str = u'{} - {}'.format(name, org)
 
     return prj_str
 
-def get_prj_name_org_from_str(prj_str):
+def split_prj_str(prj_str):
     """
-    Returns a project name and organization from the given project string
-    "<name> - <organization>".
+    Splits a project string "<name> - <organization>" and returns
+    its information.
 
     :param prj_str: A project string "<name> - <organization>".
     :type prj_str: str.
 
-    :returns: A project name and organization.
+    :returns: Tuple containing project name and organization.
     :rtype: tuple.
     """
 
-    split_prj_str = prj_str.split(DASH_SPLIT_STR)
+    split_prj_str = prj_str.split(u' - ')
 
     name = split_prj_str[0]
     org = split_prj_str[1]
@@ -731,6 +783,25 @@ def get_ref_list(con):
 
     return ref_list
 
+def get_ref_mtdt_str(ref_str):
+    """
+    Returns a reference metadata string
+    "Reference - <author>: <title> (<year>)".
+
+    :param ref_str: A reference string "<author>: <title> (<year>) @<ID>".
+    :type ref_str: str.
+
+    :returns: A reference metadata string
+        "Reference - <author>: <title> (<year>)".
+    :rtype: str.
+    """
+
+    au, ttl, yr, id = split_ref_str(ref_str)
+
+    ref_mtdt_str = u'{}: {} ({})'.format(au, ttl, yr)
+    
+    return ref_mtdt_str
+
 def get_ref_str(au, ttl, yr, id):
     """
     Returns a reference string "<author>: <title> (<year>) @<ID>".
@@ -743,11 +814,33 @@ def get_ref_str(au, ttl, yr, id):
     :type yr: int.
     :param id: A reference ID.
     :type id: str.
+
+    :returns: A reference string "<author>: <title> (<year>) @<ID>".
+    :rtype: str.
     """
 
     ref_str = u'{}: {} ({}) @{}'.format(au, ttl, yr, id)
     
     return ref_str
+
+def split_ref_str(ref_str):
+    """
+    Splits a reference string "<author>: <title> (<year>) @<ID>" and returns
+    its information.
+
+    :param ref_str: A reference string "<author>: <title> (<year>) @<ID>".
+    :type ref_str: str.
+
+    :returns: Tuple containing reference author, year, title and ID.
+    :rtype: tuple.
+    """
+
+    au = ref_str.split(u': ')[0]
+    ttl = ref_str.split(u': ')[1].split(u' (')[0]
+    yr = ref_str.split(u' (')[1].split(u') ')[0]
+    id = int(ref_str.split(u'@')[1])
+    
+    return (au, ttl, yr, id)
 
 def get_txn_list(con):
     """
