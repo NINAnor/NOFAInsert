@@ -819,16 +819,6 @@
                 </property>
                </widget>
               </item>
-              <item row="5" column="1">
-               <widget class="QDateEdit" name="dtend_de">
-                <property name="displayFormat">
-                 <string>yyyy-MM-dd</string>
-                </property>
-                <property name="calendarPopup">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
               <item row="3" column="0">
                <widget class="QLabel" name="smpe_lbl">
                 <property name="text">
@@ -846,16 +836,6 @@
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QDateEdit" name="dtstrt_de">
-                <property name="displayFormat">
-                 <string>yyyy-MM-dd</string>
-                </property>
-                <property name="calendarPopup">
-                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -1927,25 +1907,6 @@
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="8" column="3">
-                      <widget class="QDateEdit" name="verdt_de">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="contextMenuPolicy">
-                        <enum>Qt::DefaultContextMenu</enum>
-                       </property>
-                       <property name="displayFormat">
-                        <string>yyyy-MM-dd</string>
-                       </property>
-                       <property name="calendarPopup">
-                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>

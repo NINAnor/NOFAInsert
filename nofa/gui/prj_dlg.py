@@ -27,9 +27,9 @@
 from PyQt4.QtCore import Qt, QDate
 from PyQt4.QtGui import (
     QDialog, QGridLayout, QSizePolicy, QLabel, QLineEdit, QComboBox,
-    QPlainTextEdit, QHBoxLayout, QPushButton, QStatusBar, QDateEdit,
-    QMessageBox)
+    QPlainTextEdit, QHBoxLayout, QPushButton, QStatusBar, QMessageBox)
 
+import de
 import exc
 import vald
 from .. import db
@@ -114,13 +114,10 @@ class PrjDlg(QDialog):
         self.styr_lbl.setText(u'startYear')
         self.grid_lyt.addWidget(self.styr_lbl, 3, 0, 1, 1)
 
-        today_dt = QDate.currentDate()
-
-        self.styr_de = QDateEdit(self)
-        self.styr_de.setObjectName(u'styr_de')
-        self.styr_de.setDisplayFormat('yyyy')
-        self.styr_de.setDate(today_dt)
-        self.grid_lyt.addWidget(self.styr_de, 3, 1, 1, 1)
+        self.styr_mde = de.MtyDe(self)
+        self.styr_mde.setObjectName(u'styr_mde')
+        self.styr_mde.setDisplayFormat('yyyy')
+        self.grid_lyt.addWidget(self.styr_mde, 3, 1, 1, 1)
 
         self.endyr_lbl = QLabel(self)
         self.endyr_lbl.setObjectName(u'endyr_lbl')
@@ -128,11 +125,10 @@ class PrjDlg(QDialog):
         self.endyr_lbl.setText(u'endYear')
         self.grid_lyt.addWidget(self.endyr_lbl, 4, 0, 1, 1)
 
-        self.endyr_de = QDateEdit(self)
-        self.endyr_de.setObjectName(u'endyr_de')
-        self.endyr_de.setDisplayFormat('yyyy')
-        self.endyr_de.setDate(today_dt)
-        self.grid_lyt.addWidget(self.endyr_de, 4, 1, 1, 1)
+        self.endyr_mde = de.MtyDe(self)
+        self.endyr_mde.setObjectName(u'endyr_mde')
+        self.endyr_mde.setDisplayFormat('yyyy')
+        self.grid_lyt.addWidget(self.endyr_mde, 4, 1, 1, 1)
 
         self.ldr_lbl = QLabel(self)
         self.ldr_lbl.setObjectName(u'ldr_lbl')
@@ -178,7 +174,7 @@ class PrjDlg(QDialog):
             self.org_cb,
             self.no_le,
             self.name_le,
-            self.styr_de,
+            self.styr_mde,
             self.ldr_le,
             self.fncr_le]
 
@@ -194,8 +190,8 @@ class PrjDlg(QDialog):
             self.org_cb,
             self.no_le,
             self.name_le,
-            self.styr_de,
-            self.endyr_de,
+            self.styr_mde,
+            self.endyr_mde,
             self.ldr_le,
             self.mbr_pte,
             self.fncr_le,

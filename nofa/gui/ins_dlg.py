@@ -46,8 +46,8 @@ import datetime
 import uuid
 import sys
 
+import de
 import dtst_dlg, prj_dlg, ref_dlg, vald
-
 from .. import db
 
 
@@ -257,6 +257,21 @@ class InsDlg(QDialog, FORM_CLASS):
         Builds and sets up own widgets.
         """
 
+        self.dtstrt_mde = de.MtyDe(self)
+        self.dtstrt_mde.setObjectName(u'dtstrt_mde')
+        self.dtstrt_mde.setDisplayFormat('yyyy-MM-dd')
+        self.event_grid_lyt.addWidget(self.dtstrt_mde, 4, 1, 1, 1)
+
+        self.dtend_mde = de.MtyDe(self)
+        self.dtend_mde.setObjectName(u'dtend_mde')
+        self.dtend_mde.setDisplayFormat('yyyy-MM-dd')
+        self.event_grid_lyt.addWidget(self.dtend_mde, 5, 1, 1, 1)
+
+        self.verdt_mde = de.MtyDe(self)
+        self.verdt_mde.setObjectName(u'verdt_mde')
+        self.verdt_mde.setDisplayFormat('yyyy-MM-dd')
+        self.occ_grid_lyt.addWidget(self.verdt_mde, 8, 3, 1, 1)
+
         self.cntry_code_cb.currentIndexChanged.connect(self._pop_cnty_cb)
         self.cnty_cb.currentIndexChanged.connect(self._pop_muni_cb)
 
@@ -269,9 +284,6 @@ class InsDlg(QDialog, FORM_CLASS):
         self.hist_upd_dtend_de.dateChanged.connect(
             self.hist_upd_dtstrt_de.setMaximumDate)
 
-        self.dtstrt_de.setDate(self.today_dt)
-        self.dtend_de.setDate(self.today_dt)
-        self.verdt_de.setDate(self.nxt_week_dt)
         self.hist_ins_dtstrt_de.setDate(self.fltr_str_dt)
         self.hist_ins_dtend_de.setDate(self.today_dt)
         self.hist_upd_dtstrt_de.setDate(self.fltr_str_dt)
@@ -318,8 +330,8 @@ class InsDlg(QDialog, FORM_CLASS):
             self.smpsv_le,
             self.smpsu_cb,
             self.smpe_le,
-            self.dtstrt_de,
-            self.dtend_de,
+            self.dtstrt_mde,
+            self.dtend_mde,
             self.fldnum_le,
             self.rcdby_le,
             self.eventrmk_le,
@@ -340,7 +352,7 @@ class InsDlg(QDialog, FORM_CLASS):
             (u'spawningCondition', self.spwnc_cb),
             (u'spawningLocation', self.spwnl_cb),
             (u'verifiedBy', self.vfdby_le),
-            (u'verifiedDate', self.verdt_de)])
+            (u'verifiedDate', self.verdt_mde)])
 
         for wdg in self.occ_tbl_hdrs_wdg_dict.values():
             if isinstance(wdg, QLineEdit):
@@ -417,7 +429,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.mtdt_mand_wdgs = [
             self.smpp_cb,
-            self.dtend_de,
+            self.dtend_mde,
             self.rcdby_le,
             self.dtst_cb,
             self.prj_cb,
@@ -453,9 +465,8 @@ class InsDlg(QDialog, FORM_CLASS):
             elif isinstance(wdg, QComboBox):
                 wdg.currentIndexChanged.connect(self._chck_state_text)
             elif isinstance(wdg, QDateEdit):
-                wdg.setStyleSheet(
-                    "background-color: {}".format(self.yel_clr.name()))
-                wdg.editingFinished.connect(self._chck_state_text)
+                wdg.dateChanged.connect(self._chck_state_text)
+                wdg.dateChanged.emit(wdg.date())
 
     def _chck_state_text(self):
         """
@@ -475,8 +486,12 @@ class InsDlg(QDialog, FORM_CLASS):
             else:
                 state = QValidator.Acceptable
         elif isinstance(sndr, QDateEdit):
-            state = QValidator.Acceptable
+            txt = sndr.findChild(QLineEdit).text()
 
+            if txt == self.mty_str:
+                state = QValidator.Invalid
+            else:
+                state = QValidator.Acceptable
         if state == QValidator.Intermediate or state == QValidator.Invalid:
             clr = self.red_clr
             stl = 'background-color: {}'.format(clr.name())
@@ -504,7 +519,7 @@ class InsDlg(QDialog, FORM_CLASS):
                 if wdg.currentText() == self.sel_str:
                     raise exc(wdg)
             elif isinstance(wdg, QDateEdit):
-                if wdg.styleSheet() != self.mty_str:
+                if wdg.findChild(QLineEdit).text() == self.mty_str:
                     raise exc(wdg)
 
     def tr(self, message):
@@ -1125,7 +1140,10 @@ class InsDlg(QDialog, FORM_CLASS):
                 txt = wdg.currentText()
                 wdg_data = self._get_val_txt(txt, forbi)
             elif isinstance(wdg, QDateEdit):
-                wdg_data = wdg.date().toPyDate()
+                if wdg.findChild(QLineEdit).text() == self.mty_str:
+                    wdg_data = None
+                else:
+                    wdg_data = wdg.date().toPyDate()
             elif isinstance(wdg, QPlainTextEdit):
                 txt = wdg.toPlainText()
                 wdg_data = self._get_val_txt(txt, forbi)

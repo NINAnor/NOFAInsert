@@ -30,6 +30,7 @@ from PyQt4.QtGui import (
     QPlainTextEdit, QHBoxLayout, QPushButton, QStatusBar, QDateEdit,
     QMessageBox)
 
+import de
 import exc
 import vald
 from .. import db
@@ -106,11 +107,10 @@ class RefDlg(QDialog):
 
         today_dt = QDate.currentDate()
 
-        self.yr_de = QDateEdit(self)
-        self.yr_de.setObjectName(u'yr_de')
-        self.yr_de.setDisplayFormat('yyyy')
-        self.yr_de.setDate(today_dt)
-        self.grid_lyt.addWidget(self.yr_de, 2, 1, 1, 1)
+        self.yr_mde = de.MtyDe(self)
+        self.yr_mde.setObjectName(u'yr_mde')
+        self.yr_mde.setDisplayFormat('yyyy')
+        self.grid_lyt.addWidget(self.yr_mde, 2, 1, 1, 1)
 
         self.isbn_lbl = QLabel(self)
         self.isbn_lbl.setObjectName(u'isbn_lbl')
@@ -175,7 +175,7 @@ class RefDlg(QDialog):
         self.mand_wdgs = [
             self.ttl_le,
             self.au_le,
-            self.yr_de,
+            self.yr_mde,
             self.tp_cb]
 
         self.iw.set_mand_wdgs(self.mand_wdgs)
@@ -189,7 +189,7 @@ class RefDlg(QDialog):
         self.input_wdgs = [
             self.ttl_le,
             self.au_le,
-            self.yr_de,
+            self.yr_mde,
             self.isbn_le,
             self.issn_le,
             self.tp_cb,
