@@ -2176,8 +2176,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
     def _upd_occ_row(self):
         """
-        Updates an occurrence row according to the values in the occurrence
-        widgets.
+        Updates an occurrence row with the values in the occurrence widgets.
         """
 
         m = self.occ_tbl.currentRow()
@@ -2225,7 +2224,6 @@ class InsDlg(QDialog, FORM_CLASS):
 
         if self._check_occ_tbl(tbl):
             self._rst_occ_row()
-            self._upd_occ_row()
 
     def _rst_occ_row(self):
         """
@@ -2268,6 +2266,13 @@ class InsDlg(QDialog, FORM_CLASS):
 
         m = self.occ_tbl.currentRow()
 
+        QgsApplication.processEvents()
+
+        for wdg in self.occ_tbl_hdrs_wdg_dict.values():
+            wdg.blockSignals(True)
+
+        QgsApplication.processEvents()
+
         for n, wdg in enumerate(self.occ_tbl_hdrs_wdg_dict.values()):
             text = self.occ_tbl.item(m, n).text()
 
@@ -2278,6 +2283,13 @@ class InsDlg(QDialog, FORM_CLASS):
                 wdg.setCurrentIndex(idx)
             elif isinstance(wdg, QDateEdit):
                 wdg.setDate(QDate.fromString(text, 'yyyy-MM-dd'))
+
+        QgsApplication.processEvents()
+
+        for wdg in self.occ_tbl_hdrs_wdg_dict.values():
+            wdg.blockSignals(False)
+
+        QgsApplication.processEvents()
 
     def _rst_loc_row(self):
         """
