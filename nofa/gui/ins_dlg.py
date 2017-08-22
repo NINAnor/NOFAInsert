@@ -1714,9 +1714,9 @@ class InsDlg(QDialog, FORM_CLASS):
         for i, item in enumerate(item_list):
             cb.addItem(item)
 
-            if item in self.forbi_str_list:
-                clr = self.red_clr
-                cb.setItemData(i, QBrush(clr), Qt.BackgroundRole)
+            # if item in self.forbi_str_list:
+                # clr = self.red_clr
+                # cb.setItemData(i, QBrush(clr), Qt.BackgroundRole)
 
     def _rst_cb_by_cb_dict(self, cb_dict):
         """
