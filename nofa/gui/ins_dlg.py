@@ -420,6 +420,7 @@ class InsDlg(QDialog, FORM_CLASS):
             elif isinstance(wdg, QDateEdit):
                 wdg.dateChanged.connect(self._fill_hist_tbls)
 
+        self.rst_btn.clicked.connect(self._rst)
         self.ins_btn.clicked.connect(self._ins)
 
         self.occ_mand_wdgs = [
@@ -999,8 +1000,8 @@ class InsDlg(QDialog, FORM_CLASS):
         Updates children in the taxonomic coverage tree widget
         based on the state of its parent. 
  
-        :param item: A changed item.
-        :type item: QTableWidgetItem.
+        :param par: A changed item.
+        :type par: QTableWidgetItem.
         """
 
         chck_state = par.checkState(0)
@@ -1010,6 +1011,84 @@ class InsDlg(QDialog, FORM_CLASS):
             chld.setCheckState(0, chck_state)
 
             self._upd_txncvg_tw_chldn(chld)
+
+    def _rst(self):
+        """
+        Resets all widgets in the main tab.
+        """
+
+        self._rst_loc_wdgs()
+        self._rst_event_wdgs()
+        self._rst_mtdt_wdgs()
+        self._rst_occ_tbl()
+        self._rst_txncvg_tw()
+
+    def _rst_loc_wdgs(self):
+        """
+        Resets all location widgets.
+        """
+
+        self._rst_cb_by_cb_dict(self._loc_cb_dict)
+
+        self.wb_le.clear()
+        self.lake_name_statlbl.setText(u'Search for locations.')
+
+        self._create_loc_tbls()
+
+        self.loc_pte.clear()
+
+        self.loc_tbl_rb.click()
+
+    def _create_loc_tbls(self):
+        """
+        Creates location tables.
+        """
+
+        self._create_tbl_main_tab(self.nvl_tbl, self.nvl_tbl_hdrs)
+        self._create_tbl_main_tab(self.utm_tbl, self.utm_tbl_hdrs)
+
+    def _rst_event_wdgs(self):
+        """
+        Resets all event widgets.
+        """
+
+        self._rst_wdgs(self.event_input_wdgs)
+
+        self._rst_cb_by_cb_dict(self._event_cb_dict)
+
+    def _rst_mtdt_wdgs(self):
+        """
+        Resets all metadata widgets.
+        """
+
+        sel_str = self.sel_str
+
+        self.upd_dtst(sel_str)
+        self.upd_prj(sel_str)
+        self.upd_ref(sel_str)
+
+    def _rst_occ_tbl(self):
+        """
+        Resets occurrence table.
+        Also resets occurrence widgets because it is connected to the table.
+        """
+
+        self._del_all_occ_rows()
+        self._rst_occ_row()
+
+    def _rst_txncvg_tw(self):
+        """
+        Resets taxonomic coverage tree widget.
+        """
+
+        txncvg_root_item = self.txncvg_tw.invisibleRootItem().child(0)
+
+        if txncvg_root_item.checkState(0) == Qt.Unchecked:
+            txncvg_root_item.setCheckState(0, Qt.Checked)
+
+        txncvg_root_item.setCheckState(0, Qt.Unchecked)
+
+        self.txncvg_tw.expandToDepth(0)
 
     def _ins(self):
         """
@@ -1151,6 +1230,25 @@ class InsDlg(QDialog, FORM_CLASS):
             wdg_list.append(wdg_data)
 
         return wdg_list
+
+    def _rst_wdgs(self, wdgs):
+        """
+        Resets the given widgets.
+            - line edit - clear
+            - combo box - set current index to 0
+            - date edit - set date to minimum
+
+        :param wdgs: Widgets to be cleared.
+        :type wdgs: list.
+        """
+
+        for wdg in wdgs:
+            if isinstance(wdg, QLineEdit):
+                wdg.clear()
+            elif isinstance(wdg, QComboBox):
+                wdg.setCurrentIndex(0)
+            elif isinstance(wdg, QDateEdit):
+                wdg.setDate(wdg.minimumDate())
 
     def _get_occ_row_list(self, m):
         """
@@ -1435,14 +1533,15 @@ class InsDlg(QDialog, FORM_CLASS):
         idx = self.main_tb.indexOf(cb.parentWidget())
         mdtd_base_txt = self.main_tb.itemText(idx).split(self.dash_split_str)[0]
 
+        lw, id_met, info_fnc, mtdt_str_fnc = self._mtdt_lw_cb_dict[cb]
+
+        lw.clear()
+
         if cb_str in self.forbi_str_list:
             mtdt_txt = cb_str
         else:
-            lw, id_met, info_fnc, mtdt_str_fnc = self._mtdt_cb_dict[cb]
-
             items, hdrs = info_fnc(self.mc.con, id_met())
 
-            lw.clear()
             self._pop_lw(lw, items, hdrs)
 
             mtdt_txt = mtdt_str_fnc(cb_str)
@@ -1465,9 +1564,9 @@ class InsDlg(QDialog, FORM_CLASS):
         self.main_tb.setItemText(item_index, text)
 
     @property
-    def _mtdt_cb_dict(self):
+    def _mtdt_lw_cb_dict(self):
         """
-        Returns a metadata combo box dictionary.
+        Returns a metadata list widget combo box dictionary.
 
         :returns: A metadata combo box dictionary.
             - key - <combo box name>
@@ -1619,6 +1718,20 @@ class InsDlg(QDialog, FORM_CLASS):
                 clr = self.red_clr
                 cb.setItemData(i, QBrush(clr), Qt.BackgroundRole)
 
+    def _rst_cb_by_cb_dict(self, cb_dict):
+        """
+        Resets combo boxes by the given combo box dictionary.
+
+        :param cb_dict: A nofa combo box dictionary.
+            - key - <combo box name>
+            - value - [<fill method>, [<arguments>], <default value>]
+        :type cb_dict: dict.
+        """
+
+        for cb, cb_list in cb_dict.items():
+            def_val = cb_list[2]
+            cb.setCurrentIndex(cb.findText(def_val))
+
     @property
     def _nofa_cb_dict(self):
         """
@@ -1631,30 +1744,6 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         nofa_cb_dict = {
-            self.loctp_cb: [
-                self._get_loctp_list,
-                [],
-                'Norwegian VatnLnr'],
-            self.cntry_code_cb:[
-                db.get_cntry_code_list,
-                [self.mc.con],
-                self.all_str],
-            self.smpp_cb: [
-                db.get_smpp_list,
-                [self.mc.con],
-                self.sel_str],
-            self.smpsu_cb: [
-                db.get_smpsu_list,
-                [self.mc.con],
-                self.mty_str],
-            self.relia_cb: [
-                db.get_reliab_list,
-                [self.mc.con],
-                self.mty_str],
-            self.prj_cb: [
-                db.get_prj_list,
-                [self.mc.con],
-                self.sel_str],
             self.oqt_cb: [
                 db.get_oqt_list,
                 [self.mc.con],
@@ -1674,12 +1763,10 @@ class InsDlg(QDialog, FORM_CLASS):
 
         nofa_cb_dict = self._get_mrgd_dict(
             nofa_cb_dict,
-            self._cnty_cb_dict,
-            self._muni_cb_dict,
+            self._loc_cb_dict,
+            self._event_cb_dict,
             self._ectp_cb_dict,
-            self._dtst_cb_dict,
-            self._prj_cb_dict,
-            self._ref_cb_dict,
+            self._mtdt_cb_dict,
             self._occ_mand_cb_dict)
 
         return nofa_cb_dict
@@ -1696,6 +1783,34 @@ class InsDlg(QDialog, FORM_CLASS):
                 mrgd_dict[key] = val
     
         return mrgd_dict
+
+    @property
+    def _loc_cb_dict(self):
+        """
+        Returns a combo box dictionary for all location combo boxes.
+
+        :returns: A combo box dictionary for all location combo boxes.
+            - key - <combo box name>
+            - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict.
+        """
+
+        loc_cb_dict = {
+            self.loctp_cb: [
+                self._get_loctp_list,
+                [],
+                'Norwegian VatnLnr'],
+            self.cntry_code_cb:[
+                db.get_cntry_code_list,
+                [self.mc.con],
+                self.all_str]}
+
+        loc_cb_dict = self._get_mrgd_dict(
+            loc_cb_dict,
+            self._cnty_cb_dict,
+            self._muni_cb_dict)
+
+        return loc_cb_dict
 
     @property
     def _cnty_cb_dict(self):
@@ -1736,6 +1851,33 @@ class InsDlg(QDialog, FORM_CLASS):
         return muni_cb_dict
 
     @property
+    def _event_cb_dict(self):
+        """
+        Returns a combo box dictionary for all event combo boxes.
+
+        :returns: A combo box dictionary for all event combo boxes.
+            - key - <combo box name>
+            - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict.
+        """
+
+        event_cb_dict = {
+            self.smpp_cb: [
+                db.get_smpp_list,
+                [self.mc.con],
+                self.sel_str],
+            self.smpsu_cb: [
+                db.get_smpsu_list,
+                [self.mc.con],
+                self.mty_str],
+            self.relia_cb: [
+                db.get_reliab_list,
+                [self.mc.con],
+                self.mty_str],}
+
+        return event_cb_dict
+
+    @property
     def _ectp_cb_dict(self):
         """
         Returns an ecotype combo box dictionary.
@@ -1753,6 +1895,24 @@ class InsDlg(QDialog, FORM_CLASS):
                 self.mty_str]}
 
         return ectp_cb_dict
+
+    @property
+    def _mtdt_cb_dict(self):
+        """
+        Returns a metadata combo box dictionary.
+
+        :returns: An metadata combo box dictionary.
+            - key - <combo box name>
+            - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict.
+        """
+
+        mtdt_cb_dict = self._get_mrgd_dict(
+            self._dtst_cb_dict,
+            self._prj_cb_dict,
+            self._ref_cb_dict)
+
+        return mtdt_cb_dict
 
     @property
     def _dtst_cb_dict(self):
@@ -2064,7 +2224,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.occ_tbl.blockSignals(False)
 
         if self._check_occ_tbl(tbl):
-            self._rst_occ_mand_cb()
+            self._rst_occ_row()
             self._upd_occ_row()
 
     def _rst_occ_row(self):
@@ -2072,13 +2232,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Resets a current occurrence row in the occurrence table.
         """
 
-        for wdg in self.occ_tbl_hdrs_wdg_dict.values():
-            if isinstance(wdg, QLineEdit):
-                wdg.clear()
-            elif isinstance(wdg, QComboBox):
-                wdg.setCurrentIndex(0)
-            elif isinstance(wdg, QDateEdit):
-                wdg.setDate(self.nxt_week_dt)
+        self._rst_wdgs(self.occ_tbl_hdrs_wdg_dict.values())
 
         self._rst_occ_mand_cb()
         self._upd_occ_row()
@@ -2088,9 +2242,7 @@ class InsDlg(QDialog, FORM_CLASS):
         Resets occurrence mandatory combo boxes.
         """
 
-        for cb, cb_list in self._occ_mand_cb_dict.items():
-            def_val = cb_list[2]
-            cb.setCurrentIndex(cb.findText(def_val))
+        self._rst_cb_by_cb_dict(self._occ_mand_cb_dict)
 
     def _rst_all_occ_rows(self):
         """
