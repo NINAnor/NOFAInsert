@@ -228,10 +228,6 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.dash_split_str = u' - '
         self.at_split_str = u'@'
-        self.dtst_str = u'Dataset'
-        self.prj_str = u'Project'
-        self.ref_str = u'Reference'
-        self.psql_str = u'postgres'
 
         self.mty_str = u''
         self.all_str = u'<all>'
@@ -245,7 +241,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.nxt_week_dt = self.today_dt + datetime.timedelta(days=7)
         self.fltr_str_dt = datetime.datetime(2017, 1, 1)
 
-        self.def_clr = self.ins_btn.palette().background().color()
+        # self.def_clr = self.ins_btn.palette().background().color()
         self.grn_clr = QColor(177, 234, 177)
         self.red_clr = QColor(234, 177, 177)
         self.yel_clr = QColor(234, 234, 177)
@@ -257,46 +253,48 @@ class InsDlg(QDialog, FORM_CLASS):
         Builds and sets up own widgets.
         """
 
+        self._build_main_tab_wdgs()
+
+        self._build_hist_tab_wdgs()
+
+    def _build_main_tab_wdgs(self):
+        """
+        Builds and sets up widgets in main tab.
+        """
+
+        # event - dateStart
         self.dtstrt_mde = de.MtyDe(self)
         self.dtstrt_mde.setObjectName(u'dtstrt_mde')
         self.dtstrt_mde.setDisplayFormat('yyyy-MM-dd')
         self.event_grid_lyt.addWidget(self.dtstrt_mde, 4, 1, 1, 1)
 
+        # event - dateEnd
         self.dtend_mde = de.MtyDe(self)
         self.dtend_mde.setObjectName(u'dtend_mde')
         self.dtend_mde.setDisplayFormat('yyyy-MM-dd')
         self.event_grid_lyt.addWidget(self.dtend_mde, 5, 1, 1, 1)
 
+        # occurrence - verifiedDate
         self.verdt_mde = de.MtyDe(self)
         self.verdt_mde.setObjectName(u'verdt_mde')
         self.verdt_mde.setDisplayFormat('yyyy-MM-dd')
         self.occ_grid_lyt.addWidget(self.verdt_mde, 8, 3, 1, 1)
 
+        # location - connect updating combo boxes 
         self.cntry_code_cb.currentIndexChanged.connect(self._pop_cnty_cb)
         self.cnty_cb.currentIndexChanged.connect(self._pop_muni_cb)
 
-        self.hist_ins_dtstrt_de.dateChanged.connect(
-            self.hist_ins_dtend_de.setMinimumDate)
-        self.hist_ins_dtend_de.dateChanged.connect(
-            self.hist_ins_dtstrt_de.setMaximumDate)
-        self.hist_upd_dtstrt_de.dateChanged.connect(
-            self.hist_upd_dtend_de.setMinimumDate)
-        self.hist_upd_dtend_de.dateChanged.connect(
-            self.hist_upd_dtstrt_de.setMaximumDate)
-
-        self.hist_ins_dtstrt_de.setDate(self.fltr_str_dt)
-        self.hist_ins_dtend_de.setDate(self.today_dt)
-        self.hist_upd_dtstrt_de.setDate(self.fltr_str_dt)
-        self.hist_upd_dtend_de.setDate(self.today_dt)
-
+        # dataset, project, reference - create dialog
         self.adddtst_btn.clicked.connect(self._open_dtst_dlg)
         self.addprj_btn.clicked.connect(self._open_prj_dlg)
         self.addref_btn.clicked.connect(self._open_ref_dlg)
 
+        # dataset, project, reference - update list widget
         self.dtst_cb.activated.connect(self._upd_mtdt_lw)
         self.prj_cb.activated.connect(self._upd_mtdt_lw)
         self.ref_cb.activated.connect(self._upd_mtdt_lw)
 
+        # occurrence table buttons
         self.occ_tbl.currentItemChanged.connect(self._upd_occ_gb_at_selrow)
         self.occ_rowup_btn.clicked.connect(self._sel_row_up)
         self.occ_rowdwn_btn.clicked.connect(self._sel_row_dwn)
@@ -306,6 +304,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.occ_rstallrows_btn.clicked.connect(self._rst_all_occ_rows)
         self.occ_del_btn.clicked.connect(self._del_all_occ_rows)
 
+        # location table buttons
         self.loc_rowup_btn.clicked.connect(self._sel_row_up)
         self.loc_rowdwn_btn.clicked.connect(self._sel_row_dwn)
         self.loc_addrow_btn.clicked.connect(self._add_row)
@@ -314,13 +313,17 @@ class InsDlg(QDialog, FORM_CLASS):
         self.loc_rstallrows_btn.clicked.connect(self._rst_all_loc_rows)
         self.loc_del_btn.clicked.connect(self._del_all_loc_rows)
 
+        # start with main tab
         self.main_tabwdg.setCurrentIndex(0)
         self.main_tabwdg.currentChanged.connect(self._fetch_schema)
 
+        # taxon coverage - updating children
         self.txncvg_tw.itemChanged.connect(self._upd_txncvg_tw_chldn)
 
+        # populate ecotype
         self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
 
+        # validators
         self.smpsv_le.setValidator(QIntValidator(None))
         self.smpe_le.setValidator(QIntValidator(None))
         self.oq_le.setValidator(QDoubleValidator(None))
@@ -337,7 +340,7 @@ class InsDlg(QDialog, FORM_CLASS):
             self.eventrmk_le,
             self.relia_cb]
 
-        # to keep order
+        # dictionary - occurrence column: widget
         self.occ_tbl_hdrs_wdg_dict = OrderedDict([
             (u'taxon', self.txn_cb),
             (u'ecotype', self.ectp_cb),
@@ -354,6 +357,7 @@ class InsDlg(QDialog, FORM_CLASS):
             (u'verifiedBy', self.vfdby_le),
             (u'verifiedDate', self.verdt_mde)])
 
+        # occurrence table - update
         for wdg in self.occ_tbl_hdrs_wdg_dict.values():
             if isinstance(wdg, QLineEdit):
                 wdg.textChanged.connect(self._upd_occ_row)
@@ -362,26 +366,24 @@ class InsDlg(QDialog, FORM_CLASS):
             elif isinstance(wdg, QDateEdit):
                 wdg.dateChanged.connect(self._upd_occ_row)
 
+        # location - set table
         self.loctp_cb.currentIndexChanged.connect(self._set_loc_tbl)
 
-        self._create_tbl_main_tab(self.nvl_tbl, self.nvl_tbl_hdrs)
-        self._create_tbl_main_tab(self.utm_tbl, self.utm_tbl_hdrs)
+        self._create_loc_tbls()
 
         self.occ_tbl.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
+        # location tables - resizing
         self.nvl_tbl.itemChanged.connect(self.nvl_tbl.resizeColumnsToContents)
         self.utm_tbl.itemChanged.connect(self.utm_tbl.resizeColumnsToContents)
 
+        # location input - signal mapper 
         self.loc_input_sm = QSignalMapper(self)
-
         self.loc_tbl_rb.clicked.connect(self.loc_input_sm.map)
         self.loc_input_sm.setMapping(self.loc_tbl_rb, 0)
-
         self.loc_pte_rb.clicked.connect(self.loc_input_sm.map)
         self.loc_input_sm.setMapping(self.loc_pte_rb, 1)
-
         self.loc_input_sm.mapped.connect(self.loc_sw.setCurrentIndex)
-
         self.loc_tbl_rb.click()
 
         # tool for setting coordinates by left mouse click
@@ -399,6 +401,56 @@ class InsDlg(QDialog, FORM_CLASS):
         self.loc_load_btn.clicked.connect(self._load_loc_layer)
         self.add_nvl_btn.clicked.connect(self._add_nvl_codes)
 
+        # reset button
+        self.rst_btn.clicked.connect(self._rst)
+
+        # insert button
+        self.ins_btn.clicked.connect(self._ins)
+
+        self.occ_mand_wdgs = [
+            self.txn_cb,
+            self.occstat_cb,
+            self.estm_cb]
+
+        self.mtdt_mand_wdgs = [
+            self.smpp_cb,
+            self.dtend_mde,
+            self.rcdby_le,
+            self.dtst_cb,
+            self.prj_cb,
+            self.ref_cb]
+
+        self.all_mand_wdgs = self.occ_mand_wdgs + self.mtdt_mand_wdgs
+ 
+        self.set_mand_wdgs(self.all_mand_wdgs)
+
+        # self.main_hspltr.setStretchFactor(0, 1)
+        # self.main_hspltr.setStretchFactor(1, 2)
+        self.occ_hspltr.setStretchFactor(0, 1)
+        self.occ_hspltr.setStretchFactor(1, 2)
+
+    def _build_hist_tab_wdgs(self):
+        """
+        Builds and sets up widgets in history tab.
+        """
+
+        # connect date edits min and max dates
+        self.hist_ins_dtstrt_de.dateChanged.connect(
+            self.hist_ins_dtend_de.setMinimumDate)
+        self.hist_ins_dtend_de.dateChanged.connect(
+            self.hist_ins_dtstrt_de.setMaximumDate)
+        self.hist_upd_dtstrt_de.dateChanged.connect(
+            self.hist_upd_dtend_de.setMinimumDate)
+        self.hist_upd_dtend_de.dateChanged.connect(
+            self.hist_upd_dtstrt_de.setMaximumDate)
+
+        # set date edits' dates
+        self.hist_ins_dtstrt_de.setDate(self.fltr_str_dt)
+        self.hist_ins_dtend_de.setDate(self.today_dt)
+        self.hist_upd_dtstrt_de.setDate(self.fltr_str_dt)
+        self.hist_upd_dtend_de.setDate(self.today_dt)
+
+        # dictionary for updating history tables
         self.hist_tbls_fnc_dict = {
             self.hist_occ_tbl: db.get_hist_occ_list,
             self.hist_loc_tbl: db.get_hist_loc_list,
@@ -419,31 +471,6 @@ class InsDlg(QDialog, FORM_CLASS):
                 wdg.currentIndexChanged.connect(self._fill_hist_tbls)
             elif isinstance(wdg, QDateEdit):
                 wdg.dateChanged.connect(self._fill_hist_tbls)
-
-        self.rst_btn.clicked.connect(self._rst)
-        self.ins_btn.clicked.connect(self._ins)
-
-        self.occ_mand_wdgs = [
-            self.txn_cb,
-            self.occstat_cb,
-            self.estm_cb]
-
-        self.mtdt_mand_wdgs = [
-            self.smpp_cb,
-            self.dtend_mde,
-            self.rcdby_le,
-            self.dtst_cb,
-            self.prj_cb,
-            self.ref_cb]
-
-        self.all_mand_wdgs = self.occ_mand_wdgs + self.mtdt_mand_wdgs
- 
-        self.set_mand_wdgs(self.all_mand_wdgs)
-
-        self.main_hspltr.setStretchFactor(0, 1)
-        self.main_hspltr.setStretchFactor(1, 2)
-        self.occ_hspltr.setStretchFactor(0, 1)
-        self.occ_hspltr.setStretchFactor(1, 2)
 
     def set_mand_wdgs(self, wdgs):
         """
@@ -733,7 +760,7 @@ class InsDlg(QDialog, FORM_CLASS):
         lyr = QgsVectorLayer(
             uri.uri(),
             u'location-{}-{}-{}-{}'.format(wb, cntry_code, cnty, muni),
-            self.psql_str)
+            u'postgres')
 
         if lyr.isValid():
             QgsMapLayerRegistry.instance().addMapLayer(lyr)
