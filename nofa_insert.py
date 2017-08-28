@@ -168,6 +168,5 @@ class NOFAInsert:
         if not self.con:
             return
 
-        self.ins_dlg.fetch_nofa_schema()
-        self.ins_dlg.create_occ_tbl()
+        self.ins_dlg.prep()
         self.ins_dlg.show()

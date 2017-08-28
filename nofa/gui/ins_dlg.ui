@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1268</width>
-    <height>820</height>
+    <width>1279</width>
+    <height>764</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
        <string>Main</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_22">
-       <item row="0" column="0">
+       <item row="1" column="0">
         <widget class="QSplitter" name="main_hspltr">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -59,667 +59,790 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>319</width>
-             <height>596</height>
+             <width>329</width>
+             <height>540</height>
             </rect>
            </property>
            <attribute name="label">
             <string>Location</string>
            </attribute>
-           <layout class="QGridLayout" name="gridLayout_5">
+           <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
-             <layout class="QGridLayout" name="loc_grid_lyt" rowstretch="0,0,0,0,0,0,0,0,0,0,0,0,0,0">
-              <item row="4" column="0">
-               <widget class="QLabel" name="cnty_lbl">
-                <property name="text">
-                 <string>county</string>
+             <layout class="QVBoxLayout" name="loc_vlyt" stretch="0,1">
+              <item>
+               <widget class="QTabWidget" name="loc_tabwdg">
+                <property name="currentIndex">
+                 <number>1</number>
                 </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="wb_lbl">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>waterBody</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0" colspan="2">
-               <widget class="Line" name="line">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="1">
-               <layout class="QHBoxLayout" name="lake_name_hlyt">
-                <property name="sizeConstraint">
-                 <enum>QLayout::SetMinimumSize</enum>
-                </property>
-                <item>
-                 <widget class="QPushButton" name="loc_srch_btn">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="focusPolicy">
-                   <enum>Qt::NoFocus</enum>
-                  </property>
-                  <property name="text">
-                   <string>Search</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="loc_load_btn">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="focusPolicy">
-                   <enum>Qt::NoFocus</enum>
-                  </property>
-                  <property name="text">
-                   <string>Load</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item row="11" column="0" colspan="2">
-               <widget class="Line" name="line_2">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="0">
-               <widget class="QLabel" name="basemap_lbl">
-                <property name="text">
-                 <string>basemap</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="wb_le">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="1">
-               <widget class="QLabel" name="lake_name_statlbl">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Search for locations.</string>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="1">
-               <layout class="QHBoxLayout" name="loc_input_hlyt">
-                <property name="sizeConstraint">
-                 <enum>QLayout::SetMinimumSize</enum>
-                </property>
-                <item>
-                 <widget class="QRadioButton" name="loc_tbl_rb">
-                  <property name="text">
-                   <string>table</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="loc_pte_rb">
-                  <property name="text">
-                   <string>text</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item row="5" column="1">
-               <widget class="QComboBox" name="muni_cb"/>
-              </item>
-              <item row="13" column="0" colspan="2">
-               <layout class="QGridLayout" name="loc_tbl_grid_lyt" rowstretch="0,0">
-                <property name="spacing">
-                 <number>0</number>
-                </property>
-                <item row="1" column="0">
-                 <widget class="QStackedWidget" name="loc_sw">
-                  <property name="currentIndex">
-                   <number>1</number>
-                  </property>
-                  <widget class="QWidget" name="loc_tbl_w">
-                   <layout class="QGridLayout" name="gridLayout_4">
-                    <property name="margin">
-                     <number>0</number>
-                    </property>
-                    <property name="spacing">
-                     <number>0</number>
-                    </property>
+                <widget class="QWidget" name="loc_srch_tab">
+                 <attribute name="title">
+                  <string>Search</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_5">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="loc_srch_grid_lyt" rowstretch="0,0,0,0,0,0,0,0" columnstretch="0,1">
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="cnty_lbl">
+                      <property name="text">
+                       <string>county</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
                     <item row="0" column="0">
-                     <layout class="QGridLayout" name="loc_tbl_glyt" rowstretch="0,0">
-                      <item row="0" column="0">
-                       <layout class="QVBoxLayout" name="loc_tbl_btn_vlyt">
-                        <property name="spacing">
-                         <number>0</number>
+                     <widget class="QLabel" name="wb_lbl">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="text">
+                       <string>waterBody</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="5" column="1">
+                     <layout class="QHBoxLayout" name="lake_name_hlyt">
+                      <property name="sizeConstraint">
+                       <enum>QLayout::SetMinimumSize</enum>
+                      </property>
+                      <item>
+                       <widget class="QPushButton" name="loc_srch_btn">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
                         </property>
-                        <property name="sizeConstraint">
-                         <enum>QLayout::SetMinimumSize</enum>
+                        <property name="focusPolicy">
+                         <enum>Qt::NoFocus</enum>
                         </property>
-                        <item>
-                         <widget class="QPushButton" name="loc_rowup_btn">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="baseSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="font">
-                           <font>
-                            <pointsize>16</pointsize>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="focusPolicy">
-                           <enum>Qt::NoFocus</enum>
-                          </property>
-                          <property name="toolTip">
-                           <string>Select row up</string>
-                          </property>
-                          <property name="text">
-                           <string>⇧</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QPushButton" name="loc_rowdwn_btn">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="baseSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="font">
-                           <font>
-                            <pointsize>16</pointsize>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="focusPolicy">
-                           <enum>Qt::NoFocus</enum>
-                          </property>
-                          <property name="toolTip">
-                           <string>Select row down</string>
-                          </property>
-                          <property name="text">
-                           <string>⇩</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QPushButton" name="loc_addrow_btn">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="baseSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="font">
-                           <font>
-                            <pointsize>16</pointsize>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="focusPolicy">
-                           <enum>Qt::NoFocus</enum>
-                          </property>
-                          <property name="toolTip">
-                           <string>Add row</string>
-                          </property>
-                          <property name="text">
-                           <string>+</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QPushButton" name="loc_delrow_btn">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="baseSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="font">
-                           <font>
-                            <pointsize>16</pointsize>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="focusPolicy">
-                           <enum>Qt::NoFocus</enum>
-                          </property>
-                          <property name="toolTip">
-                           <string>Delete row</string>
-                          </property>
-                          <property name="text">
-                           <string>−</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QPushButton" name="loc_rstrow_btn">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="baseSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="font">
-                           <font>
-                            <pointsize>16</pointsize>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="focusPolicy">
-                           <enum>Qt::NoFocus</enum>
-                          </property>
-                          <property name="toolTip">
-                           <string>Reset selected row</string>
-                          </property>
-                          <property name="text">
-                           <string>↺</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QPushButton" name="loc_rstallrows_btn">
-                          <property name="minimumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="baseSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="font">
-                           <font>
-                            <pointsize>16</pointsize>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="focusPolicy">
-                           <enum>Qt::NoFocus</enum>
-                          </property>
-                          <property name="toolTip">
-                           <string>Reset all rows</string>
-                          </property>
-                          <property name="text">
-                           <string>⟲</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QPushButton" name="loc_del_btn">
-                          <property name="minimumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="baseSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="font">
-                           <font>
-                            <pointsize>16</pointsize>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="focusPolicy">
-                           <enum>Qt::NoFocus</enum>
-                          </property>
-                          <property name="toolTip">
-                           <string>Delete all rows except current one</string>
-                          </property>
-                          <property name="text">
-                           <string>✕</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QPushButton" name="coord_cnvs_btn">
-                          <property name="minimumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="baseSize">
-                           <size>
-                            <width>28</width>
-                            <height>28</height>
-                           </size>
-                          </property>
-                          <property name="font">
-                           <font>
-                            <pointsize>16</pointsize>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="focusPolicy">
-                           <enum>Qt::NoFocus</enum>
-                          </property>
-                          <property name="toolTip">
-                           <string>Enter coordinates by left mouse click</string>
-                          </property>
-                          <property name="text">
-                           <string>◉</string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
+                        <property name="text">
+                         <string>Search</string>
+                        </property>
+                       </widget>
                       </item>
-                      <item row="0" column="1" rowspan="2">
-                       <widget class="QStackedWidget" name="loc_tbl_sw">
-                        <property name="currentIndex">
-                         <number>0</number>
+                      <item>
+                       <widget class="QPushButton" name="loc_load_btn">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
                         </property>
-                        <widget class="QWidget" name="nvl_w">
-                         <layout class="QGridLayout" name="gridLayout_8">
-                          <property name="margin">
-                           <number>0</number>
-                          </property>
-                          <property name="spacing">
-                           <number>0</number>
-                          </property>
-                          <item row="0" column="0">
-                           <widget class="QTableWidget" name="nvl_tbl"/>
-                          </item>
-                         </layout>
-                        </widget>
-                        <widget class="QWidget" name="utm_w">
-                         <layout class="QGridLayout" name="gridLayout_2">
-                          <property name="margin">
-                           <number>0</number>
-                          </property>
-                          <property name="spacing">
-                           <number>0</number>
-                          </property>
-                          <item row="0" column="0">
-                           <widget class="QTableWidget" name="utm_tbl"/>
-                          </item>
-                         </layout>
-                        </widget>
+                        <property name="focusPolicy">
+                         <enum>Qt::NoFocus</enum>
+                        </property>
+                        <property name="text">
+                         <string>Load</string>
+                        </property>
                        </widget>
                       </item>
                      </layout>
                     </item>
-                   </layout>
-                  </widget>
-                  <widget class="QWidget" name="loc_pte_w">
-                   <layout class="QGridLayout" name="gridLayout_10">
-                    <property name="margin">
-                     <number>0</number>
-                    </property>
-                    <property name="spacing">
-                     <number>0</number>
-                    </property>
-                    <item row="0" column="0">
-                     <widget class="QPlainTextEdit" name="loc_pte"/>
+                    <item row="7" column="0">
+                     <widget class="QLabel" name="basemap_lbl">
+                      <property name="text">
+                       <string>basemap</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLineEdit" name="wb_le">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="1">
+                     <widget class="QLabel" name="lake_name_statlbl">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="text">
+                       <string>Search for locations.</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1">
+                     <widget class="QComboBox" name="muni_cb"/>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="muni_lbl">
+                      <property name="text">
+                       <string>municipality</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="7" column="1">
+                     <widget class="QPushButton" name="osm_basemap_btn">
+                      <property name="focusPolicy">
+                       <enum>Qt::NoFocus</enum>
+                      </property>
+                      <property name="text">
+                       <string>Add OSM</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QComboBox" name="cntry_code_cb"/>
                     </item>
                     <item row="1" column="0">
-                     <spacer name="loc_pte_vspcr">
-                      <property name="orientation">
-                       <enum>Qt::Vertical</enum>
+                     <widget class="QLabel" name="cntry_code_lbl">
+                      <property name="text">
+                       <string>countryCode</string>
                       </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>20</width>
-                        <height>40</height>
-                       </size>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                       </property>
-                     </spacer>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QComboBox" name="cnty_cb"/>
+                    </item>
+                    <item row="6" column="1">
+                     <widget class="QPushButton" name="add_seld_feats_btn">
+                      <property name="focusPolicy">
+                       <enum>Qt::NoFocus</enum>
+                      </property>
+                      <property name="toolTip">
+                       <string>Add locationIDs of currently selected features to table</string>
+                      </property>
+                      <property name="text">
+                       <string>Add Selected Locations</string>
+                      </property>
+                     </widget>
                     </item>
                    </layout>
-                  </widget>
-                 </widget>
+                  </item>
+                 </layout>
+                 <zorder></zorder>
+                </widget>
+                <widget class="QWidget" name="loc_edit_tab">
+                 <attribute name="title">
+                  <string>Edit</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_8">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="loc_edit_grid_lyt" columnstretch="0,1">
+                    <item row="0" column="1">
+                     <widget class="QComboBox" name="loc_edit_met_cb"/>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="loc_edit_met_lbl">
+                      <property name="text">
+                       <string>method</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0" colspan="2">
+                     <widget class="QStackedWidget" name="loc_edit_met_swdg">
+                      <property name="currentIndex">
+                       <number>1</number>
+                      </property>
+                      <widget class="QWidget" name="loc_edit_locid_wdg">
+                       <layout class="QGridLayout" name="gridLayout_25">
+                        <item row="0" column="0">
+                         <layout class="QGridLayout" name="loc_edit_locid_grid_lyt">
+                          <item row="0" column="0">
+                           <widget class="QLabel" name="loc_edit_locid_lbl">
+                            <property name="text">
+                             <string>locationID</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="1">
+                           <widget class="QLineEdit" name="loc_edit_locid_le"/>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                      <widget class="QWidget" name="loc_edit_coor_wdg">
+                       <layout class="QGridLayout" name="gridLayout_27">
+                        <item row="0" column="0">
+                         <layout class="QGridLayout" name="loc_edit_coor_grid_lyt">
+                          <item row="2" column="0">
+                           <widget class="QLabel" name="loc_edit_x_coor_lbl">
+                            <property name="text">
+                             <string>X</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="1">
+                           <widget class="QLineEdit" name="loc_edit_y_coor_le"/>
+                          </item>
+                          <item row="1" column="1">
+                           <widget class="QComboBox" name="loc_edit_opt_cb"/>
+                          </item>
+                          <item row="3" column="0">
+                           <widget class="QLabel" name="loc_edit_y_coor_lbl">
+                            <property name="text">
+                             <string>Y</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="1">
+                           <widget class="QComboBox" name="loc_edit_crs_cb">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="0">
+                           <widget class="QLabel" name="loc_edit_crs_lbl">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="text">
+                             <string>CRS</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="0">
+                           <widget class="QLabel" name="loc_edit_opt_lbl">
+                            <property name="text">
+                             <string>option</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="1">
+                           <widget class="QLineEdit" name="loc_edit_x_coor_le"/>
+                          </item>
+                          <item row="5" column="0">
+                           <widget class="QLabel" name="loc_edit_verloc_lbl">
+                            <property name="text">
+                             <string>verbatimLocality</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="5" column="1">
+                           <widget class="QLineEdit" name="loc_edit_verloc_le"/>
+                          </item>
+                          <item row="4" column="1">
+                           <widget class="QPushButton" name="loc_edit_coord_cnvs_btn">
+                            <property name="focusPolicy">
+                             <enum>Qt::NoFocus</enum>
+                            </property>
+                            <property name="toolTip">
+                             <string>Enter coordinates from canvas by left mouse click</string>
+                            </property>
+                            <property name="text">
+                             <string>Coordinates from Canvas</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                      <widget class="QWidget" name="loc_edit_nvl_wdg">
+                       <layout class="QGridLayout" name="gridLayout_29">
+                        <item row="0" column="0">
+                         <layout class="QGridLayout" name="loc_edit_nvl_grid_lyt">
+                          <item row="0" column="0">
+                           <widget class="QLabel" name="loc_edit_nvl_lbl">
+                            <property name="text">
+                             <string>Norwegian
+VatnLnr</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="1">
+                           <widget class="QLineEdit" name="loc_edit_nvl_le"/>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="loc_manual_tab">
+                 <attribute name="title">
+                  <string>Manual</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_10">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="loc_manual_grid_lyt" columnstretch="0,1">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="loc_manual_met_lbl">
+                      <property name="text">
+                       <string>method</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QComboBox" name="loc_manual_met_cb"/>
+                    </item>
+                    <item row="1" column="0" colspan="2">
+                     <widget class="QStackedWidget" name="loc_manual_swdg">
+                      <property name="currentIndex">
+                       <number>0</number>
+                      </property>
+                      <widget class="QWidget" name="loc_manual_locid_wdg">
+                       <layout class="QGridLayout" name="gridLayout_2">
+                        <item row="0" column="0">
+                         <layout class="QGridLayout" name="loc_manual_locid_grid_lyt" columnstretch="0,0">
+                          <item row="1" column="1">
+                           <widget class="QPushButton" name="loc_manual_locid_add_btn">
+                            <property name="focusPolicy">
+                             <enum>Qt::NoFocus</enum>
+                            </property>
+                            <property name="text">
+                             <string>Add</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="0" colspan="2">
+                           <widget class="QPlainTextEdit" name="loc_manual_locid_pte"/>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                      <widget class="QWidget" name="loc_manual_coor_wdg">
+                       <layout class="QGridLayout" name="gridLayout_24">
+                        <item row="0" column="0">
+                         <layout class="QGridLayout" name="loc_manual_coor_grid_lyt" columnstretch="0,1">
+                          <item row="0" column="1">
+                           <widget class="QComboBox" name="loc_manual_coor_crs_cb"/>
+                          </item>
+                          <item row="0" column="0">
+                           <widget class="QLabel" name="loc_manual_coor_crs_lbl">
+                            <property name="text">
+                             <string>CRS</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="1">
+                           <widget class="QComboBox" name="loc_manual_coor_opt_cb"/>
+                          </item>
+                          <item row="1" column="0">
+                           <widget class="QLabel" name="loc_manual_coor_opt_lbl">
+                            <property name="text">
+                             <string>option</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="0" colspan="2">
+                           <widget class="QPlainTextEdit" name="loc_manual_coor_pte"/>
+                          </item>
+                          <item row="3" column="1">
+                           <widget class="QPushButton" name="loc_manual_coor_add_btn">
+                            <property name="focusPolicy">
+                             <enum>Qt::NoFocus</enum>
+                            </property>
+                            <property name="text">
+                             <string>Add</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                      <widget class="QWidget" name="loc_manual_nvl_wdg">
+                       <layout class="QGridLayout" name="gridLayout_26">
+                        <item row="0" column="0">
+                         <layout class="QGridLayout" name="loc_manual_nvl_grid_lyt">
+                          <item row="1" column="1">
+                           <widget class="QPushButton" name="loc_manual_nvl_add_btn">
+                            <property name="focusPolicy">
+                             <enum>Qt::NoFocus</enum>
+                            </property>
+                            <property name="text">
+                             <string>Add</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="0" colspan="2">
+                           <widget class="QPlainTextEdit" name="loc_manual_nvl_pte"/>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+              <item>
+               <layout class="QGridLayout" name="loc_tbl_grid_lyt" rowstretch="0,1">
+                <item row="0" column="0">
+                 <layout class="QVBoxLayout" name="loc_tbl_btn_vlyt">
+                  <property name="spacing">
+                   <number>0</number>
+                  </property>
+                  <property name="sizeConstraint">
+                   <enum>QLayout::SetMinimumSize</enum>
+                  </property>
+                  <item>
+                   <widget class="QPushButton" name="loc_rowup_btn">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="baseSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>16</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="focusPolicy">
+                     <enum>Qt::NoFocus</enum>
+                    </property>
+                    <property name="toolTip">
+                     <string>Select row up</string>
+                    </property>
+                    <property name="text">
+                     <string>⇧</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="loc_rowdwn_btn">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="baseSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>16</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="focusPolicy">
+                     <enum>Qt::NoFocus</enum>
+                    </property>
+                    <property name="toolTip">
+                     <string>Select row down</string>
+                    </property>
+                    <property name="text">
+                     <string>⇩</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="loc_addrow_btn">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="baseSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>16</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="focusPolicy">
+                     <enum>Qt::NoFocus</enum>
+                    </property>
+                    <property name="toolTip">
+                     <string>Add row</string>
+                    </property>
+                    <property name="text">
+                     <string>+</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="loc_delrow_btn">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="baseSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>16</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="focusPolicy">
+                     <enum>Qt::NoFocus</enum>
+                    </property>
+                    <property name="toolTip">
+                     <string>Delete row</string>
+                    </property>
+                    <property name="text">
+                     <string>−</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="loc_rstrow_btn">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="baseSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>16</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="focusPolicy">
+                     <enum>Qt::NoFocus</enum>
+                    </property>
+                    <property name="toolTip">
+                     <string>Reset selected row</string>
+                    </property>
+                    <property name="text">
+                     <string>↺</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="loc_rstallrows_btn">
+                    <property name="minimumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="baseSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>16</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="focusPolicy">
+                     <enum>Qt::NoFocus</enum>
+                    </property>
+                    <property name="toolTip">
+                     <string>Reset all rows</string>
+                    </property>
+                    <property name="text">
+                     <string>⟲</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="loc_del_btn">
+                    <property name="minimumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="baseSize">
+                     <size>
+                      <width>28</width>
+                      <height>28</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>16</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="focusPolicy">
+                     <enum>Qt::NoFocus</enum>
+                    </property>
+                    <property name="toolTip">
+                     <string>Delete all rows except current one</string>
+                    </property>
+                    <property name="text">
+                     <string>✕</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item row="0" column="1" rowspan="2">
+                 <widget class="QTableWidget" name="loc_tbl"/>
                 </item>
                </layout>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="loctp_lbl">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>locationIdentifier</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QComboBox" name="loctp_cb">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="0">
-               <widget class="QLabel" name="loc_input_lbl">
-                <property name="text">
-                 <string>input</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="1">
-               <widget class="QPushButton" name="osm_basemap_btn">
-                <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
-                </property>
-                <property name="text">
-                 <string>Add OSM</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QComboBox" name="cntry_code_cb"/>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="cntry_code_lbl">
-                <property name="text">
-                 <string>countryCode</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QComboBox" name="cnty_cb"/>
-              </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="muni_lbl">
-                <property name="text">
-                 <string>municipality</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="1">
-               <widget class="QPushButton" name="add_nvl_btn">
-                <property name="focusPolicy">
-                 <enum>Qt::NoFocus</enum>
-                </property>
-                <property name="toolTip">
-                 <string>Add Norwegian VatnLnr Codes of currently selected features to table/text</string>
-                </property>
-                <property name="text">
-                 <string>Add Norwegian VatnLnr Codes</string>
-                </property>
-               </widget>
               </item>
              </layout>
             </item>
@@ -730,8 +853,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>319</width>
-             <height>596</height>
+             <width>329</width>
+             <height>540</height>
             </rect>
            </property>
            <attribute name="label">
@@ -959,8 +1082,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>319</width>
-             <height>596</height>
+             <width>329</width>
+             <height>540</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1017,8 +1140,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>319</width>
-             <height>596</height>
+             <width>329</width>
+             <height>540</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1075,8 +1198,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>319</width>
-             <height>596</height>
+             <width>329</width>
+             <height>540</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1158,8 +1281,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>903</width>
-              <height>287</height>
+              <width>904</width>
+              <height>265</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_21">
@@ -1535,7 +1658,7 @@
                <x>0</x>
                <y>0</y>
                <width>283</width>
-               <height>458</height>
+               <height>424</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_19">
@@ -1612,8 +1735,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>614</width>
-               <height>458</height>
+               <width>615</width>
+               <height>424</height>
               </rect>
              </property>
              <property name="sizePolicy">
@@ -1952,6 +2075,9 @@
                  <layout class="QHBoxLayout" name="horizontalLayout">
                   <item>
                    <widget class="QPushButton" name="rst_btn">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
                     <property name="focusPolicy">
                      <enum>Qt::NoFocus</enum>
                     </property>
@@ -1965,6 +2091,9 @@
                   </item>
                   <item>
                    <widget class="QPushButton" name="ins_btn">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
                     <property name="focusPolicy">
                      <enum>Qt::NoFocus</enum>
                     </property>
