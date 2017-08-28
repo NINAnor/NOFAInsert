@@ -314,8 +314,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.event_input_wdgs = [
             self.smpp_cb,
-            self.smpsv_le,
             self.smpsu_cb,
+            self.smpsv_le,
             self.smpe_le,
             self.dtstrt_mde,
             self.dtend_mde,
@@ -1273,23 +1273,32 @@ class InsDlg(QDialog, FORM_CLASS):
         Resets all widgets in the main tab.
         """
 
+        self._rst_loc_tbl()
         self._rst_loc_wdgs()
         self._rst_event_wdgs()
         self._rst_mtdt_wdgs()
         self._rst_occ_tbl()
         self._rst_txncvg_tw()
 
+    def _rst_loc_tbl(self):
+        """
+        Resets location table.
+        """
+
+        self.loc_del_btn.click()
+        self.loc_rstrow_btn.click()
+
     def _rst_loc_wdgs(self):
         """
-        Resets all location widgets.
+        Resets location widgets.
         """
 
         self._rst_cb_by_cb_dict(self._loc_cb_dict)
+        self._rst_cb_by_cb_dict(self._loc_edit_met_cb_dict)
+        self._rst_cb_by_cb_dict(self._loc_manual_met_cb_dict)
 
         self.wb_le.clear()
         self.lake_name_statlbl.setText(u'Search for locations.')
-
-        self.loc_pte.clear()
 
     def _rst_event_wdgs(self):
         """
@@ -1317,8 +1326,8 @@ class InsDlg(QDialog, FORM_CLASS):
         Also resets occurrence widgets because it is connected to the table.
         """
 
-        self._del_all_tbl_rows()
-        self._rst_tbl_row()
+        self.occ_del_btn.click()
+        self.occ_rstrow_btn.click()
 
     def _rst_txncvg_tw(self):
         """
@@ -2241,7 +2250,7 @@ class InsDlg(QDialog, FORM_CLASS):
             self.loc_edit_met_cb: [
                 self._get_loc_met_list,
                 [],
-                self._get_loc_met_list()[self.loc_edit_met_cb.currentIndex()]]}
+                self.met_list[2]]}
 
         return loc_edit_met_cb_dict
 
@@ -2260,7 +2269,7 @@ class InsDlg(QDialog, FORM_CLASS):
             self.loc_manual_met_cb: [
                 self._get_loc_met_list,
                 [],
-                self._get_loc_met_list()[self.loc_edit_met_cb.currentIndex()]]}
+                self.met_list[2]]}
 
         return loc_manual_met_cb_dict
 
