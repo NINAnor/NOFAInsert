@@ -359,8 +359,7 @@ class InsDlg(QDialog, FORM_CLASS):
             self.dtend_mde,
             self.rcdby_le,
             self.dtst_cb,
-            self.prj_cb,
-            self.ref_cb]
+            self.prj_cb]
 
         self.all_mand_wdgs = self.occ_mand_wdgs + self.mtdt_mand_wdgs
  
@@ -1345,7 +1344,7 @@ class InsDlg(QDialog, FORM_CLASS):
 
     def _ins(self):
         """
-        Insert the data into the database.
+        Inserts the data into the database.
         """
 
         try:
@@ -2374,7 +2373,10 @@ class InsDlg(QDialog, FORM_CLASS):
 
         ref_str = self.ref_cb.currentText()
 
-        au, ttl, yr, id = db.split_ref_str(ref_str)
+        if self._get_val_txt(ref_str):
+            au, ttl, yr, id = db.split_ref_str(ref_str)
+        else:
+            id = None
 
         return id
 
