@@ -268,8 +268,17 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         self._build_main_tab_wdgs()
-
         self._build_hist_tab_wdgs()
+
+        self.main_tabwdg.setCurrentIndex(0)
+        self.loc_tabwdg.setCurrentIndex(0)
+        self.loc_manual_swdg.setCurrentIndex(0)
+
+        self._create_loc_tbl()
+        self._create_occ_tbl()
+
+        self._con_main_tab_wdgs()
+        self._con_hist_tab_wdgs()
 
     def _build_main_tab_wdgs(self):
         """
@@ -370,68 +379,6 @@ class InsDlg(QDialog, FORM_CLASS):
         self.occ_hspltr.setStretchFactor(0, 1)
         self.occ_hspltr.setStretchFactor(1, 2)
 
-    def _con_main_tab_wdgs(self):
-        """
-        Connects main tab widgets.
-        """
-
-        self.main_tabwdg.currentChanged.connect(self._fetch_schema)
-
-        self._con_loc_wdgs()
-        self._con_mtdt_wdgs()
-
-        self.txncvg_tw.itemChanged.connect(self._upd_txncvg_tw_chldn)
-
-        self.rst_btn.clicked.connect(self._rst)
-        self.ins_btn.clicked.connect(self._ins)
-
-    def _con_loc_wdgs(self):
-        """
-        Connects location widgets.
-        """
-
-        self.wb_le.returnPressed.connect(self._srch_loc)
-
-        self.cntry_code_cb.currentIndexChanged.connect(self._pop_cnty_cb)
-        self.cnty_cb.currentIndexChanged.connect(self._pop_muni_cb)
-
-        self.loc_srch_btn.clicked.connect(self._srch_loc)
-        self.loc_load_btn.clicked.connect(self._load_loc_layer)
-        self.add_seld_feats_btn.clicked.connect(self._add_locid_seld_feats)
-
-        self.osm_basemap_btn.clicked.connect(self._add_osm_wms_lyr)
-
-        self.loc_edit_coord_cnvs_btn.clicked.connect(self._act_coord_cnvs_tool)
-
-        self.loc_manual_met_cb.currentIndexChanged.connect(
-            self._upd_loc_manual_swdg)
-        self.loc_manual_met_cb.currentIndexChanged.emit(
-            self.loc_manual_met_cb.currentIndex())
-
-        self.loc_manual_locid_add_btn.clicked.connect(self._add_manual_locid)
-        self.loc_manual_coor_add_btn.clicked.connect(self._add_manual_coor)
-        self.loc_manual_nvl_add_btn.clicked.connect(self._add_manual_nvl)
-
-    def _con_mtdt_wdgs(self):
-        """
-        Connects metadata widgets.
-        """
-
-        self.adddtst_btn.clicked.connect(self._open_dtst_dlg)
-        self.addprj_btn.clicked.connect(self._open_prj_dlg)
-        self.addref_btn.clicked.connect(self._open_ref_dlg)
-
-        self.dtst_cb.activated.connect(self._upd_mtdt_lw)
-        self.prj_cb.activated.connect(self._upd_mtdt_lw)
-        self.ref_cb.activated.connect(self._upd_mtdt_lw)
-
-    def _con_hist_tab_wdgs(self):
-        """
-        Connects history tab widgets.
-        """
-
-        self._con_wdgs_sgnls_to_met(self.hist_input_wdgs, self._fill_hist_tbls)
-
     def _build_hist_tab_wdgs(self):
         """
         Builds and sets up widgets in history tab.
@@ -468,6 +415,122 @@ class InsDlg(QDialog, FORM_CLASS):
             self.hist_ins_dtend_de,
             self.hist_upd_dtstrt_de,
             self.hist_upd_dtend_de]
+
+    def _create_loc_tbl(self):
+        """
+        Creates an occurrence table with one row.
+        """
+
+        self._create_tbl_main_tab(
+            self.loc_tbl,
+            self.loc_tbl_wdg_hdr_dict.values(),
+            self.loc_tbl_wdg_hdr_dict.keys(),
+            self._upd_loc_tbl_item)
+
+    def _create_occ_tbl(self):
+        """
+        Creates an occurrence table with one row.
+        """
+
+        self._create_tbl_main_tab(
+            self.occ_tbl,
+            self.occ_tbl_wdg_hdr_dict.values(),
+            self.occ_tbl_wdg_hdr_dict.keys(),
+            self._upd_occ_tbl_item)
+
+    def _con_main_tab_wdgs(self):
+        """
+        Connects main tab widgets.
+        """
+
+        self.main_tabwdg.currentChanged.connect(self._fetch_schema)
+
+        self._con_loc_wdgs()
+        self._con_mtdt_wdgs()
+        self._con_occ_wdgs()
+
+        self.txncvg_tw.itemChanged.connect(self._upd_txncvg_tw_chldn)
+
+        self.rst_btn.clicked.connect(self._rst)
+        self.ins_btn.clicked.connect(self._ins)
+
+    def _con_loc_wdgs(self):
+        """
+        Connects location widgets.
+        """
+
+        self.wb_le.returnPressed.connect(self._srch_loc)
+
+        self.cntry_code_cb.currentIndexChanged.connect(self._pop_cnty_cb)
+        self.cnty_cb.currentIndexChanged.connect(self._pop_muni_cb)
+
+        self.loc_srch_btn.clicked.connect(self._srch_loc)
+        self.loc_load_btn.clicked.connect(self._load_loc_layer)
+        self.add_seld_feats_btn.clicked.connect(self._add_locid_seld_feats)
+
+        self.osm_basemap_btn.clicked.connect(self._add_osm_wms_lyr)
+
+        self.loc_edit_coord_cnvs_btn.clicked.connect(self._act_coord_cnvs_tool)
+
+        self.loc_manual_met_cb.currentIndexChanged.connect(
+            self._upd_loc_manual_swdg)
+        self.loc_manual_met_cb.currentIndexChanged.emit(
+            self.loc_manual_met_cb.currentIndex())
+
+        self.loc_manual_locid_add_btn.clicked.connect(self._add_manual_locid)
+        self.loc_manual_coor_add_btn.clicked.connect(self._add_manual_coor)
+        self.loc_manual_nvl_add_btn.clicked.connect(self._add_manual_nvl)
+
+        self.loc_edit_met_cb.currentIndexChanged.connect(self._upd_loc_tbl_row)
+
+        self.loc_tbl.itemSelectionChanged.connect(self._upd_loc_tbl_wdgs)
+
+        # table buttons - connect
+        self.loc_rowup_btn.clicked.connect(self._sel_row_up)
+        self.loc_rowdwn_btn.clicked.connect(self._sel_row_dwn)
+        self.loc_addrow_btn.clicked.connect(self._add_tbl_row)
+        self.loc_delrow_btn.clicked.connect(self._del_tbl_row)
+        self.loc_rstrow_btn.clicked.connect(self._rst_tbl_row)
+        self.loc_rstallrows_btn.clicked.connect(self._rst_all_tbl_rows)
+        self.loc_del_btn.clicked.connect(self._del_all_tbl_rows)
+
+    def _con_mtdt_wdgs(self):
+        """
+        Connects metadata widgets.
+        """
+
+        self.adddtst_btn.clicked.connect(self._open_dtst_dlg)
+        self.addprj_btn.clicked.connect(self._open_prj_dlg)
+        self.addref_btn.clicked.connect(self._open_ref_dlg)
+
+        self.dtst_cb.activated.connect(self._upd_mtdt_lw)
+        self.prj_cb.activated.connect(self._upd_mtdt_lw)
+        self.ref_cb.activated.connect(self._upd_mtdt_lw)
+
+    def _con_occ_wdgs(self):
+        """
+        Connects occurrence widgets.
+        """
+
+        self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
+
+        self.occ_tbl.itemSelectionChanged.connect(self._upd_occ_tbl_wdgs)
+
+        # table buttons - connect
+        self.occ_rowup_btn.clicked.connect(self._sel_row_up)
+        self.occ_rowdwn_btn.clicked.connect(self._sel_row_dwn)
+        self.occ_addrow_btn.clicked.connect(self._add_tbl_row)
+        self.occ_delrow_btn.clicked.connect(self._del_tbl_row)
+        self.occ_rstrow_btn.clicked.connect(self._rst_tbl_row)
+        self.occ_rstallrows_btn.clicked.connect(self._rst_all_tbl_rows)
+        self.occ_del_btn.clicked.connect(self._del_all_tbl_rows)
+
+    def _con_hist_tab_wdgs(self):
+        """
+        Connects history tab widgets.
+        """
+
+        self._con_wdgs_sgnls_to_met(self.hist_input_wdgs, self._fill_hist_tbls)
 
     def set_mand_wdgs(self, wdgs):
         """
@@ -1573,8 +1636,6 @@ class InsDlg(QDialog, FORM_CLASS):
         :rtype: list.
         """
 
-        loctp = self.loc_edit_crs_cb.currentText()
-
         loc_input_set = self._get_loc_input_set(loctp)
 
         if loctp == 'Norwegian VatnLnr':
@@ -1849,15 +1910,11 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self._fetch_nofa_schema()
 
-        self._create_loc_tbl()
-        self._create_occ_tbl()
-
-        self.main_tabwdg.setCurrentIndex(0)
-        self.loc_tabwdg.setCurrentIndex(0)
-        self.loc_manual_swdg.setCurrentIndex(0)
-
-        self._con_main_tab_wdgs()
-        self._con_hist_tab_wdgs()
+        self._rst_loc_tbl()
+        self._rst_loc_wdgs()
+        self._rst_event_wdgs()
+        self._rst_occ_tbl()
+        self._rst_txncvg_tw()
 
     def _fetch_nofa_schema(self):
         """
@@ -2415,62 +2472,6 @@ class InsDlg(QDialog, FORM_CLASS):
         opt_list = self.opt_list
 
         return opt_list
-
-    def _create_loc_tbl(self):
-        """
-        Creates an occurrence table with one row.
-        Data in the row are set according to current location widgets.
-        """
-
-        self._create_tbl_main_tab(
-            self.loc_tbl,
-            self.loc_tbl_wdg_hdr_dict.values(),
-            self.loc_tbl_wdg_hdr_dict.keys(),
-            self._upd_loc_tbl_item)
-
-        self.loc_edit_met_cb.currentIndexChanged.connect(self._upd_loc_tbl_row)
-
-        self._emit_wdgs_sgnls([self.loc_edit_met_cb])
-
-        self.loc_tbl.itemSelectionChanged.connect(self._upd_loc_tbl_wdgs)
-
-        # table buttons - connect
-        self.loc_rowup_btn.clicked.connect(self._sel_row_up)
-        self.loc_rowdwn_btn.clicked.connect(self._sel_row_dwn)
-        self.loc_addrow_btn.clicked.connect(self._add_tbl_row)
-        self.loc_delrow_btn.clicked.connect(self._del_tbl_row)
-        self.loc_rstrow_btn.clicked.connect(self._rst_tbl_row)
-        self.loc_rstallrows_btn.clicked.connect(self._rst_all_tbl_rows)
-        self.loc_del_btn.clicked.connect(self._del_all_tbl_rows)
-
-    def _create_occ_tbl(self):
-        """
-        Creates an occurrence table with one row.
-        Data in the row are set according to occurrence widgets.
-        """
-
-        tbl = self.occ_tbl
-        tbl_hdrs = self.occ_tbl_wdg_hdr_dict.values()
-        tbl_wdgs = self.occ_tbl_wdg_hdr_dict.keys()
-        met = self._upd_occ_tbl_item
-
-        self._create_tbl_main_tab(tbl, tbl_hdrs, tbl_wdgs, met)
-
-        # populate ecotype combo box
-        self.txn_cb.currentIndexChanged.connect(self._pop_ectp_cb)
-
-        self._emit_wdgs_sgnls(tbl_wdgs)
-
-        self.occ_tbl.itemSelectionChanged.connect(self._upd_occ_tbl_wdgs)
-
-        # table buttons - connect
-        self.occ_rowup_btn.clicked.connect(self._sel_row_up)
-        self.occ_rowdwn_btn.clicked.connect(self._sel_row_dwn)
-        self.occ_addrow_btn.clicked.connect(self._add_tbl_row)
-        self.occ_delrow_btn.clicked.connect(self._del_tbl_row)
-        self.occ_rstrow_btn.clicked.connect(self._rst_tbl_row)
-        self.occ_rstallrows_btn.clicked.connect(self._rst_all_tbl_rows)
-        self.occ_del_btn.clicked.connect(self._del_all_tbl_rows)
 
     def _create_tbl_main_tab(self, tbl, tbl_hdrs, tbl_wdgs, met):
         """
