@@ -1523,7 +1523,7 @@ class InsDlg(QDialog, FORM_CLASS):
             self.chck_mand_wdgs(self.mtdt_mand_wdgs, MtdtNotFldExc)
             self._chck_occ_tbl()
 
-            locid_list = self._get_loc()
+            locid_list = self._get_loc_list()
 
             event_list = self.get_wdg_list(self.event_input_wdgs)
 
@@ -1630,7 +1630,7 @@ class InsDlg(QDialog, FORM_CLASS):
                 self.occ_tbl.selectRow(m)
                 raise OccNotFldExc()
 
-    def _get_loc(self):
+    def _get_loc_list(self):
         """
         Returns a list of location IDs.
 
