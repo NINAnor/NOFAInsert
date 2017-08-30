@@ -54,7 +54,7 @@ def _get_db_cur(con):
 
     return con.cursor()
 
-def check_nofa_tbls(con):
+def chck_nofa_tbls(con):
     """
     Checks if the database is NOFA.
 
@@ -308,32 +308,62 @@ def ins_txncvg(con, txn_id, event_id):
         {'taxonID': txn_id,
          'eventID': event_id})
 
-def get_loc_id_nvl_list(con, locs_tpl):
+def chck_locid(con, locid):
     """
-    Returns a list of location IDs and 'Norwegian VatLnr'.
+    Checks if a locationID is in the database.
 
     :param con: A connection.
     :type con: psycopg2.connection.
-    :param locs_tpl: A tuple of locations.
-    :type locs_tpl: tuple.
+    :param locid: A locationID.
+    :type locid: str.
 
-    :returns: A list of locations IDs and 'Norwegian VatLnr'.
-    :rtype: list.
+    :returns: True when locationID was found, False otherwise.
+    :rtype: bool.
     """
 
     cur = _get_db_cur(con)
     cur.execute(
         '''
-        SELECT      "locationID" lid,
-                    "no_vatn_lnr"
+        SELECT      "locationID"
         FROM        nofa.location
-        WHERE       "no_vatn_lnr" IN %s
-        ORDER BY    lid
+        WHERE       "locationID" = %s
         ''',
-        (locs_tpl,))
-    loc_id_nvl_list = cur.fetchall()
+        (locid,))
 
-    return loc_id_nvl_list
+    locid = cur.fetchall()
+
+    if cur.rowcount != 0:
+        resp = True
+    else:
+        resp = False
+
+    return resp
+
+def get_locid_from_nvl(con, nvl):
+    """
+    Returns a locationID based on the given Norwegian VatLnr.
+
+    :param con: A connection.
+    :type con: psycopg2.connection.
+    :param nvl: A Norwegian VatLnr.
+    :type nvl: int.
+
+    :returns: A locationID.
+    :rtype: str.
+    """
+
+    cur = _get_db_cur(con)
+    cur.execute(
+        '''
+        SELECT      "locationID"
+        FROM        nofa.location
+        WHERE       "no_vatn_lnr" = %s
+        ''',
+        (nvl,))
+
+    locid = cur.fetchone()[0]
+
+    return locid
 
 def get_dtst_info(con, dtst_id):
     """
@@ -1408,19 +1438,14 @@ def get_utm33_geom(con, geom_str, srid):
 
     return utm33_geom
 
-def get_nrst_loc_id(con, utm33_geom, max_dist):
+def get_nrst_locid(con, utm33_geom):
     """
     Returns an ID of the nearest location.
-    First it searches for a lake within the given distance and then it joins
-    it to location table to get ID of the location.
-    When there is no lake with the given distance, then it returns None.
 
     :param con: A connection.
     :type con: psycopg2.connection.
-    :param utm33_geom: A geometry.
+    :param utm33_geom: A geometry in UTM33 (EPSG: 25833).
     :type utm33_geom: str.
-    :param max_dist: A maximum distance in meters.
-    :type max_dist: int.
 
     :returns: A location ID. None where there is no lake within
         the given distance.
@@ -1430,41 +1455,29 @@ def get_nrst_loc_id(con, utm33_geom, max_dist):
     cur = _get_db_cur(con)
     cur.execute(
         '''
-        WITH nl AS (
-            SELECT      l.id AS id,
-                        l.geom AS geom,
-                        ST_Distance(l.geom, %(utm33_geom)s) AS dist
-            FROM        nofa."lake" l
-            WHERE       ST_DWithin(geom, %(utm33_geom)s, %(max_dist)s)
-            ORDER BY    geom <-> %(utm33_geom)s
-            LIMIT       1)
-        SELECT      l."locationID"
+        SELECT      "locationID"
         FROM        nofa."location" l
-                    JOIN
-                    nl ON nl.id = l."waterBodyID"
+        ORDER BY    ST_Distance(%s, l.geom)
+        LIMIT       1
         ''',
-        {'utm33_geom': utm33_geom,
-         'max_dist': max_dist})
+        (utm33_geom,))
 
-    try:
-        loc_id = cur.fetchone()[0]
-    except TypeError:
-        loc_id = None
+    locid = cur.fetchone()[0]
 
-    return loc_id
+    return locid
 
-def ins_new_loc(con, loc_id, utm33_geom, loc_name):
+def ins_new_loc(con, locid, utm33_geom, verb_loc):
     """
     Insert a new location and returns its location ID.
 
     :param con: A connection.
     :type con: psycopg2.connection.
-    :param loc_id: A location ID.
-    :type loc_id:uuid.UUID.
+    :param locid: A location ID.
+    :type locid:uuid.UUID.
     :param utm33_geom: A geometry in UTM33 (EPSG: 25833).
     :type utm33_geom: str.
-    :param loc_name: A location name.
-    :type loc_name: str.
+    :param verb_loc: A verbatimLocality.
+    :type verb_loc: str.
     """
 
     cur = _get_db_cur(con)
@@ -1480,25 +1493,25 @@ def ins_new_loc(con, loc_id, utm33_geom, loc_name):
                             %(geom)s,
                             %(verbatimLocality)s)
         ''',
-        {'locationID': loc_id,
+        {'locationID': locid,
          'locationType': 'samplingPoint lake',
          'geom': utm33_geom,
-         'verbatimLocality': loc_name})
+         'verbatimLocality': verb_loc})
 
-def get_mpt_str(utme, utmn):
+def get_mpt_str(x, y):
     """
-    Returns a multi point string with the given UTM easting and northing.
+    Returns a multi point string with the given coordinates.
 
-    :param utme: UTM easting.
-    :type utme: float.
-    :param utmn: UTM northing.
-    :type utmn: float.
+    :param x: X coordinate.
+    :type x: float.
+    :param y: Y coordinate.
+    :type y: float.
 
     :returns: A multi point string.
     :rtype: str.
     """
 
-    mpt_str = 'MULTIPOINT({} {})'.format(utme, utmn)
+    mpt_str = 'MULTIPOINT({} {})'.format(x, y)
 
     return mpt_str
 

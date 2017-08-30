@@ -2092,7 +2092,7 @@ VatnLnr</string>
                   <item>
                    <widget class="QPushButton" name="ins_btn">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="focusPolicy">
                      <enum>Qt::NoFocus</enum>

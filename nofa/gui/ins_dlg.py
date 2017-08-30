@@ -134,47 +134,109 @@ class CoorTxtExc(Exception):
     pass
 
 
-class NvlLocTblExc(Exception):
+class LocidMtyExc(Exception):
     """
-    A custom exception when there is a problem
-    with data format in 'Norwegian VatLnr' location table.
-    """
-
-    pass
-
-
-class UtmLocTblNeExc(Exception):
-    """
-    A custom exception when easting or northing is missing
-    in 'Norwegian VatLnr' location table.
+    A custom exception when locationID is empty.
     """
 
-    pass
+    def __init__(self, m):
+        """
+        Constructor.
+
+        :param m: A location table row.
+        :type m: int.
+        """
+
+        self.m = m
 
 
-class UtmLocTblExc(Exception):
+class LocidFmtExc(Exception):
     """
-    A custom exception when there is a problem
-    with data format in 'UTM' location table.
+    A custom exception when format of locationID is not uuid.UUID.
     """
 
-    pass
+    def __init__(self, m, locid):
+        """
+        Constructor.
+
+        :param m: A location table row.
+        :type m: int.
+        :param locid: A locationID.
+        :type locid: str.
+        """
+
+        self.m = m
+        self.locid = locid
+
+
+class LocidNfExc(Exception):
+    """
+    A custom exception when locationID was not found.
+    """
+
+    def __init__(self, m, locid):
+        """
+        Constructor.
+
+        :param m: A location table row.
+        :type m: int.
+        :param locid: A locationID.
+        :type locid: str.
+        """
+
+        self.m = m
+        self.locid = locid
+
+
+class CoorMtyExc(Exception):
+    """
+    A custom exception when coordinate is empty.
+    """
+
+    def __init__(self, m):
+        """
+        Constructor.
+
+        :param m: A location table row.
+        :type m: int.
+        """
+
+        self.m = m
+
+
+class NvlMtyExc(Exception):
+    """
+    A custom exception when Norwegian VatLnr is empty.
+    """
+
+    def __init__(self, m):
+        """
+        Constructor.
+
+        :param m: A location table row.
+        :type m: int.
+        """
+
+        self.m = m
 
 
 class NvlNfExc(Exception):
     """
-    A custom exception when not all 'Norwegian VatLnr' were found.
+    A custom exception when Norwegian VatLnr was not found.
     """
 
-    def __init__(self, nf_nvl):
+    def __init__(self, m, nvl):
         """
         Constructor.
 
-        :param nf_nvl: Not found 'Norwegian VatLnr'.
-        :type nf_nvl: tuple.
+        :param m: A location table row.
+        :type m: int.
+        :param nvl: Not found 'Norwegian VatLnr'.
+        :type nvl: tuple.
         """
 
-        self.nf_nvl = nf_nvl
+        self.m = m
+        self.nvl = nvl
 
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -231,7 +293,7 @@ class InsDlg(QDialog, FORM_CLASS):
             (u'UTM32', QgsCoordinateReferenceSystem('EPSG:25832')),
             (u'UTM33', QgsCoordinateReferenceSystem('EPSG:25833'))])
 
-        self.met_list = [
+        self.loc_met_list = [
             u'locationID',
             u'coordinates',
             u'Norwegian VatLnr']
@@ -320,6 +382,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.oq_le.setValidator(QDoubleValidator(None))
         self.loc_edit_x_coor_le.setValidator(QDoubleValidator(None))
         self.loc_edit_y_coor_le.setValidator(QDoubleValidator(None))
+        self.loc_edit_nvl_le.setValidator(QIntValidator(None))
 
         self.event_input_wdgs = [
             self.smpp_cb,
@@ -878,23 +941,36 @@ class InsDlg(QDialog, FORM_CLASS):
 
     def _get_locid_list(self, id):
         """
-        Returns a location ID list that is used to populate location table.
+        Returns a locationID list that is used to populate location table.
 
         :param id: A locationID.
         :type id: str.
 
-        :returns: A search list.
+        :returns: A locationID list.
         :rtype: list.
         """
 
-        locid_list = [self.met_list[0]]
-        locid_list.append(id)
+        locid_list = [None] * len(self.loc_tbl_wdg_hdr_dict)
 
-        tar_lngth = len(self.loc_tbl_wdg_hdr_dict) - len(locid_list)
-        
-        locid_list.extend([None]*tar_lngth)
+        locid_list[0] = self.loc_met_list[0]
+        locid_list[1] = id
 
         return locid_list
+
+    def _extr_locid_list(self, locid_list):
+        """
+        Extracts data from locationID list.
+
+        :param locid_list: A locationID list.
+        :type locid_list: list.
+
+        :returns: A locationID.
+        :rtype: str.
+        """
+
+        locid = locid_list[1]
+
+        return locid
 
     def _get_coor_list(self, crs_desc, opt, x, y, verb_loc=None):
         """
@@ -915,15 +991,36 @@ class InsDlg(QDialog, FORM_CLASS):
         :rtype: list.
         """
 
-        coor_list = [self.met_list[1]]
-        coor_list.append(None)
-        coor_list.extend([crs_desc, opt, str(x), str(y), verb_loc])
-        
-        tar_lngth = len(self.loc_tbl_wdg_hdr_dict) - len(coor_list)
-        
-        coor_list.extend([None]*tar_lngth)
+        coor_list = [None] * len(self.loc_tbl_wdg_hdr_dict)
+
+        coor_list[0] = self.loc_met_list[1]
+        coor_list[2] = crs_desc
+        coor_list[3] = opt
+        coor_list[4] = str(x)
+        coor_list[5] = str(y)
+        coor_list[6] = verb_loc
 
         return coor_list
+
+    def _extr_coor_list(self, coor_list):
+        """
+        Extracts data from coordinates list.
+
+        :param coor_list: A coordinates list.
+        :type coor_list: list.
+
+        :returns: A tuple containing CRS description (str), option (str),
+            X coordinate (float), Y coordinate (float), verbatim locality (str).
+        :rtype: tuple.
+        """
+
+        crs_desc = coor_list[2]
+        opt = coor_list[3]
+        x = float(coor_list[4])
+        y = float(coor_list[5])
+        verb_loc = coor_list[6]
+
+        return (crs_desc, opt, x, y, verb_loc)
 
     def _get_nvl_list(self, nvl):
         """
@@ -937,15 +1034,27 @@ class InsDlg(QDialog, FORM_CLASS):
         :rtype: list.
         """
 
-        nvl_list = [self.met_list[2]]
-        
-        tar_lngth = len(self.loc_tbl_wdg_hdr_dict) - len(nvl_list)
-        
-        nvl_list.extend([None]*(tar_lngth - 1))
+        nvl_list = [None] * len(self.loc_tbl_wdg_hdr_dict)
 
-        nvl_list.append(str(nvl))
+        nvl_list[0] = self.loc_met_list[2]
+        nvl_list[7] = str(nvl)
 
         return nvl_list
+
+    def _extr_nvl_list(self, nvl_list):
+        """
+        Extracts data from Norwegian VatnLnr list.
+
+        :param nvl_list: A Norwegian VatnLnr list.
+        :type nvl_list: list.
+
+        :returns: A Norwegian VatnLnr.
+        :rtype: int.
+        """
+
+        nvl = int(nvl_list[7])
+
+        return nvl
 
     def dsc_from_iface(self):
         """
@@ -1414,7 +1523,7 @@ class InsDlg(QDialog, FORM_CLASS):
             self.chck_mand_wdgs(self.mtdt_mand_wdgs, MtdtNotFldExc)
             self._chck_occ_tbl()
 
-            loc_id_list = self._get_loc()
+            locid_list = self._get_loc()
 
             event_list = self.get_wdg_list(self.event_input_wdgs)
 
@@ -1422,7 +1531,7 @@ class InsDlg(QDialog, FORM_CLASS):
             prj_id = self._get_prj_id()
             ref_id = self._get_ref_id()
 
-            for loc_id in loc_id_list:
+            for loc_id in locid_list:
                 event_id = uuid.uuid4()
 
                 db.ins_event(
@@ -1456,50 +1565,6 @@ class InsDlg(QDialog, FORM_CLASS):
                         self.mc.con_info[self.mc.usr_str])
 
             QMessageBox.information(self, u'Saved', u'Data correctly saved.')
-        except NoLocExc:
-            self.main_tb.setCurrentIndex(0)
-            QMessageBox.warning(
-                self, u'No Location', u'Enter at least one location.')
-        except NvlTxtExc:
-            QMessageBox.warning(
-                self,
-                u'Norwegian VatLnr',
-                u'Enter integers separated by commas.\n'
-                u'For example:\n'
-                u'3067, 5616, 5627')
-        except CoorTxtExc:
-            QMessageBox.warning(
-                self,
-                u'UTM',
-                u'Enter location in this format separated by commas '
-                u'(location name is optional):\n'
-                u'"<easting> <northing> <location_name>"\n'
-                u'For example:\n'
-                u'601404.85 6644928.24 Hovinbk, '
-                u'580033.12 6633807.99 Drengsrudbk')
-        except NvlLocTblExc:
-            QMessageBox.warning(
-                self,
-                u'Norwegian VatLnr',
-                u'Enter integers.\n'
-                u'For example:\n'
-                u'3067')
-        except UtmLocTblNeExc:
-            QMessageBox.warning(
-                self,
-                u'UTM',
-                u'Enter both easting and northing.')
-        except UtmLocTblExc:
-            QMessageBox.warning(
-                self,
-                u'UTM',
-                u'Both easting and northing must be decimals.')
-        except NvlNfExc as e:
-            QMessageBox.warning(
-                self,
-                u'Norwegian VatLnr',
-                u'The following Norwegian VatLnr codes were not found:\n'
-                u'{}\n'.format(u', '.join(str(n) for n in e.nf_nvl)))
         except MtdtNotFldExc as e:
             self.main_tb.setCurrentWidget(e.wdg.parent())
             e.wdg.setFocus()
@@ -1510,6 +1575,193 @@ class InsDlg(QDialog, FORM_CLASS):
         except OccNotFldExc:
             QMessageBox.warning(
                 self, u'Taxon', u'Select taxon.')
+        except LocidMtyExc as e:
+            self.main_tb.setCurrentWidget(self.loc_wdg)
+            self.loc_tbl.setCurrentCell(e.m, 1)
+            QMessageBox.warning(
+                self,
+                u'locationID',
+                u'locationID of selected row is empty.')
+        except LocidFmtExc as e:
+            self.main_tb.setCurrentWidget(self.loc_wdg)
+            self.loc_tbl.setCurrentCell(e.m, 1)
+            QMessageBox.warning(
+                self,
+                u'locationID',
+                u'locationID "{}" is not UUID.'.format(e.locid))
+        except LocidNfExc as e:
+            self.main_tb.setCurrentWidget(self.loc_wdg)
+            self.loc_tbl.setCurrentCell(e.m, 1)
+            QMessageBox.warning(
+                self,
+                u'locationID',
+                u'locationID "{}" was not found.'.format(e.locid))
+        except CoorMtyExc as e:
+            self.main_tb.setCurrentWidget(self.loc_wdg)
+            self.loc_tbl.setCurrentCell(e.m, 5)
+            QMessageBox.warning(
+                self,
+                u'coordinates',
+                u'Both X and Y coordinates must be entered.')
+        except NvlMtyExc as e:
+            self.main_tb.setCurrentWidget(self.loc_wdg)
+            self.loc_tbl.setCurrentCell(e.m, 7)
+            QMessageBox.warning(
+                self,
+                u'Norwegian VatLnr',
+                u'Norwegian VatLnr of selected row is empty.')
+        except NvlNfExc as e:
+            self.main_tb.setCurrentWidget(self.loc_wdg)
+            self.loc_tbl.setCurrentCell(e.m, 7)
+            QMessageBox.warning(
+                self,
+                u'Norwegian VatLnr',
+                u'Norwegian VatLnr code "{}" was not found.'.format(e.nvl))
+
+    def _chck_occ_tbl(self):
+        """
+        Checks if all rows in the occurrence are filled.
+        """
+
+        for m in range(self.occ_tbl.rowCount()):
+            occ_row_list = self._get_occ_row_list(m)
+
+            if occ_row_list[0] == None:
+                self.occ_tbl.selectRow(m)
+                raise OccNotFldExc()
+
+    def _get_loc(self):
+        """
+        Returns a list of location IDs.
+
+        :returns: A list of locationIDs.
+        :rtype: list.
+        """
+
+        locid_list = []
+
+        tbl = self.loc_tbl
+
+        for m in range(tbl.rowCount()):
+            row_data = self._get_row_data(tbl, m)
+
+            loc_met = row_data[0]
+
+            # locationID
+            if loc_met == self.loc_met_list[0]:
+                locid = self._get_locid_locid(m, row_data)
+            # coordinates
+            elif loc_met == self.loc_met_list[1]:
+                locid = self._get_locid_coor(m, row_data)
+            # nvl
+            elif loc_met == self.loc_met_list[2]:
+                locid = self._get_locid_nvl(m, row_data)
+
+            locid_list.append(locid)
+
+        return locid_list
+
+    def _get_locid_locid(self, m, row_data):
+        """
+        Returns a locationID. It is used for 'locationID' method.
+        Checks if locationID is empty, if it a valid UUID
+        and if it exists in the database. 
+
+        :param m: A location table row.
+        :type m: int.
+        :param row_data: Data in location table row.
+        :type row_data: list.
+
+        :returns: A locationID.
+        :rtype: str.
+        """
+
+        locid = self._extr_locid_list(row_data)
+
+        if not locid:
+            raise LocidMtyExc(m)
+
+        try:
+            uuid.UUID(locid)
+        except ValueError:
+            raise LocidFmtExc(m, locid)
+
+        if not db.chck_locid(self.mc.con, locid):
+            raise LocidNfExc(m, locid)
+
+        return locid
+
+    def _get_locid_coor(self, m, row_data):
+        """
+        Returns a locationID. It is used for 'coordinates' method.
+        Checks if both X and Y coordinates are entered.
+        Based on option it inserts new location or returns locationID
+        of the nearest location. 
+
+        :param m: A location table row.
+        :type m: int.
+        :param row_data: Data in location table row.
+        :type row_data: list.
+
+        :returns: A locationID of new location or the nearest location.
+        :rtype: str.
+        """
+
+        try:
+            crs_desc, opt, x, y, verb_loc = self._extr_coor_list(row_data)
+        except TypeError:
+            raise CoorMtyExc(m)
+
+        srid = self.crs_dict[crs_desc].authid().split(u':')[1]
+
+        # new
+        if opt == self.opt_list[0]:
+            locid = uuid.uuid4()
+
+            mpt_str = db.get_mpt_str(x, y)
+            utm33_geom = db.get_utm33_geom(self.mc.con, mpt_str, srid)
+            db.ins_new_loc(self.mc.con, locid, utm33_geom, verb_loc)
+            db.ins_loc_log(
+                self.mc.con,
+                locid,
+                verb_loc,
+                self.mc.con_info[self.mc.usr_str])
+        # nearest
+        elif opt == self.opt_list[1]:
+            pt_str = db.get_pt_str(x, y)
+            utm33_geom = db.get_utm33_geom(self.mc.con, pt_str, srid)
+            locid = db.get_nrst_locid(self.mc.con, utm33_geom)
+
+            locid = str(locid)
+
+        return locid
+
+    def _get_locid_nvl(self, m, row_data):
+        """
+        Returns a locationID. It is used for 'Norwegian VatLnr' method.
+        Checks if Norwegian VatLnr is empty.
+        It searches for locationID with the given Norwegian VatLnr.
+
+        :param m: A location table row.
+        :type m: int.
+        :param row_data: Data in location table row.
+        :type row_data: list.
+
+        :returns: A locationID with the given Norwegian VatLnr.
+        :rtype: str.
+        """
+
+        try:
+            nvl = self._extr_nvl_list(row_data)
+        except TypeError:
+            raise NvlMtyExc(m)
+
+        try:
+            locid = db.get_locid_from_nvl(self.mc.con, nvl)
+        except TypeError:
+            raise NvlNfExc(m, nvl)
+
+        return locid
 
     def get_wdg_list(self, wdgs, forbi=False):
         """
@@ -1627,138 +1879,6 @@ class InsDlg(QDialog, FORM_CLASS):
                     txn_list.append(txn_item.text(0))
 
         return txn_list
-
-    def _get_loc(self):
-        """
-        Returns a list of location IDs.
-
-        :returns: A list of location IDs.
-        :rtype: list.
-        """
-
-        loc_input_set = self._get_loc_input_set(loctp)
-
-        if loctp == 'Norwegian VatnLnr':
-            locs_tpl = tuple([nvl for loc in loc_input_set for nvl in loc])
-
-            loc_id_nvl_list = db.get_loc_id_nvl_list(self.mc.con, locs_tpl)
-
-            # check if all codes were found
-            if len(loc_id_nvl_list) != len(locs_tpl):
-                loc_nvl_list = [l[1] for l in loc_id_nvl_list]
-
-                nf_nvl = tuple(set(locs_tpl) - set(loc_nvl_list))
-
-                raise NvlNfExc(nf_nvl)
-
-            loc_id_list = [l[0] for l in loc_id_nvl_list]
-        else:
-            loc_id_list = []
-
-            for loc in loc_input_set:
-                utme = loc[0]
-                utmn = loc[1]
-
-                try:
-                    loc_name = loc[2]
-                except IndexError:
-                    loc_name = None
-
-                srid = self.loctp_dict[loctp]
-
-                pt_str = db.get_pt_str(utme, utmn)
-
-                utm33_geom = db.get_utm33_geom(self.mc.con, pt_str, srid)
-
-                # OS.NINA
-                # is 10 meters alright?
-                loc_id = db.get_nrst_loc_id(self.mc.con, utm33_geom, 10)
-
-                if not loc_id:
-                    loc_id = uuid.uuid4()
-
-                    mpt_str = db.get_mpt_str(utme, utmn)
-                    utm33_geom = db.get_utm33_geom(self.mc.con, mpt_str, srid)
-
-                    db.ins_new_loc(self.mc.con, loc_id, utm33_geom, loc_name)
-
-                    db.ins_loc_log(
-                        self.mc.con,
-                        loc_id,
-                        loc_name,
-                        self.mc.con_info[self.mc.usr_str])
-
-                loc_id_list.append(loc_id)
-
-        return loc_id_list
-
-    def _get_loc_input_set(self, loctp):
-        """
-        Returns a set of location inputs.
-
-        :param loctp: A location type.
-        :type loctp: str.
-
-        :returns: A set of location inputs.
-        :rtype: set.
-        """
-
-        loc_input_list = []
-
-        tbl = self.loc_tbl
-
-        mty_row_idx = []
-
-        for m in range(tbl.rowCount()):
-            row_data = self._get_row_data(tbl, m)
-
-            if all(item is None for item in row_data) \
-                and tbl.rowCount() != 1:
-                mty_row_idx.append(m)
-            else:
-                loc_input_list.append(row_data)
-
-        mty_row_idx.sort(reverse=True)
-
-        # remove empty rows
-        for m in mty_row_idx:
-            if tbl.rowCount() != 1:
-                tbl.removeRow(m)
-
-        if all(item is None for row in loc_input_list for item in row):
-            raise NoLocExc()
-
-        if loctp == 'Norwegian VatnLnr':
-            for m in range(len(loc_input_list)):
-                try:
-                    loc_input_list[m][0] = int(loc_input_list[m][0])
-                except ValueError:
-                    raise NvlLocTblExc()
-        else:
-            for m in range(len(loc_input_list)):
-                if None in loc_input_list[m][:2]:
-                    raise UtmLocTblNeExc()
-                for n in range(2):
-                    try:
-                        loc_input_list[m][n] = float(loc_input_list[m][n])
-                    except ValueError:
-                        raise UtmLocTblExc()
-
-        loc_input_set = set(map(tuple, loc_input_list))
-
-        return loc_input_set
-
-    def _chck_occ_tbl(self):
-        """
-        Checks if all rows in the occurrence are filled.
-        """
-
-        for m in range(self.occ_tbl.rowCount()):
-            occ_row_list = self._get_occ_row_list(m)
-
-            if occ_row_list[0] == None:
-                self.occ_tbl.selectRow(m)
-                raise OccNotFldExc()
 
     def upd_dtst(self, dtst_str=None):
         """
@@ -2306,7 +2426,7 @@ class InsDlg(QDialog, FORM_CLASS):
             self.loc_edit_met_cb: [
                 self._get_loc_met_list,
                 [],
-                self.met_list[2]]}
+                self.loc_met_list[2]]}
 
         return loc_edit_met_cb_dict
 
@@ -2325,7 +2445,7 @@ class InsDlg(QDialog, FORM_CLASS):
             self.loc_manual_met_cb: [
                 self._get_loc_met_list,
                 [],
-                self.met_list[2]]}
+                self.loc_met_list[2]]}
 
         return loc_manual_met_cb_dict
 
@@ -2457,7 +2577,7 @@ class InsDlg(QDialog, FORM_CLASS):
         :rtype: list.
         """
 
-        met_list = self.met_list
+        met_list = self.loc_met_list
 
         return met_list
 
@@ -2767,10 +2887,11 @@ class InsDlg(QDialog, FORM_CLASS):
         Resets a current table row.
         """
 
+        self._rst_cb_by_cb_dict(self._get_tbl_mand_cb_dict())
+
         tbl_wdgs = self._get_tbl_wdgs()
 
         self._rst_wdgs(tbl_wdgs)
-        self._rst_cb_by_cb_dict(self._get_tbl_mand_cb_dict())
         self._emit_wdgs_sgnls(tbl_wdgs)
 
     def _rst_all_tbl_rows(self):

@@ -196,7 +196,7 @@ class ConDlg(QDialog):
 
             self.mc.con = db.get_con(con_info)
 
-            if db.check_nofa_tbls(self.mc.con):
+            if db.chck_nofa_tbls(self.mc.con):
                 self.stat_bar.showMessage(
                     u'Connection to NOFA database succeeded.',
                     msg_dur)

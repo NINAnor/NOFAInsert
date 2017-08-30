@@ -160,7 +160,7 @@ class NOFAInsert:
             con_info = self.con_info
             self.con = db.get_con(con_info)
 
-            if not db.check_nofa_tbls(self.con):
+            if not db.chck_nofa_tbls(self.con):
                 self._open_con_dlg(con_info)
         except psycopg2.OperationalError:
             self._open_con_dlg(con_info)
