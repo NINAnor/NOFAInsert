@@ -26,7 +26,8 @@
 
 from PyQt4 import QtGui, uic
 from PyQt4.QtCore import (
-    QSettings, QCoreApplication, Qt, QObject, QDate, QObject, QSignalMapper)
+    QSettings, QCoreApplication, Qt, QObject, QDate, QDateTime, QObject,
+    QSignalMapper)
 from PyQt4.QtGui import (
     QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget,
     QTableWidgetItem, QDialog, QDoubleValidator, QIntValidator, QComboBox,
@@ -1763,12 +1764,14 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return locid
 
-    def get_wdg_list(self, wdgs, forbi=False):
+    def get_wdg_list(self, wdgs, pydate=True, forbi=False):
         """
         Returns the data from the given list of widgets.
 
         :param wdgs: A list of widgets whose data should be returned.
         :type wdgs: list.
+        :param pydate: True to convert QDate to Python date, False otherwise.
+        :type pydate: bool
         :param forbi: True to allow forbidden text, False otherwise.
         :type forbi: bool.
 
@@ -1781,7 +1784,23 @@ class InsDlg(QDialog, FORM_CLASS):
         for wdg in wdgs:
             if isinstance(wdg, QLineEdit):
                 txt = wdg.text()
-                wdg_data = self._get_val_txt(txt, forbi)
+
+                wdg_vald = wdg.validator()
+
+                if not vald:
+                    wdg_data = self._get_val_txt(txt, forbi)
+                elif isinstance(wdg_vald, (QIntValidator, vald.LenIntVald)):
+                    try:
+                        wdg_data = int(txt)
+                    except ValueError:
+                        wdg_data = None
+                elif isinstance(wdg_vald, QDoubleValidator):
+                    try:
+                        wdg_data = float(txt)
+                    except ValueError:
+                        wdg_data = None
+                else:
+                    wdg_data = self._get_val_txt(txt, forbi)
             elif isinstance(wdg, QComboBox):
                 txt = wdg.currentText()
                 wdg_data = self._get_val_txt(txt, forbi)
@@ -1789,7 +1808,9 @@ class InsDlg(QDialog, FORM_CLASS):
                 if wdg.findChild(QLineEdit).text() == self.mty_str:
                     wdg_data = None
                 else:
-                    wdg_data = wdg.date().toPyDate()
+                    wdg_data = wdg.date()
+                    if pydate:
+                        wdg_data = wdg_data.toPyDate()
             elif isinstance(wdg, QPlainTextEdit):
                 txt = wdg.toPlainText()
                 wdg_data = self._get_val_txt(txt, forbi)
@@ -1836,10 +1857,12 @@ class InsDlg(QDialog, FORM_CLASS):
         # OS.NINA
         # depends on the order in the table
         for n in range(self.occ_tbl.columnCount()):
-            txt = self.occ_tbl.item(m, n).text()
-            val_txt = self._get_val_txt(txt)
+            wdg_data = self.occ_tbl.item(m, n).data(Qt.EditRole)
 
-            occ_row_list.append(val_txt)
+            if isinstance(wdg_data, (str, unicode)):
+                wdg_data = self._get_val_txt(wdg_data)
+
+            occ_row_list.append(wdg_data)
 
         return occ_row_list
 
@@ -2614,6 +2637,7 @@ class InsDlg(QDialog, FORM_CLASS):
         tbl.setSelectionBehavior(QTableWidget.SelectRows)
         tbl.setSelectionMode(QTableWidget.SingleSelection)
         tbl.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        tbl.setSortingEnabled(True)
         tbl.setHorizontalHeaderLabels(tbl_hdrs)
         tbl.setRowCount(1)
 
@@ -2622,7 +2646,8 @@ class InsDlg(QDialog, FORM_CLASS):
         tbl.selectRow(m)
 
         for n, tbl_hdr in enumerate(tbl_hdrs):
-            tbl_item = QTableWidgetItem(None)
+            tbl_item = QTableWidgetItem()
+            tbl_item.setData(Qt.EditRole, None)
             tbl.setItem(m, n, tbl_item)
 
         self._con_wdgs_sgnls_to_met(tbl_wdgs, met)
@@ -2685,37 +2710,40 @@ class InsDlg(QDialog, FORM_CLASS):
 
         # skip first column
         for n in range(1, tbl.columnCount()):
-            tbl.item(m, n).setText(None)
+            tbl.item(m, n).setData(Qt.EditRole, None)
 
         cur_loc_edit_tbl_wdgs = self._cur_loc_edit_tbl_wdgs
 
         self._rst_wdgs(cur_loc_edit_tbl_wdgs)
         self._emit_wdgs_sgnls(cur_loc_edit_tbl_wdgs)
 
-    def _create_tbl_hist_tab(self, tbl, tbl_items, tbl_hdrs):
+    def _create_tbl_hist_tab(self, tbl, tbl_list, tbl_hdrs):
         """
         Creates a table with one row.
         This method is used for creating tables in the history tab.
         
         :param tbl: A table.
         :type tbl: QTableWidget.
-        :param tbl_items: Table items.
-        :type tbl_items: list.
+        :param tbl_list: Table list.
+        :type tbl_list: list.
         :param tbl_hdrs: Table headers.
         :type tbl_hdrs: list.
         """
-  
+
         tbl.setColumnCount(len(tbl_hdrs))
         tbl.setSelectionBehavior(QTableWidget.SelectItems)
         tbl.setSelectionMode(QTableWidget.ExtendedSelection)
-        tbl.setHorizontalHeaderLabels(tbl_hdrs)
-        tbl.setRowCount(len(tbl_items))
         tbl.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        tbl.setSortingEnabled(True)
+        tbl.setHorizontalHeaderLabels(tbl_hdrs)
+        tbl.setRowCount(len(tbl_list))
 
-        for m, row in enumerate(tbl_items):
+        for m, row in enumerate(tbl_list):
             for n, item in enumerate(row):
-                tbl_item = QTableWidgetItem(unicode(item))
-
+                if isinstance(item, datetime.datetime):
+                    item = QDateTime(item)
+                tbl_item = QTableWidgetItem()
+                tbl_item.setData(Qt.EditRole, item)
                 tbl.setItem(m, n, tbl_item)
 
         tbl.resizeColumnsToContents()
@@ -2733,7 +2761,8 @@ class InsDlg(QDialog, FORM_CLASS):
         """
 
         for n, tbl_hdr in enumerate(tbl_hdrs):
-            tbl_item = QTableWidgetItem(None)
+            tbl_item = QTableWidgetItem()
+            tbl_item.setData(Qt.EditRole, None)
             tbl.setItem(m, n, tbl_item)
 
     def _upd_loc_tbl_item(self):
@@ -2765,14 +2794,17 @@ class InsDlg(QDialog, FORM_CLASS):
 
         sndr = self.sender()
 
-        wdg_data = self.get_wdg_list([sndr], True)[0]
+        wdg_data = self.get_wdg_list([sndr], False, True)[0]
         m = tbl.currentRow()
         n = tbl_wdgs.index(sndr)
 
-        try:
-            tbl.item(m, n).setText(wdg_data)
-        except TypeError:
-            tbl.item(m, n).setText(str(wdg_data))
+        tbl_item = tbl.item(m, n)
+
+        tbl_item.setData(Qt.EditRole, wdg_data)
+
+        tbl.blockSignals(True)
+        tbl.selectRow(tbl_item.row())
+        tbl.blockSignals(False)
 
         tbl.resizeColumnsToContents()
 
@@ -2807,7 +2839,7 @@ class InsDlg(QDialog, FORM_CLASS):
         tbl = self.loc_tbl
         m = tbl.currentRow()
 
-        loc_met = tbl.item(m, 0).text()
+        loc_met = tbl.item(m, 0).data(Qt.EditRole)
 
         self.loc_edit_met_cb.blockSignals(True)
 
@@ -2819,9 +2851,9 @@ class InsDlg(QDialog, FORM_CLASS):
 
         for wdg in self._cur_loc_edit_tbl_wdgs:
             n = self.loc_tbl_wdg_hdr_dict.keys().index(wdg)
-            txt = tbl.item(m, n).text()
+            wdg_data = tbl.item(m, n).data(Qt.EditRole)
 
-            self._set_wdg_data_from_txt(wdg, txt)
+            self._set_wdg_data(wdg, wdg_data)
 
     def _upd_occ_tbl_wdgs(self):
         """
@@ -2832,27 +2864,37 @@ class InsDlg(QDialog, FORM_CLASS):
         tbl = self.occ_tbl
         m = tbl.currentRow()
 
+        occ_row_list = self._get_occ_row_list(m)
+
         for n, wdg in enumerate(self.occ_tbl_wdg_hdr_dict.keys()):
-            txt = tbl.item(m, n).text()
+            wdg_data = occ_row_list[n]
+            self._set_wdg_data(wdg, wdg_data)
 
-            self._set_wdg_data_from_txt(wdg, txt)
-
-    def _set_wdg_data_from_txt(self, wdg, txt):
+    def _set_wdg_data(self, wdg, wdg_data):
         """
-        Sets widget's data from the given text.
+        Sets widget's data.
 
         :param wdg: A Widget.
         :type wdg: QWidget.
-        :param txt: A text to be set.
-        :type txt: str.
+        :param wdg_data: A widget data.
+        :type wdg_data: QVariant.
         """
 
         if isinstance(wdg, QLineEdit):
-            wdg.setText(txt)
+            if wdg_data:
+                if isinstance(wdg_data, float):
+                    if wdg_data.is_integer():
+                        wdg_data = int(wdg_data)
+                wdg.setText(str(wdg_data))
+            else:
+                wdg.clear()
         elif isinstance(wdg, QComboBox):
-            wdg.setCurrentIndex(wdg.findText(txt))
+            wdg.setCurrentIndex(wdg.findText(wdg_data))
         elif isinstance(wdg, QDateEdit):
-            wdg.setDate(QDate.fromString(txt, 'yyyy-MM-dd'))
+            if wdg_data:
+                wdg.setDate(wdg_data)
+            else:
+                wdg.setDate(wdg.minimumDateTime().date())
 
     def _add_tbl_row(self):
         """
@@ -2862,6 +2904,8 @@ class InsDlg(QDialog, FORM_CLASS):
         tbl = self._get_tbl()
         tbl_hdrs = self._get_tbl_hdrs()
 
+        tbl.setSortingEnabled(False)
+
         m = tbl.currentRow() + 1
         tbl.insertRow(m)
         tbl.blockSignals(True)
@@ -2870,6 +2914,8 @@ class InsDlg(QDialog, FORM_CLASS):
         self._add_tbl_mty_row_items(tbl, tbl_hdrs, m)
 
         self._rst_tbl_row()
+
+        tbl.setSortingEnabled(True)
 
     def _del_tbl_row(self):
         """
@@ -2907,7 +2953,7 @@ class InsDlg(QDialog, FORM_CLASS):
             tbl.setCurrentCell(m, 0)
             self._rst_tbl_row()
 
-        tbl.setCurrentItem(curr_item)
+        tbl.selectRow(curr_item.row())
 
     def _del_all_tbl_rows(self, tbl):
         """
@@ -2940,8 +2986,7 @@ class InsDlg(QDialog, FORM_CLASS):
         row_data = []
 
         for n in range(tbl.columnCount()):
-            row_item = tbl.item(m, n).text() \
-                if len(tbl.item(m, n).text()) != 0 else None
+            row_item = tbl.item(m, n).data(Qt.EditRole)
 
             row_data.append(row_item)
 
@@ -2967,7 +3012,7 @@ class InsDlg(QDialog, FORM_CLASS):
         m = tbl.currentRow()
 
         for n in range(tbl.columnCount()):
-            tbl.item(m, n).setText(row_data[n])
+            tbl.item(m, n).setData(Qt.EditRole, row_data[n])
 
     def _get_tbl(self):
         """
