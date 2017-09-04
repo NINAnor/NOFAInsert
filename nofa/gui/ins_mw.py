@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- InsDlg
+ InsMw
                                  A QGIS plugin
  Insert fish occurrence data to NOFA DB
                              -------------------
@@ -30,7 +30,7 @@ from PyQt4.QtCore import (
     QSignalMapper)
 from PyQt4.QtGui import (
     QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget,
-    QTableWidgetItem, QDialog, QDoubleValidator, QIntValidator, QComboBox,
+    QTableWidgetItem, QMainWindow, QDoubleValidator, QIntValidator, QComboBox,
     QLineEdit, QDateEdit, QAbstractItemView, QValidator, QBrush, QColor,
     QPlainTextEdit, QTextCursor, QWidget)
 
@@ -240,13 +240,13 @@ class NvlNfExc(Exception):
         self.nvl = nvl
 
 
-FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'ins_dlg.ui'))
+FORM_CLASS, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), 'ins_mw.ui'))
 
 
-class InsDlg(QDialog, FORM_CLASS):
+class InsMw(QMainWindow, FORM_CLASS):
     """
-    A dialog for inserting data into NOFA database.
+    A main window for inserting data into NOFA database.
     """
 
     def __init__(self, iface, mc, plugin_dir):
@@ -261,7 +261,7 @@ class InsDlg(QDialog, FORM_CLASS):
         :type plugin_dir: str.
         """
 
-        super(InsDlg, self).__init__()
+        super(InsMw, self).__init__()
 
         # set up the user interface from Designer.
         self.setupUi(self)
@@ -3066,7 +3066,6 @@ class InsDlg(QDialog, FORM_CLASS):
         m = tbl.currentRow()
 
         occ_row_list = self._get_occ_row_list(m)
-        QgsMessageLog.logMessage(str(occ_row_list), 'pluginName')
 
         for n, wdg in enumerate(self.occ_tbl_wdg_hdr_dict.keys()):
             wdg_data = occ_row_list[n]

@@ -32,7 +32,7 @@ import psycopg2, psycopg2.extras
 
 import resources
 
-from nofa.gui import ins_dlg, con_dlg
+from nofa.gui import ins_mw, con_dlg
 from nofa import db
 
 
@@ -107,7 +107,7 @@ class NOFAInsert:
         self.con_act.triggered.connect(self._open_con_dlg)
         self.iface.addPluginToMenu(self.app_name, self.con_act)
 
-        self.ins_dlg = ins_dlg.InsDlg(self.iface, self, self.plugin_dir)
+        self.ins_mw = ins_mw.InsMw(self.iface, self, self.plugin_dir)
 
     def unload(self):
         """
@@ -117,7 +117,7 @@ class NOFAInsert:
         self.iface.removePluginMenu(self.app_name, self.nofa_act)
         self.iface.removePluginMenu(self.app_name, self.con_act)
         self.iface.removeToolBarIcon(self.nofa_act)
-        self.ins_dlg.dsc_from_iface()
+        self.ins_mw.dsc_from_iface()
 
     @property
     def con_info(self):
@@ -168,5 +168,5 @@ class NOFAInsert:
         if not self.con:
             return
 
-        self.ins_dlg.prep()
-        self.ins_dlg.show()
+        self.ins_mw.prep()
+        self.ins_mw.show()

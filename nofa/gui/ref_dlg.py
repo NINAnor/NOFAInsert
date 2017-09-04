@@ -48,7 +48,7 @@ class RefDlg(QDialog):
         :param mc: A reference to the main class.
         :type mc: object.
         :param iw: A reference to the insert window.
-        :type iw: QDialog.
+        :type iw: QMainWindow.
         """
 
         super(QDialog, self).__init__()
