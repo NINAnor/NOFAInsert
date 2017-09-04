@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1279</width>
-    <height>764</height>
+    <height>793</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
        <string>Main</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_22">
-       <item row="1" column="0">
+       <item row="0" column="0">
         <widget class="QSplitter" name="main_hspltr">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -60,7 +60,7 @@
              <x>0</x>
              <y>0</y>
              <width>329</width>
-             <height>540</height>
+             <height>569</height>
             </rect>
            </property>
            <attribute name="label">
@@ -68,11 +68,11 @@
            </attribute>
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
-             <layout class="QVBoxLayout" name="loc_vlyt" stretch="0,1">
+             <layout class="QVBoxLayout" name="loc_vlyt" stretch="0,1,0">
               <item>
                <widget class="QTabWidget" name="loc_tabwdg">
                 <property name="currentIndex">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
                 <widget class="QWidget" name="loc_srch_tab">
                  <attribute name="title">
@@ -844,6 +844,19 @@ VatnLnr</string>
                 </item>
                </layout>
               </item>
+              <item>
+               <widget class="QPushButton" name="preview_btn">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="toolTip">
+                 <string>Preview all locations in a map</string>
+                </property>
+                <property name="text">
+                 <string>Preview</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
@@ -854,7 +867,7 @@ VatnLnr</string>
              <x>0</x>
              <y>0</y>
              <width>329</width>
-             <height>540</height>
+             <height>569</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1083,7 +1096,7 @@ VatnLnr</string>
              <x>0</x>
              <y>0</y>
              <width>329</width>
-             <height>540</height>
+             <height>569</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1141,7 +1154,7 @@ VatnLnr</string>
              <x>0</x>
              <y>0</y>
              <width>329</width>
-             <height>540</height>
+             <height>569</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1199,7 +1212,7 @@ VatnLnr</string>
              <x>0</x>
              <y>0</y>
              <width>329</width>
-             <height>540</height>
+             <height>569</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1282,7 +1295,7 @@ VatnLnr</string>
               <x>0</x>
               <y>0</y>
               <width>904</width>
-              <height>265</height>
+              <height>276</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_21">
@@ -1658,7 +1671,7 @@ VatnLnr</string>
                <x>0</x>
                <y>0</y>
                <width>283</width>
-               <height>424</height>
+               <height>442</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_19">
@@ -1736,7 +1749,7 @@ VatnLnr</string>
                <x>0</x>
                <y>0</y>
                <width>615</width>
-               <height>424</height>
+               <height>442</height>
               </rect>
              </property>
              <property name="sizePolicy">

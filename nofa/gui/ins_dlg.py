@@ -37,7 +37,7 @@ from PyQt4.QtGui import (
 from qgis.core import (
     QgsApplication, QgsMessageLog, QgsCoordinateReferenceSystem,
     QgsCoordinateTransform, QgsPoint, QgsRasterLayer, QgsMapLayerRegistry,
-    QgsVectorLayer, QgsDataSourceURI, QgsProject)
+    QgsVectorLayer, QgsDataSourceURI, QgsProject, QgsFeature, QgsGeometry)
 from qgis.gui import QgsMapToolEmitPoint
 
 from collections import defaultdict, OrderedDict
@@ -529,7 +529,7 @@ class InsDlg(QDialog, FORM_CLASS):
         self.cnty_cb.currentIndexChanged.connect(self._pop_muni_cb)
 
         self.loc_srch_btn.clicked.connect(self._srch_loc)
-        self.loc_load_btn.clicked.connect(self._load_loc_layer)
+        self.loc_load_btn.clicked.connect(self._load_loc_lyr)
         self.add_seld_feats_btn.clicked.connect(self._add_locid_seld_feats)
 
         self.osm_basemap_btn.clicked.connect(self._add_osm_wms_lyr)
@@ -549,6 +549,8 @@ class InsDlg(QDialog, FORM_CLASS):
 
         self.loc_tbl.itemSelectionChanged.connect(self._upd_loc_tbl_wdgs)
 
+        self.loc_tabwdg.currentChanged.connect(self._upd_loc_tbl_wdgs)
+
         # table buttons - connect
         self.loc_rowup_btn.clicked.connect(self._sel_row_up)
         self.loc_rowdwn_btn.clicked.connect(self._sel_row_dwn)
@@ -557,6 +559,8 @@ class InsDlg(QDialog, FORM_CLASS):
         self.loc_rstrow_btn.clicked.connect(self._rst_tbl_row)
         self.loc_rstallrows_btn.clicked.connect(self._rst_all_tbl_rows)
         self.loc_del_btn.clicked.connect(self._del_all_tbl_rows)
+
+        self.preview_btn.clicked.connect(self._preview_loc)
 
     def _con_mtdt_wdgs(self):
         """
@@ -724,6 +728,8 @@ class InsDlg(QDialog, FORM_CLASS):
             self.loc_load_btn.setEnabled(True)
 
             self.locid_list = locid_list
+            self.loc_lyr_name = u'location-{}-{}-{}-{}'.format(
+                wb, cntry_code, cnty, muni)
         else:
             self.loc_load_btn.setEnabled(False)
 
@@ -855,9 +861,34 @@ class InsDlg(QDialog, FORM_CLASS):
 
         return txn
 
-    def _load_loc_layer(self):
+    def _load_loc_lyr(self):
         """
-        Loads a layer of found locations.
+        Loads a layer containing found locations.
+        """
+
+        wb, cntry_code, cnty, muni = self._loc_fltrs
+
+        loc_lyr = self._get_loc_lyr(
+            self.locid_list,
+            u'search_location-{}-{}-{}-{}'.format(wb, cntry_code, cnty, muni))
+
+        if loc_lyr.isValid():
+            QgsMapLayerRegistry.instance().addMapLayer(loc_lyr)
+
+    def _get_loc_lyr(self, locid_list, loc_lyr_name):
+        """
+        Returns a location layer containing features with the given locationIDs.
+        The name of the returned location layer is set according to the given
+        name.
+
+        :param locid_list: A list of locationID.
+        :type locid_list: list.
+        :param loc_lyr_name: A location layer name.
+        :type loc_lyr_name: str.
+
+        :returns: A location layer containing features with the given
+            locationIDs.
+        :rtype: QgsVectorLayer.
         """
 
         uri = QgsDataSourceURI()
@@ -876,18 +907,12 @@ class InsDlg(QDialog, FORM_CLASS):
             'location',
             'geom',
             '"locationID" IN ({})'.format(
-                ', '.join(['\'{}\''.format(str(l)) for l in self.locid_list])),
+                ', '.join(['\'{}\''.format(str(l)) for l in locid_list])),
             'locationID')
 
-        wb, cntry_code, cnty, muni = self._loc_fltrs
+        loc_lyr = QgsVectorLayer(uri.uri(), loc_lyr_name, u'postgres')
 
-        lyr = QgsVectorLayer(
-            uri.uri(),
-            u'location-{}-{}-{}-{}'.format(wb, cntry_code, cnty, muni),
-            u'postgres')
-
-        if lyr.isValid():
-            QgsMapLayerRegistry.instance().addMapLayer(lyr)
+        return loc_lyr
 
     def _add_locid_seld_feats(self):
         """
@@ -1086,7 +1111,11 @@ class InsDlg(QDialog, FORM_CLASS):
         :type btn: QtCore.MouseButton.
         """
 
-        if btn == Qt.LeftButton:
+        row_data = self._get_row_data(self.loc_tbl, self.loc_tbl.currentRow())
+
+        # set coordinates only on left mouse click
+        # and when method of current row is 'coordinates'
+        if btn == Qt.LeftButton and row_data[0] == self.loc_met_list[1]:
             in_crs = self.cnvs.mapSettings().destinationCrs()
 
             crs_desc = self._edit_crs_desc
@@ -1328,6 +1357,159 @@ class InsDlg(QDialog, FORM_CLASS):
         nvl_input_set = ordered_set.OrderedSet(map(tuple, nvl_input_list))
 
         return nvl_input_set
+
+    def _preview_loc(self):
+        """
+        Previews all locations in the location table.
+        It adds two layer to map canvas:
+            - layer of existing locations
+            - layer of new locations.
+        """
+
+        try:
+            locid_list = []
+
+            tbl = self.loc_tbl
+
+            new_loc_feat_list = []
+
+            for m in range(tbl.rowCount()):
+                row_data = self._get_row_data(tbl, m)
+
+                loc_met = row_data[0]
+
+                # locationID
+                if loc_met == self.loc_met_list[0]:
+                    locid = self._get_locid_locid(m, row_data)
+                # coordinates
+                elif loc_met == self.loc_met_list[1]:
+                    new_loc_feat, locid = self._get_new_loc_feat_locid_coor(
+                        m, row_data)
+
+                    if new_loc_feat:
+                        new_loc_feat_list.append(new_loc_feat)
+                # nvl
+                elif loc_met == self.loc_met_list[2]:
+                    locid = self._get_locid_nvl(m, row_data)
+
+                if locid:
+                    locid_list.append(locid)
+
+            if len(locid_list) != 0:
+                exg_loc_lyr = self._get_loc_lyr(
+                    locid_list, u'preview_location-existing')
+
+                if exg_loc_lyr.isValid():
+                    QgsMapLayerRegistry.instance().addMapLayer(exg_loc_lyr)
+
+            if len(new_loc_feat_list) != 0:
+                new_loc_lyr = QgsVectorLayer(
+                    u'Point?crs={}'.format(self._utm33_crs.authid()),
+                    u'preview_location-new',
+                    u'memory')
+
+                dp = new_loc_lyr.dataProvider()
+                dp.addFeatures(new_loc_feat_list)
+                new_loc_lyr.updateExtents()
+
+                if new_loc_lyr.isValid():
+                    QgsMapLayerRegistry.instance().addMapLayer(new_loc_lyr)
+        except LocidMtyExc as e:
+            self.main_tb.setCurrentWidget(self.loc_wdg)
+            self.loc_tbl.setCurrentCell(e.m, 1)
+            QMessageBox.warning(
+                self,
+                u'locationID',
+                u'locationID of selected row is empty.')
+        except LocidFmtExc as e:
+            self.main_tb.setCurrentWidget(self.loc_wdg)
+            self.loc_tbl.setCurrentCell(e.m, 1)
+            QMessageBox.warning(
+                self,
+                u'locationID',
+                u'locationID "{}" is not UUID.'.format(e.locid))
+        except LocidNfExc as e:
+            self.main_tb.setCurrentWidget(self.loc_wdg)
+            self.loc_tbl.setCurrentCell(e.m, 1)
+            QMessageBox.warning(
+                self,
+                u'locationID',
+                u'locationID "{}" was not found.'.format(e.locid))
+        except CoorMtyExc as e:
+            self.main_tb.setCurrentWidget(self.loc_wdg)
+            self.loc_tbl.setCurrentCell(e.m, 5)
+            QMessageBox.warning(
+                self,
+                u'coordinates',
+                u'Both X and Y coordinates must be entered.')
+        except NvlMtyExc as e:
+            self.main_tb.setCurrentWidget(self.loc_wdg)
+            self.loc_tbl.setCurrentCell(e.m, 7)
+            QMessageBox.warning(
+                self,
+                u'Norwegian VatLnr',
+                u'Norwegian VatLnr of selected row is empty.')
+        except NvlNfExc as e:
+            self.main_tb.setCurrentWidget(self.loc_wdg)
+            self.loc_tbl.setCurrentCell(e.m, 7)
+            QMessageBox.warning(
+                self,
+                u'Norwegian VatLnr',
+                u'Norwegian VatLnr code "{}" was not found.'.format(e.nvl))
+        
+    def _get_new_loc_feat_locid_coor(self, m, row_data):
+        """
+        Returns a new location feature or a locationID.
+        It is used for 'coordinates' method.
+        Checks if both X and Y coordinates are entered.
+        Based on option it returns a new location feature
+        or returns locationID of the nearest location. 
+
+        :param m: A location table row.
+        :type m: int.
+        :param row_data: Data in location table row.
+        :type row_data: list.
+
+        :returns: A locationID of new location or the nearest location.
+        :rtype: str.
+        """
+
+        try:
+            crs_desc, opt, x, y, verb_loc = self._extr_coor_list(row_data)
+        except TypeError:
+            raise CoorMtyExc(m)
+
+        crs = self.crs_dict[crs_desc]
+        srid = crs.authid().split(u':')[1]
+
+        new_loc_feat = None
+        locid = None
+
+        # new
+        if opt == self.opt_list[0]:
+            out_crs = self._utm33_crs
+            out_x, out_y = self._trf_coord(crs, out_crs, x, y)
+            pnt_geom = QgsGeometry.fromPoint(QgsPoint(out_x, out_y))
+            new_loc_feat = QgsFeature()
+            new_loc_feat.setGeometry(pnt_geom)
+        # nearest
+        elif opt == self.opt_list[1]:
+            locid = self._get_nrst_locid(x, y, srid)
+
+        return (new_loc_feat, locid)
+
+    @property
+    def _utm33_crs(self):
+        """
+        Return UTM33 CRS.
+
+        :returns: UTM33 CRS.
+        :rtype: QgsCoordinateReferenceSystem.
+        """
+
+        utm33_crs = self.crs_dict[u'UTM33']
+
+        return utm33_crs
 
     def _fetch_schema(self):
         """
@@ -1729,11 +1911,30 @@ class InsDlg(QDialog, FORM_CLASS):
                 self.mc.con_info[self.mc.usr_str])
         # nearest
         elif opt == self.opt_list[1]:
-            pt_str = db.get_pt_str(x, y)
-            utm33_geom = db.get_utm33_geom(self.mc.con, pt_str, srid)
-            locid = db.get_nrst_locid(self.mc.con, utm33_geom)
+            locid = self._get_nrst_locid(x, y, srid)
 
-            locid = str(locid)
+        return locid
+
+    def _get_nrst_locid(self, x, y, srid):
+        """
+        Returns a locationID of the nearest location.
+
+        :param x: X coordinate.
+        :type x: float.
+        :param y: Y coordinate.
+        :type y: float.
+        :param srid: SRID.
+        :type srid: int.
+
+        :returns: A locationID of the nearest location.
+        :rtype: str.
+        """
+
+        pt_str = db.get_pt_str(x, y)
+        utm33_geom = db.get_utm33_geom(self.mc.con, pt_str, srid)
+        locid = db.get_nrst_locid(self.mc.con, utm33_geom)
+
+        locid = str(locid)
 
         return locid
 
