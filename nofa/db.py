@@ -1393,20 +1393,20 @@ def ins_ref(con, ref_list):
 
     return id
 
-def get_pt_str(utme, utmn):
+def get_pt_str(x, y):
     """
-    Returns a point string with the given UTM easting and northing.
+    Returns a point string with the given coordinates.
 
-    :param utme: UTM easting.
-    :type utme: float.
-    :param utmn: UTM northing.
-    :type utmn: float.
+    :param x: X coordinate.
+    :type x: float.
+    :param y: Y coordinate.
+    :type y: float.
 
     :returns: A point string.
     :rtype: str.
     """
 
-    pt_str = 'POINT({} {})'.format(utme, utmn)
+    pt_str = 'POINT({} {})'.format(x, y)
 
     return pt_str
 
