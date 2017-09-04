@@ -2042,12 +2042,14 @@ class InsMw(QMainWindow, FORM_CLASS):
             elif isinstance(wdg, QDateEdit):
                 wdg.setDate(wdg.minimumDate())
 
-    def _get_occ_row_list(self, m):
+    def _get_occ_row_list(self, m, forbi=False):
         """
         Returns an occurrence row list.
 
         :param m: A row number.
         :type m: int.
+        :param forbi: True to allow forbidden text, False otherwise.
+        :type forbi: bool.
 
         :returns: A list of data in the given row in the occurrence table.
         :rtype: list.
@@ -2061,7 +2063,7 @@ class InsMw(QMainWindow, FORM_CLASS):
             wdg_data = self.occ_tbl.item(m, n).data(Qt.EditRole)
 
             if isinstance(wdg_data, (str, unicode)):
-                wdg_data = self._get_val_txt(wdg_data, forbi=True)
+                wdg_data = self._get_val_txt(wdg_data, forbi)
 
             occ_row_list.append(wdg_data)
 
@@ -3065,7 +3067,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         tbl = self.occ_tbl
         m = tbl.currentRow()
 
-        occ_row_list = self._get_occ_row_list(m)
+        occ_row_list = self._get_occ_row_list(m, True)
 
         for n, wdg in enumerate(self.occ_tbl_wdg_hdr_dict.keys()):
             wdg_data = occ_row_list[n]
