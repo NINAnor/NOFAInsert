@@ -2061,7 +2061,7 @@ class InsDlg(QDialog, FORM_CLASS):
             wdg_data = self.occ_tbl.item(m, n).data(Qt.EditRole)
 
             if isinstance(wdg_data, (str, unicode)):
-                wdg_data = self._get_val_txt(wdg_data)
+                wdg_data = self._get_val_txt(wdg_data, forbi=True)
 
             occ_row_list.append(wdg_data)
 
@@ -3066,6 +3066,7 @@ class InsDlg(QDialog, FORM_CLASS):
         m = tbl.currentRow()
 
         occ_row_list = self._get_occ_row_list(m)
+        QgsMessageLog.logMessage(str(occ_row_list), 'pluginName')
 
         for n, wdg in enumerate(self.occ_tbl_wdg_hdr_dict.keys()):
             wdg_data = occ_row_list[n]
