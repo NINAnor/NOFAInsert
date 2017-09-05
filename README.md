@@ -1,7 +1,4 @@
-<html>
-<body>
-<h3>QGIS plugin for batch inserting darwin core fish occurrence data to NOFA db</h3>
+# QGIS NOFAInsert Plugin
 
-
-</body>
-</html>
+QGIS plugin for batch inserting darwin core fish occurrence data into NOFA
+database. 
