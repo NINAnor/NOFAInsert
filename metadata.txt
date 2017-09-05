@@ -16,8 +16,8 @@ email=matteo.destefano@nina.no
 
 about=This plugin is designed to simplify fish occurrence data insertion to the Norwegian Fish Atlas db.
 
-tracker=github.com
-repository=github.com
+tracker=https://github.com/NINAnor/NOFAInsert/issues
+repository=https://github.com/NINAnor/NOFAInsert
 # End of mandatory metadata
 
 # Recommended items:
@@ -26,7 +26,7 @@ repository=github.com
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=
+tags=NOFA, data collection, data insert
 
 homepage=
 category=Plugins
