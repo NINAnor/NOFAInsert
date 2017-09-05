@@ -2065,6 +2065,9 @@ class InsMw(QMainWindow, FORM_CLASS):
             if isinstance(wdg_data, (str, unicode)):
                 wdg_data = self._get_val_txt(wdg_data, forbi)
 
+            if isinstance(wdg_data, QDate):
+                wdg_data = wdg_data.toPyDate()
+
             occ_row_list.append(wdg_data)
 
         return occ_row_list
