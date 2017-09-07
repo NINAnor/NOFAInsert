@@ -1,0 +1,306 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>User Manual &mdash; NOFAInsert 0.5 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="NOFAInsert 0.5 documentation" href="index.html"/>
+        <link rel="prev" title="NOFAInsert" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> NOFAInsert
+          
+
+          
+            
+            <img src="_static/icon.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-up-connection">Setting Up Connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#graphical-user-interface">Graphical User Interface</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">NOFAInsert</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>User Manual</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/user-manual.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="user-manual">
+<h1>User Manual<a class="headerlink" href="#user-manual" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>NOFAInsert plugin is not a part of the
+<a class="reference external" href="https://plugins.qgis.org/">official QGIS repository</a>.
+However, it still can be installed the same way as other plugins.
+All you need to do is to add a NINA repository.</p>
+<p>First open <span class="guilabel">Plugins</span> <span class="menuselection">‣</span>
+<span class="guilabel">Manage and Install Plugins…</span>.</p>
+<div class="figure align-center" id="id1">
+<img alt="_images/installation-open_plugin_manager.png" src="_images/installation-open_plugin_manager.png" />
+<p class="caption"><span class="caption-text">Figure 1: Open plugin manager.</span></p>
+</div>
+<p>In <span class="guilabel">Settings</span> tab activate option
+<span class="guilabel">Show also experimental plugins</span>.</p>
+<p>By clicking on <span class="guilabel">Add…</span> button add a
+<a class="reference external" href="http://www.nina.no/english/Home">NINA</a> repository:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Name</span><span class="p">:</span>        <span class="n">NINA</span>
+<span class="n">URL</span><span class="p">:</span>         <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">vm</span><span class="o">-</span><span class="n">srv</span><span class="o">-</span><span class="n">finstad</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">ntnu</span><span class="o">.</span><span class="n">no</span><span class="o">/</span><span class="n">NOFA_plugins</span><span class="o">/</span><span class="n">plugins</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id2">
+<img alt="_images/installation-add_repository.png" src="_images/installation-add_repository.png" />
+<p class="caption"><span class="caption-text">Figure 2: Add repository.</span></p>
+</div>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="_images/installation-add_nina_repository.png"><img alt="_images/installation-add_nina_repository.png" src="_images/installation-add_nina_repository.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">Figure 3: Add NINA repository.</span></p>
+</div>
+<p>In <span class="guilabel">All</span> or <span class="guilabel">Not installed</span> tab search for <code class="docutils literal"><span class="pre">NOFAInsert</span></code>.
+Select NOFAInsert plugin and click on <span class="guilabel">Install plugin</span>.</p>
+<div class="figure align-center" id="id4">
+<img alt="_images/installation-plugin_installation.png" src="_images/installation-plugin_installation.png" />
+<p class="caption"><span class="caption-text">Figure 4: Plugin installation.</span></p>
+</div>
+<p>After a successful installation plugin’s icon will appear in
+<span class="guilabel">Plugins Toolbar</span>.
+You can start NOFAInsert plugin by clicking on its icon or by selecting
+<span class="guilabel">Plugins</span> <span class="menuselection">‣</span> <span class="guilabel">NOFAInsert</span>
+<span class="menuselection">‣</span> <span class="guilabel">NOFAInsert</span>.</p>
+<div class="figure align-center" id="id5">
+<img alt="_images/installation-plugins_toolbar_icon.png" src="_images/installation-plugins_toolbar_icon.png" />
+<p class="caption"><span class="caption-text">Figure 5: Plugin icon in Plugins Toolbar.</span></p>
+</div>
+</div>
+<div class="section" id="setting-up-connection">
+<h2>Setting Up Connection<a class="headerlink" href="#setting-up-connection" title="Permalink to this headline">¶</a></h2>
+<p>Before inserting data into <a class="reference external" href="https://github.com/NINAnor/NOFA/wiki">NOFA</a>
+database you need to set up database connection
+paramaters.</p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Add screenshot.</p>
+</div>
+</div>
+<div class="section" id="graphical-user-interface">
+<h2>Graphical User Interface<a class="headerlink" href="#graphical-user-interface" title="Permalink to this headline">¶</a></h2>
+<p>Graphical user interface of the main window contains two tabs - <span class="guilabel">Main</span>
+and <span class="guilabel">History</span>.</p>
+<div class="figure align-center" id="id6">
+<img alt="_images/gui-main_gui.png" src="_images/gui-main_gui.png" />
+<p class="caption"><span class="caption-text">Figure 6: Graphical User Interface.</span></p>
+</div>
+<dl class="docutils">
+<dt>Element 1:</dt>
+<dd>Tabs switcher.</dd>
+<dt>Element 2:</dt>
+<dd>Name of a database the plugin is connected to.</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="NOFAInsert" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017 Norwegian Institute for Nature Research.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
