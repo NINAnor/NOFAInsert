@@ -867,8 +867,8 @@ VatnLnr</string>
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>329</width>
-              <height>571</height>
+              <width>239</width>
+              <height>351</height>
              </rect>
             </property>
             <attribute name="label">
@@ -1096,8 +1096,8 @@ VatnLnr</string>
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>329</width>
-              <height>571</height>
+              <width>191</width>
+              <height>134</height>
              </rect>
             </property>
             <attribute name="label">
@@ -1154,8 +1154,8 @@ VatnLnr</string>
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>329</width>
-              <height>571</height>
+              <width>187</width>
+              <height>134</height>
              </rect>
             </property>
             <attribute name="label">
@@ -1212,8 +1212,8 @@ VatnLnr</string>
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>329</width>
-              <height>571</height>
+              <width>203</width>
+              <height>245</height>
              </rect>
             </property>
             <attribute name="label">
@@ -2141,7 +2141,7 @@ VatnLnr</string>
           </property>
           <widget class="QWidget" name="hist_occ_tab">
            <attribute name="title">
-            <string>Occurrences</string>
+            <string>Occurrence</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_13">
             <item row="0" column="0">
@@ -2151,7 +2151,7 @@ VatnLnr</string>
           </widget>
           <widget class="QWidget" name="hist_loc_tab">
            <attribute name="title">
-            <string>Locations</string>
+            <string>Location</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_14">
             <item row="0" column="0">
@@ -2161,7 +2161,7 @@ VatnLnr</string>
           </widget>
           <widget class="QWidget" name="hist_event_tab">
            <attribute name="title">
-            <string>Events</string>
+            <string>Event</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_23">
             <item row="0" column="0">
@@ -2171,7 +2171,7 @@ VatnLnr</string>
           </widget>
           <widget class="QWidget" name="hist_dtst_tab">
            <attribute name="title">
-            <string>Datasets</string>
+            <string>Dataset</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_15">
             <item row="0" column="0">
@@ -2181,7 +2181,7 @@ VatnLnr</string>
           </widget>
           <widget class="QWidget" name="hist_prj_tab">
            <attribute name="title">
-            <string>Projects</string>
+            <string>Project</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_17">
             <item row="0" column="0">
@@ -2191,7 +2191,7 @@ VatnLnr</string>
           </widget>
           <widget class="QWidget" name="hist_ref_tab">
            <attribute name="title">
-            <string>References</string>
+            <string>Reference</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_18">
             <item row="0" column="0">
