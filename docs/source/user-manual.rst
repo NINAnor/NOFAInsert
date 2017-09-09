@@ -44,7 +44,6 @@ By clicking on :guilabel:`Add...` button add a
    Add repository.
 
 .. figure:: images/installation-add_nina_repository.png
-   :width: 60%
 
    Add NINA repository.
 
@@ -72,10 +71,23 @@ Connection Setup
 Before inserting data into `NOFA <https://github.com/NINAnor/NOFA/wiki>`__
 database it is necessary to set up connection parameters.
 
-.. todo::
-   Add screenshot and description.
+.. figure:: images/connection-gui.png
 
-Connection parameter can be be accessed by :guilabel:`Plugins`
+   Connection Dialog – Graphical User Interface.
+
+Element 1:
+   Line edits for connection parameters.
+
+Element 2:
+   Button that tests and saves connection parameters.
+
+Element 3:
+   Button that saves the dialog.
+
+First enter all connection parameters (element 1) and then test the connection
+(element 2). After successful connection test close the dialog (element 3).
+
+Connection parameters can be later accessed by :guilabel:`Plugins`
 :menuselection:`-->` :guilabel:`NOFAInsert` :menuselection:`-->`
 :guilabel:`Connection Parameters`.
 
