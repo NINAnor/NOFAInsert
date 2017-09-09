@@ -26,7 +26,7 @@
 
 from PyQt4.QtGui import (
     QDialog, QGridLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton,
-    QStatusBar)
+    QStatusBar, QMessageBox)
 
 from qgis.core import QgsApplication
 
@@ -159,11 +159,6 @@ class ConDlg(QDialog):
         self.ok_btn.clicked.connect(self.close)
         self.btn_lyt.addWidget(self.ok_btn)
 
-        self.stat_bar = QStatusBar(self)
-        self.stat_bar.setObjectName(u'stat_bar')
-        self.stat_bar.showMessage(stat_bar_msg)
-        self.grid_lyt.addWidget(self.stat_bar, 6, 0, 1, 2)
-
     def _ins_con_info(self, con_info):
         """
         Inserts a connection information into line edits.
@@ -197,14 +192,16 @@ class ConDlg(QDialog):
             self.mc.con = db.get_con(con_info)
 
             if db.chck_nofa_tbls(self.mc.con):
-                self.stat_bar.showMessage(
-                    u'Connection to NOFA database succeeded.',
-                    msg_dur)
+                QMessageBox.information(
+                    self,
+                    u'Success',
+                    u'Connection to NOFA database succeeded.')
                 self.ok_btn.setEnabled(True)
             else:
-                self.stat_bar.showMessage(
-                    u'Connection succeeded but the database is not NOFA.',
-                    msg_dur)
+                QMessageBox.warning(
+                    self,
+                    u'Success - not NOFA',
+                    u'Connection succeeded but the database is not NOFA.')
                 self.ok_btn.setEnabled(False)
 
                 self.mc.con.close()
@@ -212,7 +209,7 @@ class ConDlg(QDialog):
         except psycopg2.OperationalError:
             self.mc.con = None
             self.ok_btn.setEnabled(False)
-            self.stat_bar.showMessage(u'Connection failed.', msg_dur)
+            QMessageBox.warning(self, u'Fail', u'Connection failed.')
         finally:
             self._enable_wdgs(True)
 
