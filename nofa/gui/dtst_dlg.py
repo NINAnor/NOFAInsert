@@ -216,10 +216,6 @@ class DtstDlg(QDialog):
         self.cl_btn.clicked.connect(self.close)
         self.btn_lyt.addWidget(self.cl_btn)
 
-        self.stat_bar = QStatusBar(self)
-        self.stat_bar.setObjectName(u'stat_bar')
-        self.grid_lyt.addWidget(self.stat_bar, 11, 0, 1, 2)
-
     def _fetch_dtst_data(self):
         """
         Fetches data from the NOFA database and populates widgets.
@@ -286,10 +282,11 @@ class DtstDlg(QDialog):
             dtst_cnt = db.get_dtst_cnt(self.mc.con, id)
 
             if dtst_cnt != 0:
-                self.stat_bar.showMessage(
+                QMessageBox.warning(
+                    self,
+                    u'datasetID',
                     u'datasetID "{}" is already in the table. '
-                    u'Enter different datasetID.'.format(id),
-                    10000)
+                    u'Enter different datasetID.'.format(id))
                 return
 
             db.ins_dtst(self.mc.con, dtst_list)
@@ -297,7 +294,7 @@ class DtstDlg(QDialog):
             db.ins_dtst_log(
                 self.mc.con, id, self.mc.con_info[self.mc.usr_str])
 
-            self.stat_bar.showMessage(u'Dataset saved.', 10000)
+            QMessageBox.information(self, u'Saved', u'Dataset saved.')
 
             self.iw.pop_dtst_cb()
             self.iw.upd_dtst(db.get_dtst_str(id, dtst_list[0]))
