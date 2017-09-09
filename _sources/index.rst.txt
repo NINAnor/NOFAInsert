@@ -1,5 +1,6 @@
+##########
 NOFAInsert
-==========
+##########
 
 NOFAInsert is a QGIS plugin for batch inserting
 `Darwin Core <http://rs.tdwg.org/dwc/>`__ fish occurrence data into
@@ -12,10 +13,11 @@ If you have any idea, comment or you have found a bug please write it to the
 `plugin GitHub issues <https://github.com/NINAnor/NOFAInsert/issues>`__.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    user-manual
 
+*******
 Authors
 *******
 
