@@ -711,7 +711,7 @@ VatnLnr</string>
                       <enum>Qt::NoFocus</enum>
                      </property>
                      <property name="toolTip">
-                      <string>Delete row</string>
+                      <string>Delete selected row</string>
                      </property>
                      <property name="text">
                       <string>−</string>
@@ -831,7 +831,7 @@ VatnLnr</string>
                       <enum>Qt::NoFocus</enum>
                      </property>
                      <property name="toolTip">
-                      <string>Delete all rows except current one</string>
+                      <string>Delete all rows except selected one</string>
                      </property>
                      <property name="text">
                       <string>✕</string>
@@ -1491,7 +1491,7 @@ VatnLnr</string>
                      <enum>Qt::NoFocus</enum>
                     </property>
                     <property name="toolTip">
-                     <string>Delete row</string>
+                     <string>Delete selected row</string>
                     </property>
                     <property name="text">
                      <string>−</string>
@@ -1625,7 +1625,7 @@ VatnLnr</string>
                      <enum>Qt::NoFocus</enum>
                     </property>
                     <property name="toolTip">
-                     <string>Delete all rows except current one</string>
+                     <string>Delete all rows except selected one</string>
                     </property>
                     <property name="text">
                      <string>✕</string>
