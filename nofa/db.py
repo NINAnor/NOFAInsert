@@ -382,11 +382,12 @@ def get_dtst_info(con, dtst_id):
     cur = _get_db_cur(con)
     cur.execute(
         '''
-        SELECT      "datasetID",
-                    "datasetName",
+        SELECT      "datasetName",
+                    "datasetID",
+                    "ownerInstitutionCode",
                     "rightsHolder",
-                    "institutionCode",
                     "license",
+                    "accessRights",
                     "bibliographicCitation",
                     "datasetComment",
                     "informationWithheld",
