@@ -213,10 +213,6 @@ class PrjDlg(QDialog):
         self.cl_btn.clicked.connect(self.close)
         self.btn_lyt.addWidget(self.cl_btn)
 
-        self.stat_bar = QStatusBar(self)
-        self.stat_bar.setObjectName(u'stat_bar')
-        self.grid_lyt.addWidget(self.stat_bar, 10, 0, 1, 2)
-
     def _fetch_prj_data(self):
         """
         Fetches data from the NOFA database and populates widgets.
@@ -265,7 +261,7 @@ class PrjDlg(QDialog):
             db.ins_prj_log(
                 self.mc.con, id, self.mc.con_info[self.mc.usr_str])
 
-            self.stat_bar.showMessage(u'Project saved.', 10000)
+            QMessageBox.information(self, u'Saved', u'Project saved.')
 
             self.iw.pop_prj_cb()
             self.iw.upd_prj(db.get_prj_str(prj_list[2], prj_list[0]))
