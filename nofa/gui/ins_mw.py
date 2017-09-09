@@ -2249,7 +2249,8 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
 
         for hdr, item in zip(hdrs, items):
-            lw_item = QListWidgetItem(u'{}: {}'.format(hdr, item))
+            lw_item = QListWidgetItem(
+                u'{}: {}'.format(hdr, str(item) if item else u''))
             lw.addItem(lw_item)
 
     def prep(self):
