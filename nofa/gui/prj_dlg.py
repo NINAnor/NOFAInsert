@@ -261,10 +261,10 @@ class PrjDlg(QDialog):
             db.ins_prj_log(
                 self.mc.con, id, self.mc.con_info[self.mc.usr_str])
 
-            QMessageBox.information(self, u'Saved', u'Project saved.')
-
             self.iw.pop_prj_cb()
             self.iw.upd_prj(db.get_prj_str(prj_list[2], prj_list[0]))
+
+            QMessageBox.information(self, u'Saved', u'Project saved.')
         except exc.MandNotFldExc as e:
             e.wdg.setFocus()
             QMessageBox.warning(

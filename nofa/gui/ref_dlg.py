@@ -258,11 +258,11 @@ class RefDlg(QDialog):
             db.ins_ref_log(
                 self.mc.con, id, self.mc.con_info[self.mc.usr_str])
 
-            QMessageBox.information(self, u'Saved', u'Reference saved.')
-
             self.iw.pop_ref_cb()
             self.iw.upd_ref(
                 db.get_ref_str(ref_list[1], ref_list[0], ref_list[2], id))
+
+            QMessageBox.information(self, u'Saved', u'Reference saved.')
         except exc.MandNotFldExc as e:
             e.wdg.setFocus()
             QMessageBox.warning(

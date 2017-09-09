@@ -294,10 +294,10 @@ class DtstDlg(QDialog):
             db.ins_dtst_log(
                 self.mc.con, id, self.mc.con_info[self.mc.usr_str])
 
-            QMessageBox.information(self, u'Saved', u'Dataset saved.')
-
             self.iw.pop_dtst_cb()
             self.iw.upd_dtst(db.get_dtst_str(id, dtst_list[0]))
+
+            QMessageBox.information(self, u'Saved', u'Dataset saved.')
         except exc.MandNotFldExc as e:
             e.wdg.setFocus()
             QMessageBox.warning(
