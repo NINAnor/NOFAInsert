@@ -212,10 +212,6 @@ class RefDlg(QDialog):
         self.cl_btn.clicked.connect(self.close)
         self.btn_lyt.addWidget(self.cl_btn)
 
-        self.stat_bar = QStatusBar(self)
-        self.stat_bar.setObjectName(u'stat_bar')
-        self.grid_lyt.addWidget(self.stat_bar, 10, 0, 1, 2)
-
     def _fetch_ref_data(self):
         """
         Fetches data from the NOFA database and populates widgets.
@@ -262,7 +258,7 @@ class RefDlg(QDialog):
             db.ins_ref_log(
                 self.mc.con, id, self.mc.con_info[self.mc.usr_str])
 
-            self.stat_bar.showMessage(u'Reference saved.', 10000)
+            QMessageBox.information(self, u'Saved', u'Reference saved.')
 
             self.iw.pop_ref_cb()
             self.iw.upd_ref(
