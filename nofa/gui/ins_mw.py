@@ -2949,6 +2949,9 @@ class InsMw(QMainWindow, FORM_CLASS):
             for n, item in enumerate(row):
                 if isinstance(item, datetime.datetime):
                     item = QDateTime(item)
+                elif isinstance(item, uuid.UUID):
+                    item = str(item)
+
                 tbl_item = QTableWidgetItem()
                 tbl_item.setData(Qt.EditRole, item)
                 tbl.setItem(m, n, tbl_item)
