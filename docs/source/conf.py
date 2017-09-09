@@ -28,7 +28,7 @@ import sphinx_rtd_theme
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 sys.path.append(os.path.abspath('extensions'))
 extensions = [
-    'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.viewcode', 'autoimage',
+    'sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.viewcode', 'autoimage',
     'numfig']
 
 todo_include_todos = True
