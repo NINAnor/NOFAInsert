@@ -70,7 +70,7 @@ Connection Setup
 ****************
 
 Before inserting data into `NOFA <https://github.com/NINAnor/NOFA/wiki>`__
-database it is necessary to set up connection paramaters.
+database it is necessary to set up connection parameters.
 
 .. todo::
    Add screenshot and description.
