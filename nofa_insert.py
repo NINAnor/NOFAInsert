@@ -93,7 +93,7 @@ class NOFAInsert:
 
         self.nofa_act = QAction(self.iface.mainWindow())
         self.nofa_act.setText(self.app_name)
-        nofa_icon = QIcon(':/plugins/NOFAInsert/icon.png')
+        nofa_icon = QIcon(os.path.join(self.plugin_dir, 'nofainsert.svg'))
         self.nofa_act.setIcon(nofa_icon)
         self.nofa_act.triggered.connect(self.run)
         self.iface.addToolBarIcon(self.nofa_act)

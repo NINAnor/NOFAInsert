@@ -30,7 +30,7 @@ tags=NOFA, data collection, data insert
 
 homepage=
 category=Plugins
-icon=icon.png
+icon=nofainsert-24.png
 # experimental flag
 experimental=True
 
