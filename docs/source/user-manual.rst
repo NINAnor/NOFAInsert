@@ -367,7 +367,7 @@ Event
 Dataset, Project, Reference
 ---------------------------
 
-:guilabel:`Dataset`, :guilabel:`Project` and :guilabel:`Reference` sections
+:guilabel:`Dataset` :guilabel:`Project` and :guilabel:`Reference` sections
 are all basically the same therefore only example for :guilabel:`Dataset`
 is present in this manual.
 
@@ -393,3 +393,34 @@ You can select one of existing datasets (element 1) or you can add a new dataset
 *******
 History
 *******
+
+In :guilabel:`History` tab user can view history of data insertion.
+
+.. figure:: images/history-gui.png
+
+   History tab – Graphical User Interface.
+
+Element 1:
+   You can switch between tabs:
+
+      * :guilabel:`Occurrence`
+      * :guilabel:`Location`
+      * :guilabel:`Event`
+      * :guilabel:`Dataset`
+      * :guilabel:`Project`
+      * :guilabel:`Reference`
+
+Element 2:
+   Table that is different for each tab.
+
+Element 3:
+   Insert date filters.
+
+Element 4:
+   Update date filters.
+
+Element 5:
+   User filter.
+
+You can browse data insertion history of different tables (element 1).
+Change filters (elements 2, 3, 4) to narrow or widen displayed data.
