@@ -421,13 +421,13 @@ def get_prj_info(con, prj_id):
     cur = _get_db_cur(con)
     cur.execute(
         '''
-        SELECT      "projectNumber",
+        SELECT      "organisation",
+                    "projectNumber",
                     "projectName",
                     "startYear",
                     "endYear",
                     "projectLeader",
                     "projectMembers",
-                    "organisation",
                     "financer",
                     "remarks",
                     "projectID"
