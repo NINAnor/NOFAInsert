@@ -82,7 +82,7 @@ Element 2:
    Button that tests and saves connection parameters.
 
 Element 3:
-   Button that saves the dialog.
+   Button that closes the dialog.
 
 First enter all connection parameters (element 1) and then test the connection
 (element 2). After successful connection test close the dialog (element 3).
