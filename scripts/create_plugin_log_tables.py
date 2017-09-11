@@ -3,11 +3,11 @@ import psycopg2
 
 # connection parameters to NODA DB official db
 
-pg_host=r'vm-srv-finstad.vm.ntnu.no'
-pg_user=r'<username>'
-pg_pwd='<password>'
-pg_db=r'nofa'
-pg_port=r'5432'
+pg_host = r'<host>'
+pg_user = r'<username>'
+pg_pwd = '<password>'
+pg_db = r'<db>'
+pg_port = r'<port>'
 
 try:
     con = psycopg2.connect(
