@@ -30,8 +30,6 @@ from PyQt4.QtGui import QAction, QIcon
 import os
 import psycopg2, psycopg2.extras
 
-import resources
-
 from nofa.gui import ins_mw, con_dlg
 from nofa import db
 
