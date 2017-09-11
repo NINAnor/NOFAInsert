@@ -1,0 +1,476 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Developer Manual &mdash; NOFAInsert 0.5 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="NOFAInsert 0.5 documentation" href="index.html"/>
+        <link rel="next" title="API" href="api.html"/>
+        <link rel="prev" title="User Manual" href="user-manual.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> NOFAInsert
+          
+
+          
+            
+            <img src="_static/nofainsert.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user-manual.html">User Manual</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#technologies">Technologies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#development">Development</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#history">History</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#development-tools-setup">Development Tools Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#api-documentation">API Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debugging">Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#branches">Branches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plugin-structure">Plugin Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nina-qgis-plugin-repository">NINA QGIS Plugin Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#online-documentation">Online Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#github-repository">GitHub Repository</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">NOFAInsert</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Developer Manual</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/developer-manual.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="developer-manual">
+<h1>Developer Manual<a class="headerlink" href="#developer-manual" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All commands listed in this manual are for
+<a class="reference external" href="https://www.debian.org/">Debian</a>
+and <a class="reference external" href="https://www.debian.org/misc/children-distros">its derivations</a>.</p>
+</div>
+<div class="section" id="technologies">
+<h2>Technologies<a class="headerlink" href="#technologies" title="Permalink to this headline">¶</a></h2>
+<p>NOFAInsert is a <a class="reference external" href="https://www.qgis.org/">QGIS</a> plugin written in
+<a class="reference external" href="https://www.python.org/">Python</a>. Like other
+<a class="reference external" href="https://www.qgis.org/">QGIS</a> <a class="reference external" href="https://www.python.org/">Python</a> plugins
+it uses <a class="reference external" href="https://qgis.org/api/">QGIS API</a> and
+<a class="reference external" href="https://riverbankcomputing.com/software/pyqt/">PyQt</a> bindings.
+Additionally NOFAInsert plugin makes extensive use of
+<a class="reference external" href="http://initd.org/psycopg/">psycopg</a> package.</p>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<p>The newest version of plugin
+(<a class="reference external" href="https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate">0.5</a>)
+was developed for <a class="reference external" href="https://www.qgis.org/">QGIS</a> 2.18.
+It uses packages <a class="reference external" href="http://pyqt.sourceforge.net/Docs/PyQt4/">PyQt4</a>
+and <a class="reference external" href="http://initd.org/psycopg/">psycopg</a>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://qgis.org/api/2.18/">QGIS 2.18 API</a></li>
+<li><a class="reference external" href="http://pyqt.sourceforge.net/Docs/PyQt4/">PyQt4</a></li>
+<li><a class="reference external" href="http://initd.org/psycopg/docs/">psycopg2</a></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="development">
+<h2>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="history">
+<h3>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h3>
+<p>Plugin development started in January 2017 by Matteo De Stefano
+(<a class="reference external" href="https://github.com/mdlux">GitHub profile</a>) who released
+version <a class="reference external" href="https://github.com/NINAnor/NOFAInsert/releases/tag/v0.3-alpha">0.3</a>.
+Together with intern
+Jakob Miksch (<a class="reference external" href="https://github.com/bufferclip">GitHub profile</a>) who worked in
+<a class="reference external" href="http://www.nina.no/english/Home">NINA</a> as part of his
+<a class="reference external" href="https://erasmusintern.org/">Erasmus+ Internship</a> version
+<a class="reference external" href="https://github.com/NINAnor/NOFAInsert/releases/tag/v.0.4-prebeta">0.4</a>
+was released. Another Erasmus+ intern Ondřej Svoboda
+(<a class="reference external" href="https://github.com/svoboond">GitHub profile</a>) reworked the whole plugin
+and released version
+<a class="reference external" href="https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate">0.5</a>.</p>
+</div>
+<div class="section" id="development-tools-setup">
+<h3>Development Tools Setup<a class="headerlink" href="#development-tools-setup" title="Permalink to this headline">¶</a></h3>
+<p>There is nothing a developer must setup in order to start
+(except for building <a class="reference internal" href="#online-documentation"><span class="std std-ref">documentation</span></a>) because all
+needed <a class="reference external" href="https://www.python.org/">Python</a> packages are already present in
+<a class="reference external" href="https://www.qgis.org/">QGIS</a> by default.</p>
+<p>However, if you are using an IDE you can set it up to understand the API.</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://docs.qgis.org/testing/en/docs/pyqgis_developer_cookbook/ide_debugging.html#making-eclipse-understand-the-api">Making Eclipse understand the API</a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="api-documentation">
+<span id="id1"></span><h3>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h3>
+<p>All classes, methods and functions are documented in
+<a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> format
+that can be used by <a class="reference external" href="http://sphinx-doc.org/">Sphinx</a>
+to generate documentation.</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="api.html#api"><span class="std std-ref">API</span></a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="debugging">
+<h3>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://docs.qgis.org/testing/en/docs/pyqgis_developer_cookbook/ide_debugging.html#debugging-using-eclipse-and-pydev">Debugging using Eclipse and PyDev</a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="branches">
+<h3>Branches<a class="headerlink" href="#branches" title="Permalink to this headline">¶</a></h3>
+<p>There are three important branches:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>master</strong> – main branch.</li>
+<li><strong>gh-pages</strong> – branch with <a class="reference internal" href="#online-documentation"><span class="std std-ref">documentation</span></a>.</li>
+<li><strong>before_rework_2017-07-13</strong> – version <a class="reference external" href="https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate">0.5</a>
+came with significant changes. This branch server as a backup
+of the previous version.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="plugin-structure">
+<h3>Plugin Structure<a class="headerlink" href="#plugin-structure" title="Permalink to this headline">¶</a></h3>
+<p>Structure with short comments is as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>/
+├── data/
+│   └── icons/
+│       └── options.png      # icon for opening connection parameters dialog
+├── docs/                    # directory with docs
+│   ├── source/              # directory with docs source
+│   ├── make.bat             # batch file for creating docs
+│   ├── Makefile             # makefile for creating docs
+│   └── update-docs.sh       # bash script for publishing updates docs
+├── nofa/                    # NOFA package
+│   ├── gui/                 # GUI package
+│   │   ├── __init__.py      # module for package initialization
+│   │   ├── con_dlg.py       # module with connection dialog class
+│   │   ├── de.py            # module with custom date edit class
+│   │   ├── dtst_dlg.py      # module with reference dialog class
+│   │   ├── exc.py           # module with custom exceptions
+│   │   ├── ins_mw.py        # module with insert main window class
+│   │   ├── ins_mw.ui        # XML file for creating GUI
+│   │   ├── prj_dlg.py       # module with project dialog class
+│   │   ├── ref_dlg.py       # module with reference dialog class
+│   │   └── vald.py          # module with custom validators
+│   ├── wms/                 # directory with WMS files
+│   │   └── osm.xml          # XML file for loading OSM basemap
+│   ├── __init__.py          # module for package initialization
+│   ├── db.py                # module with database queries
+│   └── ordered_set.py       # module with OrderedSet container
+├── scripts/                 # directory with scripts
+│   └── create_log_tbls.py   # script for creating log tables
+├── test/                    # directory with tests
+├── __init__.py              # module for package initialization
+├── metadata.txt             # plugin metadata
+├── nofa_insert.py           # module with main class
+└── README.md                # GitHub readme
+</pre></div>
+</div>
+</div>
+<div class="section" id="nina-qgis-plugin-repository">
+<h3>NINA QGIS Plugin Repository<a class="headerlink" href="#nina-qgis-plugin-repository" title="Permalink to this headline">¶</a></h3>
+<p>Users install NOFAInsert plugin from NINA QGIS Plugin Repository.
+It is a simple <a class="reference external" href="https://en.wikipedia.org/wiki/XML">XML</a> file:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://vm-srv-finstad.vm.ntnu.no/NOFA_plugins/plugins.xml">http://vm-srv-finstad.vm.ntnu.no/NOFA_plugins/plugins.xml</a></li>
+</ul>
+</div></blockquote>
+<p>When new version of plugin is released it is necessary to edit the file so that
+users get a notification.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">How soon a user gets notified depends on his/her settings in
+<span class="guilabel">Plugins</span> <span class="menuselection">‣</span>
+<span class="guilabel">Manage and Install Plugins...</span> <span class="menuselection">‣</span>
+<span class="guilabel">Settings</span>.</p>
+</div>
+<p>To adjust the file log in to server and edit <code class="docutils literal"><span class="pre">version=&quot;0.5&quot;</span></code> to the new
+version. In order to be able to do that you need to have superuser rights.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>ssh &lt;username&gt;@vm-srv-finstad.vm.ntnu.no
+<span class="nb">cd</span> /var/www/html/NOFA_plugins
+sudo nano plugins.xml
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Version listed in <a class="reference external" href="http://vm-srv-finstad.vm.ntnu.no/NOFA_plugins/plugins.xml">http://vm-srv-finstad.vm.ntnu.no/NOFA_plugins/plugins.xml</a>
+should match version in <code class="file docutils literal"><span class="pre">metadata.txt</span></code>.</p>
+</div>
+</div>
+<div class="section" id="online-documentation">
+<span id="id2"></span><h3>Online Documentation<a class="headerlink" href="#online-documentation" title="Permalink to this headline">¶</a></h3>
+<p>Plugin documentation is available on its own
+<a class="reference external" href="https://ninanor.github.io/NOFAInsert/">webpage</a>. This webpage is connected
+to <a class="reference external" href="https://github.com/NINAnor/NOFAInsert/tree/gh-pages">gh-pages</a> branch.
+The documentation itself is written in
+<a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a>
+and built with <a class="reference external" href="http://sphinx-doc.org/">Sphinx</a>.</p>
+<p>First install <a class="reference external" href="http://sphinx-doc.org/">Sphinx</a> and
+<a class="reference external" href="http://docs.readthedocs.io/en/latest/theme.html">Read the Docs Theme</a>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo pip install sphinx
+sudo pip install sphinx_rtd_theme
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>To run commands mentioned above you need to have <code class="docutils literal"><span class="pre">pip</span></code> installed.</p>
+<div class="last highlight-bash"><div class="highlight"><pre><span></span>sudo apt install python-pip
+</pre></div>
+</div>
+</div>
+<p>Then you can build the documentation:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">cd</span> docs/
+make html
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If you run across a problem building the documentation
+(especially <a class="reference internal" href="#api-documentation"><span class="std std-ref">API documentation</span></a>) make sure you run
+<a class="reference external" href="http://sphinx-doc.org/">Sphinx</a>
+for <a class="reference external" href="https://www.python.org/">Python</a> 2.</p>
+</div>
+<p>To view created pages in <a class="reference external" href="https://www.mozilla.org/">Firefox</a>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>firefox build/html/index.html <span class="p">&amp;</span>
+</pre></div>
+</div>
+<p>When you are satisfied with your changes publish updated documentation to
+<a class="reference external" href="https://github.com/NINAnor/NOFAInsert/tree/gh-pages">gh-pages</a> branch.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>./docs/update-docs.sh
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Execute the previous command from main directory.</p>
+</div>
+</div>
+<div class="section" id="github-repository">
+<h3>GitHub Repository<a class="headerlink" href="#github-repository" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://github.com/NINAnor/NOFAInsert">GitHub repository – Code</a></li>
+<li><a class="reference external" href="https://github.com/NINAnor/NOFAInsert/issues">GitHub repository – Issues</a></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="user-manual.html" class="btn btn-neutral" title="User Manual" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017 Norwegian Institute for Nature Research.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
