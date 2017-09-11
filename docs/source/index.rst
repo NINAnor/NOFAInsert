@@ -16,6 +16,8 @@ If you have any idea, comment or you have found a bug please write it to the
    :maxdepth: 3
 
    user-manual
+   developer-manual
+   api
 
 *******
 Authors

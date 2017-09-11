@@ -13,6 +13,7 @@
 
 import sys, os
 import sphinx_rtd_theme
+sys.path.insert(0, os.path.abspath('../../'))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -29,7 +30,7 @@ import sphinx_rtd_theme
 sys.path.append(os.path.abspath('extensions'))
 extensions = [
     'sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.viewcode', 'autoimage',
-    'numfig']
+    'numfig', 'sphinx.ext.autodoc']
 
 todo_include_todos = True
 
@@ -70,7 +71,7 @@ release = '0.5'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = []
+exclude_patterns = ['_build']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
@@ -218,3 +219,10 @@ latex_documents = [
 man_pages = [
     ('index', 'TemplateClass', u'NOFAInsert Documentation',
      [u'Norwegian Institute for Nature Research'], 1)]
+
+def remove_module_docstring(app, what, name, obj, options, lines):
+    if what == 'module':
+        del lines[:]
+ 
+def setup(app):
+    app.connect("autodoc-process-docstring", remove_module_docstring)
