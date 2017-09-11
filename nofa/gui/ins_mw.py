@@ -24,6 +24,12 @@
  ***************************************************************************/
 """
 
+from qgis.core import (
+    QgsApplication, QgsMessageLog, QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform, QgsPoint, QgsRasterLayer, QgsMapLayerRegistry,
+    QgsVectorLayer, QgsDataSourceURI, QgsProject, QgsFeature, QgsGeometry)
+from qgis.gui import QgsMapToolEmitPoint
+
 from PyQt4 import QtGui, uic
 from PyQt4.QtCore import (
     QSettings, QCoreApplication, Qt, QObject, QDate, QDateTime, QObject,
@@ -33,12 +39,6 @@ from PyQt4.QtGui import (
     QTableWidgetItem, QMainWindow, QDoubleValidator, QIntValidator, QComboBox,
     QLineEdit, QDateEdit, QAbstractItemView, QValidator, QBrush, QColor,
     QPlainTextEdit, QTextCursor, QWidget)
-
-from qgis.core import (
-    QgsApplication, QgsMessageLog, QgsCoordinateReferenceSystem,
-    QgsCoordinateTransform, QgsPoint, QgsRasterLayer, QgsMapLayerRegistry,
-    QgsVectorLayer, QgsDataSourceURI, QgsProject, QgsFeature, QgsGeometry)
-from qgis.gui import QgsMapToolEmitPoint
 
 from collections import defaultdict, OrderedDict
 import os

@@ -24,11 +24,11 @@
  ***************************************************************************/
 """
 
+from qgis.core import QgsApplication
+
 from PyQt4.QtGui import (
     QDialog, QGridLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton,
     QStatusBar, QMessageBox)
-
-from qgis.core import QgsApplication
 
 import psycopg2
 
