@@ -604,10 +604,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Sets mandatory widgets. Mandatory widgets have predefined color
         when they are not filled/selected.
-            - line edit - must contain at least one
-            - combo box - selected value can not be in list of forbidden
-                          strings
-            - date edit - user must edit (click) on it at least once
+
+            * line edit - must contain at least one
+            * combo box - selected value can not be in list of forbidden
+              strings
+            * date edit - user must edit (click) on it at least once
         
         :param wdgs: A list of widgets to be set as mandatory.
         :type wdgs: list.
@@ -2285,10 +2286,12 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Populates combo boxes.
 
-        :param cb_dict: A combo box dictionary.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :type cb_dict:
+        :param cb_dict: | A combo box dictionary.
+                        |    - key - <combo box name>
+                        |    - value - [<fill method>, [<arguments>], <default value>]
+        :type cb_dict: dict.
+        :param hh: sjaiosdj
+        :type hh: dassdasd
         """
 
         for cb, cb_list in cb_dict.items():
