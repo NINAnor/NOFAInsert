@@ -8,12 +8,12 @@ API
 Main Class
 **********
 
-.. autoclass:: gui.ins_mw.InsMw
+.. autoclass:: nofa.gui.ins_mw.InsMw
     :members:
 
 *****************
 Database Handling
 *****************
 
-.. automodule:: db
+.. automodule:: nofa.db
    :members:
