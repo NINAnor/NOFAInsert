@@ -40,9 +40,12 @@ Development
 History
 =======
 
-Plugin development started in January 2017 by Matteo De Stefano
-(`GitHub profile <https://github.com/mdlux>`__) who released
-version `0.3 <https://github.com/NINAnor/NOFAInsert/releases/tag/v0.3-alpha>`__.
+In December 2016 Stefan Blumentrath
+(`GitHub profile <https://github.com/ninsbl>`__) started developing the plugin.
+At the beggining of 2017 Matteo De Stefano
+(`GitHub profile <https://github.com/mdlux>`__) created a separate repository
+and released version
+`0.3 <https://github.com/NINAnor/NOFAInsert/releases/tag/v0.3-alpha>`__.
 Together with intern
 Jakob Miksch (`GitHub profile <https://github.com/bufferclip>`__) who worked in
 `NINA <http://www.nina.no/english/Home>`__ as part of his

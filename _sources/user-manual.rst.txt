@@ -204,12 +204,12 @@ Element 1:
    You can switch between three tabs:
 
       * :guilabel:`Search` – to search for existing location(s) and add it
-        to the location table. :ref:`More information <search>`.
+        to the location table. :ref:`More information <location-search>`.
       * :guilabel:`Edit` – to edit one specific row
         in :guilabel:`Location Table` (element 2).
-        :ref:`More information <edit>`.
+        :ref:`More information <location-edit>`.
       * :guilabel:`Manual` – to add multiple locations by text.
-        :ref:`More information <manual>`.
+        :ref:`More information <location-manual>`.
 
 Element 2:
    :guilabel:`Location Table` is an overview of all entered locations.
@@ -240,7 +240,7 @@ Element 3:
    :guilabel:`Location Table`, then layer
    ``preview_location-new``/``preview_location-existing`` is added.
 
-.. _search:
+.. _location-search:
 
 Search
 """"""
@@ -281,7 +281,7 @@ Finally add selected features in the layer (element 5) to the
 You can also load `OpenStreetMap <https://www.openstreetmap.org/>`__ basemap
 (element 6) to map canvas to make it easier to orientate.
 
-.. _edit:
+.. _location-edit:
 
 Edit
 """"
@@ -310,7 +310,7 @@ There is only one line edit for **locationID** and **Norwegian VatLnr** methods.
 Method **coordinates** offers few more widgets and lets you enter coordinates
 by mouse click on map canvas.
 
-.. _manual:
+.. _location-manual:
 
 Manual
 """"""
