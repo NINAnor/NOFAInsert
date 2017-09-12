@@ -314,10 +314,10 @@ def chck_locid(con, locid):
 
     :param con: A connection.
     :type con: psycopg2.connection
-    :param locid: A locationID.
+    :param locid: A location ID.
     :type locid: str
 
-    :returns: True when locationID was found, False otherwise.
+    :returns: True when location ID was found, False otherwise.
     :rtype: bool
     """
 
