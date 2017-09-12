@@ -39,7 +39,7 @@ class MtyDe(QDateEdit):
         Constructor.
 
         :param par: A parent widget.
-        :type par: QWidget.
+        :type par: QWidget
         """
 
         super(MtyDe, self).__init__(par)
@@ -54,7 +54,7 @@ class MtyDe(QDateEdit):
         Returns empty string if the given date time equals minimum date time.
 
         :param dttm: A date time.
-        :type dttm: QDateTime.
+        :type dttm: QDateTime
         """
 
         if dttm == self.minimumDateTime():
@@ -68,7 +68,7 @@ class MtyDe(QDateEdit):
         Sets date to minimum if backspace or delete button is an event key.
 
         :param event: An Event.
-        :type event: QEvent.
+        :type event: QEvent
         """
 
         if event.key() == Qt.Key_Delete or event.key() == Qt.Key_Backspace:
@@ -82,7 +82,7 @@ class MtyDe(QDateEdit):
         Sets date to current date if text in line edit is an empty string.
 
         :param event: An Event.
-        :type event: QEvent.
+        :type event: QEvent
         """
 
         if self.findChild(QLineEdit).text() == u'':

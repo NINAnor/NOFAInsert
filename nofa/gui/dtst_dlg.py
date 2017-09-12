@@ -45,9 +45,9 @@ class DtstDlg(QDialog):
         Constructor.
 
         :param mc: A reference to the main class.
-        :type mc: object.
+        :type mc: object
         :param iw: A reference to the insert window.
-        :type iw: QMainWindow.
+        :type iw: QMainWindow
         """
 
         super(QDialog, self).__init__()
@@ -228,10 +228,11 @@ class DtstDlg(QDialog):
         """
         Returns a dataset combo box dictionary.
 
-        :returns: A dataset combo box dictionary.
-            - key - combo_box_name
-            - value - [fill_method, [arguments], default_value]
-        :rtype: dict.
+        :returns:
+         | A dataset combo box dictionary:
+         |    - key -- <combo box name>
+         |    - value -- [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         dtst_cb_dict = {
@@ -259,7 +260,7 @@ class DtstDlg(QDialog):
         Returns a list of licenses.
 
         :returns: A list of licenses.
-        :rtype: list.
+        :rtype: list
         """
 
         lic_list = ['NLOD', 'CC-0', 'CC-BY 4.0']

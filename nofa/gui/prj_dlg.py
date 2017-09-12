@@ -45,9 +45,9 @@ class PrjDlg(QDialog):
         Constructor.
 
         :param mc: A reference to the main class.
-        :type mc: object.
+        :type mc: object
         :param iw: A reference to the insert window.
-        :type iw: QMainWindow.
+        :type iw: QMainWindow
         """
 
         super(QDialog, self).__init__()
@@ -225,10 +225,11 @@ class PrjDlg(QDialog):
         """
         Returns a project combo box dictionary.
 
-        :returns: A project combo box dictionary.
-            - key - combo_box_name
-            - value - [fill_method, [arguments], default_value]
-        :rtype: dict.
+        :returns:
+         | A project combo box dictionary:
+         |    - key - combo_box_name
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         dtst_cb_dict = {

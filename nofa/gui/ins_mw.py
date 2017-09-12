@@ -62,7 +62,7 @@ class ActLyrExc(Exception):
 
 class LocLyrSrcExc(Exception):
     """
-    A custom exception when a layer source is not "nofa.location".
+    A custom exception when a layer source is not `nofa.location`.
     """
 
     pass
@@ -86,7 +86,7 @@ class MtdtNotFldExc(Exception):
         Constructor.
 
         :param nf_nvl: A widget that is not filled/selected.
-        :type nf_nvl: QWidget.
+        :type nf_nvl: QWidget
         """
 
         self.wdg = wdg
@@ -111,7 +111,7 @@ class NoLocExc(Exception):
 class LocidTxtExc(Exception):
     """
     A custom exception when there is a problem
-    with format of 'locationID' location text.
+    with format of `locationID` location text.
     """
 
     pass
@@ -120,7 +120,7 @@ class LocidTxtExc(Exception):
 class NvlTxtExc(Exception):
     """
     A custom exception when there is a problem
-    with format of 'Norwegian VatLnr' location text.
+    with format of `Norwegian VatLnr` location text.
     """
 
     pass
@@ -129,7 +129,7 @@ class NvlTxtExc(Exception):
 class CoorTxtExc(Exception):
     """
     A custom exception when there is a problem
-    with format of coordinates location text.
+    with format of `coordinates` location text.
     """
 
     pass
@@ -137,7 +137,7 @@ class CoorTxtExc(Exception):
 
 class LocidMtyExc(Exception):
     """
-    A custom exception when locationID is empty.
+    A custom exception when location ID is empty.
     """
 
     def __init__(self, m):
@@ -145,7 +145,7 @@ class LocidMtyExc(Exception):
         Constructor.
 
         :param m: A location table row.
-        :type m: int.
+        :type m: int
         """
 
         self.m = m
@@ -153,7 +153,7 @@ class LocidMtyExc(Exception):
 
 class LocidFmtExc(Exception):
     """
-    A custom exception when format of locationID is not uuid.UUID.
+    A custom exception when format of location ID is not *uuid.UUID*.
     """
 
     def __init__(self, m, locid):
@@ -161,9 +161,9 @@ class LocidFmtExc(Exception):
         Constructor.
 
         :param m: A location table row.
-        :type m: int.
-        :param locid: A locationID.
-        :type locid: str.
+        :type m: int
+        :param locid: A location ID.
+        :type locid: str
         """
 
         self.m = m
@@ -172,7 +172,7 @@ class LocidFmtExc(Exception):
 
 class LocidNfExc(Exception):
     """
-    A custom exception when locationID was not found.
+    A custom exception when location ID was not found.
     """
 
     def __init__(self, m, locid):
@@ -180,9 +180,9 @@ class LocidNfExc(Exception):
         Constructor.
 
         :param m: A location table row.
-        :type m: int.
-        :param locid: A locationID.
-        :type locid: str.
+        :type m: int
+        :param locid: A location ID.
+        :type locid: str
         """
 
         self.m = m
@@ -199,7 +199,7 @@ class CoorMtyExc(Exception):
         Constructor.
 
         :param m: A location table row.
-        :type m: int.
+        :type m: int
         """
 
         self.m = m
@@ -215,7 +215,7 @@ class NvlMtyExc(Exception):
         Constructor.
 
         :param m: A location table row.
-        :type m: int.
+        :type m: int
         """
 
         self.m = m
@@ -231,9 +231,9 @@ class NvlNfExc(Exception):
         Constructor.
 
         :param m: A location table row.
-        :type m: int.
-        :param nvl: Not found 'Norwegian VatLnr'.
-        :type nvl: tuple.
+        :type m: int
+        :param nvl: Norwegian VatLnr(s) that was/were not found.
+        :type nvl: tuple
         """
 
         self.m = m
@@ -254,11 +254,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         Constructor.
 
         :param iface: A reference to the QgisInterface.
-        :type iface: QgisInterface.
+        :type iface: QgisInterface
         :param mc: A reference to the main class.
-        :type mc: object.
+        :type mc: object
         :param plugin_dir: A plugin directory.
-        :type plugin_dir: str.
+        :type plugin_dir: str
         """
 
         super(InsMw, self).__init__()
@@ -605,13 +605,13 @@ class InsMw(QMainWindow, FORM_CLASS):
         Sets mandatory widgets. Mandatory widgets have predefined color
         when they are not filled/selected.
 
-            * line edit - must contain at least one
-            * combo box - selected value can not be in list of forbidden
+            - *QLineEdit* -- must contain at least one
+            - *QComboBox* -- selected value can not be in list of forbidden
               strings
-            * date edit - user must edit (click) on it at least once
+            - *QDateEdit* -- user must edit (click) on it at least once
         
         :param wdgs: A list of widgets to be set as mandatory.
-        :type wdgs: list.
+        :type wdgs: list
         """
 
         for wdg in wdgs:
@@ -660,12 +660,12 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def chck_mand_wdgs(self, mand_wdgs, exc):
         """
-        Check if the given mandatory widgets are filled.
+        Checks if the given mandatory widgets are filled.
 
         :param mand_wdgs: A list of mandatory widgets.
-        :type mand_wdgs: list.
+        :type mand_wdgs: list
         :param exc: An exception that should be raised.
-        :type exc: Exception.
+        :type exc: Exception
         """
 
         for wdg in mand_wdgs:
@@ -686,7 +686,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Also resets all input widgets.
 
         :param idx: A current index of location manual method combo box.
-        :type idx: int.
+        :type idx: int
         """
 
         self.loc_manual_swdg.setCurrentIndex(idx)
@@ -741,16 +741,16 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a validated text.
 
-        :param txt: A text.
-        :type txt: str.
+        :param txt: A text to be validated.
+        :type txt: str
         :param forbi: True to allow forbidden text, False otherwise.
-        :type forbi: bool.
+        :type forbi: bool
         :param all: True to allow all text, False otherwise.
         :type all: bool
 
         :returns: A filter, None when text is in list of forbidden strings
             or when length of text is zero.
-        :rtype: str.
+        :rtype: str
         """
 
         if forbi == False and txt in self.forbi_str_list:
@@ -770,9 +770,13 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns location filters.
         It is used to filter locations.
 
-        :returns: A tuple containing water body, country code, county
-            and municipality.
-        :rtype: tuple.
+        :returns:
+         | A tuple containing:
+         |    - *str* -- water body
+         |    - *str* -- country code
+         |    - *str* -- county
+         |    - *str* -- municipality
+        :rtype: tuple
         """
 
         wb = self._wb
@@ -789,7 +793,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns None when there is no text in the line edit.
 
         :returns: A water body, None when there is no text in the line edit.
-        :rtype: str.
+        :rtype: str
         """
 
         txt = self.wb_le.text()
@@ -803,9 +807,9 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a country code from country code combo box.
 
-        :returns: A country code, None when text is equal to <all> string
+        :returns: A country code, None when text is equal to `<all>` string
             or when length of text is zero.
-        :rtype: str.
+        :rtype: str
         """
 
         txt = self.cntry_code_cb.currentText()
@@ -819,9 +823,9 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a county from county combo box.
 
-        :returns: A county, None when text is equal to <all> string
+        :returns: A county, None when text is equal to `<all>` string
             or when length of text is zero.
-        :rtype: str.
+        :rtype: str
         """
 
         txt = self.cnty_cb.currentText()
@@ -835,9 +839,9 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a municipality from municipality combo box.
 
-        :returns: A municipality, None when text is equal to <all> string
+        :returns: A municipality, None when text is equal to `<all>` string
             or when length of text is zero.
-        :rtype: str.
+        :rtype: str
         """
 
         txt = self.muni_cb.currentText()
@@ -851,9 +855,9 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a taxon from taxon combo box.
 
-        :returns: A taxon, None when text is equal to <all> string
+        :returns: A taxon, None when text is equal to `<all>` string
             or when length of text is zero.
-        :rtype: str.
+        :rtype: str
         """
 
         txt = self.txn_cb.currentText()
@@ -878,18 +882,19 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _get_loc_lyr(self, locid_list, loc_lyr_name):
         """
-        Returns a location layer containing features with the given locationIDs.
+        Returns a location layer containing features with the given
+        location IDs.
         The name of the returned location layer is set according to the given
         name.
 
-        :param locid_list: A list of locationID.
-        :type locid_list: list.
+        :param locid_list: A list of location IDs.
+        :type locid_list: list
         :param loc_lyr_name: A location layer name.
-        :type loc_lyr_name: str.
+        :type loc_lyr_name: str
 
         :returns: A location layer containing features with the given
-            locationIDs.
-        :rtype: QgsVectorLayer.
+            location IDs.
+        :rtype: QgsVectorLayer
         """
 
         uri = QgsDataSourceURI()
@@ -952,10 +957,10 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _chck_lyr(self, lyr):
         """
-        Checks if the given layer is a from nofa.location table.
+        Checks if the given layer is a from `nofa.location` table.
         
         :param lyr: A layer to be checked.
-        :type lyr: QgsVectorLayer.
+        :type lyr: QgsVectorLayer
         """
 
         try:
@@ -968,13 +973,13 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _get_locid_list(self, id):
         """
-        Returns a locationID list that is used to populate location table.
+        Returns a location ID list that is used to populate location table.
 
-        :param id: A locationID.
-        :type id: str.
+        :param id: A location ID.
+        :type id: str
 
-        :returns: A locationID list.
-        :rtype: list.
+        :returns: A location ID list.
+        :rtype: list
         """
 
         locid_list = [None] * len(self.loc_tbl_wdg_hdr_dict)
@@ -986,13 +991,13 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _extr_locid_list(self, locid_list):
         """
-        Extracts data from locationID list.
+        Extracts data from location ID list.
 
-        :param locid_list: A locationID list.
-        :type locid_list: list.
+        :param locid_list: A location ID list.
+        :type locid_list: list
 
-        :returns: A locationID.
-        :rtype: str.
+        :returns: A location ID.
+        :rtype: str
         """
 
         locid = locid_list[1]
@@ -1004,15 +1009,15 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a coordinates list that is used to populate location table.
 
         :param crs_desc: A CRS description.
-        :type crs_desc: str.
+        :type crs_desc: str
         :param opt: An option.
-        :type opt: str.
+        :type opt: str
         :param x: X coordinate.
-        :type x: float.
+        :type x: float
         :param y: Y coordinate.
         :type y: float.
         :param verb_loc: A verbatim locality.
-        :type verb_loc: str.
+        :type verb_loc: str
 
         :returns: A coordinates list.
         :rtype: list.
@@ -1034,11 +1039,16 @@ class InsMw(QMainWindow, FORM_CLASS):
         Extracts data from coordinates list.
 
         :param coor_list: A coordinates list.
-        :type coor_list: list.
+        :type coor_list: list
 
-        :returns: A tuple containing CRS description (str), option (str),
-            X coordinate (float), Y coordinate (float), verbatim locality (str).
-        :rtype: tuple.
+        :returns:
+         | A tuple containing:
+         |    - *str* -- CRS description,
+         |    - *str* -- option
+         |    - *float* -- X coordinate
+         |    - *float* -- Y coordinate
+         |    - *str* -- verbatim locality
+        :rtype: tuple
         """
 
         crs_desc = coor_list[2]
@@ -1051,14 +1061,14 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _get_nvl_list(self, nvl):
         """
-        Returns a Norwegian VatnLnr list that is used to populate location
+        Returns a `Norwegian VatnLnr` list that is used to populate location
         table.
 
-        :param nvl: A Norwegian VatnLnr.
-        :type nvl: int.
+        :param nvl: A `Norwegian VatnLnr`.
+        :type nvl: int
 
-        :returns: A Norwegian VatnLnr list.
-        :rtype: list.
+        :returns: A `Norwegian VatnLnr` list.
+        :rtype: list
         """
 
         nvl_list = [None] * len(self.loc_tbl_wdg_hdr_dict)
@@ -1070,13 +1080,13 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _extr_nvl_list(self, nvl_list):
         """
-        Extracts data from Norwegian VatnLnr list.
+        Extracts data from `Norwegian VatnLnr` list.
 
-        :param nvl_list: A Norwegian VatnLnr list.
-        :type nvl_list: list.
+        :param nvl_list: A `Norwegian VatnLnr` list.
+        :type nvl_list: list
 
-        :returns: A Norwegian VatnLnr.
-        :rtype: int.
+        :returns: A `Norwegian VatnLnr`.
+        :rtype: int
         """
 
         nvl = int(nvl_list[7])
@@ -1107,9 +1117,9 @@ class InsMw(QMainWindow, FORM_CLASS):
         Coordinates are set only on left mouse click.
 
         :param pnt: A point.
-        :type pnt: QgsPoint.
+        :type pnt: QgsPoint
         :param btn: A mouse button.
-        :type btn: QtCore.MouseButton.
+        :type btn: QtCore.MouseButton
         """
 
         row_data = self._get_row_data(self.loc_tbl, self.loc_tbl.currentRow())
@@ -1136,7 +1146,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns an edit CRS description.
 
         :returns: An edit CRS description.
-        :rtype: str.
+        :rtype: str
         """
 
         crs_desc = self.loc_edit_crs_cb.currentText()
@@ -1149,7 +1159,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a manual CRS description.
 
         :returns: A manual CRS description.
-        :rtype: str.
+        :rtype: str
         """
 
         crs_desc = self.loc_manual_coor_crs_cb.currentText()
@@ -1162,7 +1172,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns an edit option.
 
         :returns: An edit option.
-        :rtype: str.
+        :rtype: str
         """
 
         opt = self.loc_edit_opt_cb.currentText()
@@ -1175,7 +1185,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a manual option.
 
         :returns: A manual option.
-        :rtype: str.
+        :rtype: str
         """
 
         opt = self.loc_manual_coor_opt_cb.currentText()
@@ -1188,16 +1198,16 @@ class InsMw(QMainWindow, FORM_CLASS):
         to the output CRS.
 
         :param in_crs: An input CRS.
-        :type in_crs: QgsCoordinateReferenceSystem.
+        :type in_crs: QgsCoordinateReferenceSystem
         :param out_crs: An Output CRS.
-        :type out_crs: QgsCoordinateReferenceSystem.
+        :type out_crs: QgsCoordinateReferenceSystem
         :param in_x: An input X coordinate.
-        :type in_x: float.
+        :type in_x: float
         :param in_y: An input Y coordinate.
-        :type in_y: float.
+        :type in_y: float
 
         :returns: X and Y coordinates in the output CRS.
-        :rtype: tuple.
+        :rtype: tuple
         """
 
         trf = QgsCoordinateTransform(in_crs, out_crs)
@@ -1208,7 +1218,7 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _add_manual_locid(self):
         """
-        Adds locationIDs from text to location table.
+        Adds location IDs from text to location table.
         """
 
         try:
@@ -1230,10 +1240,10 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _get_locid_input_set(self):
         """
-        Returns a locationID input set.
+        Returns a location ID input set.
 
-        :returns: A locationID input set.
-        :rtype: ordered_set.OrderedSet.
+        :returns: A location ID input set.
+        :rtype: ordered_set.OrderedSet
         """
 
         locid_txt = self.loc_manual_locid_pte.toPlainText()
@@ -1287,7 +1297,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a coordinates input set.
 
         :returns: A coordinates input set.
-        :rtype: ordered_set.OrderedSet.
+        :rtype: ordered_set.OrderedSet
         """
 
         coor_txt = self.loc_manual_coor_pte.toPlainText()
@@ -1313,7 +1323,7 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _add_manual_nvl(self):
         """
-        Adds Norwegian VatnLnr from text to location table.
+        Adds `Norwegian VatnLnr` from text to location table.
         """
 
         try:
@@ -1334,10 +1344,10 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _get_nvl_input_set(self):
         """
-        Returns a Norwegian VatnLnr input set.
+        Returns a `Norwegian VatnLnr` input set.
 
-        :returns: A Norwegian VatnLnr input set.
-        :rtype: ordered_set.OrderedSet.
+        :returns: A `Norwegian VatnLnr` input set.
+        :rtype: ordered_set.OrderedSet
         """
 
         nvl_txt = self.loc_manual_nvl_pte.toPlainText()
@@ -1363,6 +1373,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Previews all locations in the location table.
         It adds two layer to map canvas:
+
             - layer of existing locations
             - layer of new locations.
         """
@@ -1460,19 +1471,19 @@ class InsMw(QMainWindow, FORM_CLASS):
         
     def _get_new_loc_feat_locid_coor(self, m, row_data):
         """
-        Returns a new location feature or a locationID.
+        Returns a new location feature or a location ID.
         It is used for 'coordinates' method.
         Checks if both X and Y coordinates are entered.
         Based on option it returns a new location feature
-        or returns locationID of the nearest location. 
+        or returns location ID of the nearest location. 
 
         :param m: A location table row.
-        :type m: int.
+        :type m: int
         :param row_data: Data in location table row.
-        :type row_data: list.
+        :type row_data: list
 
-        :returns: A locationID of new location or the nearest location.
-        :rtype: str.
+        :returns: A location ID of new location or the nearest location.
+        :rtype: str
         """
 
         try:
@@ -1505,7 +1516,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Return UTM33 CRS.
 
         :returns: UTM33 CRS.
-        :rtype: QgsCoordinateReferenceSystem.
+        :rtype: QgsCoordinateReferenceSystem
         """
 
         utm33_crs = self.crs_dict[u'UTM33']
@@ -1515,8 +1526,8 @@ class InsMw(QMainWindow, FORM_CLASS):
     def _fetch_schema(self):
         """
         Fetches a schema based on what tab is active.
-        If the main tab is active it fetches data from NOFA schema,
-        otherwise it fetches data from plugin schema.
+        If the main tab is active it fetches data from `NOFA` schema,
+        otherwise it fetches data from `plugin` schema.
         """
 
         idx = self.main_tabwdg.currentIndex()
@@ -1528,7 +1539,7 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _fetch_plugin_schema(self):
         """
-        Fetches data from the plugin schema and populates tables.
+        Fetches data from the `plugin` schema and populates tables.
         """
 
         self._pop_usr_cb()
@@ -1567,9 +1578,14 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns history filters.
         It is used to filter entries in history tab.
 
-        :returns: A tuple containing user, insert start date, insert end date,
-            update start date and update end date.
-        :rtype: tuple.
+        :returns:
+         | A tuple containing:
+         |    - *str* -- user
+         |    - *datetime.date* -- insert start date
+         |    - *datetime.date* -- insert end date
+         |    - *datetime.date* -- update start date
+         |    - *datetime.date* -- update end date
+        :rtype: tuple
         """
 
         usr_txt = self.usr_cb.currentText()
@@ -1612,7 +1628,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         based on the state of its parent. 
  
         :param par: A changed item.
-        :type par: QTableWidgetItem.
+        :type par: QTableWidgetItem
         """
 
         chck_state = par.checkState(0)
@@ -1816,10 +1832,10 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _get_loc_list(self):
         """
-        Returns a list of location IDs.
+        Returns a location ID list.
 
-        :returns: A list of locationIDs.
-        :rtype: list.
+        :returns: A location ID list.
+        :rtype: list
         """
 
         locid_list = []
@@ -1847,17 +1863,17 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _get_locid_locid(self, m, row_data):
         """
-        Returns a locationID. It is used for 'locationID' method.
-        Checks if locationID is empty, if it a valid UUID
+        Returns a location ID. It is used for 'locationID' method.
+        Checks if location ID is empty, if it a valid *UUID*
         and if it exists in the database. 
 
         :param m: A location table row.
-        :type m: int.
+        :type m: int
         :param row_data: Data in location table row.
-        :type row_data: list.
+        :type row_data: list
 
-        :returns: A locationID.
-        :rtype: str.
+        :returns: A location ID.
+        :rtype: str
         """
 
         locid = self._extr_locid_list(row_data)
@@ -1877,18 +1893,18 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _get_locid_coor(self, m, row_data):
         """
-        Returns a locationID. It is used for 'coordinates' method.
+        Returns a location ID. It is used for 'coordinates' method.
         Checks if both X and Y coordinates are entered.
-        Based on option it inserts new location or returns locationID
+        Based on option it inserts new location or returns location ID
         of the nearest location. 
 
         :param m: A location table row.
-        :type m: int.
+        :type m: int
         :param row_data: Data in location table row.
-        :type row_data: list.
+        :type row_data: list
 
-        :returns: A locationID of new location or the nearest location.
-        :rtype: str.
+        :returns: A location ID of new location or the nearest location.
+        :rtype: str
         """
 
         try:
@@ -1918,17 +1934,17 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _get_nrst_locid(self, x, y, srid):
         """
-        Returns a locationID of the nearest location.
+        Returns a location ID of the nearest location.
 
         :param x: X coordinate.
-        :type x: float.
+        :type x: float
         :param y: Y coordinate.
-        :type y: float.
+        :type y: float
         :param srid: SRID.
-        :type srid: int.
+        :type srid: int
 
-        :returns: A locationID of the nearest location.
-        :rtype: str.
+        :returns: A location ID of the nearest location.
+        :rtype: str
         """
 
         pt_str = db.get_pt_str(x, y)
@@ -1941,17 +1957,17 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _get_locid_nvl(self, m, row_data):
         """
-        Returns a locationID. It is used for 'Norwegian VatLnr' method.
+        Returns a location ID. It is used for 'Norwegian VatLnr' method.
         Checks if Norwegian VatLnr is empty.
-        It searches for locationID with the given Norwegian VatLnr.
+        It searches for location ID with the given Norwegian VatLnr.
 
         :param m: A location table row.
-        :type m: int.
+        :type m: int
         :param row_data: Data in location table row.
-        :type row_data: list.
+        :type row_data: list
 
-        :returns: A locationID with the given Norwegian VatLnr.
-        :rtype: str.
+        :returns: A location ID with the given Norwegian VatLnr.
+        :rtype: str
         """
 
         try:
@@ -1971,14 +1987,15 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns the data from the given list of widgets.
 
         :param wdgs: A list of widgets whose data should be returned.
-        :type wdgs: list.
-        :param pydate: True to convert QDate to Python date, False otherwise.
+        :type wdgs: list
+        :param pydate: True to convert *QDate* to *datetime.date*,
+            False otherwise.
         :type pydate: bool
         :param forbi: True to allow forbidden text, False otherwise.
-        :type forbi: bool.
+        :type forbi: bool
 
         :returns: A list of data from event input widgets.
-        :rtype: list.
+        :rtype: list
         """
 
         wdg_list = []
@@ -2024,13 +2041,14 @@ class InsMw(QMainWindow, FORM_CLASS):
     def _rst_wdgs(self, wdgs):
         """
         Resets the given widgets.
-            - line edit - clear
-            - plain text edit - clear
-            - combo box - set current index to 0
-            - date edit - set date to minimum
+
+            - *QLineEdit* -- clear
+            - *QPlainTextEdit* -- clear
+            - *QComboBox* -- set current index to 0
+            - *QDateEdit* -- set date to minimum
 
         :param wdgs: Widgets to be cleared.
-        :type wdgs: list.
+        :type wdgs: list
         """
 
         for wdg in wdgs:
@@ -2048,12 +2066,12 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns an occurrence row list.
 
         :param m: A row number.
-        :type m: int.
+        :type m: int
         :param forbi: True to allow forbidden text, False otherwise.
-        :type forbi: bool.
+        :type forbi: bool
 
         :returns: A list of data in the given row in the occurrence table.
-        :rtype: list.
+        :rtype: list
         """
 
         occ_row_list = []
@@ -2078,7 +2096,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Inserts all checked taxons into the database.
 
         :param event_id: An event ID.
-        :type event_id: uuid.UUID.
+        :type event_id: uuid.UUID
         """
 
         for txn in self._ckd_txns:
@@ -2092,7 +2110,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns all checked taxons from the taxon coverage tree widget.
 
         :returns: A list of all checked taxons.
-        :rtype: list.
+        :rtype: list
         """
 
         txn_list = []
@@ -2114,8 +2132,8 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Updates a dataset according to the last selected.
         
-        :param dtst_str: A dataset string "<ID> - <name>".
-        :type dtst_str: str.
+        :param dtst_str: A dataset string `<ID> - <name>`.
+        :type dtst_str: str
         """
 
         self._upd_mtdt(self.dtst_cb, dtst_str)
@@ -2124,8 +2142,8 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Updates a project according to the last selected.
         
-        :param prj_str: A project string "<name> - <organisation>".
-        :type prj_str: str.
+        :param prj_str: A project string `<name> - <organisation>`.
+        :type prj_str: str
         """
 
         self._upd_mtdt(self.prj_cb, prj_str)
@@ -2134,8 +2152,8 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Updates a reference according to the last selected.
 
-        :param ref_str: A reference string "<author>: <title> (<year>) @<ID>".
-        :type ref_str: str.
+        :param ref_str: A reference string `<author>: <title> (<year>) @<ID>`.
+        :type ref_str: str
         """
 
         self._upd_mtdt(self.ref_cb, ref_str)
@@ -2161,9 +2179,9 @@ class InsMw(QMainWindow, FORM_CLASS):
         Updates a metadata list widget.
 
         :param cb_str: A combob box string.
-        :type cb_str: str.
+        :type cb_str: str
         :param cb: A combo box.
-        :type cb: QComboBox.
+        :type cb: QComboBox
         """
 
         if isinstance(cb_str, int):
@@ -2195,10 +2213,10 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Sets metadata item text.
 
-        :param item_index: An Item index.
-        :type item_index: int.
+        :param item_index: An item index.
+        :type item_index: int
         :param text: A text.
-        :type text: str.
+        :type text: str
         """
 
         self.main_tb.setItemText(item_index, text)
@@ -2208,12 +2226,14 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a metadata list widget combo box dictionary.
 
-        :returns: A metadata combo box dictionary.
-            - key - <combo box name>
-            - value - [<list widget>,
-                       <method that returns ID>,
-                       <function that returns information>,
-                       <function that returns metadata string>]
+        :returns:
+         | A metadata combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [
+         |        <list widget>,
+         |        <method that returns ID>,
+         |        <function that returns information>,
+         |        <function that returns metadata string>]
         :rtype: dict.
         """
 
@@ -2239,14 +2259,14 @@ class InsMw(QMainWindow, FORM_CLASS):
     def _pop_lw(self, lw, items, hdrs):
         """
         Populates the given list widget.
-        Adds all items with their corresponding headers "<header>: <item>".
+        Adds all items with their corresponding headers `<header>: <item>`.
 
         :param lw: A list widget.
-        :type lw: QListWidget.
+        :type lw: QListWidget
         :param items: Items to be added.
-        :type items: list.
+        :type items: list
         :param hdrs: Headers to be added.
-        :type hdrs: list.
+        :type hdrs: list
         """
 
         for hdr, item in zip(hdrs, items):
@@ -2269,7 +2289,7 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def _fetch_nofa_schema(self):
         """
-        Fetches data from the NOFA schema and populates widgets.
+        Fetches data from the `NOFA` schema and populates widgets.
         """
 
         nofa_cb_dict = self._nofa_cb_dict
@@ -2286,12 +2306,13 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Populates combo boxes.
 
-        :param cb_dict: | A combo box dictionary.
-                        |    - key - <combo box name>
-                        |    - value - [<fill method>, [<arguments>], <default value>]
+        :param cb_dict:
+         | A combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
         :type cb_dict: dict.
-        :param hh: sjaiosdj
-        :type hh: dassdasd
+        :param cb: Who knows.
+        :type cb: bool
         """
 
         for cb, cb_list in cb_dict.items():
@@ -2356,13 +2377,11 @@ class InsMw(QMainWindow, FORM_CLASS):
     def _add_cb_items(self, cb, item_list):
         """
         Adds items from the item list to the combo box.
-        Color of items whose text is in the list of forbidden strings
-        is set to red.
 
-        :param cb:
-        :type cb:
-        :param item_list:
-        :type item_list:
+        :param cb: A combob box.
+        :type cb: QComboBox
+        :param item_list: An item list.
+        :type item_list: list
         """
 
         cb.clear()
@@ -2378,10 +2397,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Resets combo boxes by the given combo box dictionary.
 
-        :param cb_dict: A nofa combo box dictionary.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :type cb_dict: dict.
+        :param cb_dict:
+         | A combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :type cb_dict: dict
         """
 
         for cb, cb_list in cb_dict.items():
@@ -2394,12 +2414,13 @@ class InsMw(QMainWindow, FORM_CLASS):
     @property
     def _nofa_cb_dict(self):
         """
-        Returns a nofa combo box dictionary.
+        Returns a `NOFA` combo box dictionary.
 
-        :returns: A nofa combo box dictionary.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :rtype: dict.
+        :returns:
+         | A `NOFA` combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         nofa_cb_dict = {
@@ -2450,10 +2471,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a combo box dictionary for all location combo boxes.
 
-        :returns: A combo box dictionary for all location combo boxes.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :rtype: dict.
+        :returns:
+         | A combo box dictionary for all location combo boxes:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         loc_cb_dict = {
@@ -2490,10 +2512,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a county combo box dictionary.
 
-        :returns: A county combo box dictionary.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :rtype: dict.
+        :returns:
+         | A county combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         cnty_cb_dict = {
@@ -2509,10 +2532,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a municipality combo box dictionary.
 
-        :returns: A municipality combo box dictionary.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :rtype: dict.
+        :returns:
+         | A municipality combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         muni_cb_dict = {
@@ -2528,10 +2552,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a combo box dictionary for all event combo boxes.
 
-        :returns: A combo box dictionary for all event combo boxes.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :rtype: dict.
+        :returns:
+         | A combo box dictionary for all event combo boxes:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         event_cb_dict = {
@@ -2555,10 +2580,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns an ecotype combo box dictionary.
 
-        :returns: An ecotype combo box dictionary.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :rtype: dict.
+        :returns:
+         | An ecotype combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         ectp_cb_dict = {
@@ -2574,10 +2600,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a metadata combo box dictionary.
 
-        :returns: An metadata combo box dictionary.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :rtype: dict.
+        :returns: A metadata combo box dictionary.
+         | A metadata combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         mtdt_cb_dict = self._get_mrgd_dict(
@@ -2592,10 +2619,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a dataset combo box dictionary.
 
-        :returns: An dataset combo box dictionary.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :rtype: dict.
+        :returns:
+         | A dataset combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         dtst_cb_dict = {
@@ -2611,10 +2639,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a project combo box dictionary.
 
-        :returns: An project combo box dictionary.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :rtype: dict.
+        :returns:
+         | A project combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         prj_cb_dict = {
@@ -2630,10 +2659,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a reference combo box dictionary.
 
-        :returns: An reference combo box dictionary.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :rtype: dict.
+        :returns:
+         | A reference combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         ref_cb_dict = {
@@ -2649,10 +2679,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a location edit method combo box dictionary.
 
-        :returns: A location edit method combo box dictionary.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :rtype: dict.
+        :returns:
+         | A location edit method combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         loc_edit_met_cb_dict = {
@@ -2668,10 +2699,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a location manual method combo box dictionary.
 
-        :returns: A location manual method combo box dictionary.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :rtype: dict.
+        :returns:
+         | A location manual method combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         loc_manual_met_cb_dict = {
@@ -2687,10 +2719,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns an occurrence mandatory combo box dictionary.
 
-        :returns: An occurrence mandatory combo box dictionary.
-            - key - <combo box name>
-            - value - [<fill method>, [<arguments>], <default value>]
-        :rtype: dict.
+        :returns:
+         | An occurrence mandatory combo box dictionary:
+         |    - key - <combo box name>
+         |    - value - [<fill method>, [<arguments>], <default value>]
+        :rtype: dict
         """
 
         occ_mand_cb_dict = {
@@ -2748,7 +2781,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a dataset ID from the dataset combo box.
 
         :returns: A dataset ID.
-        :rtype: str.
+        :rtype: str
         """
 
         dtst_str = self.dtst_cb.currentText()
@@ -2762,7 +2795,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a project ID based on name and organization.
 
         :returns: A project ID.
-        :rtype: str.
+        :rtype: str
         """
 
         prj_str = self.prj_cb.currentText()
@@ -2778,7 +2811,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a reference ID from the reference combo box.
 
         :returns: A reference ID.
-        :rtype: str.
+        :rtype: str
         """
 
         ref_str = self.ref_cb.currentText()
@@ -2795,7 +2828,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a list of SRS descriptions.
 
         :returns: A list of SRS descriptions.
-        :rtype: list.
+        :rtype: list
         """
 
         srs_desc_list = self.crs_dict.keys()
@@ -2807,7 +2840,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a list of methods.
 
         :returns: A list of methods.
-        :rtype: list.
+        :rtype: list
         """
 
         met_list = self.loc_met_list
@@ -2819,7 +2852,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a list of options.
 
         :returns: A list of options.
-        :rtype: list.
+        :rtype: list
         """
 
         opt_list = self.opt_list
@@ -2832,13 +2865,13 @@ class InsMw(QMainWindow, FORM_CLASS):
         This method is used for creating tables in the main tab.
         
         :param tbl: A table.
-        :type tbl: QTableWidget.
+        :type tbl: QTableWidget
         :param tbl_hdrs: Table headers.
-        :type tbl_hdrs: list.
+        :type tbl_hdrs: list
         :param tbl_wdgs: Table widgets.
-        :type tbl_wdgs: list.
+        :type tbl_wdgs: list
         :param met: A method for updating table.
-        :type met: function.
+        :type met: function
         """
   
         tbl.itemChanged.connect(tbl.resizeColumnsToContents)
@@ -2865,14 +2898,15 @@ class InsMw(QMainWindow, FORM_CLASS):
     def _con_wdgs_sgnls_to_met(self, wdgs, met):
         """
         Connects signals of the given widgets to the given method.
-            - QLineEdit - textChanged
-            - QComboBox - currentIndexChanged
-            - QDateEdit - dateChanged
+
+            - *QLineEdit* - textChanged
+            - *QComboBox* - currentIndexChanged
+            - *QDateEdit* - dateChanged
 
         :param wdgs: Widgets.
-        :type wdgs: list.
+        :type wdgs: list
         :param met: A method.
-        :type met: function.
+        :type met: function
         """
 
         for wdg in wdgs:
@@ -2886,12 +2920,13 @@ class InsMw(QMainWindow, FORM_CLASS):
     def _emit_wdgs_sgnls(self, tbl_wdgs):
         """
         Emits signals of the given widgets.
-            - QLineEdit - textChanged
-            - QComboBox - currentIndexChanged
-            - QDateEdit - dateChanged
+
+            - *QLineEdit* - textChanged
+            - *QComboBox* - currentIndexChanged
+            - *QDateEdit* - dateChanged
 
         :param tbl_wdgs: Widgets.
-        :type tbl_wdgs: list.
+        :type tbl_wdgs: list
         """
 
         for wdg in tbl_wdgs:
@@ -2910,7 +2945,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Also sets index of location method stacked widget.
 
         :param idx: A current index of location edit method combo box.
-        :type idx: int.
+        :type idx: int
         """
 
         self.loc_edit_met_swdg.setCurrentIndex(idx)
@@ -2933,11 +2968,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         This method is used for creating tables in the history tab.
         
         :param tbl: A table.
-        :type tbl: QTableWidget.
+        :type tbl: QTableWidget
         :param tbl_list: Table list.
-        :type tbl_list: list.
+        :type tbl_list: list
         :param tbl_hdrs: Table headers.
-        :type tbl_hdrs: list.
+        :type tbl_hdrs: list
         """
 
         tbl.setColumnCount(len(tbl_hdrs))
@@ -2966,11 +3001,11 @@ class InsMw(QMainWindow, FORM_CLASS):
         Adds a row at the given position of a table with empty items.
 
         :param tbl: A table.
-        :type tbl: QTableWidget.
+        :type tbl: QTableWidget
         :param tbl_hdrs: Table headers.
-        :type tbl_hdrs: list.
+        :type tbl_hdrs: list
         :param m: A row number.
-        :type m: int.
+        :type m: int
         """
 
         for n, tbl_hdr in enumerate(tbl_hdrs):
@@ -3000,9 +3035,9 @@ class InsMw(QMainWindow, FORM_CLASS):
         with the values in the sender widget.
 
         :param tbl: A table.
-        :type tbl: QTableWidget.
+        :type tbl: QTableWidget
         :param tbl_wdgs: A list of table widgets.
-        :type tbl_wdgs: list.
+        :type tbl_wdgs: list
         """
 
         sndr = self.sender()
@@ -3088,9 +3123,9 @@ class InsMw(QMainWindow, FORM_CLASS):
         Sets widget's data.
 
         :param wdg: A Widget.
-        :type wdg: QWidget.
+        :type wdg: QWidget
         :param wdg_data: A widget data.
-        :type wdg_data: QVariant.
+        :type wdg_data: QVariant
         """
 
         if isinstance(wdg, QLineEdit):
@@ -3173,7 +3208,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Deletes all table rows except the currently selected one.
 
         :param tbl: A table.
-        :type tbl: QTableWidget.
+        :type tbl: QTableWidget
         """
 
         tbl = self._get_tbl()
@@ -3188,12 +3223,12 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns data from the given table in the given row.
 
         :param tbl: A table.
-        :type tbl: QTableWidget.
+        :type tbl: QTableWidget
         :param m: A row number.
-        :type m: int.
+        :type m: int
 
         :returns: Data from the given table in the given row.
-        :rtype: list.
+        :rtype: list
         """
 
         row_data = []
@@ -3212,7 +3247,7 @@ class InsMw(QMainWindow, FORM_CLASS):
 
         :param row_data: A data to be written. It has to have the same length
             as number of columns in the table.
-        :type row_data: list.
+        :type row_data: list
         """
 
         tbl = self.loc_tbl
@@ -3232,7 +3267,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a table the sender works with.
 
         :returns: A table the sender works with.
-        :rtype: QTableWidget.
+        :rtype: QTableWidget
         """
 
         if self.sender().objectName().startswith(u'occ_'):
@@ -3245,7 +3280,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a table headers the sender works with.
 
         :returns: A table headers the sender works with.
-        :rtype: list.
+        :rtype: list
         """
 
         if self.sender().objectName().startswith(u'occ_'):
@@ -3258,7 +3293,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a table widgets the sender works with.
 
         :returns: A table widgets the sender works with.
-        :rtype: list.
+        :rtype: list
         """
 
         if self.sender().objectName().startswith(u'occ_'):
@@ -3272,7 +3307,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a list of current location edit table widgets.
 
         :returns: A list of current location table widgets.
-        :rtype: list.
+        :rtype: list
         """
 
         cur_loc_edit_tbl_wdgs = self.loc_edit_met_swdg.currentWidget().findChildren(
@@ -3286,7 +3321,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a list of current location manual table widgets.
 
         :returns: A list of current location table widgets.
-        :rtype: list.
+        :rtype: list
         """
 
         cur_loc_manual_tbl_wdgs = self.loc_manual_swdg.currentWidget().findChildren(
@@ -3299,7 +3334,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a table mandatory combo box dictionary the sender works with.
 
         :returns: A table mandatory combo box dictionary the sender works with.
-        :rtype: dict.
+        :rtype: dict
         """
 
         if self.sender().objectName().startswith(u'occ_'):

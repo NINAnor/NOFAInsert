@@ -46,9 +46,9 @@ class RefDlg(QDialog):
         Constructor.
 
         :param mc: A reference to the main class.
-        :type mc: object.
+        :type mc: object
         :param iw: A reference to the insert window.
-        :type iw: QMainWindow.
+        :type iw: QMainWindow
         """
 
         super(QDialog, self).__init__()
@@ -226,9 +226,10 @@ class RefDlg(QDialog):
         """
         Returns a reference combo box dictionary.
 
-        :returns: A reference combo box dictionary.
-            - key - combo_box_name
-            - value - [fill_method, [arguments], default_value]
+        :returns:
+         | A reference combo box dictionary:
+         |    - key - combo_box_name
+         |    - value - [<fill method>, [<arguments>], <default value>]
         :rtype: dict.
         """
 

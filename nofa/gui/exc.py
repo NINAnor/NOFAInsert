@@ -34,7 +34,7 @@ class MandNotFldExc(Exception):
         Constructor.
 
         :param nf_nvl: A widget that is not filled/selected.
-        :type nf_nvl: QWidget.
+        :type nf_nvl: QWidget
         """
 
         self.wdg = wdg

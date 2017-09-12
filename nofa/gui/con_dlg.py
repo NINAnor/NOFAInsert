@@ -45,11 +45,11 @@ class ConDlg(QDialog):
         Constructor.
 
         :param mc: A reference to the main class.
-        :type mc: object.
+        :type mc: object
         :param con_info: A connection information.
-        :type con_info: dict.
+        :type con_info: dict
         :param stat_bar_msg: A status bar message.
-        :type stat_bar_msg: str.
+        :type stat_bar_msg: str
         """
 
         super(QDialog, self).__init__()
@@ -63,9 +63,9 @@ class ConDlg(QDialog):
         Sets up self.
 
         :param con_info: A connection information.
-        :type con_info: dict.
+        :type con_info: dict
         :param stat_bar_msg: A status bar message.
-        :type stat_bar_msg: str.
+        :type stat_bar_msg: str
         """
 
         self.setObjectName(u'ConnDlg')
@@ -83,9 +83,9 @@ class ConDlg(QDialog):
         Builds own widgets.
 
         :param con_info: A connection information.
-        :type con_info: dict.
+        :type con_info: dict
         :param stat_bar_msg: A status bar message.
-        :type stat_bar_msg: str.
+        :type stat_bar_msg: str
         """
  
         self.host_lbl = QLabel(self)
@@ -164,7 +164,7 @@ class ConDlg(QDialog):
         Inserts a connection information into line edits.
 
         :param con_info: A connection information.
-        :type con_info: dict.
+        :type con_info: dict
         """
 
         for conn_str, conn_le in self.con_dict.iteritems():
@@ -219,7 +219,7 @@ class ConDlg(QDialog):
         Returns a connection information from line edits.
 
         :returns: A connection information dictionary.
-        :rtype: dict.
+        :rtype: dict
         """
 
         con_info = {}
@@ -231,10 +231,10 @@ class ConDlg(QDialog):
 
     def _save_con_info(self, con_info):
         """
-        Saves a connection information to QSettings.
+        Saves a connection information to settings of the main class.
 
         :param con_info: A connection information.
-        :type con_info: dict.
+        :type con_info: dict
         """
 
         for con_str, con_val in con_info.iteritems():
@@ -245,7 +245,7 @@ class ConDlg(QDialog):
         Enables or disables line edits and push buttons.
         
         :param bl: True to enable widgets, False to disable widgets.
-        :type bl: bool.
+        :type bl: bool
         """
 
         for con_str, con_le in self.con_dict.iteritems():

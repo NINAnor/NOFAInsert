@@ -38,7 +38,7 @@ class LenTxtVald(QValidator):
         Constructor.
 
         :param par: A parent widget.
-        :type par: QWidget.
+        :type par: QWidget
         """
 
         super(LenTxtVald, self).__init__(par)
@@ -48,11 +48,15 @@ class LenTxtVald(QValidator):
         Validates the given text.
 
         :param txt: A text.
-        :type txt: str.
+        :type txt: str
         :param pos: A position.
-        :type pos: int.
+        :type pos: int
 
-        :returns: A tuple that contains validator, text and position.
+        :returns:
+         | A tuple containing:
+         |    - *int* -- validator state
+         |    - *str* -- text
+         |    - *int* -- position
         :rtype: tuple
         """
 
@@ -66,7 +70,7 @@ class LenTxtVald(QValidator):
         Corrects the given text.
 
         :param txt: A text.
-        :type txt: str.
+        :type txt: str
         """
 
         pass
@@ -82,7 +86,7 @@ class LenIntVald(QValidator):
         Constructor.
 
         :param par: A parent widget.
-        :type par: QWidget.
+        :type par: QWidget
         """
 
         super(LenIntVald, self).__init__(par)
@@ -95,11 +99,15 @@ class LenIntVald(QValidator):
         Validates the given text.
 
         :param txt: A text.
-        :type txt: str.
+        :type txt: str
         :param pos: A position.
-        :type pos: int.
+        :type pos: int
 
-        :returns: A tuple that contains validator, text and position.
+        :returns:
+         | A tuple containing:
+         |    - *int* -- validator state
+         |    - *str* -- text
+         |    - *int* -- position
         :rtype: tuple
         """
 
@@ -121,7 +129,7 @@ class LenIntVald(QValidator):
         Corrects the given text.
 
         :param txt: A text.
-        :type txt: str.
+        :type txt: str
         """
 
         pass

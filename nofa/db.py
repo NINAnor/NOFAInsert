@@ -33,7 +33,7 @@ def get_con(con_info):
     Returns a connection.
 
     :returns: A connection.
-    :rtype: psycopg2.connection.
+    :rtype: psycopg2.connection
     """
 
     con = psycopg2.connect(**con_info)
@@ -46,10 +46,10 @@ def _get_db_cur(con):
     Returns a database cursor.
     
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A database cursor.
-    :rtype: psycopg2.cursor.
+    :rtype: psycopg2.cursor
     """
 
     return con.cursor()
@@ -59,10 +59,10 @@ def chck_nofa_tbls(con):
     Checks if the database is NOFA.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: True when database is NOFA, False otherwise.
-    :rtype: bool.
+    :rtype: bool
     """
 
     cur = _get_db_cur(con)
@@ -88,19 +88,19 @@ def ins_event(con, loc_id, event_id, event_list, dtst_id, prj_id, ref_id):
     Insert an event to the database.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param loc_id: A location ID.
-    :type loc_id: uuid.UUID.
+    :type loc_id: uuid.UUID
     :param event_id: An event ID.
-    :type event_id: uuid.UUID.
+    :type event_id: uuid.UUID
     :param event_list: A list of data from event input widgets.
-    :type event_list: list.
+    :type event_list: list
     :param dtst_id: A dataset ID.
-    :type dtst_id: str.
+    :type dtst_id: str
     :param prj_id: A project ID.
-    :type prj_id: str.
+    :type prj_id: str
     :param ref_id: A reference ID.
-    :type ref_id: int.
+    :type ref_id: int
     """
 
     cur = _get_db_cur(con)
@@ -159,12 +159,12 @@ def get_txn_id(con, txn):
     Returns a taxon ID based on the given scientific name.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param txn: A taxon scientific name.
-    :type txn: str.
+    :type txn: str
 
     :returns: A taxon ID.
-    :rtype: int.
+    :rtype: int
     """
 
     cur = _get_db_cur(con)
@@ -185,12 +185,12 @@ def get_ectp_id(con, ectp):
     Returns an ecotype ID based on the given vernacular name.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param txn: An ecotype vernacular name.
-    :type txn: str.
+    :type txn: str
 
     :returns: An ecotype ID, None when there is no ecotype.
-    :rtype: int.
+    :rtype: int
     """
 
     cur = _get_db_cur(con)
@@ -211,20 +211,20 @@ def ins_occ(con, occ_id, txn_id, ectp_id, occ_row_list, event_id):
     insert an occurrence to the database.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param occ_id: An occurrence ID.
-    :type occ_id: uuid.UUID.
+    :type occ_id: uuid.UUID
     :param txn_id: A taxon ID.
-    :type txn_id: int.
+    :type txn_id: int
     :param ectp_id: An ecotype ID, None when there is no ecotype.
-    :type ectp_id: int.
+    :type ectp_id: int
     :param occ_row_list: A list of data in the row in the occurrence table.
-    :type occ_row_list: list.
+    :type occ_row_list: list
     :param event_id: An event ID.
-    :type event_id: uuid.UUID.
+    :type event_id: uuid.UUID
 
     :returns: An ecotype ID, None when there is no ecotype.
-    :rtype: int.
+    :rtype: int
     """
 
     cur = _get_db_cur(con)
@@ -289,11 +289,11 @@ def ins_txncvg(con, txn_id, event_id):
     Insert a taxon coverage into the database.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param txn_id: A taxon ID.
-    :type txn_id: int.
+    :type txn_id: int
     :param event_id: An event ID.
-    :type event_id: uuid.UUID.
+    :type event_id: uuid.UUID
     """
 
     cur = _get_db_cur(con)
@@ -310,15 +310,15 @@ def ins_txncvg(con, txn_id, event_id):
 
 def chck_locid(con, locid):
     """
-    Checks if a locationID is in the database.
+    Checks if a location ID is in the database.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param locid: A locationID.
-    :type locid: str.
+    :type locid: str
 
     :returns: True when locationID was found, False otherwise.
-    :rtype: bool.
+    :rtype: bool
     """
 
     cur = _get_db_cur(con)
@@ -341,15 +341,15 @@ def chck_locid(con, locid):
 
 def get_locid_from_nvl(con, nvl):
     """
-    Returns a locationID based on the given Norwegian VatLnr.
+    Returns a location ID based on the given `Norwegian VatLnr`.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
-    :param nvl: A Norwegian VatLnr.
-    :type nvl: int.
+    :type con: psycopg2.connection
+    :param nvl: A `Norwegian VatLnr`.
+    :type nvl: int
 
-    :returns: A locationID.
-    :rtype: str.
+    :returns: A location ID.
+    :rtype: str
     """
 
     cur = _get_db_cur(con)
@@ -370,13 +370,15 @@ def get_dtst_info(con, dtst_id):
     Returns information about a dataset with the given ID.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param dtst_id: A dataset ID.
-    :type dtst_id: str.
+    :type dtst_id: str
 
-    :returns: A tuple containing a list of dataset items
-        and a list of dataset headers.
-    :rtype: tuple.
+    :returns:
+     | A tuple containing:
+     |    - *list* -- a list of dataset items
+     |    - *list* -- a list of dataset headers
+    :rtype: tuple
     """
 
     cur = _get_db_cur(con)
@@ -409,13 +411,15 @@ def get_prj_info(con, prj_id):
     and organization.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param prj_id: A project ID.
-    :type prj_id: int.
+    :type prj_id: int
 
-    :returns: A tuple containing a list of project items
-        and a list of project headers.
-    :rtype: tuple.
+    :returns:
+     | A tuple containing:
+     |    - *list* -- a list of project items
+     |    - *list* -- a list of project headers
+    :rtype: tuple
     """
 
     cur = _get_db_cur(con)
@@ -447,13 +451,15 @@ def get_ref_info(con, ref_id):
     Returns information about a reference with the given reference ID.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param ref_id: A reference ID.
-    :type ref_id: str.
+    :type ref_id: str
 
-    :returns: A tuple containing a list of reference items
-        and a list of reference headers.
-    :rtype: tuple.
+    :returns:
+     | A tuple containing:
+     |    - *list* -- a list of reference items
+     |    - *list* -- a list of reference headers
+    :rtype: tuple
     """
 
     cur = _get_db_cur(con)
@@ -485,10 +491,13 @@ def get_fam_dict(con):
     Returns a defaultdict with family as keys and taxons as values.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
-    :returns: A defaultdict with families as keys and taxons as values.
-    :rtype: collections.defaultdict.
+    :returns:
+     | A defaultdict:
+     |    - key - *str* -- family
+     |    - value - *str* -- taxons
+    :rtype: collections.defaultdict
     """
 
     cur = _get_db_cur(con)
@@ -516,10 +525,10 @@ def get_cntry_code_list(con):
     country code combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of country codes.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -541,12 +550,12 @@ def get_cnty_list(con, cntry_code):
     county combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param cntry_code: A country code.
-    :type cntry_code: str.
+    :type cntry_code: str
 
     :returns: A list of counties.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -571,14 +580,14 @@ def get_muni_list(con, cntry_code, cnty):
     municipality combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param cntry_code: A country code.
-    :type cntry_code: str.
+    :type cntry_code: str
     :param cnty: A county.
-    :type cnty: str.
+    :type cnty: str
 
     :returns: A list of municipalities.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -606,10 +615,10 @@ def get_dtst_list(con):
     dataset combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list with information about datasets.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -628,13 +637,13 @@ def get_dtst_list(con):
 
 def get_dtst_mtdt_str(dtst_str):
     """
-    Returns a dataset metadata string "Dataset - <name>".
+    Returns a dataset metadata string `<name>`.
 
-    :param dtst_str: A dataset string "<ID> - <name>".
-    :type dtst_str: str.
+    :param dtst_str: A dataset string `<ID> - <name>`.
+    :type dtst_str: str
 
-    :returns: A dataset metadata string "Dataset - <name>".
-    :rtype: str.
+    :returns: A dataset metadata string `<name>`.
+    :rtype: str
     """
 
     name, org = split_dtst_str(dtst_str)
@@ -645,12 +654,15 @@ def get_dtst_mtdt_str(dtst_str):
 
 def get_dtst_str(id, name):
     """
-    Returns a dataset string "<ID> - <name>"
+    Returns a dataset string `<ID> - <name>`.
 
     :param id: A dataset ID.
-    :type id: str.
+    :type id: str
     :param name: A dataset name.
-    :type name: str.
+    :type name: str
+
+    :returns: A dataset string `<ID> - <name>`.
+    :rtype: str
     """
 
     dtst_str = u'{} - {}'.format(id, name)
@@ -659,14 +671,17 @@ def get_dtst_str(id, name):
 
 def split_dtst_str(dtst_str):
     """
-    Splits a dataset string "<ID> - <name>" and returns
+    Splits a dataset string `<ID> - <name>` and returns
     its information.
 
-    :param dtst_str: A dataset string "<ID> - <name>".
-    :type dtst_str: str.
+    :param dtst_str: A dataset string `<ID> - <name>`.
+    :type dtst_str: str
 
-    :returns: Tuple containing dataset ID and name.
-    :rtype: tuple.
+    :returns:
+     | A tuple containing:
+     |    - *str* -- dataset ID
+     |    - *str* -- name
+    :rtype: tuple
     """
 
     split_dtst_str = dtst_str.split(u' - ')
@@ -682,10 +697,10 @@ def get_prj_list(con):
     project combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list with information about projects.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -704,13 +719,13 @@ def get_prj_list(con):
 
 def get_prj_mtdt_str(prj_str):
     """
-    Returns a projects metadata string "Project - <name> - <organisation>".
+    Returns a projects metadata string `<name> - <organisation>`.
 
-    :param prj_str: A project string "<name> - <organization>".
-    :type prj_str: str.
+    :param prj_str: A project string `<name> - <organization>`.
+    :type prj_str: str
 
-    :returns: A projects metadata string "Project - <name> - <organisation>".
-    :rtype: str.
+    :returns: A projects metadata string `<name> - <organisation>`.
+    :rtype: str
     """
 
     name, org = split_prj_str(prj_str)
@@ -721,15 +736,15 @@ def get_prj_mtdt_str(prj_str):
 
 def get_prj_str(name, org):
     """
-    Returns a project string "<name> - <organisation>".
+    Returns a project string `<name> - <organisation>`.
 
     :param name: A project name.
-    :type name: str.
+    :type name: str
     :param org: A project organization.
-    :type org: str.
+    :type org: str
 
-    :returns: A project string "<name> - <organisation>".
-    :rtype: str.
+    :returns: A project string `<name> - <organisation>`.
+    :rtype: str
     """
 
     prj_str = u'{} - {}'.format(name, org)
@@ -738,14 +753,17 @@ def get_prj_str(name, org):
 
 def split_prj_str(prj_str):
     """
-    Splits a project string "<name> - <organization>" and returns
+    Splits a project string `<name> - <organization>` and returns
     its information.
 
-    :param prj_str: A project string "<name> - <organization>".
-    :type prj_str: str.
+    :param prj_str: A project string `<name> - <organization>`.
+    :type prj_str: str
 
-    :returns: Tuple containing project name and organization.
-    :rtype: tuple.
+    :returns:
+     | A tuple containing:
+     |    - *str* -- project name
+     |    - *str* -- organization
+    :rtype: tuple
     """
 
     split_prj_str = prj_str.split(u' - ')
@@ -760,14 +778,14 @@ def get_prj_id(con, prj_name, prj_org):
     Returns a project ID with the given organization number and name.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param prj_name: A project name.
-    :type prj_name: str.
+    :type prj_name: str
     :param prj_org: A project organization.
-    :type prj_org: str.
+    :type prj_org: str
 
     :returns: A project ID with the given organization number and name.
-    :rtype: int.
+    :rtype: int
     """
 
     cur = _get_db_cur(con)
@@ -792,10 +810,10 @@ def get_ref_list(con):
     reference combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list with information about references.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -816,15 +834,13 @@ def get_ref_list(con):
 
 def get_ref_mtdt_str(ref_str):
     """
-    Returns a reference metadata string
-    "Reference - <author>: <title> (<year>)".
+    Returns a reference metadata string `<author>: <title> (<year>)`.
 
-    :param ref_str: A reference string "<author>: <title> (<year>) @<ID>".
-    :type ref_str: str.
+    :param ref_str: A reference string `<author>: <title> (<year>) @<ID>`.
+    :type ref_str: str
 
-    :returns: A reference metadata string
-        "Reference - <author>: <title> (<year>)".
-    :rtype: str.
+    :returns: A reference metadata string `<author>: <title> (<year>)`.
+    :rtype: str
     """
 
     au, ttl, yr, id = split_ref_str(ref_str)
@@ -835,19 +851,19 @@ def get_ref_mtdt_str(ref_str):
 
 def get_ref_str(au, ttl, yr, id):
     """
-    Returns a reference string "<author>: <title> (<year>) @<ID>".
+    Returns a reference string `<author>: <title> (<year>) @<ID>`.
 
     :param au: A reference author.
-    :type au: str.
+    :type au: str
     :param ttl: A reference title.
-    :type ttl: str.
+    :type ttl: str
     :param yr: A reference year.
-    :type yr: int.
+    :type yr: int
     :param id: A reference ID.
-    :type id: str.
+    :type id: str
 
-    :returns: A reference string "<author>: <title> (<year>) @<ID>".
-    :rtype: str.
+    :returns: A reference string `<author>: <title> (<year>) @<ID>`.
+    :rtype: str
     """
 
     ref_str = u'{}: {} ({}) @{}'.format(au, ttl, yr, id)
@@ -856,14 +872,19 @@ def get_ref_str(au, ttl, yr, id):
 
 def split_ref_str(ref_str):
     """
-    Splits a reference string "<author>: <title> (<year>) @<ID>" and returns
+    Splits a reference string `<author>: <title> (<year>) @<ID>` and returns
     its information.
 
-    :param ref_str: A reference string "<author>: <title> (<year>) @<ID>".
-    :type ref_str: str.
+    :param ref_str: A reference string `<author>: <title> (<year>) @<ID>`.
+    :type ref_str: str
 
-    :returns: Tuple containing reference author, year, title and ID.
-    :rtype: tuple.
+    :returns:
+     | A tuple containing:
+     |    - *str* -- author
+     |    - *str* -- year
+     |    - *str* -- title
+     |    - *int* -- ID
+    :rtype: tuple
     """
 
     au = ref_str.split(u': ')[0]
@@ -878,10 +899,10 @@ def get_txn_list(con):
     Returns a list of taxons that is used to populate taxon combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of taxons.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -903,12 +924,12 @@ def get_ectp_list(con, txn_name):
     Returns a list of ecotypes that is used to populate ecotype combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param txn_name: A taxon name.
-    :type txn_name: str.
+    :type txn_name: str
 
     :returns: A list of ecotypes.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -934,10 +955,10 @@ def get_oqt_list(con):
     organism quantity type combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of organism quantity types.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -958,10 +979,10 @@ def get_occstat_list(con):
     occurrence status combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of occurrence statuses.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -982,10 +1003,10 @@ def get_poptrend_list(con):
     population trend combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of population trends.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -1007,10 +1028,10 @@ def get_estbms_list(con):
     establishment means combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of establishment means.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -1031,10 +1052,10 @@ def get_smpp_list(con):
     sampling protocol combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of sampling protocols.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -1055,10 +1076,10 @@ def get_reliab_list(con):
     reliability combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of reliabilities.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -1079,10 +1100,10 @@ def get_smpsu_list(con):
     sample size unit combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of sample size units.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -1103,10 +1124,10 @@ def get_spwnc_list(con):
     spawning condition combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of spawning conditions.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -1127,10 +1148,10 @@ def get_spwnl_list(con):
     spawning location combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of spawning locations.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -1151,10 +1172,10 @@ def get_inst_list(con):
     institution combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of institutions.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -1176,10 +1197,10 @@ def get_acs_list(con):
     access rights combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of access rights.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -1200,12 +1221,12 @@ def get_dtst_cnt(con, id):
     Returns a number of datasets with the given ID.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param id: A dataset ID.
-    :type id: str.
+    :type id: str
 
     :returns: A number of datasets with the given ID.
-    :rtype: int.
+    :rtype: int
     """
 
     cur = _get_db_cur(con)
@@ -1226,9 +1247,9 @@ def ins_dtst(con, dtst_list):
     Insert an event to the database.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
-    :param dtst_list: A dataset list.
-    :type dtst_list: list.
+    :type con: psycopg2.connection
+    :param dtst_list: A dataset list
+    :type dtst_list: list
     """
 
     cur = _get_db_cur(con)
@@ -1272,12 +1293,12 @@ def ins_prj(con, prj_list):
     Insert an event to the database.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
-    :param prj_list: A project list.
-    :type prj_list: list.
+    :type con: psycopg2.connection
+    :param prj_list: A project list
+    :type prj_list: list
 
     :returns: A project ID.
-    :rtype: int.
+    :rtype: int
     """
 
     cur = _get_db_cur(con)
@@ -1324,10 +1345,10 @@ def get_reftp_list(con):
     reference type combo box.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of reference types.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -1348,12 +1369,12 @@ def ins_ref(con, ref_list):
     Insert an event to the database.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
-    :param ref_list: A reference list.
-    :type ref_list: list.
+    :type con: psycopg2.connection
+    :param ref_list: A reference list
+    :type ref_list: list
 
     :returns: A reference ID.
-    :rtype: int.
+    :rtype: int
     """
 
     cur = _get_db_cur(con)
@@ -1399,12 +1420,12 @@ def get_pt_str(x, y):
     Returns a point string with the given coordinates.
 
     :param x: X coordinate.
-    :type x: float.
+    :type x: float
     :param y: Y coordinate.
-    :type y: float.
+    :type y: float
 
     :returns: A point string.
-    :rtype: str.
+    :rtype: str
     """
 
     pt_str = 'POINT({} {})'.format(x, y)
@@ -1416,14 +1437,14 @@ def get_utm33_geom(con, geom_str, srid):
     Returns a geometry in UTM33 (EPSG: 25833).
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param geom_str: A geometry string.
-    :type geom_str: str.
+    :type geom_str: str
     :param srid: SRID.
-    :type srid: int.
+    :type srid: int
 
     :returns: A geometry in UTM33 (EPSG: 25833).
-    :rtype: str.
+    :rtype: str
     """
 
     cur = _get_db_cur(con)
@@ -1444,13 +1465,13 @@ def get_nrst_locid(con, utm33_geom):
     Returns an ID of the nearest location.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param utm33_geom: A geometry in UTM33 (EPSG: 25833).
-    :type utm33_geom: str.
+    :type utm33_geom: str
 
     :returns: A location ID. None where there is no lake within
         the given distance.
-    :rtype: uuid.UUID.
+    :rtype: uuid.UUID
     """
 
     cur = _get_db_cur(con)
@@ -1472,13 +1493,13 @@ def ins_new_loc(con, locid, utm33_geom, verb_loc):
     Insert a new location and returns its location ID.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param locid: A location ID.
-    :type locid:uuid.UUID.
+    :type locid: uuid.UUID
     :param utm33_geom: A geometry in UTM33 (EPSG: 25833).
-    :type utm33_geom: str.
+    :type utm33_geom: str
     :param verb_loc: A verbatimLocality.
-    :type verb_loc: str.
+    :type verb_loc: str
     """
 
     cur = _get_db_cur(con)
@@ -1504,12 +1525,12 @@ def get_mpt_str(x, y):
     Returns a multi point string with the given coordinates.
 
     :param x: X coordinate.
-    :type x: float.
+    :type x: float
     :param y: Y coordinate.
-    :type y: float.
+    :type y: float
 
     :returns: A multi point string.
-    :rtype: str.
+    :rtype: str
     """
 
     mpt_str = 'MULTIPOINT({} {})'.format(x, y)
@@ -1521,18 +1542,18 @@ def get_loc_by_fltrs(con, wb, cntry_code, cnty, muni):
     Returns location IDs with the given filters.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param wb: A water body.
-    :type wb: str.
+    :type wb: str
     :param cntry_code: A country code.
-    :type cntry_code: str.
+    :type cntry_code: str
     :param cnty: A county.
-    :type cnty: str.
+    :type cnty: str
     :param muni: A municipality.
-    :type muni: str.
+    :type muni: str
 
     :returns: A list of location IDs.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -1566,21 +1587,21 @@ def ins_occ_log(con, occ_id, event_id, dtst_id, prj_id, ref_id, loc_id, usr):
     Insert an occurrence log to the database.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param occ_id: An occurrence ID.
-    :type occ_id: uuid.UUID.
+    :type occ_id: uuid.UUID
     :param event_id: An event ID.
-    :type event_id: uuid.UUID.
+    :type event_id: uuid.UUID
     :param dtst_id: A dataset ID.
-    :type dtst_id: str.
+    :type dtst_id: str
     :param prj_id: A project ID.
-    :type prj_id: str.
+    :type prj_id: str
     :param ref_id: A reference ID.
-    :type ref_id: int.
+    :type ref_id: int
     :param loc_id: A location ID.
-    :type loc_id: uuid.UUID.
+    :type loc_id: uuid.UUID
     :param usr: An username.
-    :type usr: str.
+    :type usr: str
     """
 
     cur = _get_db_cur(con)
@@ -1615,13 +1636,13 @@ def ins_loc_log(con, id, name, usr):
     Insert a location log to the database.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param id: A location ID.
-    :type id: str.
+    :type id: str
     :param name: A location name.
-    :type name: str.
+    :type name: str
     :param usr: An username.
-    :type usr: str.
+    :type usr: str
     """
 
     cur = _get_db_cur(con)
@@ -1644,19 +1665,19 @@ def ins_event_log(con, loc_id, event_id, dtst_id, prj_id, ref_id, usr):
     Insert an event log to the database.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param loc_id: A location ID.
-    :type loc_id: str.
+    :type loc_id: str
     :param event_id: An event ID.
-    :type event_id: uuid.UUID.
+    :type event_id: uuid.UUID
     :param dtst_id: A dataset ID.
-    :type dtst_id: str.
+    :type dtst_id: str
     :param prj_id: A project ID.
-    :type prj_id: str.
+    :type prj_id: str
     :param ref_id: A reference ID.
     :type ref_id: int
     :param usr: An username.
-    :type usr: str.
+    :type usr: str
     """
 
     cur = _get_db_cur(con)
@@ -1688,11 +1709,11 @@ def ins_dtst_log(con, id, usr):
     Insert a dataset log to the database.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param id: A dataset ID.
-    :type id: str.
+    :type id: str
     :param usr: An username.
-    :type usr: str.
+    :type usr: str
     """
 
     cur = _get_db_cur(con)
@@ -1712,11 +1733,11 @@ def ins_prj_log(con, id, usr):
     Insert a project log to the database.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param id: A project ID.
-    :type id: str.
+    :type id: str
     :param usr: An username.
-    :type usr: str.
+    :type usr: str
     """
 
     cur = _get_db_cur(con)
@@ -1736,11 +1757,11 @@ def ins_ref_log(con, id, usr):
     Insert a reference log to the database.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param id: A reference ID.
-    :type id: str.
+    :type id: str
     :param usr: An username.
-    :type usr: str.
+    :type usr: str
     """
 
     cur = _get_db_cur(con)
@@ -1764,21 +1785,23 @@ def get_hist_occ_list(
     Data are filtered based on input values.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param usr: An username.
-    :type usr: str.
+    :type usr: str
     :param ins_dt_strt: Insert date start.
-    :type ins_dt_strt: datetime.date.
+    :type ins_dt_strt: datetime.date
     :param ins_dt_end: Insert date end.
-    :type ins_dt_end: datetime.date.
+    :type ins_dt_end: datetime.date
     :param upd_dt_strt: Update date start.
-    :type upd_dt_strt: datetime.date.
+    :type upd_dt_strt: datetime.date
     :param upd_dt_end: Update date end.
-    :type upd_dt_end: datetime.date.
+    :type upd_dt_end: datetime.date
 
-    :returns: A tuple containing a list of history occurrences
-        and a list of history occurrences headers.
-    :rtype: tuple.
+    :returns:
+     | A tuple containing:
+     |    - *list* -- a list of history occurrences
+     |     - *list* -- a list of history occurrences headers
+    :rtype: tuple
     """
 
     cur = _get_db_cur(con)
@@ -1823,21 +1846,23 @@ def get_hist_loc_list(
     Data are filtered based on input values.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param usr: An username.
-    :type usr: str.
+    :type usr: str
     :param ins_dt_strt: Insert date start.
-    :type ins_dt_strt: datetime.date.
+    :type ins_dt_strt: datetime.date
     :param ins_dt_end: Insert date end.
-    :type ins_dt_end: datetime.date.
+    :type ins_dt_end: datetime.date
     :param upd_dt_strt: Update date start.
-    :type upd_dt_strt: datetime.date.
+    :type upd_dt_strt: datetime.date
     :param upd_dt_end: Update date end.
-    :type upd_dt_end: datetime.date.
+    :type upd_dt_end: datetime.date
 
-    :returns: A tuple containing a list of history locations
-        and a list of history locations headers.
-    :rtype: tuple.
+    :returns:
+     | A tuple containing:
+     |    - *list* -- a list of history locations
+     |    - *list* -- a list of history locations headers
+    :rtype: tuple
     """
 
     cur = _get_db_cur(con)
@@ -1878,21 +1903,23 @@ def get_hist_event_list(
     Data are filtered based on input values.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param usr: An username.
-    :type usr: str.
+    :type usr: str
     :param ins_dt_strt: Insert date start.
-    :type ins_dt_strt: datetime.date.
+    :type ins_dt_strt: datetime.date
     :param ins_dt_end: Insert date end.
-    :type ins_dt_end: datetime.date.
+    :type ins_dt_end: datetime.date
     :param upd_dt_strt: Update date start.
-    :type upd_dt_strt: datetime.date.
+    :type upd_dt_strt: datetime.date
     :param upd_dt_end: Update date end.
-    :type upd_dt_end: datetime.date.
+    :type upd_dt_end: datetime.date
 
-    :returns: A tuple containing a list of history events
-        and a list of history events headers.
-    :rtype: tuple.
+    :returns:
+     | A tuple containing:
+     |    - *list* -- a list of history events
+     |    - *list* -- a list of history events headers
+    :rtype: tuple
     """
 
     cur = _get_db_cur(con)
@@ -1936,21 +1963,23 @@ def get_hist_dtst_list(
     Data are filtered based on input values.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param usr: An username.
-    :type usr: str.
+    :type usr: str
     :param ins_dt_strt: Insert date start.
-    :type ins_dt_strt: datetime.date.
+    :type ins_dt_strt: datetime.date
     :param ins_dt_end: Insert date end.
-    :type ins_dt_end: datetime.date.
+    :type ins_dt_end: datetime.date
     :param upd_dt_strt: Update date start.
-    :type upd_dt_strt: datetime.date.
+    :type upd_dt_strt: datetime.date
     :param upd_dt_end: Update date end.
-    :type upd_dt_end: datetime.date.
+    :type upd_dt_end: datetime.date
 
-    :returns: A tuple containing a list of history datasets
-        and a list of history datasets headers.
-    :rtype: tuple.
+    :returns:
+     | A tuple containing:
+     |    - *list* -- a list of history datasets
+     |    - *list* -- a list of history datasets headers
+    :rtype: tuple
     """
 
     cur = _get_db_cur(con)
@@ -1990,21 +2019,23 @@ def get_hist_prj_list(
     Data are filtered based on input values.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param usr: An username.
-    :type usr: str.
+    :type usr: str
     :param ins_dt_strt: Insert date start.
-    :type ins_dt_strt: datetime.date.
+    :type ins_dt_strt: datetime.date
     :param ins_dt_end: Insert date end.
-    :type ins_dt_end: datetime.date.
+    :type ins_dt_end: datetime.date
     :param upd_dt_strt: Update date start.
-    :type upd_dt_strt: datetime.date.
+    :type upd_dt_strt: datetime.date
     :param upd_dt_end: Update date end.
-    :type upd_dt_end: datetime.date.
+    :type upd_dt_end: datetime.date
 
-    :returns: A tuple containing a list of history projects
-        and a list of history projects headers.
-    :rtype: tuple.
+    :returns:
+     | A tuple containing:
+     |    - *list* -- a list of history projects
+     |    - *list* -- a list of history projects headers
+    :rtype: tuple
     """
 
     cur = _get_db_cur(con)
@@ -2044,21 +2075,23 @@ def get_hist_ref_list(
     Data are filtered based on input values.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param usr: An username.
-    :type usr: str.
+    :type usr: str
     :param ins_dt_strt: Insert date start.
-    :type ins_dt_strt: datetime.date.
+    :type ins_dt_strt: datetime.date
     :param ins_dt_end: Insert date end.
-    :type ins_dt_end: datetime.date.
+    :type ins_dt_end: datetime.date
     :param upd_dt_strt: Update date start.
-    :type upd_dt_strt: datetime.date.
+    :type upd_dt_strt: datetime.date
     :param upd_dt_end: Update date end.
-    :type upd_dt_end: datetime.date.
+    :type upd_dt_end: datetime.date
 
-    :returns: A tuple containing a list of history references
-        and a list of history references headers.
-    :rtype: tuple.
+    :returns:
+     | A tuple containing:
+     |    - *list* -- a list of history references
+     |    - *list* -- a list of history references headers
+    :rtype: tuple
     """
 
     cur = _get_db_cur(con)
@@ -2094,10 +2127,10 @@ def get_usr_list(con):
     Returns a list of users whose accounts are active.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
 
     :returns: A list of users whose accounts are active.
-    :rtype: list.
+    :rtype: list
     """
 
     cur = _get_db_cur(con)
@@ -2121,16 +2154,16 @@ def get_col_def_val(con, schema, tbl, col):
     This function returns a default value with database function or cast.
 
     :param con: A connection.
-    :type con: psycopg2.connection.
+    :type con: psycopg2.connection
     :param schema: A schema.
-    :type schema: str.
+    :type schema: str
     :param tbl: A table.
-    :type tbl: str.
+    :type tbl: str
     :param col: A column.
-    :type col: str.
+    :type col: str
 
     :returns: A column default value.
-    :rtype: str.
+    :rtype: str
     """
 
     cur = _get_db_cur(con)

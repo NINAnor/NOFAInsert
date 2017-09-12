@@ -34,7 +34,7 @@ from nofa.gui import ins_mw, con_dlg
 from nofa import db
 
 
-class NOFAInsert:
+class NOFAInsert(object):
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
@@ -123,7 +123,7 @@ class NOFAInsert:
         Returns a connection information from QSettings.
 
         :returns: A connection information dictionary.
-        :rtype: dict.
+        :rtype: dict
         """
 
         _con_info = {}
@@ -140,7 +140,7 @@ class NOFAInsert:
         Opens a connection dialog.
         
         :param con_info: A connection information dictionary.
-        :type con_info: dict.
+        :type con_info: dict
         """
 
         if not con_info:
