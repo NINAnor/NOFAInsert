@@ -5,9 +5,11 @@ git pull
 rm -rf *
 touch .nojekyll
 git checkout master docs
+cd docs
 make clean
 make html
-mv /build/html/* ./
+cd ..
+mv docs/build/html/* ./
 rm -rf docs
 git add -A
 git commit -m "Publish updated docs"
