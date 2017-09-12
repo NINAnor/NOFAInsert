@@ -4,7 +4,7 @@ git checkout gh-pages
 git pull
 rm -rf *
 touch .nojekyll
-git checkout master
+git checkout master docs
 cd docs
 make clean
 make html
