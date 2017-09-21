@@ -75,7 +75,7 @@ class MtyDe(QDateEdit):
             self.setDate(self.minimumDateTime().date())
 
         return QDateEdit.keyPressEvent(self, event)
-    
+
     def mousePressEvent(self, event):
         """
         Returns mouse press event.
@@ -87,5 +87,5 @@ class MtyDe(QDateEdit):
 
         if self.findChild(QLineEdit).text() == u'':
             self.setDate(QDate.currentDate())
-        
+
         return QDateEdit.mousePressEvent(self, event)

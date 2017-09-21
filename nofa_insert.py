@@ -28,7 +28,8 @@ from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
 
 import os
-import psycopg2, psycopg2.extras
+import psycopg2
+import psycopg2.extras
 
 from nofa.gui import ins_mw, con_dlg
 from nofa import db
@@ -64,7 +65,7 @@ class NOFAInsert(object):
 
             if qVersion() > '4.3.3':
                 QCoreApplication.installTranslator(self.translator)
-        
+
         self.org = u'NINA'
         self.app_name = u'NOFAInsert'
 
@@ -138,7 +139,7 @@ class NOFAInsert(object):
     def _open_con_dlg(self, con_info=None):
         """
         Opens a connection dialog.
-        
+
         :param con_info: A connection information dictionary.
         :type con_info: dict
         """

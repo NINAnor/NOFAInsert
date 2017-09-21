@@ -81,7 +81,7 @@ class RefDlg(QDialog):
 
         self.ttl_lbl = QLabel(self)
         self.ttl_lbl.setObjectName(u'ttl_lbl')
-        self.ttl_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.ttl_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.ttl_lbl.setText(u'title')
         self.grid_lyt.addWidget(self.ttl_lbl, 0, 0, 1, 1)
 
@@ -91,7 +91,7 @@ class RefDlg(QDialog):
 
         self.au_lbl = QLabel(self)
         self.au_lbl.setObjectName(u'au_lbl')
-        self.au_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.au_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.au_lbl.setText(u'author(s)')
         self.grid_lyt.addWidget(self.au_lbl, 1, 0, 1, 1)
 
@@ -101,7 +101,7 @@ class RefDlg(QDialog):
 
         self.yr_lbl = QLabel(self)
         self.yr_lbl.setObjectName(u'yr_lbl')
-        self.yr_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.yr_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.yr_lbl.setText(u'year')
         self.grid_lyt.addWidget(self.yr_lbl, 2, 0, 1, 1)
 
@@ -114,7 +114,7 @@ class RefDlg(QDialog):
 
         self.isbn_lbl = QLabel(self)
         self.isbn_lbl.setObjectName(u'isbn_lbl')
-        self.isbn_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.isbn_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.isbn_lbl.setText(u'isbn')
         self.grid_lyt.addWidget(self.isbn_lbl, 3, 0, 1, 1)
 
@@ -124,7 +124,7 @@ class RefDlg(QDialog):
 
         self.issn_lbl = QLabel(self)
         self.issn_lbl.setObjectName(u'issn_lbl')
-        self.issn_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.issn_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.issn_lbl.setText(u'issn')
         self.grid_lyt.addWidget(self.issn_lbl, 4, 0, 1, 1)
 
@@ -134,7 +134,7 @@ class RefDlg(QDialog):
 
         self.tp_lbl = QLabel(self)
         self.tp_lbl.setObjectName(u'tp_lbl')
-        self.tp_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.tp_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.tp_lbl.setText(u'referenceType')
         self.grid_lyt.addWidget(self.tp_lbl, 5, 0, 1, 1)
 
@@ -144,7 +144,7 @@ class RefDlg(QDialog):
 
         self.jrn_lbl = QLabel(self)
         self.jrn_lbl.setObjectName(u'jrn_lbl')
-        self.jrn_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.jrn_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.jrn_lbl.setText(u'journalName')
         self.grid_lyt.addWidget(self.jrn_lbl, 6, 0, 1, 1)
 
@@ -154,7 +154,7 @@ class RefDlg(QDialog):
 
         self.vol_lbl = QLabel(self)
         self.vol_lbl.setObjectName(u'vol_lbl')
-        self.vol_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.vol_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.vol_lbl.setText(u'volume')
         self.grid_lyt.addWidget(self.vol_lbl, 7, 0, 1, 1)
 
@@ -164,7 +164,7 @@ class RefDlg(QDialog):
 
         self.pg_lbl = QLabel(self)
         self.pg_lbl.setObjectName(u'pg_lbl')
-        self.pg_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.pg_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.pg_lbl.setText(u'page')
         self.grid_lyt.addWidget(self.pg_lbl, 8, 0, 1, 1)
 

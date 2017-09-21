@@ -80,7 +80,7 @@ class DtstDlg(QDialog):
 
         self.name_lbl = QLabel(self)
         self.name_lbl.setObjectName(u'name_lbl')
-        self.name_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.name_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.name_lbl.setText(u'datasetName')
         self.grid_lyt.addWidget(self.name_lbl, 0, 0, 1, 1)
 
@@ -90,7 +90,7 @@ class DtstDlg(QDialog):
 
         self.id_lbl = QLabel(self)
         self.id_lbl.setObjectName(u'id_lbl')
-        self.id_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.id_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.id_lbl.setText(u'datasetId')
         self.grid_lyt.addWidget(self.id_lbl, 1, 0, 1, 1)
 
@@ -100,7 +100,7 @@ class DtstDlg(QDialog):
 
         self.inst_lbl = QLabel(self)
         self.inst_lbl.setObjectName(u'inst_lbl')
-        self.inst_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.inst_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.inst_lbl.setText(u'ownerInstitutionCode')
         self.grid_lyt.addWidget(self.inst_lbl, 2, 0, 1, 1)
 
@@ -110,7 +110,7 @@ class DtstDlg(QDialog):
 
         self.rght_lbl = QLabel(self)
         self.rght_lbl.setObjectName(u'rght_lbl')
-        self.rght_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.rght_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.rght_lbl.setText(u'rightsHolder')
         self.grid_lyt.addWidget(self.rght_lbl, 3, 0, 1, 1)
 
@@ -120,7 +120,7 @@ class DtstDlg(QDialog):
 
         self.lic_lbl = QLabel(self)
         self.lic_lbl.setObjectName(u'lic_lbl')
-        self.lic_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.lic_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.lic_lbl.setText(u'license')
         self.grid_lyt.addWidget(self.lic_lbl, 4, 0, 1, 1)
 
@@ -130,7 +130,7 @@ class DtstDlg(QDialog):
 
         self.acs_lbl = QLabel(self)
         self.acs_lbl.setObjectName(u'acs_lbl')
-        self.acs_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.acs_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.acs_lbl.setText(u'accessRights')
         self.grid_lyt.addWidget(self.acs_lbl, 5, 0, 1, 1)
 
@@ -140,7 +140,7 @@ class DtstDlg(QDialog):
 
         self.cit_lbl = QLabel(self)
         self.cit_lbl.setObjectName(u'cit_lbl')
-        self.cit_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.cit_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.cit_lbl.setText(u'bibliographicCitation')
         self.grid_lyt.addWidget(self.cit_lbl, 6, 0, 1, 1)
 
@@ -150,7 +150,7 @@ class DtstDlg(QDialog):
 
         self.cmnt_lbl = QLabel(self)
         self.cmnt_lbl.setObjectName(u'cmnt_lbl')
-        self.cmnt_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.cmnt_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.cmnt_lbl.setText(u'datasetComment')
         self.grid_lyt.addWidget(self.cmnt_lbl, 7, 0, 1, 1)
 
@@ -160,7 +160,7 @@ class DtstDlg(QDialog):
 
         self.info_lbl = QLabel(self)
         self.info_lbl.setObjectName(u'info_lbl')
-        self.info_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.info_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.info_lbl.setText(u'informationWithheld')
         self.grid_lyt.addWidget(self.info_lbl, 8, 0, 1, 1)
 
@@ -170,7 +170,7 @@ class DtstDlg(QDialog):
 
         self.dtgen_lbl = QLabel(self)
         self.dtgen_lbl.setObjectName(u'dtgen_lbl')
-        self.dtgen_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.dtgen_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.dtgen_lbl.setText(u'dataGeneralizations')
         self.grid_lyt.addWidget(self.dtgen_lbl, 9, 0, 1, 1)
 

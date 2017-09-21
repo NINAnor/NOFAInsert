@@ -25,7 +25,8 @@
 
 from collections import defaultdict
 import datetime
-import psycopg2, psycopg2.extras
+import psycopg2
+import psycopg2.extras
 
 
 def get_con(con_info):
@@ -41,10 +42,11 @@ def get_con(con_info):
 
     return con
 
+
 def _get_db_cur(con):
     """
     Returns a database cursor.
-    
+
     :param con: A connection.
     :type con: psycopg2.connection
 
@@ -53,6 +55,7 @@ def _get_db_cur(con):
     """
 
     return con.cursor()
+
 
 def chck_nofa_tbls(con):
     """
@@ -82,6 +85,7 @@ def chck_nofa_tbls(con):
         resp = False
 
     return resp
+
 
 def ins_event(con, loc_id, event_id, event_list, dtst_id, prj_id, ref_id):
     """
@@ -154,6 +158,7 @@ def ins_event(con, loc_id, event_id, event_list, dtst_id, prj_id, ref_id):
          'projectID': prj_id,
          'referenceID': ref_id})
 
+
 def get_txn_id(con, txn):
     """
     Returns a taxon ID based on the given scientific name.
@@ -180,6 +185,7 @@ def get_txn_id(con, txn):
 
     return txn_id
 
+
 def get_ectp_id(con, ectp):
     """
     Returns an ecotype ID based on the given vernacular name.
@@ -205,6 +211,7 @@ def get_ectp_id(con, ectp):
     ectp_id = cur.fetchone()[0] if cur.rowcount != 0 else None
 
     return ectp_id
+
 
 def ins_occ(con, occ_id, txn_id, ectp_id, occ_row_list, event_id):
     """
@@ -284,6 +291,7 @@ def ins_occ(con, occ_id, txn_id, ectp_id, occ_row_list, event_id):
          'modified': datetime.datetime.now(),
          'eventID': event_id})
 
+
 def ins_txncvg(con, txn_id, event_id):
     """
     Insert a taxon coverage into the database.
@@ -307,6 +315,7 @@ def ins_txncvg(con, txn_id, event_id):
         ''',
         {'taxonID': txn_id,
          'eventID': event_id})
+
 
 def chck_locid(con, locid):
     """
@@ -339,6 +348,7 @@ def chck_locid(con, locid):
 
     return resp
 
+
 def get_locid_from_nvl(con, nvl):
     """
     Returns a location ID based on the given `Norwegian VatLnr`.
@@ -364,6 +374,7 @@ def get_locid_from_nvl(con, nvl):
     locid = cur.fetchone()[0]
 
     return locid
+
 
 def get_dtst_info(con, dtst_id):
     """
@@ -404,6 +415,7 @@ def get_dtst_info(con, dtst_id):
     dtst_hdrs = [h[0] for h in cur.description]
 
     return (dtst_items, dtst_hdrs)
+
 
 def get_prj_info(con, prj_id):
     """
@@ -446,6 +458,7 @@ def get_prj_info(con, prj_id):
 
     return (prj_items, prj_hdrs)
 
+
 def get_ref_info(con, ref_id):
     """
     Returns information about a reference with the given reference ID.
@@ -486,6 +499,7 @@ def get_ref_info(con, ref_id):
 
     return (ref_items, ref_hdrs)
 
+
 def get_fam_dict(con):
     """
     Returns a defaultdict with family as keys and taxons as values.
@@ -519,6 +533,7 @@ def get_fam_dict(con):
 
     return fam_dict
 
+
 def get_cntry_code_list(con):
     """
     Returns a list of country codes that is used to populate
@@ -544,6 +559,7 @@ def get_cntry_code_list(con):
 
     return cntry_code_list
 
+
 def get_cnty_list(con, cntry_code):
     """
     Returns a list of counties that is used to populate
@@ -563,7 +579,7 @@ def get_cnty_list(con, cntry_code):
         '''
         SELECT      DISTINCT "county" c
         FROM        nofa."location"
-        WHERE       %(countryCode)s IS NULL OR "countryCode" = %(countryCode)s 
+        WHERE       %(countryCode)s IS NULL OR "countryCode" = %(countryCode)s
         ORDER BY    c
         ''',
         {'countryCode': cntry_code})
@@ -573,6 +589,7 @@ def get_cnty_list(con, cntry_code):
     cnty_list = [c[0] for c in cntys]
 
     return cnty_list
+
 
 def get_muni_list(con, cntry_code, cnty):
     """
@@ -595,7 +612,9 @@ def get_muni_list(con, cntry_code, cnty):
         '''
         SELECT      DISTINCT "municipality" m
         FROM        nofa."location"
-        WHERE       (%(countryCode)s IS NULL OR "countryCode" = %(countryCode)s)
+        WHERE       (   %(countryCode)s IS NULL
+                        OR
+                        "countryCode" = %(countryCode)s)
                     AND
                     (%(county)s IS NULL OR "county" = %(county)s)
         ORDER BY    m
@@ -608,6 +627,7 @@ def get_muni_list(con, cntry_code, cnty):
     muni_list = [m[0] for m in munis]
 
     return muni_list
+
 
 def get_dtst_list(con):
     """
@@ -635,6 +655,7 @@ def get_dtst_list(con):
 
     return dtst_list
 
+
 def get_dtst_mtdt_str(dtst_str):
     """
     Returns a dataset metadata string `<name>`.
@@ -649,8 +670,9 @@ def get_dtst_mtdt_str(dtst_str):
     name, org = split_dtst_str(dtst_str)
 
     dtst_mtdt_str = u'{}'.format(name)
-    
+
     return dtst_mtdt_str
+
 
 def get_dtst_str(id, name):
     """
@@ -668,6 +690,7 @@ def get_dtst_str(id, name):
     dtst_str = u'{} - {}'.format(id, name)
 
     return dtst_str
+
 
 def split_dtst_str(dtst_str):
     """
@@ -690,6 +713,7 @@ def split_dtst_str(dtst_str):
     name = split_dtst_str[1]
 
     return (id, name)
+
 
 def get_prj_list(con):
     """
@@ -717,6 +741,7 @@ def get_prj_list(con):
 
     return prj_list
 
+
 def get_prj_mtdt_str(prj_str):
     """
     Returns a projects metadata string `<name> - <organisation>`.
@@ -731,8 +756,9 @@ def get_prj_mtdt_str(prj_str):
     name, org = split_prj_str(prj_str)
 
     prj_mtdt_str = u'{} - {}'.format(name, org)
-    
+
     return prj_mtdt_str
+
 
 def get_prj_str(name, org):
     """
@@ -750,6 +776,7 @@ def get_prj_str(name, org):
     prj_str = u'{} - {}'.format(name, org)
 
     return prj_str
+
 
 def split_prj_str(prj_str):
     """
@@ -772,6 +799,7 @@ def split_prj_str(prj_str):
     org = split_prj_str[1]
 
     return (name, org)
+
 
 def get_prj_id(con, prj_name, prj_org):
     """
@@ -804,6 +832,7 @@ def get_prj_id(con, prj_name, prj_org):
 
     return prj_id
 
+
 def get_ref_list(con):
     """
     Returns a list with information about references that is used to populate
@@ -832,6 +861,7 @@ def get_ref_list(con):
 
     return ref_list
 
+
 def get_ref_mtdt_str(ref_str):
     """
     Returns a reference metadata string `<author>: <title> (<year>)`.
@@ -846,8 +876,9 @@ def get_ref_mtdt_str(ref_str):
     au, ttl, yr, id = split_ref_str(ref_str)
 
     ref_mtdt_str = u'{}: {} ({})'.format(au, ttl, yr)
-    
+
     return ref_mtdt_str
+
 
 def get_ref_str(au, ttl, yr, id):
     """
@@ -867,8 +898,9 @@ def get_ref_str(au, ttl, yr, id):
     """
 
     ref_str = u'{}: {} ({}) @{}'.format(au, ttl, yr, id)
-    
+
     return ref_str
+
 
 def split_ref_str(ref_str):
     """
@@ -891,8 +923,9 @@ def split_ref_str(ref_str):
     ttl = ref_str.split(u': ')[1].split(u' (')[0]
     yr = ref_str.split(u' (')[1].split(u') ')[0]
     id = int(ref_str.split(u'@')[1])
-    
+
     return (au, ttl, yr, id)
+
 
 def get_txn_list(con):
     """
@@ -918,6 +951,7 @@ def get_txn_list(con):
     txn_list = [t[0] for t in txns]
 
     return txn_list
+
 
 def get_ectp_list(con, txn_name):
     """
@@ -949,6 +983,7 @@ def get_ectp_list(con, txn_name):
 
     return ectp_list
 
+
 def get_oqt_list(con):
     """
     Returns a list of organism quantity types that is used to populate
@@ -968,10 +1003,11 @@ def get_oqt_list(con):
         FROM      nofa."l_organismQuantityType"
         ORDER BY  oqt
         ''')
-    oqts  = cur.fetchall()
+    oqts = cur.fetchall()
     oqt_list = [o[0] for o in oqts]
 
     return oqt_list
+
 
 def get_occstat_list(con):
     """
@@ -992,10 +1028,11 @@ def get_occstat_list(con):
         FROM      nofa."l_occurrenceStatus"
         ORDER BY  os
         ''')
-    occstats  = cur.fetchall()
+    occstats = cur.fetchall()
     occstat_list = [o[0] for o in occstats]
 
     return occstat_list
+
 
 def get_poptrend_list(con):
     """
@@ -1017,10 +1054,11 @@ def get_poptrend_list(con):
         WHERE       "populationTrend" is not null
         ORDER BY    pt
         ''')
-    poptrends  = cur.fetchall()
+    poptrends = cur.fetchall()
     poptrend_list = [p[0] for p in poptrends]
 
     return poptrend_list
+
 
 def get_estbms_list(con):
     """
@@ -1041,10 +1079,11 @@ def get_estbms_list(con):
         FROM        nofa."l_establishmentMeans"
         ORDER BY    em
         ''')
-    estbms  = cur.fetchall()
+    estbms = cur.fetchall()
     estbms_list = [e[0] for e in estbms]
 
     return estbms_list
+
 
 def get_smpp_list(con):
     """
@@ -1065,10 +1104,11 @@ def get_smpp_list(con):
         FROM        nofa."l_samplingProtocol"
         ORDER BY    sp
         ''')
-    smpps  = cur.fetchall()
+    smpps = cur.fetchall()
     smpp_list = [s[0] for s in smpps]
 
     return smpp_list
+
 
 def get_reliab_list(con):
     """
@@ -1089,10 +1129,11 @@ def get_reliab_list(con):
         FROM        nofa."l_reliability"
         ORDER BY    r
         ''')
-    relias  = cur.fetchall()
+    relias = cur.fetchall()
     relia_list = [r[0] for r in relias]
 
     return relia_list
+
 
 def get_smpsu_list(con):
     """
@@ -1113,10 +1154,11 @@ def get_smpsu_list(con):
         FROM        nofa."l_sampleSizeUnit"
         ORDER BY    s
         ''')
-    smpsus  = cur.fetchall()
+    smpsus = cur.fetchall()
     smpsu_list = [s[0] for s in smpsus]
 
     return smpsu_list
+
 
 def get_spwnc_list(con):
     """
@@ -1137,10 +1179,11 @@ def get_spwnc_list(con):
         FROM        nofa."l_spawningCondition"
         ORDER BY    s
         ''')
-    spwncs  = cur.fetchall()
+    spwncs = cur.fetchall()
     spwnc_list = [s[0] for s in spwncs]
 
     return spwnc_list
+
 
 def get_spwnl_list(con):
     """
@@ -1161,10 +1204,11 @@ def get_spwnl_list(con):
         FROM        nofa."l_spawningLocation"
         ORDER BY    s
         ''')
-    spwnls  = cur.fetchall()
+    spwnls = cur.fetchall()
     spwnl_list = [s[0] for s in spwnls]
 
     return spwnl_list
+
 
 def get_inst_list(con):
     """
@@ -1191,6 +1235,7 @@ def get_inst_list(con):
 
     return inst_list
 
+
 def get_acs_list(con):
     """
     Returns a list of access rights that is used to populate
@@ -1215,6 +1260,7 @@ def get_acs_list(con):
     acs_rght_list = [ar[0] for ar in acs_rghts]
 
     return acs_rght_list
+
 
 def get_dtst_cnt(con, id):
     """
@@ -1241,6 +1287,7 @@ def get_dtst_cnt(con, id):
     dtst_cnt = cur.rowcount
 
     return dtst_cnt
+
 
 def ins_dtst(con, dtst_list):
     """
@@ -1287,6 +1334,7 @@ def ins_dtst(con, dtst_list):
          'datasetComment': dtst_list[7],
          'informationWithheld': dtst_list[8],
          'dataGeneralizations': dtst_list[9]})
+
 
 def ins_prj(con, prj_list):
     """
@@ -1339,6 +1387,7 @@ def ins_prj(con, prj_list):
 
     return id
 
+
 def get_reftp_list(con):
     """
     Returns a list of reference types that is used to populate
@@ -1363,6 +1412,7 @@ def get_reftp_list(con):
     reftp_list = [r[0] for r in reftps]
 
     return reftp_list
+
 
 def ins_ref(con, ref_list):
     """
@@ -1415,6 +1465,7 @@ def ins_ref(con, ref_list):
 
     return id
 
+
 def get_pt_str(x, y):
     """
     Returns a point string with the given coordinates.
@@ -1431,6 +1482,7 @@ def get_pt_str(x, y):
     pt_str = 'POINT({} {})'.format(x, y)
 
     return pt_str
+
 
 def get_utm33_geom(con, geom_str, srid):
     """
@@ -1460,6 +1512,7 @@ def get_utm33_geom(con, geom_str, srid):
 
     return utm33_geom
 
+
 def get_nrst_locid(con, utm33_geom):
     """
     Returns an ID of the nearest location.
@@ -1487,6 +1540,7 @@ def get_nrst_locid(con, utm33_geom):
     locid = cur.fetchone()[0]
 
     return locid
+
 
 def ins_new_loc(con, locid, utm33_geom, verb_loc):
     """
@@ -1520,6 +1574,7 @@ def ins_new_loc(con, locid, utm33_geom, verb_loc):
          'geom': utm33_geom,
          'verbatimLocality': verb_loc})
 
+
 def get_mpt_str(x, y):
     """
     Returns a multi point string with the given coordinates.
@@ -1536,6 +1591,7 @@ def get_mpt_str(x, y):
     mpt_str = 'MULTIPOINT({} {})'.format(x, y)
 
     return mpt_str
+
 
 def get_loc_by_fltrs(con, wb, cntry_code, cnty, muni):
     """
@@ -1563,7 +1619,9 @@ def get_loc_by_fltrs(con, wb, cntry_code, cnty, muni):
         FROM        nofa.location loc
         WHERE       (%(waterBody)s IS NULL OR "waterBody" LIKE %(waterBody)s)
                     AND
-                    (%(countryCode)s IS NULL OR "countryCode" = %(countryCode)s)
+                    (   %(countryCode)s IS NULL
+                        OR
+                        "countryCode" = %(countryCode)s)
                     AND
                     (%(county)s IS NULL OR "county" = %(county)s)
                     AND
@@ -1581,6 +1639,7 @@ def get_loc_by_fltrs(con, wb, cntry_code, cnty, muni):
     locid_list = [l[0] for l in locids]
 
     return locid_list
+
 
 def ins_occ_log(con, occ_id, event_id, dtst_id, prj_id, ref_id, loc_id, usr):
     """
@@ -1631,6 +1690,7 @@ def ins_occ_log(con, occ_id, event_id, dtst_id, prj_id, ref_id, loc_id, usr):
          'location_id': loc_id,
          'username': usr})
 
+
 def ins_loc_log(con, id, name, usr):
     """
     Insert a location log to the database.
@@ -1659,6 +1719,7 @@ def ins_loc_log(con, id, name, usr):
         {'location_id': id,
          'location_name': name,
          'username': usr})
+
 
 def ins_event_log(con, loc_id, event_id, dtst_id, prj_id, ref_id, usr):
     """
@@ -1704,6 +1765,7 @@ def ins_event_log(con, loc_id, event_id, dtst_id, prj_id, ref_id, usr):
          'reference_id': ref_id,
          'username': usr})
 
+
 def ins_dtst_log(con, id, usr):
     """
     Insert a dataset log to the database.
@@ -1727,6 +1789,7 @@ def ins_dtst_log(con, id, usr):
         ''',
         {'dataset_id': id,
          'username': usr})
+
 
 def ins_prj_log(con, id, usr):
     """
@@ -1752,6 +1815,7 @@ def ins_prj_log(con, id, usr):
         {'project_id': id,
          'username': usr})
 
+
 def ins_ref_log(con, id, usr):
     """
     Insert a reference log to the database.
@@ -1775,6 +1839,7 @@ def ins_ref_log(con, id, usr):
         ''',
         {'reference_id': id,
          'username': usr})
+
 
 def get_hist_occ_list(
         con, usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end):
@@ -1837,6 +1902,7 @@ def get_hist_occ_list(
 
     return (hist_occ_list, hist_occ_hdrs)
 
+
 def get_hist_loc_list(
         con, usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end):
     """
@@ -1893,6 +1959,7 @@ def get_hist_loc_list(
     hist_loc_hdrs = [d[0] for d in cur.description]
 
     return (hist_loc_list, hist_loc_hdrs)
+
 
 def get_hist_event_list(
         con, usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end):
@@ -1954,6 +2021,7 @@ def get_hist_event_list(
 
     return (hist_event_list, hist_event_hdrs)
 
+
 def get_hist_dtst_list(
         con, usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end):
     """
@@ -2009,6 +2077,7 @@ def get_hist_dtst_list(
     hist_dtst_hdrs = [d[0] for d in cur.description]
 
     return (hist_dtst_list, hist_dtst_hdrs)
+
 
 def get_hist_prj_list(
         con, usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end):
@@ -2066,6 +2135,7 @@ def get_hist_prj_list(
 
     return (hist_prj_list, hist_prj_hdrs)
 
+
 def get_hist_ref_list(
         con, usr, ins_dt_strt, ins_dt_end, upd_dt_strt, upd_dt_end):
     """
@@ -2122,6 +2192,7 @@ def get_hist_ref_list(
 
     return (hist_ref_list, hist_ref_hdrs)
 
+
 def get_usr_list(con):
     """
     Returns a list of users whose accounts are active.
@@ -2147,6 +2218,7 @@ def get_usr_list(con):
     usr_list = [u[0] for u in usrs]
 
     return usr_list
+
 
 def get_col_def_val(con, schema, tbl, col):
     """

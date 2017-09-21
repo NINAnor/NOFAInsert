@@ -80,7 +80,7 @@ class PrjDlg(QDialog):
 
         self.org_lbl = QLabel(self)
         self.org_lbl.setObjectName(u'org_lbl')
-        self.org_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.org_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.org_lbl.setText(u'organization')
         self.grid_lyt.addWidget(self.org_lbl, 0, 0, 1, 1)
 
@@ -90,7 +90,7 @@ class PrjDlg(QDialog):
 
         self.no_lbl = QLabel(self)
         self.no_lbl.setObjectName(u'no_lbl')
-        self.no_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.no_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.no_lbl.setText(u'projectNumber')
         self.grid_lyt.addWidget(self.no_lbl, 1, 0, 1, 1)
 
@@ -100,7 +100,7 @@ class PrjDlg(QDialog):
 
         self.name_lbl = QLabel(self)
         self.name_lbl.setObjectName(u'name_lbl')
-        self.name_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.name_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.name_lbl.setText(u'projectName')
         self.grid_lyt.addWidget(self.name_lbl, 2, 0, 1, 1)
 
@@ -110,7 +110,7 @@ class PrjDlg(QDialog):
 
         self.styr_lbl = QLabel(self)
         self.styr_lbl.setObjectName(u'styr_lbl')
-        self.styr_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.styr_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.styr_lbl.setText(u'startYear')
         self.grid_lyt.addWidget(self.styr_lbl, 3, 0, 1, 1)
 
@@ -121,7 +121,7 @@ class PrjDlg(QDialog):
 
         self.endyr_lbl = QLabel(self)
         self.endyr_lbl.setObjectName(u'endyr_lbl')
-        self.endyr_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.endyr_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.endyr_lbl.setText(u'endYear')
         self.grid_lyt.addWidget(self.endyr_lbl, 4, 0, 1, 1)
 
@@ -132,7 +132,7 @@ class PrjDlg(QDialog):
 
         self.ldr_lbl = QLabel(self)
         self.ldr_lbl.setObjectName(u'ldr_lbl')
-        self.ldr_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.ldr_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.ldr_lbl.setText(u'projectLeader')
         self.grid_lyt.addWidget(self.ldr_lbl, 5, 0, 1, 1)
 
@@ -142,7 +142,7 @@ class PrjDlg(QDialog):
 
         self.mbr_lbl = QLabel(self)
         self.mbr_lbl.setObjectName(u'mbr_lbl')
-        self.mbr_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.mbr_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.mbr_lbl.setText(u'projectMembers')
         self.grid_lyt.addWidget(self.mbr_lbl, 6, 0, 1, 1)
 
@@ -152,7 +152,7 @@ class PrjDlg(QDialog):
 
         self.fncr_lbl = QLabel(self)
         self.fncr_lbl.setObjectName(u'fncr_lbl')
-        self.fncr_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.fncr_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.fncr_lbl.setText(u'financer')
         self.grid_lyt.addWidget(self.fncr_lbl, 7, 0, 1, 1)
 
@@ -162,7 +162,7 @@ class PrjDlg(QDialog):
 
         self.rmk_lbl = QLabel(self)
         self.rmk_lbl.setObjectName(u'rmk_lbl')
-        self.rmk_lbl.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.rmk_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.rmk_lbl.setText(u'remarks')
         self.grid_lyt.addWidget(self.rmk_lbl, 8, 0, 1, 1)
 

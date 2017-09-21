@@ -42,13 +42,17 @@ from PyQt4.QtGui import (
 
 from collections import defaultdict, OrderedDict
 import os
-import psycopg2, psycopg2.extras
+import psycopg2
+import psycopg2.extras
 import datetime
 import uuid
 import sys
 
 import de
-import dtst_dlg, prj_dlg, ref_dlg, vald
+import dtst_dlg
+import prj_dlg
+import ref_dlg
+import vald
 from .. import db, ordered_set
 
 
@@ -288,7 +292,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         self.loctp_dict = {
             u'Norwegian VatnLnr': 'no_vatn_lnr',
             u'coordinates UTM32': 25832,
-            u'coordinates UTM33': 25833,}
+            u'coordinates UTM33': 25833}
 
         self.crs_dict = OrderedDict([
             (u'UTM32', QgsCoordinateReferenceSystem('EPSG:25832')),
@@ -366,7 +370,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         self.verdt_mde.setDisplayFormat('yyyy-MM-dd')
         self.occ_grid_lyt.addWidget(self.verdt_mde, 8, 3, 1, 1)
 
-        # dictionary - widget: occurrence table header 
+        # dictionary - widget: occurrence table header
         self.loc_tbl_wdg_hdr_dict = OrderedDict([
             (self.loc_edit_met_cb, u'method'),
             (self.loc_edit_locid_le, u'locationID'),
@@ -375,7 +379,7 @@ class InsMw(QMainWindow, FORM_CLASS):
             (self.loc_edit_x_coor_le, u'X'),
             (self.loc_edit_y_coor_le, u'Y'),
             (self.loc_edit_verloc_le, u'verbatimLocality'),
-            (self.loc_edit_nvl_le, u'NVL')])        
+            (self.loc_edit_nvl_le, u'NVL')])
 
         # validators
         self.smpsv_le.setValidator(QIntValidator(None))
@@ -397,7 +401,7 @@ class InsMw(QMainWindow, FORM_CLASS):
             self.eventrmk_le,
             self.relia_cb]
 
-        # dictionary - widget: occurrence table header 
+        # dictionary - widget: occurrence table header
         self.occ_tbl_wdg_hdr_dict = OrderedDict([
             (self.txn_cb, u'taxon'),
             (self.ectp_cb, u'ecotype'),
@@ -435,7 +439,7 @@ class InsMw(QMainWindow, FORM_CLASS):
             self.prj_cb]
 
         self.all_mand_wdgs = self.occ_mand_wdgs + self.mtdt_mand_wdgs
- 
+
         self.set_mand_wdgs(self.all_mand_wdgs)
 
         # self.main_hspltr.setStretchFactor(0, 1)
@@ -609,7 +613,7 @@ class InsMw(QMainWindow, FORM_CLASS):
             - *QComboBox* -- selected value can not be in list of forbidden
               strings
             - *QDateEdit* -- user must edit (click) on it at least once
-        
+
         :param wdgs: A list of widgets to be set as mandatory.
         :type wdgs: list
         """
@@ -753,9 +757,9 @@ class InsMw(QMainWindow, FORM_CLASS):
         :rtype: str
         """
 
-        if forbi == False and txt in self.forbi_str_list:
+        if forbi is False and txt in self.forbi_str_list:
             val_txt = None
-        elif all == False and txt == self.all_str:
+        elif all is False and txt == self.all_str:
             val_txt = None
         elif len(txt) == 0:
             val_txt = None
@@ -958,7 +962,7 @@ class InsMw(QMainWindow, FORM_CLASS):
     def _chck_lyr(self, lyr):
         """
         Checks if the given layer is a from `nofa.location` table.
-        
+
         :param lyr: A layer to be checked.
         :type lyr: QgsVectorLayer
         """
@@ -1277,7 +1281,8 @@ class InsMw(QMainWindow, FORM_CLASS):
             coor_input_set = self._get_coor_input_set()
 
             for coor in coor_input_set:
-                self._set_loc_tbl_row(self._get_coor_list(crs_desc, opt, *coor))
+                self._set_loc_tbl_row(
+                    self._get_coor_list(crs_desc, opt, *coor))
         except NoLocExc:
             QMessageBox.warning(
                 self, u'No Location', u'Enter at least one location.')
@@ -1468,14 +1473,14 @@ class InsMw(QMainWindow, FORM_CLASS):
                 self,
                 u'Norwegian VatLnr',
                 u'Norwegian VatLnr code "{}" was not found.'.format(e.nvl))
-        
+
     def _get_new_loc_feat_locid_coor(self, m, row_data):
         """
         Returns a new location feature or a location ID.
         It is used for 'coordinates' method.
         Checks if both X and Y coordinates are entered.
         Based on option it returns a new location feature
-        or returns location ID of the nearest location. 
+        or returns location ID of the nearest location.
 
         :param m: A location table row.
         :type m: int
@@ -1590,7 +1595,7 @@ class InsMw(QMainWindow, FORM_CLASS):
 
         usr_txt = self.usr_cb.currentText()
         usr = self._get_val_txt(usr_txt)
-        
+
         ins_dt_strt = self.hist_ins_dtstrt_de.date().toPyDate()
         ins_dt_end = self.hist_ins_dtend_de.date().toPyDate()
         upd_dt_strt = self.hist_upd_dtstrt_de.date().toPyDate()
@@ -1625,8 +1630,8 @@ class InsMw(QMainWindow, FORM_CLASS):
     def _upd_txncvg_tw_chldn(self, par):
         """
         Updates children in the taxonomic coverage tree widget
-        based on the state of its parent. 
- 
+        based on the state of its parent.
+
         :param par: A changed item.
         :type par: QTableWidgetItem
         """
@@ -1752,7 +1757,7 @@ class InsMw(QMainWindow, FORM_CLASS):
 
                     txn_id = db.get_txn_id(self.mc.con, occ_row_list[0])
 
-                    ectp = occ_row_list[1]    
+                    ectp = occ_row_list[1]
                     ectp_id = db.get_ectp_id(self.mc.con, ectp)
 
                     db.ins_occ(
@@ -1826,7 +1831,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         for m in range(self.occ_tbl.rowCount()):
             occ_row_list = self._get_occ_row_list(m)
 
-            if occ_row_list[0] == None:
+            if occ_row_list[0] is None:
                 self.occ_tbl.selectRow(m)
                 raise OccNotFldExc()
 
@@ -1865,7 +1870,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Returns a location ID. It is used for 'locationID' method.
         Checks if location ID is empty, if it a valid *UUID*
-        and if it exists in the database. 
+        and if it exists in the database.
 
         :param m: A location table row.
         :type m: int
@@ -1896,7 +1901,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         Returns a location ID. It is used for 'coordinates' method.
         Checks if both X and Y coordinates are entered.
         Based on option it inserts new location or returns location ID
-        of the nearest location. 
+        of the nearest location.
 
         :param m: A location table row.
         :type m: int
@@ -2131,7 +2136,7 @@ class InsMw(QMainWindow, FORM_CLASS):
     def upd_dtst(self, dtst_str=None):
         """
         Updates a dataset according to the last selected.
-        
+
         :param dtst_str: A dataset string `<ID> - <name>`.
         :type dtst_str: str
         """
@@ -2141,7 +2146,7 @@ class InsMw(QMainWindow, FORM_CLASS):
     def upd_prj(self, prj_str=None):
         """
         Updates a project according to the last selected.
-        
+
         :param prj_str: A project string `<name> - <organisation>`.
         :type prj_str: str
         """
@@ -2189,7 +2194,8 @@ class InsMw(QMainWindow, FORM_CLASS):
             cb_str = cb.currentText()
 
         idx = self.main_tb.indexOf(cb.parentWidget())
-        mdtd_base_txt = self.main_tb.itemText(idx).split(self.dash_split_str)[0]
+        mdtd_base_txt = self.main_tb.itemText(idx).split(
+            self.dash_split_str)[0]
 
         lw, id_met, info_fnc, mtdt_str_fnc = self._mtdt_lw_cb_dict[cb]
 
@@ -2205,7 +2211,8 @@ class InsMw(QMainWindow, FORM_CLASS):
             mtdt_txt = mtdt_str_fnc(cb_str)
 
         self._set_mtdt_item_txt(
-            idx, u'{}{}{}'.format(mdtd_base_txt, self.dash_split_str, mtdt_txt))
+            idx, u'{}{}{}'
+            .format(mdtd_base_txt, self.dash_split_str, mtdt_txt))
 
         self.settings.setValue(cb.objectName(), cb_str)
 
@@ -2390,8 +2397,8 @@ class InsMw(QMainWindow, FORM_CLASS):
             cb.addItem(item)
 
             # if item in self.forbi_str_list:
-                # clr = self.red_clr
-                # cb.setItemData(i, QBrush(clr), Qt.BackgroundRole)
+            #     clr = self.red_clr
+            #     cb.setItemData(i, QBrush(clr), Qt.BackgroundRole)
 
     def _rst_cb_by_cb_dict(self, cb_dict):
         """
@@ -2463,7 +2470,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         for dict in dicts:
             for key, val in dict.items():
                 mrgd_dict[key] = val
-    
+
         return mrgd_dict
 
     @property
@@ -2479,7 +2486,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
 
         loc_cb_dict = {
-            self.cntry_code_cb:[
+            self.cntry_code_cb: [
                 db.get_cntry_code_list,
                 [self.mc.con],
                 self.all_str],
@@ -2571,7 +2578,7 @@ class InsMw(QMainWindow, FORM_CLASS):
             self.relia_cb: [
                 db.get_reliab_list,
                 [self.mc.con],
-                self.mty_str],}
+                self.mty_str]}
 
         return event_cb_dict
 
@@ -2761,17 +2768,17 @@ class InsMw(QMainWindow, FORM_CLASS):
 
         root_item = QTreeWidgetItem(self.txncvg_tw, ["All"])
         root_item.setCheckState(0, Qt.Unchecked)
-        root_item.setFlags(Qt.ItemIsUserCheckable|Qt.ItemIsEnabled)
+        root_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
 
         for fam in fam_dict.keys():
             family_item = QTreeWidgetItem(root_item, [fam])
             family_item.setCheckState(0, Qt.Unchecked)
-            family_item.setFlags(Qt.ItemIsUserCheckable|Qt.ItemIsEnabled)
+            family_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
 
             for txn in fam_dict[fam]:
                 txn_item = QTreeWidgetItem(family_item, [txn])
                 txn_item.setCheckState(0, Qt.Unchecked)
-                txn_item.setFlags(Qt.ItemIsUserCheckable|Qt.ItemIsEnabled)
+                txn_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
 
         self.txncvg_tw.sortByColumn(0, Qt.AscendingOrder)
         self.txncvg_tw.expandToDepth(0)
@@ -2863,7 +2870,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Creates a table with one row.
         This method is used for creating tables in the main tab.
-        
+
         :param tbl: A table.
         :type tbl: QTableWidget
         :param tbl_hdrs: Table headers.
@@ -2873,9 +2880,9 @@ class InsMw(QMainWindow, FORM_CLASS):
         :param met: A method for updating table.
         :type met: function
         """
-  
+
         tbl.itemChanged.connect(tbl.resizeColumnsToContents)
-  
+
         tbl.setColumnCount(len(tbl_hdrs))
         tbl.setSelectionBehavior(QTableWidget.SelectRows)
         tbl.setSelectionMode(QTableWidget.SingleSelection)
@@ -2937,7 +2944,6 @@ class InsMw(QMainWindow, FORM_CLASS):
             elif isinstance(wdg, QDateEdit):
                 wdg.dateChanged.emit(wdg.date())
 
-
     def _upd_loc_tbl_row(self, idx):
         """
         Adjusts the current location table row according to the current
@@ -2966,7 +2972,7 @@ class InsMw(QMainWindow, FORM_CLASS):
         """
         Creates a table with one row.
         This method is used for creating tables in the history tab.
-        
+
         :param tbl: A table.
         :type tbl: QTableWidget
         :param tbl_list: Table list.
@@ -3254,7 +3260,7 @@ class InsMw(QMainWindow, FORM_CLASS):
 
         curr_row_data = self._get_row_data(tbl, tbl.currentRow())
 
-        if any(item != None for item in curr_row_data[1:]):
+        if any(item is not None for item in curr_row_data[1:]):
             self.loc_addrow_btn.click()
 
         m = tbl.currentRow()
@@ -3310,8 +3316,8 @@ class InsMw(QMainWindow, FORM_CLASS):
         :rtype: list
         """
 
-        cur_loc_edit_tbl_wdgs = self.loc_edit_met_swdg.currentWidget().findChildren(
-            (QLineEdit, QPlainTextEdit, QComboBox, QDateEdit))
+        cur_loc_edit_tbl_wdgs = self.loc_edit_met_swdg.currentWidget()\
+            .findChildren((QLineEdit, QPlainTextEdit, QComboBox, QDateEdit))
 
         return cur_loc_edit_tbl_wdgs
 
@@ -3324,8 +3330,8 @@ class InsMw(QMainWindow, FORM_CLASS):
         :rtype: list
         """
 
-        cur_loc_manual_tbl_wdgs = self.loc_manual_swdg.currentWidget().findChildren(
-            (QLineEdit, QPlainTextEdit, QComboBox, QDateEdit))
+        cur_loc_manual_tbl_wdgs = self.loc_manual_swdg.currentWidget()\
+            .findChildren((QLineEdit, QPlainTextEdit, QComboBox, QDateEdit))
 
         return cur_loc_manual_tbl_wdgs
 

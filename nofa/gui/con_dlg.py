@@ -87,48 +87,48 @@ class ConDlg(QDialog):
         :param stat_bar_msg: A status bar message.
         :type stat_bar_msg: str
         """
- 
+
         self.host_lbl = QLabel(self)
         self.host_lbl.setObjectName(u'host_lbl')
         self.host_lbl.setText(self.mc.host_str.title())
         self.grid_lyt.addWidget(self.host_lbl, 0, 0, 1, 1)
- 
+
         self.host_le = QLineEdit(self)
         self.host_le.setObjectName(u'host_le')
         self.grid_lyt.addWidget(self.host_le, 0, 1, 1, 1)
- 
+
         self.port_lbl = QLabel(self)
         self.port_lbl.setObjectName(u'port_lbl')
         self.port_lbl.setText(self.mc.port_str.title())
         self.grid_lyt.addWidget(self.port_lbl, 1, 0, 1, 1)
- 
+
         self.port_le = QLineEdit(self)
         self.port_le.setObjectName(u'port_le')
         self.grid_lyt.addWidget(self.port_le, 1, 1, 1, 1)
- 
+
         self.db_lbl = QLabel(self)
         self.db_lbl.setObjectName(u'db_lbl')
         self.db_lbl.setText(self.mc.db_str.title())
         self.grid_lyt.addWidget(self.db_lbl, 2, 0, 1, 1)
- 
+
         self.db_le = QLineEdit(self)
         self.db_le.setObjectName(u'db_le')
         self.grid_lyt.addWidget(self.db_le, 2, 1, 1, 1)
- 
+
         self.usr_lbl = QLabel(self)
         self.usr_lbl.setObjectName(u'usr_lbl')
         self.usr_lbl.setText(self.mc.usr_str.title())
         self.grid_lyt.addWidget(self.usr_lbl, 3, 0, 1, 1)
- 
+
         self.usr_le = QLineEdit(self)
         self.usr_le.setObjectName(u'usr_le')
         self.grid_lyt.addWidget(self.usr_le, 3, 1, 1, 1)
- 
+
         self.pwd_lbl = QLabel(self)
         self.pwd_lbl.setObjectName(u'pwd_lbl')
         self.pwd_lbl.setText(self.mc.pwd_str.title())
         self.grid_lyt.addWidget(self.pwd_lbl, 4, 0, 1, 1)
- 
+
         self.pwd_le = QLineEdit(self)
         self.pwd_le.setObjectName(u'pwd_le')
         self.pwd_le.setEchoMode(QLineEdit.Password)
@@ -142,16 +142,16 @@ class ConDlg(QDialog):
         self.con_dict[self.mc.pwd_str] = self.pwd_le
 
         self._ins_con_info(con_info)
- 
+
         self.btn_lyt = QHBoxLayout(self)
         self.grid_lyt.addLayout(self.btn_lyt, 5, 0, 1, 2)
- 
+
         self.test_btn = QPushButton(self)
         self.test_btn.setObjectName(u'test_btn')
         self.test_btn.setText(u'Test and Save')
         self.test_btn.clicked.connect(self._test_con)
         self.btn_lyt.addWidget(self.test_btn)
- 
+
         self.ok_btn = QPushButton(self)
         self.ok_btn.setObjectName(u'ok_btn')
         self.ok_btn.setText(u'OK')
@@ -243,7 +243,7 @@ class ConDlg(QDialog):
     def _enable_wdgs(self, bl):
         """
         Enables or disables line edits and push buttons.
-        
+
         :param bl: True to enable widgets, False to disable widgets.
         :type bl: bool
         """
