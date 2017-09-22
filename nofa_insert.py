@@ -34,10 +34,11 @@ import psycopg2.extras
 from nofa.gui import ins_mw, con_dlg
 from nofa import db
 
-import sys  
+import sys
 
-reload(sys)  
+reload(sys)
 sys.setdefaultencoding('utf8')
+
 
 class NOFAInsert(object):
     """QGIS Plugin Implementation."""
