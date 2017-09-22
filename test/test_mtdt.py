@@ -48,7 +48,7 @@ class TestMtdt(unittest.TestCase):
 
         mtdt_fp = os.path.abspath(os.path.join(
             os.path.dirname(__file__), os.pardir, 'metadata.txt'))
-        LOGGER.info(mtdt_fp)
+        LOGGER.info('metadata file path: "{}"'.format(mtdt_fp))
 
         parser = ConfigParser.ConfigParser()
         parser.optionxform = str
@@ -59,14 +59,15 @@ class TestMtdt(unittest.TestCase):
 
         assert parser.has_section(sxn_name), msg
 
-        mtdt = parser.items(sxn_name)
+        mtdt = dict(parser.items(sxn_name))
+        LOGGER.info('metadata in section "{}": "{}"'.format(sxn_name, mtdt))
 
         for exp_mtdt in mand_mtdt:
             msg = (
                 'Cannot find metadata "{}" in section "{}" of "{}".'
                 .format(exp_mtdt, sxn_name, mtdt_fp))
 
-            self.assertIn(exp_mtdt, dict(mtdt), msg)
+            self.assertIn(exp_mtdt, mtdt, msg)
 
 if __name__ == '__main__':
     unittest.main()

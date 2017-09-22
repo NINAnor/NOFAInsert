@@ -32,8 +32,11 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsRasterLayer)
 
+import logging
 from utilities import get_qgis_app
-QGIS_APP = get_qgis_app()
+
+LOGGER = logging.getLogger('QGIS')
+QGIS_APP, IFACE, CANVAS, PARENT = get_qgis_app()
 
 
 class TestQGIS(unittest.TestCase):
@@ -44,6 +47,7 @@ class TestQGIS(unittest.TestCase):
 
         reg = QgsProviderRegistry.instance()
         providers = reg.providerList()
+        LOGGER.info('providers: {}'.format(providers))
 
         self.assertIn('gdal', providers)
         self.assertIn('ogr', providers)
