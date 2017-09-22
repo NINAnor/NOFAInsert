@@ -88,13 +88,20 @@ test: compile
 
 # The dclean target removes compiled python files from plugin directory
 # also deletes any .git entry
-dclean:
+clean_pyc:
 	@echo
 	@echo "-----------------------------------"
 	@echo "Removing any compiled python files."
 	@echo "-----------------------------------"
 	find $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME) -iname "*.pyc" -delete
-	find $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME) -iname ".git" -prune -exec rm -Rf {} \;
+
+clean_test:
+	@echo
+	@echo "------------------------"
+	@echo "Removing any test files."
+	@echo "------------------------"
+	find $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME) -iname ".coverage" -delete
+	find $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME) -iname ".noseids" -delete
 
 clean:
 	@echo
