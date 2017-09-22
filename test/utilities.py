@@ -1,25 +1,53 @@
-# coding=utf-8
-"""Common functionality used by regression tests."""
+# -*- coding: utf-8 -*-
+"""
+/***************************************************************************
+ NOFAInsert
+                                 A QGIS plugin
+ Insert fish occurrence data to NOFA DB
+                              -------------------
+        begin                : 2017-01-09
+        git sha              : $Format:%H$
+        copyright            : (C) 2017 by NINA
+        contributors         : stefan.blumentrath@nina.no
+                               matteo.destefano@nina.no
+                               jakob.miksch@nina.no
+                               ondrej.svoboda@nina.no
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+"""
 
 import sys
 import logging
 
 
 LOGGER = logging.getLogger('QGIS')
-QGIS_APP = None  # Static variable used to hold hand to running QGIS app
+QGIS_APP = None
 CANVAS = None
 PARENT = None
 IFACE = None
 
 
 def get_qgis_app():
-    """ Start one QGIS application to test against.
+    """
+    Start one QGIS application to test against.
 
-    :returns: Handle to QGIS app, canvas, iface and parent. If there are any
-        errors the tuple members will be returned as None.
-    :rtype: (QgsApplication, CANVAS, IFACE, PARENT)
+    If QGIS is already running the handle to that app is returned.
 
-    If QGIS is already running the handle to that app will be returned.
+    :returns:
+     | A tuple containing:
+     |    - *QgsApplication* -- QGIS application
+     |    - *QgisInterface* -- QGIS interface
+     |    - *QgsMapCanvas* -- QGIS map canvas
+     |    - *QWidget* -- parent
+    :rtype: tuple
     """
 
     try:
@@ -30,32 +58,29 @@ def get_qgis_app():
     except ImportError:
         return None, None, None, None
 
-    global QGIS_APP  # pylint: disable=W0603
+    global QGIS_APP
 
     if QGIS_APP is None:
-        gui_flag = True  # All test will run qgis in gui mode
-        #noinspection PyPep8Naming
+        # All test will run qgis in gui mode
+        gui_flag = True
         QGIS_APP = QgsApplication(sys.argv, gui_flag)
-        # Make sure QGIS_PREFIX_PATH is set in your env if needed!
+        # make sure QGIS_PREFIX_PATH is set in your env if needed
         QGIS_APP.initQgis()
         s = QGIS_APP.showSettings()
         LOGGER.debug(s)
 
-    global PARENT  # pylint: disable=W0603
+    global PARENT
     if PARENT is None:
-        #noinspection PyPep8Naming
         PARENT = QtGui.QWidget()
 
-    global CANVAS  # pylint: disable=W0603
+    global CANVAS
     if CANVAS is None:
-        #noinspection PyPep8Naming
         CANVAS = QgsMapCanvas(PARENT)
         CANVAS.resize(QtCore.QSize(400, 400))
 
-    global IFACE  # pylint: disable=W0603
+    global IFACE
     if IFACE is None:
         # QgisInterface is a stub implementation of the QGIS plugin interface
-        #noinspection PyPep8Naming
         IFACE = QgisInterface(CANVAS)
 
-    return QGIS_APP, CANVAS, IFACE, PARENT
+    return QGIS_APP, IFACE, CANVAS, PARENT
