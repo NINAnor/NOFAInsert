@@ -59,14 +59,14 @@ class TestMtdt(unittest.TestCase):
 
         assert parser.has_section(sxn_name), msg
 
-        exg_mtdt = parser.items(sxn_name)
+        mtdt = parser.items(sxn_name)
 
         for exp_mtdt in mand_mtdt:
             msg = (
                 'Cannot find metadata "{}" in section "{}" of "{}".'
                 .format(exp_mtdt, sxn_name, mtdt_fp))
 
-            self.assertIn(exp_mtdt, dict(exg_mtdt), msg)
+            self.assertIn(exp_mtdt, dict(mtdt), msg)
 
 if __name__ == '__main__':
     unittest.main()
