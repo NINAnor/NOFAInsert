@@ -38,18 +38,7 @@ LOCALES =
 #LRELEASE = lrelease-qt4
 
 
-# translation
-SOURCES = \
-	__init__.py \
-	test_plugin.py test_plugin_dialog.py
-
 PLUGINNAME = NOFAInsert-master
-
-PY_FILES = \
-	__init__.py \
-	test_plugin.py test_plugin_dialog.py
-
-UI_FILES = test_plugin_dialog_base.ui
 
 EXTRA_DIRS =
 
@@ -91,7 +80,7 @@ test: compile
 clean_pyc:
 	@echo
 	@echo "-----------------------------------"
-	@echo "Removing any compiled python files."
+	@echo "Removing any Python compiled files."
 	@echo "-----------------------------------"
 	find $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME) -iname "*.pyc" -delete
 
@@ -102,13 +91,6 @@ clean_test:
 	@echo "------------------------"
 	find $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME) -iname ".coverage" -delete
 	find $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME) -iname ".noseids" -delete
-
-clean:
-	@echo
-	@echo "------------------------------------"
-	@echo "Removing uic and rcc generated files"
-	@echo "------------------------------------"
-	rm $(COMPILED_UI_FILES)
 
 doc:
 	@echo
