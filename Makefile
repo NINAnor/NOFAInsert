@@ -57,7 +57,7 @@ default: compile
 
 compile: $(COMPILED_RESOURCE_FILES)
 
-test: compile
+test: compile clean_test
 	@echo
 	@echo "----------------------"
 	@echo "Regression Test Suite"
@@ -67,7 +67,7 @@ test: compile
 	@-export PYTHONPATH=`pwd`:$(PYTHONPATH); \
 		export QGIS_DEBUG=0; \
 		export QGIS_LOG_FILE=/dev/null; \
-		nosetests -v --with-id --with-coverage --cover-package=. \
+		nosetests -v --with-id --logging-level=INFO --with-coverage --cover-package=. \
 		3>&1 1>&2 2>&3 3>&- || true
 	@echo "----------------------"
 	@echo "If you get a 'no module named qgis.core error, try sourcing"
