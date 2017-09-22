@@ -33,7 +33,7 @@ LOGGER = logging.getLogger('QGIS')
 
 
 class TestMtdt(unittest.TestCase):
-    """Test that the plugin metadata contains mandatory information."""
+    """Test for plugin metadata."""
 
     def test_mtdt(self):
         """Tests that the plugin metadata contains mandatory information."""
@@ -59,14 +59,14 @@ class TestMtdt(unittest.TestCase):
 
         assert parser.has_section(sxn_name), msg
 
-        mtdt_items = parser.items(sxn_name)
+        exg_mtdt = parser.items(sxn_name)
 
-        for mtdt in mand_mtdt:
+        for exp_mtdt in mand_mtdt:
             msg = (
                 'Cannot find metadata "{}" in section "{}" of "{}".'
-                .format(mtdt, sxn_name, mtdt_fp))
+                .format(exp_mtdt, sxn_name, mtdt_fp))
 
-            self.assertIn(mtdt, dict(mtdt_items), msg)
+            self.assertIn(exp_mtdt, dict(exg_mtdt), msg)
 
 if __name__ == '__main__':
     unittest.main()
