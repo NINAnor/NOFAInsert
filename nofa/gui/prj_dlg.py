@@ -198,7 +198,7 @@ class PrjDlg(QDialog):
             self.fncr_le,
             self.rmk_pte]
 
-        self.btn_lyt = QHBoxLayout(self)
+        self.btn_lyt = QHBoxLayout()
         self.grid_lyt.addLayout(self.btn_lyt, 9, 1, 1, 1)
 
         self.sv_btn = QPushButton(self)

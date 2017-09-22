@@ -197,7 +197,7 @@ class RefDlg(QDialog):
             self.vol_le,
             self.pg_le]
 
-        self.btn_lyt = QHBoxLayout(self)
+        self.btn_lyt = QHBoxLayout()
         self.grid_lyt.addLayout(self.btn_lyt, 9, 1, 1, 1)
 
         self.sv_btn = QPushButton(self)

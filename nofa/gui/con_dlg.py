@@ -143,7 +143,7 @@ class ConDlg(QDialog):
 
         self._ins_con_info(con_info)
 
-        self.btn_lyt = QHBoxLayout(self)
+        self.btn_lyt = QHBoxLayout()
         self.grid_lyt.addLayout(self.btn_lyt, 5, 0, 1, 2)
 
         self.test_btn = QPushButton(self)
