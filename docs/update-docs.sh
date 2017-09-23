@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 # build docs
+git checkout master
+mv nofa /tmp/
 git checkout gh-pages
 git pull
 rm -rf *
 touch .nojekyll
-git checkout master
+git checkout master docs
+mv /tmp/nofa .
 cd docs
 make clean
 make html
 cd ..
-shopt -s extglob
-rm -rf !(docs)
 mv docs/build/html/* ./
-rm -rf docs
+rm -rf docs nofa
 git add -A
 git commit -m "Publish updated docs"
 git push origin gh-pages
