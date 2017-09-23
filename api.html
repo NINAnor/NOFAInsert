@@ -13,8 +13,6 @@
 
   
   
-  
-  
 
   
 
@@ -43,7 +41,6 @@
 
 <body class="wy-body-for-nav" role="document">
 
-   
   <div class="wy-grid-for-nav">
 
     
@@ -87,15 +84,12 @@
           
             
             
-              
-            
-            
-              <ul class="current">
+                <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="user-manual.html">User Manual</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developer-manual.html">Developer Manual</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#main-class">Main Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#database-handling">Database Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-nofa.db">Database Handling</a></li>
 </ul>
 </li>
 </ul>
@@ -110,10 +104,8 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">NOFAInsert</a>
-        
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">NOFAInsert</a>
       </nav>
 
 
@@ -122,40 +114,23 @@
         <div class="rst-content">
           
 
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
-
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-      <li>API</li>
-    
-    
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>API</li>
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -165,16 +140,1766 @@
 <span id="id1"></span><h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="main-class">
 <h2>Main Class<a class="headerlink" href="#main-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nofa.gui.ins_mw.InsMw">
+<em class="property">class </em><code class="descclassname">nofa.gui.ins_mw.</code><code class="descname">InsMw</code><span class="sig-paren">(</span><em>iface</em>, <em>mc</em>, <em>plugin_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/gui/ins_mw.html#InsMw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.gui.ins_mw.InsMw" title="Permalink to this definition">¶</a></dt>
+<dd><p>A main window for inserting data into NOFA database.</p>
+<dl class="method">
+<dt id="nofa.gui.ins_mw.InsMw.chck_mand_wdgs">
+<code class="descname">chck_mand_wdgs</code><span class="sig-paren">(</span><em>mand_wdgs</em>, <em>exc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/gui/ins_mw.html#InsMw.chck_mand_wdgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.gui.ins_mw.InsMw.chck_mand_wdgs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the given mandatory widgets are filled.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mand_wdgs</strong> (<em>list</em>) – A list of mandatory widgets.</li>
+<li><strong>exc</strong> (<em>Exception</em>) – An exception that should be raised.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nofa.gui.ins_mw.InsMw.dsc_from_iface">
+<code class="descname">dsc_from_iface</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/gui/ins_mw.html#InsMw.dsc_from_iface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.gui.ins_mw.InsMw.dsc_from_iface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disconnects the plugin from the QGIS interface.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nofa.gui.ins_mw.InsMw.get_wdg_list">
+<code class="descname">get_wdg_list</code><span class="sig-paren">(</span><em>wdgs</em>, <em>pydate=True</em>, <em>forbi=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/gui/ins_mw.html#InsMw.get_wdg_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.gui.ins_mw.InsMw.get_wdg_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the data from the given list of widgets.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>wdgs</strong> (<em>list</em>) – A list of widgets whose data should be returned.</li>
+<li><strong>pydate</strong> (<em>bool</em>) – True to convert <em>QDate</em> to <em>datetime.date</em>,
+False otherwise.</li>
+<li><strong>forbi</strong> (<em>bool</em>) – True to allow forbidden text, False otherwise.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of data from event input widgets.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nofa.gui.ins_mw.InsMw.pop_cb">
+<code class="descname">pop_cb</code><span class="sig-paren">(</span><em>cb_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/gui/ins_mw.html#InsMw.pop_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.gui.ins_mw.InsMw.pop_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populates combo boxes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cb_dict</strong> (<em>dict.</em>) – <div class="line-block">
+<div class="line">A combo box dictionary:</div>
+<div class="line-block">
+<div class="line">- key - &lt;combo box name&gt;</div>
+<div class="line">- value - [&lt;fill method&gt;, [&lt;arguments&gt;], &lt;default value&gt;]</div>
 </div>
-<div class="section" id="database-handling">
-<h2>Database Handling<a class="headerlink" href="#database-handling" title="Permalink to this headline">¶</a></h2>
+</div>
+</li>
+<li><strong>cb</strong> (<em>bool</em>) – Who knows.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nofa.gui.ins_mw.InsMw.pop_dtst_cb">
+<code class="descname">pop_dtst_cb</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/gui/ins_mw.html#InsMw.pop_dtst_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.gui.ins_mw.InsMw.pop_dtst_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populates the dataset combo box.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nofa.gui.ins_mw.InsMw.pop_prj_cb">
+<code class="descname">pop_prj_cb</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/gui/ins_mw.html#InsMw.pop_prj_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.gui.ins_mw.InsMw.pop_prj_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populates the project combo box.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nofa.gui.ins_mw.InsMw.pop_ref_cb">
+<code class="descname">pop_ref_cb</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/gui/ins_mw.html#InsMw.pop_ref_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.gui.ins_mw.InsMw.pop_ref_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populates the reference combo box.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nofa.gui.ins_mw.InsMw.prep">
+<code class="descname">prep</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/gui/ins_mw.html#InsMw.prep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.gui.ins_mw.InsMw.prep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares the whole plugin to be shown.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nofa.gui.ins_mw.InsMw.set_mand_wdgs">
+<code class="descname">set_mand_wdgs</code><span class="sig-paren">(</span><em>wdgs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/gui/ins_mw.html#InsMw.set_mand_wdgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.gui.ins_mw.InsMw.set_mand_wdgs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets mandatory widgets. Mandatory widgets have predefined color
+when they are not filled/selected.</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>QLineEdit</em> – must contain at least one</li>
+<li><em>QComboBox</em> – selected value can not be in list of forbidden
+strings</li>
+<li><em>QDateEdit</em> – user must edit (click) on it at least once</li>
+</ul>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>wdgs</strong> (<em>list</em>) – A list of widgets to be set as mandatory.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nofa.gui.ins_mw.InsMw.upd_dtst">
+<code class="descname">upd_dtst</code><span class="sig-paren">(</span><em>dtst_str=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/gui/ins_mw.html#InsMw.upd_dtst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.gui.ins_mw.InsMw.upd_dtst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates a dataset according to the last selected.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dtst_str</strong> (<em>str</em>) – A dataset string <cite>&lt;ID&gt; - &lt;name&gt;</cite>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nofa.gui.ins_mw.InsMw.upd_prj">
+<code class="descname">upd_prj</code><span class="sig-paren">(</span><em>prj_str=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/gui/ins_mw.html#InsMw.upd_prj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.gui.ins_mw.InsMw.upd_prj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates a project according to the last selected.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prj_str</strong> (<em>str</em>) – A project string <cite>&lt;name&gt; - &lt;organisation&gt;</cite>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nofa.gui.ins_mw.InsMw.upd_ref">
+<code class="descname">upd_ref</code><span class="sig-paren">(</span><em>ref_str=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/gui/ins_mw.html#InsMw.upd_ref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.gui.ins_mw.InsMw.upd_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates a reference according to the last selected.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ref_str</strong> (<em>str</em>) – A reference string <cite>&lt;author&gt;: &lt;title&gt; (&lt;year&gt;) &#64;&lt;ID&gt;</cite>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-nofa.db">
+<span id="database-handling"></span><h2>Database Handling<a class="headerlink" href="#module-nofa.db" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nofa.db.chck_locid">
+<code class="descclassname">nofa.db.</code><code class="descname">chck_locid</code><span class="sig-paren">(</span><em>con</em>, <em>locid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#chck_locid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.chck_locid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a location ID is in the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>locid</strong> (<em>str</em>) – A location ID.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True when location ID was found, False otherwise.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.chck_nofa_tbls">
+<code class="descclassname">nofa.db.</code><code class="descname">chck_nofa_tbls</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#chck_nofa_tbls"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.chck_nofa_tbls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the database is NOFA.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True when database is NOFA, False otherwise.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_acs_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_acs_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_acs_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_acs_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of access rights that is used to populate
+access rights combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of access rights.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_cntry_code_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_cntry_code_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_cntry_code_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_cntry_code_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of country codes that is used to populate
+country code combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of country codes.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_cnty_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_cnty_list</code><span class="sig-paren">(</span><em>con</em>, <em>cntry_code</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_cnty_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_cnty_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of counties that is used to populate
+county combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>cntry_code</strong> (<em>str</em>) – A country code.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of counties.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_col_def_val">
+<code class="descclassname">nofa.db.</code><code class="descname">get_col_def_val</code><span class="sig-paren">(</span><em>con</em>, <em>schema</em>, <em>tbl</em>, <em>col</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_col_def_val"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_col_def_val" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a column default value for the given table in the given schema.
+This function returns a default value with database function or cast.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>schema</strong> (<em>str</em>) – A schema.</li>
+<li><strong>tbl</strong> (<em>str</em>) – A table.</li>
+<li><strong>col</strong> (<em>str</em>) – A column.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A column default value.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_con">
+<code class="descclassname">nofa.db.</code><code class="descname">get_con</code><span class="sig-paren">(</span><em>con_info</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_con"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_con" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a connection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">psycopg2.connection</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_dtst_cnt">
+<code class="descclassname">nofa.db.</code><code class="descname">get_dtst_cnt</code><span class="sig-paren">(</span><em>con</em>, <em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_dtst_cnt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_dtst_cnt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a number of datasets with the given ID.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>id</strong> (<em>str</em>) – A dataset ID.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A number of datasets with the given ID.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_dtst_info">
+<code class="descclassname">nofa.db.</code><code class="descname">get_dtst_info</code><span class="sig-paren">(</span><em>con</em>, <em>dtst_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_dtst_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_dtst_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns information about a dataset with the given ID.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>dtst_id</strong> (<em>str</em>) – A dataset ID.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><div class="line-block">
+<div class="line">A tuple containing:</div>
+<div class="line-block">
+<div class="line">- <em>list</em> – a list of dataset items</div>
+<div class="line">- <em>list</em> – a list of dataset headers</div>
+</div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_dtst_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_dtst_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_dtst_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_dtst_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list with information about datasets that is used to populate
+dataset combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list with information about datasets.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_dtst_mtdt_str">
+<code class="descclassname">nofa.db.</code><code class="descname">get_dtst_mtdt_str</code><span class="sig-paren">(</span><em>dtst_str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_dtst_mtdt_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_dtst_mtdt_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dataset metadata string <cite>&lt;name&gt;</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dtst_str</strong> (<em>str</em>) – A dataset string <cite>&lt;ID&gt; - &lt;name&gt;</cite>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dataset metadata string <cite>&lt;name&gt;</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_dtst_str">
+<code class="descclassname">nofa.db.</code><code class="descname">get_dtst_str</code><span class="sig-paren">(</span><em>id</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_dtst_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_dtst_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dataset string <cite>&lt;ID&gt; - &lt;name&gt;</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>id</strong> (<em>str</em>) – A dataset ID.</li>
+<li><strong>name</strong> (<em>str</em>) – A dataset name.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dataset string <cite>&lt;ID&gt; - &lt;name&gt;</cite>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_ectp_id">
+<code class="descclassname">nofa.db.</code><code class="descname">get_ectp_id</code><span class="sig-paren">(</span><em>con</em>, <em>ectp</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_ectp_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_ectp_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an ecotype ID based on the given vernacular name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>txn</strong> (<em>str</em>) – An ecotype vernacular name.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">An ecotype ID, None when there is no ecotype.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_ectp_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_ectp_list</code><span class="sig-paren">(</span><em>con</em>, <em>txn_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_ectp_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_ectp_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of ecotypes that is used to populate ecotype combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>txn_name</strong> (<em>str</em>) – A taxon name.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of ecotypes.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_estbms_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_estbms_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_estbms_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_estbms_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of establishment means that is used to populate
+establishment means combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of establishment means.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_fam_dict">
+<code class="descclassname">nofa.db.</code><code class="descname">get_fam_dict</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_fam_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_fam_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a defaultdict with family as keys and taxons as values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><div class="line-block">
+<div class="line">A defaultdict:</div>
+<div class="line-block">
+<div class="line">- key - <em>str</em> – family</div>
+<div class="line">- value - <em>str</em> – taxons</div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">collections.defaultdict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_hist_dtst_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_hist_dtst_list</code><span class="sig-paren">(</span><em>con</em>, <em>usr</em>, <em>ins_dt_strt</em>, <em>ins_dt_end</em>, <em>upd_dt_strt</em>, <em>upd_dt_end</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_hist_dtst_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_hist_dtst_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of history datasets that is used to populate
+dataset history table.
+Also returns a list of history datasets headers.
+Data are filtered based on input values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>usr</strong> (<em>str</em>) – An username.</li>
+<li><strong>ins_dt_strt</strong> (<em>datetime.date</em>) – Insert date start.</li>
+<li><strong>ins_dt_end</strong> (<em>datetime.date</em>) – Insert date end.</li>
+<li><strong>upd_dt_strt</strong> (<em>datetime.date</em>) – Update date start.</li>
+<li><strong>upd_dt_end</strong> (<em>datetime.date</em>) – Update date end.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><div class="line-block">
+<div class="line">A tuple containing:</div>
+<div class="line-block">
+<div class="line">- <em>list</em> – a list of history datasets</div>
+<div class="line">- <em>list</em> – a list of history datasets headers</div>
+</div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_hist_event_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_hist_event_list</code><span class="sig-paren">(</span><em>con</em>, <em>usr</em>, <em>ins_dt_strt</em>, <em>ins_dt_end</em>, <em>upd_dt_strt</em>, <em>upd_dt_end</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_hist_event_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_hist_event_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of history events that is used to populate
+event history table.
+Also returns a list of history events headers.
+Data are filtered based on input values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>usr</strong> (<em>str</em>) – An username.</li>
+<li><strong>ins_dt_strt</strong> (<em>datetime.date</em>) – Insert date start.</li>
+<li><strong>ins_dt_end</strong> (<em>datetime.date</em>) – Insert date end.</li>
+<li><strong>upd_dt_strt</strong> (<em>datetime.date</em>) – Update date start.</li>
+<li><strong>upd_dt_end</strong> (<em>datetime.date</em>) – Update date end.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><div class="line-block">
+<div class="line">A tuple containing:</div>
+<div class="line-block">
+<div class="line">- <em>list</em> – a list of history events</div>
+<div class="line">- <em>list</em> – a list of history events headers</div>
+</div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_hist_loc_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_hist_loc_list</code><span class="sig-paren">(</span><em>con</em>, <em>usr</em>, <em>ins_dt_strt</em>, <em>ins_dt_end</em>, <em>upd_dt_strt</em>, <em>upd_dt_end</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_hist_loc_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_hist_loc_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of history locations that is used to populate
+location history table.
+Also returns a list of history locations headers.
+Data are filtered based on input values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>usr</strong> (<em>str</em>) – An username.</li>
+<li><strong>ins_dt_strt</strong> (<em>datetime.date</em>) – Insert date start.</li>
+<li><strong>ins_dt_end</strong> (<em>datetime.date</em>) – Insert date end.</li>
+<li><strong>upd_dt_strt</strong> (<em>datetime.date</em>) – Update date start.</li>
+<li><strong>upd_dt_end</strong> (<em>datetime.date</em>) – Update date end.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><div class="line-block">
+<div class="line">A tuple containing:</div>
+<div class="line-block">
+<div class="line">- <em>list</em> – a list of history locations</div>
+<div class="line">- <em>list</em> – a list of history locations headers</div>
+</div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_hist_occ_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_hist_occ_list</code><span class="sig-paren">(</span><em>con</em>, <em>usr</em>, <em>ins_dt_strt</em>, <em>ins_dt_end</em>, <em>upd_dt_strt</em>, <em>upd_dt_end</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_hist_occ_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_hist_occ_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of history occurrences that is used to populate
+occurrence history table.
+Also returns a list of history occurrences headers.
+Data are filtered based on input values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>usr</strong> (<em>str</em>) – An username.</li>
+<li><strong>ins_dt_strt</strong> (<em>datetime.date</em>) – Insert date start.</li>
+<li><strong>ins_dt_end</strong> (<em>datetime.date</em>) – Insert date end.</li>
+<li><strong>upd_dt_strt</strong> (<em>datetime.date</em>) – Update date start.</li>
+<li><strong>upd_dt_end</strong> (<em>datetime.date</em>) – Update date end.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><div class="line-block">
+<div class="line">A tuple containing:</div>
+<div class="line-block">
+<div class="line">- <em>list</em> – a list of history occurrences</div>
+<div class="line-block">
+<div class="line">- <em>list</em> – a list of history occurrences headers</div>
+</div>
+</div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_hist_prj_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_hist_prj_list</code><span class="sig-paren">(</span><em>con</em>, <em>usr</em>, <em>ins_dt_strt</em>, <em>ins_dt_end</em>, <em>upd_dt_strt</em>, <em>upd_dt_end</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_hist_prj_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_hist_prj_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of history projects that is used to populate
+project history table.
+Also returns a list of history projects headers.
+Data are filtered based on input values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>usr</strong> (<em>str</em>) – An username.</li>
+<li><strong>ins_dt_strt</strong> (<em>datetime.date</em>) – Insert date start.</li>
+<li><strong>ins_dt_end</strong> (<em>datetime.date</em>) – Insert date end.</li>
+<li><strong>upd_dt_strt</strong> (<em>datetime.date</em>) – Update date start.</li>
+<li><strong>upd_dt_end</strong> (<em>datetime.date</em>) – Update date end.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><div class="line-block">
+<div class="line">A tuple containing:</div>
+<div class="line-block">
+<div class="line">- <em>list</em> – a list of history projects</div>
+<div class="line">- <em>list</em> – a list of history projects headers</div>
+</div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_hist_ref_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_hist_ref_list</code><span class="sig-paren">(</span><em>con</em>, <em>usr</em>, <em>ins_dt_strt</em>, <em>ins_dt_end</em>, <em>upd_dt_strt</em>, <em>upd_dt_end</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_hist_ref_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_hist_ref_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of history references that is used to populate
+reference history table.
+Also returns a list of history references headers.
+Data are filtered based on input values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>usr</strong> (<em>str</em>) – An username.</li>
+<li><strong>ins_dt_strt</strong> (<em>datetime.date</em>) – Insert date start.</li>
+<li><strong>ins_dt_end</strong> (<em>datetime.date</em>) – Insert date end.</li>
+<li><strong>upd_dt_strt</strong> (<em>datetime.date</em>) – Update date start.</li>
+<li><strong>upd_dt_end</strong> (<em>datetime.date</em>) – Update date end.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><div class="line-block">
+<div class="line">A tuple containing:</div>
+<div class="line-block">
+<div class="line">- <em>list</em> – a list of history references</div>
+<div class="line">- <em>list</em> – a list of history references headers</div>
+</div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_inst_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_inst_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_inst_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_inst_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of institutions that is used to populate
+institution combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of institutions.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_loc_by_fltrs">
+<code class="descclassname">nofa.db.</code><code class="descname">get_loc_by_fltrs</code><span class="sig-paren">(</span><em>con</em>, <em>wb</em>, <em>cntry_code</em>, <em>cnty</em>, <em>muni</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_loc_by_fltrs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_loc_by_fltrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns location IDs with the given filters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>wb</strong> (<em>str</em>) – A water body.</li>
+<li><strong>cntry_code</strong> (<em>str</em>) – A country code.</li>
+<li><strong>cnty</strong> (<em>str</em>) – A county.</li>
+<li><strong>muni</strong> (<em>str</em>) – A municipality.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of location IDs.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_locid_from_nvl">
+<code class="descclassname">nofa.db.</code><code class="descname">get_locid_from_nvl</code><span class="sig-paren">(</span><em>con</em>, <em>nvl</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_locid_from_nvl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_locid_from_nvl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a location ID based on the given <cite>Norwegian VatLnr</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>nvl</strong> (<em>int</em>) – A <cite>Norwegian VatLnr</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A location ID.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_mpt_str">
+<code class="descclassname">nofa.db.</code><code class="descname">get_mpt_str</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_mpt_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_mpt_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a multi point string with the given coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>float</em>) – X coordinate.</li>
+<li><strong>y</strong> (<em>float</em>) – Y coordinate.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A multi point string.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_muni_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_muni_list</code><span class="sig-paren">(</span><em>con</em>, <em>cntry_code</em>, <em>cnty</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_muni_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_muni_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of municipalities that is used to populate
+municipality combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>cntry_code</strong> (<em>str</em>) – A country code.</li>
+<li><strong>cnty</strong> (<em>str</em>) – A county.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of municipalities.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_nrst_locid">
+<code class="descclassname">nofa.db.</code><code class="descname">get_nrst_locid</code><span class="sig-paren">(</span><em>con</em>, <em>utm33_geom</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_nrst_locid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_nrst_locid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an ID of the nearest location.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>utm33_geom</strong> (<em>str</em>) – A geometry in UTM33 (EPSG: 25833).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A location ID. None where there is no lake within
+the given distance.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">uuid.UUID</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_occstat_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_occstat_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_occstat_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_occstat_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of occurrence statuses that is used to populate
+occurrence status combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of occurrence statuses.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_oqt_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_oqt_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_oqt_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_oqt_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of organism quantity types that is used to populate
+organism quantity type combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of organism quantity types.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_poptrend_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_poptrend_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_poptrend_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_poptrend_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of population trends that is used to populate
+population trend combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of population trends.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_prj_id">
+<code class="descclassname">nofa.db.</code><code class="descname">get_prj_id</code><span class="sig-paren">(</span><em>con</em>, <em>prj_name</em>, <em>prj_org</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_prj_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_prj_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a project ID with the given organization number and name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>prj_name</strong> (<em>str</em>) – A project name.</li>
+<li><strong>prj_org</strong> (<em>str</em>) – A project organization.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A project ID with the given organization number and name.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_prj_info">
+<code class="descclassname">nofa.db.</code><code class="descname">get_prj_info</code><span class="sig-paren">(</span><em>con</em>, <em>prj_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_prj_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_prj_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns information about a project with the given project name
+and organization.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>prj_id</strong> (<em>int</em>) – A project ID.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><div class="line-block">
+<div class="line">A tuple containing:</div>
+<div class="line-block">
+<div class="line">- <em>list</em> – a list of project items</div>
+<div class="line">- <em>list</em> – a list of project headers</div>
+</div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_prj_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_prj_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_prj_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_prj_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list with information about projects that is used to populate
+project combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list with information about projects.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_prj_mtdt_str">
+<code class="descclassname">nofa.db.</code><code class="descname">get_prj_mtdt_str</code><span class="sig-paren">(</span><em>prj_str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_prj_mtdt_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_prj_mtdt_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a projects metadata string <cite>&lt;name&gt; - &lt;organisation&gt;</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prj_str</strong> (<em>str</em>) – A project string <cite>&lt;name&gt; - &lt;organization&gt;</cite>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A projects metadata string <cite>&lt;name&gt; - &lt;organisation&gt;</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_prj_str">
+<code class="descclassname">nofa.db.</code><code class="descname">get_prj_str</code><span class="sig-paren">(</span><em>name</em>, <em>org</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_prj_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_prj_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a project string <cite>&lt;name&gt; - &lt;organisation&gt;</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) – A project name.</li>
+<li><strong>org</strong> (<em>str</em>) – A project organization.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A project string <cite>&lt;name&gt; - &lt;organisation&gt;</cite>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_pt_str">
+<code class="descclassname">nofa.db.</code><code class="descname">get_pt_str</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_pt_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_pt_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a point string with the given coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>float</em>) – X coordinate.</li>
+<li><strong>y</strong> (<em>float</em>) – Y coordinate.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A point string.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_ref_info">
+<code class="descclassname">nofa.db.</code><code class="descname">get_ref_info</code><span class="sig-paren">(</span><em>con</em>, <em>ref_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_ref_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_ref_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns information about a reference with the given reference ID.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>ref_id</strong> (<em>str</em>) – A reference ID.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><div class="line-block">
+<div class="line">A tuple containing:</div>
+<div class="line-block">
+<div class="line">- <em>list</em> – a list of reference items</div>
+<div class="line">- <em>list</em> – a list of reference headers</div>
+</div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_ref_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_ref_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_ref_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_ref_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list with information about references that is used to populate
+reference combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list with information about references.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_ref_mtdt_str">
+<code class="descclassname">nofa.db.</code><code class="descname">get_ref_mtdt_str</code><span class="sig-paren">(</span><em>ref_str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_ref_mtdt_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_ref_mtdt_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a reference metadata string <cite>&lt;author&gt;: &lt;title&gt; (&lt;year&gt;)</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ref_str</strong> (<em>str</em>) – A reference string <cite>&lt;author&gt;: &lt;title&gt; (&lt;year&gt;) &#64;&lt;ID&gt;</cite>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A reference metadata string <cite>&lt;author&gt;: &lt;title&gt; (&lt;year&gt;)</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_ref_str">
+<code class="descclassname">nofa.db.</code><code class="descname">get_ref_str</code><span class="sig-paren">(</span><em>au</em>, <em>ttl</em>, <em>yr</em>, <em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_ref_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_ref_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a reference string <cite>&lt;author&gt;: &lt;title&gt; (&lt;year&gt;) &#64;&lt;ID&gt;</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>au</strong> (<em>str</em>) – A reference author.</li>
+<li><strong>ttl</strong> (<em>str</em>) – A reference title.</li>
+<li><strong>yr</strong> (<em>int</em>) – A reference year.</li>
+<li><strong>id</strong> (<em>str</em>) – A reference ID.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A reference string <cite>&lt;author&gt;: &lt;title&gt; (&lt;year&gt;) &#64;&lt;ID&gt;</cite>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_reftp_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_reftp_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_reftp_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_reftp_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of reference types that is used to populate
+reference type combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of reference types.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_reliab_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_reliab_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_reliab_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_reliab_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of reliabilities that is used to populate
+reliability combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of reliabilities.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_smpp_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_smpp_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_smpp_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_smpp_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of sampling protocols that is used to populate
+sampling protocol combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of sampling protocols.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_smpsu_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_smpsu_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_smpsu_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_smpsu_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of sample size units that is used to populate
+sample size unit combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of sample size units.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_spwnc_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_spwnc_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_spwnc_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_spwnc_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of spawning conditions that is used to populate
+spawning condition combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of spawning conditions.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_spwnl_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_spwnl_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_spwnl_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_spwnl_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of spawning locations that is used to populate
+spawning location combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of spawning locations.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_txn_id">
+<code class="descclassname">nofa.db.</code><code class="descname">get_txn_id</code><span class="sig-paren">(</span><em>con</em>, <em>txn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_txn_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_txn_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a taxon ID based on the given scientific name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>txn</strong> (<em>str</em>) – A taxon scientific name.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A taxon ID.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_txn_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_txn_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_txn_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_txn_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of taxons that is used to populate taxon combo box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of taxons.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_usr_list">
+<code class="descclassname">nofa.db.</code><code class="descname">get_usr_list</code><span class="sig-paren">(</span><em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_usr_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_usr_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of users whose accounts are active.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of users whose accounts are active.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.get_utm33_geom">
+<code class="descclassname">nofa.db.</code><code class="descname">get_utm33_geom</code><span class="sig-paren">(</span><em>con</em>, <em>geom_str</em>, <em>srid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#get_utm33_geom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.get_utm33_geom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a geometry in UTM33 (EPSG: 25833).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>geom_str</strong> (<em>str</em>) – A geometry string.</li>
+<li><strong>srid</strong> (<em>int</em>) – SRID.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A geometry in UTM33 (EPSG: 25833).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.ins_dtst">
+<code class="descclassname">nofa.db.</code><code class="descname">ins_dtst</code><span class="sig-paren">(</span><em>con</em>, <em>dtst_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#ins_dtst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.ins_dtst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert an event to the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>dtst_list</strong> (<em>list</em>) – A dataset list</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.ins_dtst_log">
+<code class="descclassname">nofa.db.</code><code class="descname">ins_dtst_log</code><span class="sig-paren">(</span><em>con</em>, <em>id</em>, <em>usr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#ins_dtst_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.ins_dtst_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a dataset log to the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>id</strong> (<em>str</em>) – A dataset ID.</li>
+<li><strong>usr</strong> (<em>str</em>) – An username.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.ins_event">
+<code class="descclassname">nofa.db.</code><code class="descname">ins_event</code><span class="sig-paren">(</span><em>con</em>, <em>loc_id</em>, <em>event_id</em>, <em>event_list</em>, <em>dtst_id</em>, <em>prj_id</em>, <em>ref_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#ins_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.ins_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert an event to the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>loc_id</strong> (<em>uuid.UUID</em>) – A location ID.</li>
+<li><strong>event_id</strong> (<em>uuid.UUID</em>) – An event ID.</li>
+<li><strong>event_list</strong> (<em>list</em>) – A list of data from event input widgets.</li>
+<li><strong>dtst_id</strong> (<em>str</em>) – A dataset ID.</li>
+<li><strong>prj_id</strong> (<em>str</em>) – A project ID.</li>
+<li><strong>ref_id</strong> (<em>int</em>) – A reference ID.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.ins_event_log">
+<code class="descclassname">nofa.db.</code><code class="descname">ins_event_log</code><span class="sig-paren">(</span><em>con</em>, <em>loc_id</em>, <em>event_id</em>, <em>dtst_id</em>, <em>prj_id</em>, <em>ref_id</em>, <em>usr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#ins_event_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.ins_event_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert an event log to the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>loc_id</strong> (<em>str</em>) – A location ID.</li>
+<li><strong>event_id</strong> (<em>uuid.UUID</em>) – An event ID.</li>
+<li><strong>dtst_id</strong> (<em>str</em>) – A dataset ID.</li>
+<li><strong>prj_id</strong> (<em>str</em>) – A project ID.</li>
+<li><strong>ref_id</strong> (<em>int</em>) – A reference ID.</li>
+<li><strong>usr</strong> (<em>str</em>) – An username.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.ins_loc_log">
+<code class="descclassname">nofa.db.</code><code class="descname">ins_loc_log</code><span class="sig-paren">(</span><em>con</em>, <em>id</em>, <em>name</em>, <em>usr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#ins_loc_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.ins_loc_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a location log to the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>id</strong> (<em>str</em>) – A location ID.</li>
+<li><strong>name</strong> (<em>str</em>) – A location name.</li>
+<li><strong>usr</strong> (<em>str</em>) – An username.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.ins_new_loc">
+<code class="descclassname">nofa.db.</code><code class="descname">ins_new_loc</code><span class="sig-paren">(</span><em>con</em>, <em>locid</em>, <em>utm33_geom</em>, <em>verb_loc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#ins_new_loc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.ins_new_loc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a new location and returns its location ID.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>locid</strong> (<em>uuid.UUID</em>) – A location ID.</li>
+<li><strong>utm33_geom</strong> (<em>str</em>) – A geometry in UTM33 (EPSG: 25833).</li>
+<li><strong>verb_loc</strong> (<em>str</em>) – A verbatimLocality.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.ins_occ">
+<code class="descclassname">nofa.db.</code><code class="descname">ins_occ</code><span class="sig-paren">(</span><em>con</em>, <em>occ_id</em>, <em>txn_id</em>, <em>ectp_id</em>, <em>occ_row_list</em>, <em>event_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#ins_occ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.ins_occ" title="Permalink to this definition">¶</a></dt>
+<dd><p>insert an occurrence to the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>occ_id</strong> (<em>uuid.UUID</em>) – An occurrence ID.</li>
+<li><strong>txn_id</strong> (<em>int</em>) – A taxon ID.</li>
+<li><strong>ectp_id</strong> (<em>int</em>) – An ecotype ID, None when there is no ecotype.</li>
+<li><strong>occ_row_list</strong> (<em>list</em>) – A list of data in the row in the occurrence table.</li>
+<li><strong>event_id</strong> (<em>uuid.UUID</em>) – An event ID.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">An ecotype ID, None when there is no ecotype.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.ins_occ_log">
+<code class="descclassname">nofa.db.</code><code class="descname">ins_occ_log</code><span class="sig-paren">(</span><em>con</em>, <em>occ_id</em>, <em>event_id</em>, <em>dtst_id</em>, <em>prj_id</em>, <em>ref_id</em>, <em>loc_id</em>, <em>usr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#ins_occ_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.ins_occ_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert an occurrence log to the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>occ_id</strong> (<em>uuid.UUID</em>) – An occurrence ID.</li>
+<li><strong>event_id</strong> (<em>uuid.UUID</em>) – An event ID.</li>
+<li><strong>dtst_id</strong> (<em>str</em>) – A dataset ID.</li>
+<li><strong>prj_id</strong> (<em>str</em>) – A project ID.</li>
+<li><strong>ref_id</strong> (<em>int</em>) – A reference ID.</li>
+<li><strong>loc_id</strong> (<em>uuid.UUID</em>) – A location ID.</li>
+<li><strong>usr</strong> (<em>str</em>) – An username.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.ins_prj">
+<code class="descclassname">nofa.db.</code><code class="descname">ins_prj</code><span class="sig-paren">(</span><em>con</em>, <em>prj_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#ins_prj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.ins_prj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert an event to the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>prj_list</strong> (<em>list</em>) – A project list</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A project ID.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.ins_prj_log">
+<code class="descclassname">nofa.db.</code><code class="descname">ins_prj_log</code><span class="sig-paren">(</span><em>con</em>, <em>id</em>, <em>usr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#ins_prj_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.ins_prj_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a project log to the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>id</strong> (<em>str</em>) – A project ID.</li>
+<li><strong>usr</strong> (<em>str</em>) – An username.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.ins_ref">
+<code class="descclassname">nofa.db.</code><code class="descname">ins_ref</code><span class="sig-paren">(</span><em>con</em>, <em>ref_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#ins_ref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.ins_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert an event to the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>ref_list</strong> (<em>list</em>) – A reference list</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A reference ID.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.ins_ref_log">
+<code class="descclassname">nofa.db.</code><code class="descname">ins_ref_log</code><span class="sig-paren">(</span><em>con</em>, <em>id</em>, <em>usr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#ins_ref_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.ins_ref_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a reference log to the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>id</strong> (<em>str</em>) – A reference ID.</li>
+<li><strong>usr</strong> (<em>str</em>) – An username.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.ins_txncvg">
+<code class="descclassname">nofa.db.</code><code class="descname">ins_txncvg</code><span class="sig-paren">(</span><em>con</em>, <em>txn_id</em>, <em>event_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#ins_txncvg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.ins_txncvg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a taxon coverage into the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>con</strong> (<em>psycopg2.connection</em>) – A connection.</li>
+<li><strong>txn_id</strong> (<em>int</em>) – A taxon ID.</li>
+<li><strong>event_id</strong> (<em>uuid.UUID</em>) – An event ID.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.split_dtst_str">
+<code class="descclassname">nofa.db.</code><code class="descname">split_dtst_str</code><span class="sig-paren">(</span><em>dtst_str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#split_dtst_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.split_dtst_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits a dataset string <cite>&lt;ID&gt; - &lt;name&gt;</cite> and returns
+its information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dtst_str</strong> (<em>str</em>) – A dataset string <cite>&lt;ID&gt; - &lt;name&gt;</cite>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><div class="line-block">
+<div class="line">A tuple containing:</div>
+<div class="line-block">
+<div class="line">- <em>str</em> – dataset ID</div>
+<div class="line">- <em>str</em> – name</div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.split_prj_str">
+<code class="descclassname">nofa.db.</code><code class="descname">split_prj_str</code><span class="sig-paren">(</span><em>prj_str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#split_prj_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.split_prj_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits a project string <cite>&lt;name&gt; - &lt;organization&gt;</cite> and returns
+its information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prj_str</strong> (<em>str</em>) – A project string <cite>&lt;name&gt; - &lt;organization&gt;</cite>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><div class="line-block">
+<div class="line">A tuple containing:</div>
+<div class="line-block">
+<div class="line">- <em>str</em> – project name</div>
+<div class="line">- <em>str</em> – organization</div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nofa.db.split_ref_str">
+<code class="descclassname">nofa.db.</code><code class="descname">split_ref_str</code><span class="sig-paren">(</span><em>ref_str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nofa/db.html#split_ref_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nofa.db.split_ref_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits a reference string <cite>&lt;author&gt;: &lt;title&gt; (&lt;year&gt;) &#64;&lt;ID&gt;</cite> and returns
+its information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ref_str</strong> (<em>str</em>) – A reference string <cite>&lt;author&gt;: &lt;title&gt; (&lt;year&gt;) &#64;&lt;ID&gt;</cite>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><div class="line-block">
+<div class="line">A tuple containing:</div>
+<div class="line-block">
+<div class="line">- <em>str</em> – author</div>
+<div class="line">- <em>str</em> – year</div>
+<div class="line">- <em>str</em> – title</div>
+<div class="line">- <em>int</em> – ID</div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 </div>
 
 
-           </div>
-           <div class="articleComments">
-            
            </div>
           </div>
           <footer>
@@ -182,7 +1907,7 @@
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="developer-manual.html" class="btn btn-neutral" title="Developer Manual" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="developer-manual.html" class="btn btn-neutral" title="Developer Manual" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

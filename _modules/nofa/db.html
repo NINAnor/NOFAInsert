@@ -1,0 +1,2455 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>nofa.db &mdash; NOFAInsert 0.5 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="NOFAInsert 0.5 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> NOFAInsert
+          
+
+          
+            
+            <img src="../../_static/nofainsert.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user-manual.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer-manual.html">Developer Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">NOFAInsert</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>nofa.db</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nofa.db</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">/***************************************************************************</span>
+<span class="sd">                                 A QGIS plugin</span>
+<span class="sd"> Insert fish occurrence data to NOFA DB</span>
+<span class="sd">                              -------------------</span>
+<span class="sd">        begin                : 2017-01-09</span>
+<span class="sd">        git sha              : $Format:%H$</span>
+<span class="sd">        copyright            : (C) 2017 by NINA</span>
+<span class="sd">        contributors         : stefan.blumentrath@nina.no</span>
+<span class="sd">                               matteo.destefano@nina.no</span>
+<span class="sd">                               jakob.miksch@nina.no</span>
+<span class="sd">                               ondrej.svoboda@nina.no</span>
+<span class="sd"> ***************************************************************************/</span>
+
+<span class="sd">/***************************************************************************</span>
+<span class="sd"> *                                                                         *</span>
+<span class="sd"> *   This program is free software; you can redistribute it and/or modify  *</span>
+<span class="sd"> *   it under the terms of the GNU General Public License as published by  *</span>
+<span class="sd"> *   the Free Software Foundation; either version 2 of the License, or     *</span>
+<span class="sd"> *   (at your option) any later version.                                   *</span>
+<span class="sd"> *                                                                         *</span>
+<span class="sd"> ***************************************************************************/</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">psycopg2</span>
+<span class="kn">import</span> <span class="nn">psycopg2.extras</span>
+
+
+<div class="viewcode-block" id="get_con"><a class="viewcode-back" href="../../api.html#nofa.db.get_con">[docs]</a><span class="k">def</span> <span class="nf">get_con</span><span class="p">(</span><span class="n">con_info</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a connection.</span>
+
+<span class="sd">    :returns: A connection.</span>
+<span class="sd">    :rtype: psycopg2.connection</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">con</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">con_info</span><span class="p">)</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">set_isolation_level</span><span class="p">(</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">extensions</span><span class="o">.</span><span class="n">ISOLATION_LEVEL_AUTOCOMMIT</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">con</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a database cursor.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A database cursor.</span>
+<span class="sd">    :rtype: psycopg2.cursor</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="chck_nofa_tbls"><a class="viewcode-back" href="../../api.html#nofa.db.chck_nofa_tbls">[docs]</a><span class="k">def</span> <span class="nf">chck_nofa_tbls</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if the database is NOFA.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: True when database is NOFA, False otherwise.</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT    table_name</span>
+<span class="sd">        FROM      information_schema.tables</span>
+<span class="sd">        WHERE     table_schema = &#39;nofa&#39;</span>
+<span class="sd">                  AND</span>
+<span class="sd">                  table_name IN (&#39;location&#39;, &#39;event&#39;, &#39;occurrence&#39;)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cur</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="n">resp</span></div>
+
+
+<div class="viewcode-block" id="ins_event"><a class="viewcode-back" href="../../api.html#nofa.db.ins_event">[docs]</a><span class="k">def</span> <span class="nf">ins_event</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">loc_id</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">event_list</span><span class="p">,</span> <span class="n">dtst_id</span><span class="p">,</span> <span class="n">prj_id</span><span class="p">,</span> <span class="n">ref_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert an event to the database.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param loc_id: A location ID.</span>
+<span class="sd">    :type loc_id: uuid.UUID</span>
+<span class="sd">    :param event_id: An event ID.</span>
+<span class="sd">    :type event_id: uuid.UUID</span>
+<span class="sd">    :param event_list: A list of data from event input widgets.</span>
+<span class="sd">    :type event_list: list</span>
+<span class="sd">    :param dtst_id: A dataset ID.</span>
+<span class="sd">    :type dtst_id: str</span>
+<span class="sd">    :param prj_id: A project ID.</span>
+<span class="sd">    :type prj_id: str</span>
+<span class="sd">    :param ref_id: A reference ID.</span>
+<span class="sd">    :type ref_id: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INSERT INTO    nofa.event (</span>
+<span class="sd">                           &quot;locationID&quot;,</span>
+<span class="sd">                           &quot;eventID&quot;,</span>
+<span class="sd">                           &quot;samplingProtocol&quot;,</span>
+<span class="sd">                           &quot;sampleSizeUnit&quot;,</span>
+<span class="sd">                           &quot;sampleSizeValue&quot;,</span>
+<span class="sd">                           &quot;samplingEffort&quot;,</span>
+<span class="sd">                           &quot;dateStart&quot;,</span>
+<span class="sd">                           &quot;dateEnd&quot;,</span>
+<span class="sd">                           &quot;fieldNumber&quot;,</span>
+<span class="sd">                           &quot;recordedBy&quot;,</span>
+<span class="sd">                           &quot;eventRemarks&quot;,</span>
+<span class="sd">                           &quot;reliability&quot;,</span>
+<span class="sd">                           &quot;datasetID&quot;,</span>
+<span class="sd">                           &quot;projectID&quot;,</span>
+<span class="sd">                           &quot;referenceID&quot;)</span>
+<span class="sd">        VALUES         (   %(locationID)s,</span>
+<span class="sd">                           %(eventID)s,</span>
+<span class="sd">                           %(samplingProtocol)s,</span>
+<span class="sd">                           %(sampleSizeUnit)s,</span>
+<span class="sd">                           %(sampleSizeValue)s,</span>
+<span class="sd">                           %(samplingEffort)s,</span>
+<span class="sd">                           %(dateStart)s,</span>
+<span class="sd">                           %(dateEnd)s,</span>
+<span class="sd">                           %(fieldNumber)s,</span>
+<span class="sd">                           %(recordedBy)s,</span>
+<span class="sd">                           %(eventRemarks)s,</span>
+<span class="sd">                           %(reliability)s,</span>
+<span class="sd">                           %(datasetID)s,</span>
+<span class="sd">                           %(projectID)s,</span>
+<span class="sd">                           %(referenceID)s)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;locationID&#39;</span><span class="p">:</span> <span class="n">loc_id</span><span class="p">,</span>
+         <span class="s1">&#39;eventID&#39;</span><span class="p">:</span> <span class="n">event_id</span><span class="p">,</span>
+         <span class="s1">&#39;samplingProtocol&#39;</span><span class="p">:</span> <span class="n">event_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+         <span class="s1">&#39;sampleSizeUnit&#39;</span><span class="p">:</span> <span class="n">event_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+         <span class="s1">&#39;sampleSizeValue&#39;</span><span class="p">:</span> <span class="n">event_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+         <span class="s1">&#39;samplingEffort&#39;</span><span class="p">:</span> <span class="n">event_list</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+         <span class="s1">&#39;dateStart&#39;</span><span class="p">:</span> <span class="n">event_list</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+         <span class="s1">&#39;dateEnd&#39;</span><span class="p">:</span> <span class="n">event_list</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+         <span class="s1">&#39;fieldNumber&#39;</span><span class="p">:</span> <span class="n">event_list</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
+         <span class="s1">&#39;recordedBy&#39;</span><span class="p">:</span> <span class="n">event_list</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+         <span class="s1">&#39;eventRemarks&#39;</span><span class="p">:</span> <span class="n">event_list</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span>
+         <span class="s1">&#39;reliability&#39;</span><span class="p">:</span> <span class="n">event_list</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span>
+         <span class="s1">&#39;datasetID&#39;</span><span class="p">:</span> <span class="n">dtst_id</span><span class="p">,</span>
+         <span class="s1">&#39;projectID&#39;</span><span class="p">:</span> <span class="n">prj_id</span><span class="p">,</span>
+         <span class="s1">&#39;referenceID&#39;</span><span class="p">:</span> <span class="n">ref_id</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="get_txn_id"><a class="viewcode-back" href="../../api.html#nofa.db.get_txn_id">[docs]</a><span class="k">def</span> <span class="nf">get_txn_id</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">txn</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a taxon ID based on the given scientific name.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param txn: A taxon scientific name.</span>
+<span class="sd">    :type txn: str</span>
+
+<span class="sd">    :returns: A taxon ID.</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;taxonID&quot;</span>
+<span class="sd">        FROM        nofa.&quot;l_taxon&quot;</span>
+<span class="sd">        WHERE       &quot;scientificName&quot; = %s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">txn</span><span class="p">,))</span>
+
+    <span class="n">txn_id</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">txn_id</span></div>
+
+
+<div class="viewcode-block" id="get_ectp_id"><a class="viewcode-back" href="../../api.html#nofa.db.get_ectp_id">[docs]</a><span class="k">def</span> <span class="nf">get_ectp_id</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">ectp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an ecotype ID based on the given vernacular name.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param txn: An ecotype vernacular name.</span>
+<span class="sd">    :type txn: str</span>
+
+<span class="sd">    :returns: An ecotype ID, None when there is no ecotype.</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;ecotypeID&quot;</span>
+<span class="sd">        FROM        nofa.&quot;l_ecotype&quot;</span>
+<span class="sd">        WHERE       &quot;vernacularName&quot; = %s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">ectp</span><span class="p">,))</span>
+
+    <span class="n">ectp_id</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">cur</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">ectp_id</span></div>
+
+
+<div class="viewcode-block" id="ins_occ"><a class="viewcode-back" href="../../api.html#nofa.db.ins_occ">[docs]</a><span class="k">def</span> <span class="nf">ins_occ</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">occ_id</span><span class="p">,</span> <span class="n">txn_id</span><span class="p">,</span> <span class="n">ectp_id</span><span class="p">,</span> <span class="n">occ_row_list</span><span class="p">,</span> <span class="n">event_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    insert an occurrence to the database.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param occ_id: An occurrence ID.</span>
+<span class="sd">    :type occ_id: uuid.UUID</span>
+<span class="sd">    :param txn_id: A taxon ID.</span>
+<span class="sd">    :type txn_id: int</span>
+<span class="sd">    :param ectp_id: An ecotype ID, None when there is no ecotype.</span>
+<span class="sd">    :type ectp_id: int</span>
+<span class="sd">    :param occ_row_list: A list of data in the row in the occurrence table.</span>
+<span class="sd">    :type occ_row_list: list</span>
+<span class="sd">    :param event_id: An event ID.</span>
+<span class="sd">    :type event_id: uuid.UUID</span>
+
+<span class="sd">    :returns: An ecotype ID, None when there is no ecotype.</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INSERT INTO    nofa.&quot;occurrence&quot; (</span>
+<span class="sd">                           &quot;occurrenceID&quot;,</span>
+<span class="sd">                           &quot;taxonID&quot;,</span>
+<span class="sd">                           &quot;ecotypeID&quot;,</span>
+<span class="sd">                           &quot;organismQuantityType&quot;,</span>
+<span class="sd">                           &quot;organismQuantity&quot;,</span>
+<span class="sd">                           &quot;occurrenceStatus&quot;,</span>
+<span class="sd">                           &quot;populationTrend&quot;,</span>
+<span class="sd">                           &quot;recordNumber&quot;,</span>
+<span class="sd">                           &quot;occurrenceRemarks&quot;,</span>
+<span class="sd">                           &quot;establishmentMeans&quot;,</span>
+<span class="sd">                           &quot;establishmentRemarks&quot;,</span>
+<span class="sd">                           &quot;spawningCondition&quot;,</span>
+<span class="sd">                           &quot;spawningLocation&quot;,</span>
+<span class="sd">                           &quot;verifiedBy&quot;,</span>
+<span class="sd">                           &quot;verifiedDate&quot;,</span>
+<span class="sd">                           &quot;modified&quot;,</span>
+<span class="sd">                           &quot;eventID&quot;)</span>
+<span class="sd">        VALUES         (   %(occurrenceID)s,</span>
+<span class="sd">                           %(taxonID)s,</span>
+<span class="sd">                           %(ecotypeID)s,</span>
+<span class="sd">                           %(organismQuantityType)s,</span>
+<span class="sd">                           %(organismQuantity)s,</span>
+<span class="sd">                           %(occurrenceStatus)s,</span>
+<span class="sd">                           %(populationTrend)s,</span>
+<span class="sd">                           %(recordNumber)s,</span>
+<span class="sd">                           %(occurrenceRemarks)s,</span>
+<span class="sd">                           %(establishmentMeans)s,</span>
+<span class="sd">                           %(establishmentRemarks)s,</span>
+<span class="sd">                           %(spawningCondition)s,</span>
+<span class="sd">                           %(spawningLocation)s,</span>
+<span class="sd">                           %(verifiedBy)s,</span>
+<span class="sd">                           %(verifiedDate)s,</span>
+<span class="sd">                           %(modified)s,</span>
+<span class="sd">                           %(eventID)s)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;occurrenceID&#39;</span><span class="p">:</span> <span class="n">occ_id</span><span class="p">,</span>
+         <span class="s1">&#39;taxonID&#39;</span><span class="p">:</span> <span class="n">txn_id</span><span class="p">,</span>
+         <span class="s1">&#39;ecotypeID&#39;</span><span class="p">:</span> <span class="n">ectp_id</span><span class="p">,</span>
+         <span class="s1">&#39;organismQuantityType&#39;</span><span class="p">:</span> <span class="n">occ_row_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+         <span class="s1">&#39;organismQuantity&#39;</span><span class="p">:</span> <span class="n">occ_row_list</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+         <span class="s1">&#39;occurrenceStatus&#39;</span><span class="p">:</span> <span class="n">occ_row_list</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+         <span class="s1">&#39;populationTrend&#39;</span><span class="p">:</span> <span class="n">occ_row_list</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+         <span class="s1">&#39;recordNumber&#39;</span><span class="p">:</span> <span class="n">occ_row_list</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
+         <span class="s1">&#39;occurrenceRemarks&#39;</span><span class="p">:</span> <span class="n">occ_row_list</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+         <span class="s1">&#39;establishmentMeans&#39;</span><span class="p">:</span> <span class="n">occ_row_list</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span>
+         <span class="s1">&#39;establishmentRemarks&#39;</span><span class="p">:</span> <span class="n">occ_row_list</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span>
+         <span class="s1">&#39;spawningCondition&#39;</span><span class="p">:</span> <span class="n">occ_row_list</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span>
+         <span class="s1">&#39;spawningLocation&#39;</span><span class="p">:</span> <span class="n">occ_row_list</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span>
+         <span class="s1">&#39;verifiedBy&#39;</span><span class="p">:</span> <span class="n">occ_row_list</span><span class="p">[</span><span class="mi">12</span><span class="p">],</span>
+         <span class="s1">&#39;verifiedDate&#39;</span><span class="p">:</span> <span class="n">occ_row_list</span><span class="p">[</span><span class="mi">13</span><span class="p">],</span>
+         <span class="s1">&#39;modified&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+         <span class="s1">&#39;eventID&#39;</span><span class="p">:</span> <span class="n">event_id</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="ins_txncvg"><a class="viewcode-back" href="../../api.html#nofa.db.ins_txncvg">[docs]</a><span class="k">def</span> <span class="nf">ins_txncvg</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">txn_id</span><span class="p">,</span> <span class="n">event_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert a taxon coverage into the database.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param txn_id: A taxon ID.</span>
+<span class="sd">    :type txn_id: int</span>
+<span class="sd">    :param event_id: An event ID.</span>
+<span class="sd">    :type event_id: uuid.UUID</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INSERT INTO     nofa.&quot;samplingTaxaRange&quot;(</span>
+<span class="sd">                            &quot;taxonID&quot;,</span>
+<span class="sd">                            &quot;eventID&quot;)</span>
+<span class="sd">        VALUES         (   %(taxonID)s,</span>
+<span class="sd">                           %(eventID)s)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;taxonID&#39;</span><span class="p">:</span> <span class="n">txn_id</span><span class="p">,</span>
+         <span class="s1">&#39;eventID&#39;</span><span class="p">:</span> <span class="n">event_id</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="chck_locid"><a class="viewcode-back" href="../../api.html#nofa.db.chck_locid">[docs]</a><span class="k">def</span> <span class="nf">chck_locid</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">locid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if a location ID is in the database.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param locid: A location ID.</span>
+<span class="sd">    :type locid: str</span>
+
+<span class="sd">    :returns: True when location ID was found, False otherwise.</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;locationID&quot;</span>
+<span class="sd">        FROM        nofa.location</span>
+<span class="sd">        WHERE       &quot;locationID&quot; = %s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">locid</span><span class="p">,))</span>
+
+    <span class="n">locid</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">cur</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="n">resp</span></div>
+
+
+<div class="viewcode-block" id="get_locid_from_nvl"><a class="viewcode-back" href="../../api.html#nofa.db.get_locid_from_nvl">[docs]</a><span class="k">def</span> <span class="nf">get_locid_from_nvl</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">nvl</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a location ID based on the given `Norwegian VatLnr`.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param nvl: A `Norwegian VatLnr`.</span>
+<span class="sd">    :type nvl: int</span>
+
+<span class="sd">    :returns: A location ID.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;locationID&quot;</span>
+<span class="sd">        FROM        nofa.location</span>
+<span class="sd">        WHERE       &quot;no_vatn_lnr&quot; = %s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">nvl</span><span class="p">,))</span>
+
+    <span class="n">locid</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">locid</span></div>
+
+
+<div class="viewcode-block" id="get_dtst_info"><a class="viewcode-back" href="../../api.html#nofa.db.get_dtst_info">[docs]</a><span class="k">def</span> <span class="nf">get_dtst_info</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">dtst_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns information about a dataset with the given ID.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param dtst_id: A dataset ID.</span>
+<span class="sd">    :type dtst_id: str</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">     | A tuple containing:</span>
+<span class="sd">     |    - *list* -- a list of dataset items</span>
+<span class="sd">     |    - *list* -- a list of dataset headers</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;datasetName&quot;,</span>
+<span class="sd">                    &quot;datasetID&quot;,</span>
+<span class="sd">                    &quot;ownerInstitutionCode&quot;,</span>
+<span class="sd">                    &quot;rightsHolder&quot;,</span>
+<span class="sd">                    &quot;license&quot;,</span>
+<span class="sd">                    &quot;accessRights&quot;,</span>
+<span class="sd">                    &quot;bibliographicCitation&quot;,</span>
+<span class="sd">                    &quot;datasetComment&quot;,</span>
+<span class="sd">                    &quot;informationWithheld&quot;,</span>
+<span class="sd">                    &quot;dataGeneralizations&quot;</span>
+<span class="sd">        FROM        nofa.&quot;m_dataset&quot;</span>
+<span class="sd">        WHERE       &quot;datasetID&quot; = %s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">dtst_id</span><span class="p">,))</span>
+
+    <span class="n">dtst_items</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+    <span class="n">dtst_hdrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">description</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">dtst_items</span><span class="p">,</span> <span class="n">dtst_hdrs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_prj_info"><a class="viewcode-back" href="../../api.html#nofa.db.get_prj_info">[docs]</a><span class="k">def</span> <span class="nf">get_prj_info</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">prj_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns information about a project with the given project name</span>
+<span class="sd">    and organization.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param prj_id: A project ID.</span>
+<span class="sd">    :type prj_id: int</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">     | A tuple containing:</span>
+<span class="sd">     |    - *list* -- a list of project items</span>
+<span class="sd">     |    - *list* -- a list of project headers</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;organisation&quot;,</span>
+<span class="sd">                    &quot;projectNumber&quot;,</span>
+<span class="sd">                    &quot;projectName&quot;,</span>
+<span class="sd">                    &quot;startYear&quot;,</span>
+<span class="sd">                    &quot;endYear&quot;,</span>
+<span class="sd">                    &quot;projectLeader&quot;,</span>
+<span class="sd">                    &quot;projectMembers&quot;,</span>
+<span class="sd">                    &quot;financer&quot;,</span>
+<span class="sd">                    &quot;remarks&quot;,</span>
+<span class="sd">                    &quot;projectID&quot;</span>
+<span class="sd">        FROM        nofa.&quot;m_project&quot;</span>
+<span class="sd">        WHERE       &quot;projectID&quot; = %s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">prj_id</span><span class="p">,))</span>
+
+    <span class="n">prj_items</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+    <span class="n">prj_hdrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">description</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">prj_items</span><span class="p">,</span> <span class="n">prj_hdrs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_ref_info"><a class="viewcode-back" href="../../api.html#nofa.db.get_ref_info">[docs]</a><span class="k">def</span> <span class="nf">get_ref_info</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">ref_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns information about a reference with the given reference ID.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param ref_id: A reference ID.</span>
+<span class="sd">    :type ref_id: str</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">     | A tuple containing:</span>
+<span class="sd">     |    - *list* -- a list of reference items</span>
+<span class="sd">     |    - *list* -- a list of reference headers</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;referenceID&quot;,</span>
+<span class="sd">                    &quot;author&quot;,</span>
+<span class="sd">                    &quot;referenceType&quot;,</span>
+<span class="sd">                    &quot;year&quot;,</span>
+<span class="sd">                    &quot;titel&quot;,</span>
+<span class="sd">                    &quot;journalName&quot;,</span>
+<span class="sd">                    &quot;volume&quot;,</span>
+<span class="sd">                    &quot;issn&quot;,</span>
+<span class="sd">                    &quot;isbn&quot;,</span>
+<span class="sd">                    &quot;page&quot;</span>
+<span class="sd">        FROM        nofa.&quot;m_reference&quot;</span>
+<span class="sd">        WHERE       &quot;referenceID&quot; = %s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">ref_id</span><span class="p">,))</span>
+
+    <span class="n">ref_items</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+    <span class="n">ref_hdrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">description</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">ref_items</span><span class="p">,</span> <span class="n">ref_hdrs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_fam_dict"><a class="viewcode-back" href="../../api.html#nofa.db.get_fam_dict">[docs]</a><span class="k">def</span> <span class="nf">get_fam_dict</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a defaultdict with family as keys and taxons as values.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">     | A defaultdict:</span>
+<span class="sd">     |    - key - *str* -- family</span>
+<span class="sd">     |    - value - *str* -- taxons</span>
+<span class="sd">    :rtype: collections.defaultdict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;scientificName&quot;,</span>
+<span class="sd">                    &quot;family&quot;</span>
+<span class="sd">        FROM        nofa.l_taxon</span>
+<span class="sd">        WHERE       &quot;scientificName&quot; IS NOT NULL</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    &quot;family&quot; IS NOT NULL</span>
+<span class="sd">        GROUP BY    &quot;scientificName&quot;, &quot;family&quot;</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">spp</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">fam_dict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spp</span><span class="p">:</span>
+        <span class="n">fam_dict</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">fam_dict</span></div>
+
+
+<div class="viewcode-block" id="get_cntry_code_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_cntry_code_list">[docs]</a><span class="k">def</span> <span class="nf">get_cntry_code_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of country codes that is used to populate</span>
+<span class="sd">    country code combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of country codes.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      DISTINCT &quot;countryCode&quot; cc</span>
+<span class="sd">        FROM        nofa.&quot;location&quot;</span>
+<span class="sd">        ORDER BY    cc</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">cntry_codes</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">cntry_code_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cntry_codes</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">cntry_code_list</span></div>
+
+
+<div class="viewcode-block" id="get_cnty_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_cnty_list">[docs]</a><span class="k">def</span> <span class="nf">get_cnty_list</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">cntry_code</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of counties that is used to populate</span>
+<span class="sd">    county combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param cntry_code: A country code.</span>
+<span class="sd">    :type cntry_code: str</span>
+
+<span class="sd">    :returns: A list of counties.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      DISTINCT &quot;county&quot; c</span>
+<span class="sd">        FROM        nofa.&quot;location&quot;</span>
+<span class="sd">        WHERE       %(countryCode)s IS NULL OR &quot;countryCode&quot; = %(countryCode)s</span>
+<span class="sd">        ORDER BY    c</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;countryCode&#39;</span><span class="p">:</span> <span class="n">cntry_code</span><span class="p">})</span>
+
+    <span class="n">cntys</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">cnty_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cntys</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">cnty_list</span></div>
+
+
+<div class="viewcode-block" id="get_muni_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_muni_list">[docs]</a><span class="k">def</span> <span class="nf">get_muni_list</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">cntry_code</span><span class="p">,</span> <span class="n">cnty</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of municipalities that is used to populate</span>
+<span class="sd">    municipality combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param cntry_code: A country code.</span>
+<span class="sd">    :type cntry_code: str</span>
+<span class="sd">    :param cnty: A county.</span>
+<span class="sd">    :type cnty: str</span>
+
+<span class="sd">    :returns: A list of municipalities.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      DISTINCT &quot;municipality&quot; m</span>
+<span class="sd">        FROM        nofa.&quot;location&quot;</span>
+<span class="sd">        WHERE       (   %(countryCode)s IS NULL</span>
+<span class="sd">                        OR</span>
+<span class="sd">                        &quot;countryCode&quot; = %(countryCode)s)</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    (%(county)s IS NULL OR &quot;county&quot; = %(county)s)</span>
+<span class="sd">        ORDER BY    m</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;countryCode&#39;</span><span class="p">:</span> <span class="n">cntry_code</span><span class="p">,</span>
+         <span class="s1">&#39;county&#39;</span><span class="p">:</span> <span class="n">cnty</span><span class="p">})</span>
+
+    <span class="n">munis</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">muni_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">munis</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">muni_list</span></div>
+
+
+<div class="viewcode-block" id="get_dtst_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_dtst_list">[docs]</a><span class="k">def</span> <span class="nf">get_dtst_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list with information about datasets that is used to populate</span>
+<span class="sd">    dataset combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list with information about datasets.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;datasetID&quot; dsid,</span>
+<span class="sd">                    &quot;datasetName&quot; dsn</span>
+<span class="sd">        FROM        nofa.&quot;m_dataset&quot;</span>
+<span class="sd">        ORDER BY    dsid, dsn</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">dtsts</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">dtst_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_dtst_str</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dtsts</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">dtst_list</span></div>
+
+
+<div class="viewcode-block" id="get_dtst_mtdt_str"><a class="viewcode-back" href="../../api.html#nofa.db.get_dtst_mtdt_str">[docs]</a><span class="k">def</span> <span class="nf">get_dtst_mtdt_str</span><span class="p">(</span><span class="n">dtst_str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a dataset metadata string `&lt;name&gt;`.</span>
+
+<span class="sd">    :param dtst_str: A dataset string `&lt;ID&gt; - &lt;name&gt;`.</span>
+<span class="sd">    :type dtst_str: str</span>
+
+<span class="sd">    :returns: A dataset metadata string `&lt;name&gt;`.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">,</span> <span class="n">org</span> <span class="o">=</span> <span class="n">split_dtst_str</span><span class="p">(</span><span class="n">dtst_str</span><span class="p">)</span>
+
+    <span class="n">dtst_mtdt_str</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dtst_mtdt_str</span></div>
+
+
+<div class="viewcode-block" id="get_dtst_str"><a class="viewcode-back" href="../../api.html#nofa.db.get_dtst_str">[docs]</a><span class="k">def</span> <span class="nf">get_dtst_str</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a dataset string `&lt;ID&gt; - &lt;name&gt;`.</span>
+
+<span class="sd">    :param id: A dataset ID.</span>
+<span class="sd">    :type id: str</span>
+<span class="sd">    :param name: A dataset name.</span>
+<span class="sd">    :type name: str</span>
+
+<span class="sd">    :returns: A dataset string `&lt;ID&gt; - &lt;name&gt;`.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dtst_str</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dtst_str</span></div>
+
+
+<div class="viewcode-block" id="split_dtst_str"><a class="viewcode-back" href="../../api.html#nofa.db.split_dtst_str">[docs]</a><span class="k">def</span> <span class="nf">split_dtst_str</span><span class="p">(</span><span class="n">dtst_str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Splits a dataset string `&lt;ID&gt; - &lt;name&gt;` and returns</span>
+<span class="sd">    its information.</span>
+
+<span class="sd">    :param dtst_str: A dataset string `&lt;ID&gt; - &lt;name&gt;`.</span>
+<span class="sd">    :type dtst_str: str</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">     | A tuple containing:</span>
+<span class="sd">     |    - *str* -- dataset ID</span>
+<span class="sd">     |    - *str* -- name</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">split_dtst_str</span> <span class="o">=</span> <span class="n">dtst_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39; - &#39;</span><span class="p">)</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">split_dtst_str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">split_dtst_str</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_prj_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_prj_list">[docs]</a><span class="k">def</span> <span class="nf">get_prj_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list with information about projects that is used to populate</span>
+<span class="sd">    project combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list with information about projects.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;projectName&quot; pn,</span>
+<span class="sd">                    &quot;organisation&quot; o</span>
+<span class="sd">        FROM        nofa.&quot;m_project&quot;</span>
+<span class="sd">        ORDER BY    pn, o</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">prjs</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">prj_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_prj_str</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">prjs</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">prj_list</span></div>
+
+
+<div class="viewcode-block" id="get_prj_mtdt_str"><a class="viewcode-back" href="../../api.html#nofa.db.get_prj_mtdt_str">[docs]</a><span class="k">def</span> <span class="nf">get_prj_mtdt_str</span><span class="p">(</span><span class="n">prj_str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a projects metadata string `&lt;name&gt; - &lt;organisation&gt;`.</span>
+
+<span class="sd">    :param prj_str: A project string `&lt;name&gt; - &lt;organization&gt;`.</span>
+<span class="sd">    :type prj_str: str</span>
+
+<span class="sd">    :returns: A projects metadata string `&lt;name&gt; - &lt;organisation&gt;`.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">,</span> <span class="n">org</span> <span class="o">=</span> <span class="n">split_prj_str</span><span class="p">(</span><span class="n">prj_str</span><span class="p">)</span>
+
+    <span class="n">prj_mtdt_str</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">org</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">prj_mtdt_str</span></div>
+
+
+<div class="viewcode-block" id="get_prj_str"><a class="viewcode-back" href="../../api.html#nofa.db.get_prj_str">[docs]</a><span class="k">def</span> <span class="nf">get_prj_str</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">org</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a project string `&lt;name&gt; - &lt;organisation&gt;`.</span>
+
+<span class="sd">    :param name: A project name.</span>
+<span class="sd">    :type name: str</span>
+<span class="sd">    :param org: A project organization.</span>
+<span class="sd">    :type org: str</span>
+
+<span class="sd">    :returns: A project string `&lt;name&gt; - &lt;organisation&gt;`.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">prj_str</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">org</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">prj_str</span></div>
+
+
+<div class="viewcode-block" id="split_prj_str"><a class="viewcode-back" href="../../api.html#nofa.db.split_prj_str">[docs]</a><span class="k">def</span> <span class="nf">split_prj_str</span><span class="p">(</span><span class="n">prj_str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Splits a project string `&lt;name&gt; - &lt;organization&gt;` and returns</span>
+<span class="sd">    its information.</span>
+
+<span class="sd">    :param prj_str: A project string `&lt;name&gt; - &lt;organization&gt;`.</span>
+<span class="sd">    :type prj_str: str</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">     | A tuple containing:</span>
+<span class="sd">     |    - *str* -- project name</span>
+<span class="sd">     |    - *str* -- organization</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">split_prj_str</span> <span class="o">=</span> <span class="n">prj_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39; - &#39;</span><span class="p">)</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">split_prj_str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">org</span> <span class="o">=</span> <span class="n">split_prj_str</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">org</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_prj_id"><a class="viewcode-back" href="../../api.html#nofa.db.get_prj_id">[docs]</a><span class="k">def</span> <span class="nf">get_prj_id</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">prj_name</span><span class="p">,</span> <span class="n">prj_org</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a project ID with the given organization number and name.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param prj_name: A project name.</span>
+<span class="sd">    :type prj_name: str</span>
+<span class="sd">    :param prj_org: A project organization.</span>
+<span class="sd">    :type prj_org: str</span>
+
+<span class="sd">    :returns: A project ID with the given organization number and name.</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;projectID&quot; o</span>
+<span class="sd">        FROM        nofa.&quot;m_project&quot;</span>
+<span class="sd">        WHERE       &quot;projectName&quot; = %s</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    &quot;organisation&quot; = %s</span>
+
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">prj_name</span><span class="p">,</span> <span class="n">prj_org</span><span class="p">,))</span>
+
+    <span class="n">prj_id</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">prj_id</span></div>
+
+
+<div class="viewcode-block" id="get_ref_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_ref_list">[docs]</a><span class="k">def</span> <span class="nf">get_ref_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list with information about references that is used to populate</span>
+<span class="sd">    reference combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list with information about references.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;referenceID&quot;,</span>
+<span class="sd">                    &quot;author&quot;,</span>
+<span class="sd">                    &quot;titel&quot;,</span>
+<span class="sd">                    &quot;year&quot;</span>
+<span class="sd">        FROM        nofa.&quot;m_reference&quot;</span>
+<span class="sd">        ORDER BY    &quot;author&quot;, &quot;titel&quot;</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">refs</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">ref_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_ref_str</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">ref_list</span></div>
+
+
+<div class="viewcode-block" id="get_ref_mtdt_str"><a class="viewcode-back" href="../../api.html#nofa.db.get_ref_mtdt_str">[docs]</a><span class="k">def</span> <span class="nf">get_ref_mtdt_str</span><span class="p">(</span><span class="n">ref_str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a reference metadata string `&lt;author&gt;: &lt;title&gt; (&lt;year&gt;)`.</span>
+
+<span class="sd">    :param ref_str: A reference string `&lt;author&gt;: &lt;title&gt; (&lt;year&gt;) @&lt;ID&gt;`.</span>
+<span class="sd">    :type ref_str: str</span>
+
+<span class="sd">    :returns: A reference metadata string `&lt;author&gt;: &lt;title&gt; (&lt;year&gt;)`.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">au</span><span class="p">,</span> <span class="n">ttl</span><span class="p">,</span> <span class="n">yr</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="n">split_ref_str</span><span class="p">(</span><span class="n">ref_str</span><span class="p">)</span>
+
+    <span class="n">ref_mtdt_str</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">au</span><span class="p">,</span> <span class="n">ttl</span><span class="p">,</span> <span class="n">yr</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ref_mtdt_str</span></div>
+
+
+<div class="viewcode-block" id="get_ref_str"><a class="viewcode-back" href="../../api.html#nofa.db.get_ref_str">[docs]</a><span class="k">def</span> <span class="nf">get_ref_str</span><span class="p">(</span><span class="n">au</span><span class="p">,</span> <span class="n">ttl</span><span class="p">,</span> <span class="n">yr</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a reference string `&lt;author&gt;: &lt;title&gt; (&lt;year&gt;) @&lt;ID&gt;`.</span>
+
+<span class="sd">    :param au: A reference author.</span>
+<span class="sd">    :type au: str</span>
+<span class="sd">    :param ttl: A reference title.</span>
+<span class="sd">    :type ttl: str</span>
+<span class="sd">    :param yr: A reference year.</span>
+<span class="sd">    :type yr: int</span>
+<span class="sd">    :param id: A reference ID.</span>
+<span class="sd">    :type id: str</span>
+
+<span class="sd">    :returns: A reference string `&lt;author&gt;: &lt;title&gt; (&lt;year&gt;) @&lt;ID&gt;`.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ref_str</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">) @</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">au</span><span class="p">,</span> <span class="n">ttl</span><span class="p">,</span> <span class="n">yr</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ref_str</span></div>
+
+
+<div class="viewcode-block" id="split_ref_str"><a class="viewcode-back" href="../../api.html#nofa.db.split_ref_str">[docs]</a><span class="k">def</span> <span class="nf">split_ref_str</span><span class="p">(</span><span class="n">ref_str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Splits a reference string `&lt;author&gt;: &lt;title&gt; (&lt;year&gt;) @&lt;ID&gt;` and returns</span>
+<span class="sd">    its information.</span>
+
+<span class="sd">    :param ref_str: A reference string `&lt;author&gt;: &lt;title&gt; (&lt;year&gt;) @&lt;ID&gt;`.</span>
+<span class="sd">    :type ref_str: str</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">     | A tuple containing:</span>
+<span class="sd">     |    - *str* -- author</span>
+<span class="sd">     |    - *str* -- year</span>
+<span class="sd">     |    - *str* -- title</span>
+<span class="sd">     |    - *int* -- ID</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">au</span> <span class="o">=</span> <span class="n">ref_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;: &#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ttl</span> <span class="o">=</span> <span class="n">ref_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;: &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39; (&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">yr</span> <span class="o">=</span> <span class="n">ref_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39; (&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;) &#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ref_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">au</span><span class="p">,</span> <span class="n">ttl</span><span class="p">,</span> <span class="n">yr</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_txn_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_txn_list">[docs]</a><span class="k">def</span> <span class="nf">get_txn_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of taxons that is used to populate taxon combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of taxons.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;scientificName&quot; sn</span>
+<span class="sd">        FROM        nofa.&quot;l_taxon&quot;</span>
+<span class="sd">        WHERE       &quot;taxonRank&quot; IN (&#39;species&#39;, &#39;hybrid&#39;, &#39;genus&#39;)</span>
+<span class="sd">        ORDER BY    sn</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">txns</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">txn_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">txns</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">txn_list</span></div>
+
+
+<div class="viewcode-block" id="get_ectp_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_ectp_list">[docs]</a><span class="k">def</span> <span class="nf">get_ectp_list</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">txn_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of ecotypes that is used to populate ecotype combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param txn_name: A taxon name.</span>
+<span class="sd">    :type txn_name: str</span>
+
+<span class="sd">    :returns: A list of ecotypes.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      e.&quot;vernacularName&quot; vn</span>
+<span class="sd">        FROM        nofa.&quot;l_ecotype&quot; e</span>
+<span class="sd">                    JOIN</span>
+<span class="sd">                    nofa.&quot;l_taxon&quot; t ON e.&quot;taxonID&quot; = t.&quot;taxonID&quot;</span>
+<span class="sd">        WHERE       t.&quot;scientificName&quot; = %s</span>
+<span class="sd">        ORDER BY    vn;</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">txn_name</span><span class="p">,))</span>
+    <span class="n">ectps</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">ectp_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ectps</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">ectp_list</span></div>
+
+
+<div class="viewcode-block" id="get_oqt_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_oqt_list">[docs]</a><span class="k">def</span> <span class="nf">get_oqt_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of organism quantity types that is used to populate</span>
+<span class="sd">    organism quantity type combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of organism quantity types.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT    &quot;organismQuantityType&quot; oqt</span>
+<span class="sd">        FROM      nofa.&quot;l_organismQuantityType&quot;</span>
+<span class="sd">        ORDER BY  oqt</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">oqts</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="n">oqt_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">oqts</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">oqt_list</span></div>
+
+
+<div class="viewcode-block" id="get_occstat_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_occstat_list">[docs]</a><span class="k">def</span> <span class="nf">get_occstat_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of occurrence statuses that is used to populate</span>
+<span class="sd">    occurrence status combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of occurrence statuses.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT    &quot;occurrenceStatus&quot; os</span>
+<span class="sd">        FROM      nofa.&quot;l_occurrenceStatus&quot;</span>
+<span class="sd">        ORDER BY  os</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">occstats</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="n">occstat_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">occstats</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">occstat_list</span></div>
+
+
+<div class="viewcode-block" id="get_poptrend_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_poptrend_list">[docs]</a><span class="k">def</span> <span class="nf">get_poptrend_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of population trends that is used to populate</span>
+<span class="sd">    population trend combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of population trends.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;populationTrend&quot; pt</span>
+<span class="sd">        FROM        nofa.&quot;l_populationTrend&quot;</span>
+<span class="sd">        WHERE       &quot;populationTrend&quot; is not null</span>
+<span class="sd">        ORDER BY    pt</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">poptrends</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="n">poptrend_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">poptrends</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">poptrend_list</span></div>
+
+
+<div class="viewcode-block" id="get_estbms_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_estbms_list">[docs]</a><span class="k">def</span> <span class="nf">get_estbms_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of establishment means that is used to populate</span>
+<span class="sd">    establishment means combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of establishment means.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;establishmentMeans&quot; em</span>
+<span class="sd">        FROM        nofa.&quot;l_establishmentMeans&quot;</span>
+<span class="sd">        ORDER BY    em</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">estbms</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="n">estbms_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">estbms</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">estbms_list</span></div>
+
+
+<div class="viewcode-block" id="get_smpp_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_smpp_list">[docs]</a><span class="k">def</span> <span class="nf">get_smpp_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of sampling protocols that is used to populate</span>
+<span class="sd">    sampling protocol combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of sampling protocols.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;samplingProtocol&quot; sp</span>
+<span class="sd">        FROM        nofa.&quot;l_samplingProtocol&quot;</span>
+<span class="sd">        ORDER BY    sp</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">smpps</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="n">smpp_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">smpps</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">smpp_list</span></div>
+
+
+<div class="viewcode-block" id="get_reliab_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_reliab_list">[docs]</a><span class="k">def</span> <span class="nf">get_reliab_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of reliabilities that is used to populate</span>
+<span class="sd">    reliability combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of reliabilities.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;reliability&quot; r</span>
+<span class="sd">        FROM        nofa.&quot;l_reliability&quot;</span>
+<span class="sd">        ORDER BY    r</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">relias</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="n">relia_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">relias</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">relia_list</span></div>
+
+
+<div class="viewcode-block" id="get_smpsu_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_smpsu_list">[docs]</a><span class="k">def</span> <span class="nf">get_smpsu_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of sample size units that is used to populate</span>
+<span class="sd">    sample size unit combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of sample size units.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;sampleSizeUnit&quot; s</span>
+<span class="sd">        FROM        nofa.&quot;l_sampleSizeUnit&quot;</span>
+<span class="sd">        ORDER BY    s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">smpsus</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="n">smpsu_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">smpsus</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">smpsu_list</span></div>
+
+
+<div class="viewcode-block" id="get_spwnc_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_spwnc_list">[docs]</a><span class="k">def</span> <span class="nf">get_spwnc_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of spawning conditions that is used to populate</span>
+<span class="sd">    spawning condition combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of spawning conditions.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;spawningCondition&quot; s</span>
+<span class="sd">        FROM        nofa.&quot;l_spawningCondition&quot;</span>
+<span class="sd">        ORDER BY    s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">spwncs</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="n">spwnc_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spwncs</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">spwnc_list</span></div>
+
+
+<div class="viewcode-block" id="get_spwnl_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_spwnl_list">[docs]</a><span class="k">def</span> <span class="nf">get_spwnl_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of spawning locations that is used to populate</span>
+<span class="sd">    spawning location combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of spawning locations.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;spawningLocation&quot; s</span>
+<span class="sd">        FROM        nofa.&quot;l_spawningLocation&quot;</span>
+<span class="sd">        ORDER BY    s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">spwnls</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="n">spwnl_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spwnls</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">spwnl_list</span></div>
+
+
+<div class="viewcode-block" id="get_inst_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_inst_list">[docs]</a><span class="k">def</span> <span class="nf">get_inst_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of institutions that is used to populate</span>
+<span class="sd">    institution combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of institutions.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      distinct &quot;institutionCode&quot; i</span>
+<span class="sd">        FROM        nofa.&quot;m_dataset&quot;</span>
+<span class="sd">        ORDER BY    i;</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">insts</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">inst_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">insts</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">inst_list</span></div>
+
+
+<div class="viewcode-block" id="get_acs_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_acs_list">[docs]</a><span class="k">def</span> <span class="nf">get_acs_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of access rights that is used to populate</span>
+<span class="sd">    access rights combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of access rights.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      distinct &quot;accessRights&quot; ar</span>
+<span class="sd">        FROM        nofa.&quot;m_dataset&quot;</span>
+<span class="sd">        ORDER BY    ar;</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">acs_rghts</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">acs_rght_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ar</span> <span class="ow">in</span> <span class="n">acs_rghts</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">acs_rght_list</span></div>
+
+
+<div class="viewcode-block" id="get_dtst_cnt"><a class="viewcode-back" href="../../api.html#nofa.db.get_dtst_cnt">[docs]</a><span class="k">def</span> <span class="nf">get_dtst_cnt</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a number of datasets with the given ID.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param id: A dataset ID.</span>
+<span class="sd">    :type id: str</span>
+
+<span class="sd">    :returns: A number of datasets with the given ID.</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;datasetID&quot;</span>
+<span class="sd">        FROM        nofa.&quot;m_dataset&quot;</span>
+<span class="sd">        WHERE       &quot;datasetID&quot; = %s;</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="nb">id</span><span class="p">,))</span>
+
+    <span class="n">dtst_cnt</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">rowcount</span>
+
+    <span class="k">return</span> <span class="n">dtst_cnt</span></div>
+
+
+<div class="viewcode-block" id="ins_dtst"><a class="viewcode-back" href="../../api.html#nofa.db.ins_dtst">[docs]</a><span class="k">def</span> <span class="nf">ins_dtst</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">dtst_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert an event to the database.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param dtst_list: A dataset list</span>
+<span class="sd">    :type dtst_list: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INSERT INTO     nofa.m_dataset (</span>
+<span class="sd">                            &quot;datasetName&quot;,</span>
+<span class="sd">                            &quot;datasetID&quot;,</span>
+<span class="sd">                            &quot;ownerInstitutionCode&quot;,</span>
+<span class="sd">                            &quot;rightsHolder&quot;,</span>
+<span class="sd">                            &quot;license&quot;,</span>
+<span class="sd">                            &quot;accessRights&quot;,</span>
+<span class="sd">                            &quot;bibliographicCitation&quot;,</span>
+<span class="sd">                            &quot;datasetComment&quot;,</span>
+<span class="sd">                            &quot;informationWithheld&quot;,</span>
+<span class="sd">                            &quot;dataGeneralizations&quot;)</span>
+<span class="sd">        VALUES          (   %(datasetName)s,</span>
+<span class="sd">                            %(datasetID)s,</span>
+<span class="sd">                            %(ownerInstitutionCode)s,</span>
+<span class="sd">                            %(rightsHolder)s,</span>
+<span class="sd">                            %(license)s,</span>
+<span class="sd">                            %(accessRights)s,</span>
+<span class="sd">                            %(bibliographicCitation)s,</span>
+<span class="sd">                            %(datasetComment)s,</span>
+<span class="sd">                            %(informationWithheld)s,</span>
+<span class="sd">                            %(dataGeneralizations)s)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;datasetName&#39;</span><span class="p">:</span> <span class="n">dtst_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+         <span class="s1">&#39;datasetID&#39;</span><span class="p">:</span> <span class="n">dtst_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+         <span class="s1">&#39;ownerInstitutionCode&#39;</span><span class="p">:</span> <span class="n">dtst_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+         <span class="s1">&#39;rightsHolder&#39;</span><span class="p">:</span> <span class="n">dtst_list</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+         <span class="s1">&#39;license&#39;</span><span class="p">:</span> <span class="n">dtst_list</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+         <span class="s1">&#39;accessRights&#39;</span><span class="p">:</span> <span class="n">dtst_list</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+         <span class="s1">&#39;bibliographicCitation&#39;</span><span class="p">:</span> <span class="n">dtst_list</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
+         <span class="s1">&#39;datasetComment&#39;</span><span class="p">:</span> <span class="n">dtst_list</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+         <span class="s1">&#39;informationWithheld&#39;</span><span class="p">:</span> <span class="n">dtst_list</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span>
+         <span class="s1">&#39;dataGeneralizations&#39;</span><span class="p">:</span> <span class="n">dtst_list</span><span class="p">[</span><span class="mi">9</span><span class="p">]})</span></div>
+
+
+<div class="viewcode-block" id="ins_prj"><a class="viewcode-back" href="../../api.html#nofa.db.ins_prj">[docs]</a><span class="k">def</span> <span class="nf">ins_prj</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">prj_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert an event to the database.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param prj_list: A project list</span>
+<span class="sd">    :type prj_list: list</span>
+
+<span class="sd">    :returns: A project ID.</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INSERT INTO     nofa.m_project (</span>
+<span class="sd">                            &quot;organisation&quot;,</span>
+<span class="sd">                            &quot;projectNumber&quot;,</span>
+<span class="sd">                            &quot;projectName&quot;,</span>
+<span class="sd">                            &quot;startYear&quot;,</span>
+<span class="sd">                            &quot;endYear&quot;,</span>
+<span class="sd">                            &quot;projectLeader&quot;,</span>
+<span class="sd">                            &quot;projectMembers&quot;,</span>
+<span class="sd">                            &quot;financer&quot;,</span>
+<span class="sd">                            &quot;remarks&quot;)</span>
+<span class="sd">        VALUES          (   %(organisation)s,</span>
+<span class="sd">                            %(projectNumber)s,</span>
+<span class="sd">                            %(projectName)s,</span>
+<span class="sd">                            %(startYear)s,</span>
+<span class="sd">                            %(endYear)s,</span>
+<span class="sd">                            %(projectLeader)s,</span>
+<span class="sd">                            %(projectMembers)s,</span>
+<span class="sd">                            %(financer)s,</span>
+<span class="sd">                            %(remarks)s)</span>
+<span class="sd">        RETURNING       &quot;projectID&quot;</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;organisation&#39;</span><span class="p">:</span> <span class="n">prj_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+         <span class="s1">&#39;projectNumber&#39;</span><span class="p">:</span> <span class="n">prj_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+         <span class="s1">&#39;projectName&#39;</span><span class="p">:</span> <span class="n">prj_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+         <span class="s1">&#39;startYear&#39;</span><span class="p">:</span> <span class="n">prj_list</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+         <span class="s1">&#39;endYear&#39;</span><span class="p">:</span> <span class="n">prj_list</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+         <span class="s1">&#39;projectLeader&#39;</span><span class="p">:</span> <span class="n">prj_list</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+         <span class="s1">&#39;projectMembers&#39;</span><span class="p">:</span> <span class="n">prj_list</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
+         <span class="s1">&#39;financer&#39;</span><span class="p">:</span> <span class="n">prj_list</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+         <span class="s1">&#39;remarks&#39;</span><span class="p">:</span> <span class="n">prj_list</span><span class="p">[</span><span class="mi">8</span><span class="p">]})</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="nb">id</span></div>
+
+
+<div class="viewcode-block" id="get_reftp_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_reftp_list">[docs]</a><span class="k">def</span> <span class="nf">get_reftp_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of reference types that is used to populate</span>
+<span class="sd">    reference type combo box.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of reference types.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;referenceType&quot; rt</span>
+<span class="sd">        FROM        nofa.&quot;l_referenceType&quot;</span>
+<span class="sd">        ORDER BY    rt</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">reftps</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">reftp_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reftps</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">reftp_list</span></div>
+
+
+<div class="viewcode-block" id="ins_ref"><a class="viewcode-back" href="../../api.html#nofa.db.ins_ref">[docs]</a><span class="k">def</span> <span class="nf">ins_ref</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">ref_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert an event to the database.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param ref_list: A reference list</span>
+<span class="sd">    :type ref_list: list</span>
+
+<span class="sd">    :returns: A reference ID.</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INSERT INTO     nofa.m_reference (</span>
+<span class="sd">                            &quot;titel&quot;,</span>
+<span class="sd">                            &quot;author&quot;,</span>
+<span class="sd">                            &quot;year&quot;,</span>
+<span class="sd">                            &quot;isbn&quot;,</span>
+<span class="sd">                            &quot;issn&quot;,</span>
+<span class="sd">                            &quot;referenceType&quot;,</span>
+<span class="sd">                            &quot;journalName&quot;,</span>
+<span class="sd">                            &quot;volume&quot;,</span>
+<span class="sd">                            &quot;page&quot;)</span>
+<span class="sd">        VALUES          (   %(title)s,</span>
+<span class="sd">                            %(author)s,</span>
+<span class="sd">                            %(year)s,</span>
+<span class="sd">                            %(isbn)s,</span>
+<span class="sd">                            %(issn)s,</span>
+<span class="sd">                            %(referenceType)s,</span>
+<span class="sd">                            %(journalName)s,</span>
+<span class="sd">                            %(volume)s,</span>
+<span class="sd">                            %(page)s)</span>
+<span class="sd">        RETURNING       &quot;referenceID&quot;</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">ref_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+         <span class="s1">&#39;author&#39;</span><span class="p">:</span> <span class="n">ref_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+         <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="n">ref_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+         <span class="s1">&#39;isbn&#39;</span><span class="p">:</span> <span class="n">ref_list</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+         <span class="s1">&#39;issn&#39;</span><span class="p">:</span> <span class="n">ref_list</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+         <span class="s1">&#39;referenceType&#39;</span><span class="p">:</span> <span class="n">ref_list</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+         <span class="s1">&#39;journalName&#39;</span><span class="p">:</span> <span class="n">ref_list</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
+         <span class="s1">&#39;volume&#39;</span><span class="p">:</span> <span class="n">ref_list</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+         <span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="n">ref_list</span><span class="p">[</span><span class="mi">8</span><span class="p">]})</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="nb">id</span></div>
+
+
+<div class="viewcode-block" id="get_pt_str"><a class="viewcode-back" href="../../api.html#nofa.db.get_pt_str">[docs]</a><span class="k">def</span> <span class="nf">get_pt_str</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a point string with the given coordinates.</span>
+
+<span class="sd">    :param x: X coordinate.</span>
+<span class="sd">    :type x: float</span>
+<span class="sd">    :param y: Y coordinate.</span>
+<span class="sd">    :type y: float</span>
+
+<span class="sd">    :returns: A point string.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">pt_str</span> <span class="o">=</span> <span class="s1">&#39;POINT(</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pt_str</span></div>
+
+
+<div class="viewcode-block" id="get_utm33_geom"><a class="viewcode-back" href="../../api.html#nofa.db.get_utm33_geom">[docs]</a><span class="k">def</span> <span class="nf">get_utm33_geom</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">geom_str</span><span class="p">,</span> <span class="n">srid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a geometry in UTM33 (EPSG: 25833).</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param geom_str: A geometry string.</span>
+<span class="sd">    :type geom_str: str</span>
+<span class="sd">    :param srid: SRID.</span>
+<span class="sd">    :type srid: int</span>
+
+<span class="sd">    :returns: A geometry in UTM33 (EPSG: 25833).</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      ST_Transform(</span>
+<span class="sd">                        ST_GeomFromText(%s, %s),</span>
+<span class="sd">                        25833)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">geom_str</span><span class="p">,</span> <span class="n">srid</span><span class="p">,))</span>
+
+    <span class="n">utm33_geom</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">utm33_geom</span></div>
+
+
+<div class="viewcode-block" id="get_nrst_locid"><a class="viewcode-back" href="../../api.html#nofa.db.get_nrst_locid">[docs]</a><span class="k">def</span> <span class="nf">get_nrst_locid</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">utm33_geom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an ID of the nearest location.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param utm33_geom: A geometry in UTM33 (EPSG: 25833).</span>
+<span class="sd">    :type utm33_geom: str</span>
+
+<span class="sd">    :returns: A location ID. None where there is no lake within</span>
+<span class="sd">        the given distance.</span>
+<span class="sd">    :rtype: uuid.UUID</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;locationID&quot;</span>
+<span class="sd">        FROM        nofa.&quot;location&quot; l</span>
+<span class="sd">        ORDER BY    ST_Distance(%s, l.geom)</span>
+<span class="sd">        LIMIT       1</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">utm33_geom</span><span class="p">,))</span>
+
+    <span class="n">locid</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">locid</span></div>
+
+
+<div class="viewcode-block" id="ins_new_loc"><a class="viewcode-back" href="../../api.html#nofa.db.ins_new_loc">[docs]</a><span class="k">def</span> <span class="nf">ins_new_loc</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">locid</span><span class="p">,</span> <span class="n">utm33_geom</span><span class="p">,</span> <span class="n">verb_loc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert a new location and returns its location ID.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param locid: A location ID.</span>
+<span class="sd">    :type locid: uuid.UUID</span>
+<span class="sd">    :param utm33_geom: A geometry in UTM33 (EPSG: 25833).</span>
+<span class="sd">    :type utm33_geom: str</span>
+<span class="sd">    :param verb_loc: A verbatimLocality.</span>
+<span class="sd">    :type verb_loc: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INSERT INTO     nofa.location (</span>
+<span class="sd">                            &quot;locationID&quot;,</span>
+<span class="sd">                            &quot;locationType&quot;,</span>
+<span class="sd">                            &quot;geom&quot;,</span>
+<span class="sd">                            &quot;verbatimLocality&quot;)</span>
+<span class="sd">        VALUES          (   %(locationID)s,</span>
+<span class="sd">                            %(locationType)s,</span>
+<span class="sd">                            %(geom)s,</span>
+<span class="sd">                            %(verbatimLocality)s)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;locationID&#39;</span><span class="p">:</span> <span class="n">locid</span><span class="p">,</span>
+         <span class="s1">&#39;locationType&#39;</span><span class="p">:</span> <span class="s1">&#39;samplingPoint lake&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;geom&#39;</span><span class="p">:</span> <span class="n">utm33_geom</span><span class="p">,</span>
+         <span class="s1">&#39;verbatimLocality&#39;</span><span class="p">:</span> <span class="n">verb_loc</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="get_mpt_str"><a class="viewcode-back" href="../../api.html#nofa.db.get_mpt_str">[docs]</a><span class="k">def</span> <span class="nf">get_mpt_str</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a multi point string with the given coordinates.</span>
+
+<span class="sd">    :param x: X coordinate.</span>
+<span class="sd">    :type x: float</span>
+<span class="sd">    :param y: Y coordinate.</span>
+<span class="sd">    :type y: float</span>
+
+<span class="sd">    :returns: A multi point string.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mpt_str</span> <span class="o">=</span> <span class="s1">&#39;MULTIPOINT(</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mpt_str</span></div>
+
+
+<div class="viewcode-block" id="get_loc_by_fltrs"><a class="viewcode-back" href="../../api.html#nofa.db.get_loc_by_fltrs">[docs]</a><span class="k">def</span> <span class="nf">get_loc_by_fltrs</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">wb</span><span class="p">,</span> <span class="n">cntry_code</span><span class="p">,</span> <span class="n">cnty</span><span class="p">,</span> <span class="n">muni</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns location IDs with the given filters.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param wb: A water body.</span>
+<span class="sd">    :type wb: str</span>
+<span class="sd">    :param cntry_code: A country code.</span>
+<span class="sd">    :type cntry_code: str</span>
+<span class="sd">    :param cnty: A county.</span>
+<span class="sd">    :type cnty: str</span>
+<span class="sd">    :param muni: A municipality.</span>
+<span class="sd">    :type muni: str</span>
+
+<span class="sd">    :returns: A list of location IDs.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      &quot;locationID&quot;</span>
+<span class="sd">        FROM        nofa.location loc</span>
+<span class="sd">        WHERE       (%(waterBody)s IS NULL OR &quot;waterBody&quot; LIKE %(waterBody)s)</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    (   %(countryCode)s IS NULL</span>
+<span class="sd">                        OR</span>
+<span class="sd">                        &quot;countryCode&quot; = %(countryCode)s)</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    (%(county)s IS NULL OR &quot;county&quot; = %(county)s)</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    (   %(municipality)s IS NULL</span>
+<span class="sd">                        OR</span>
+<span class="sd">                        &quot;municipality&quot; = %(municipality)s)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;waterBody&#39;</span><span class="p">:</span> <span class="s1">&#39;%&#39;</span> <span class="o">+</span> <span class="n">wb</span> <span class="o">+</span> <span class="s1">&#39;%&#39;</span> <span class="k">if</span> <span class="n">wb</span> <span class="k">else</span> <span class="n">wb</span><span class="p">,</span>
+         <span class="s1">&#39;countryCode&#39;</span><span class="p">:</span> <span class="n">cntry_code</span><span class="p">,</span>
+         <span class="s1">&#39;county&#39;</span><span class="p">:</span> <span class="n">cnty</span><span class="p">,</span>
+         <span class="s1">&#39;municipality&#39;</span><span class="p">:</span> <span class="n">muni</span><span class="p">})</span>
+
+    <span class="n">locids</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">locid_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">locids</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">locid_list</span></div>
+
+
+<div class="viewcode-block" id="ins_occ_log"><a class="viewcode-back" href="../../api.html#nofa.db.ins_occ_log">[docs]</a><span class="k">def</span> <span class="nf">ins_occ_log</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">occ_id</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">dtst_id</span><span class="p">,</span> <span class="n">prj_id</span><span class="p">,</span> <span class="n">ref_id</span><span class="p">,</span> <span class="n">loc_id</span><span class="p">,</span> <span class="n">usr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert an occurrence log to the database.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param occ_id: An occurrence ID.</span>
+<span class="sd">    :type occ_id: uuid.UUID</span>
+<span class="sd">    :param event_id: An event ID.</span>
+<span class="sd">    :type event_id: uuid.UUID</span>
+<span class="sd">    :param dtst_id: A dataset ID.</span>
+<span class="sd">    :type dtst_id: str</span>
+<span class="sd">    :param prj_id: A project ID.</span>
+<span class="sd">    :type prj_id: str</span>
+<span class="sd">    :param ref_id: A reference ID.</span>
+<span class="sd">    :type ref_id: int</span>
+<span class="sd">    :param loc_id: A location ID.</span>
+<span class="sd">    :type loc_id: uuid.UUID</span>
+<span class="sd">    :param usr: An username.</span>
+<span class="sd">    :type usr: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INSERT INTO     plugin.occurrence_log (</span>
+<span class="sd">                            occurrence_id,</span>
+<span class="sd">                            event_id,</span>
+<span class="sd">                            dataset_id,</span>
+<span class="sd">                            project_id,</span>
+<span class="sd">                            reference_id,</span>
+<span class="sd">                            location_id,</span>
+<span class="sd">                            username)</span>
+<span class="sd">        VALUES          (   %(occurrence_id)s,</span>
+<span class="sd">                            %(event_id)s,</span>
+<span class="sd">                            %(dataset_id)s,</span>
+<span class="sd">                            %(project_id)s,</span>
+<span class="sd">                            %(reference_id)s,</span>
+<span class="sd">                            %(location_id)s,</span>
+<span class="sd">                            %(username)s)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;occurrence_id&#39;</span><span class="p">:</span> <span class="n">occ_id</span><span class="p">,</span>
+         <span class="s1">&#39;event_id&#39;</span><span class="p">:</span> <span class="n">event_id</span><span class="p">,</span>
+         <span class="s1">&#39;dataset_id&#39;</span><span class="p">:</span> <span class="n">dtst_id</span><span class="p">,</span>
+         <span class="s1">&#39;project_id&#39;</span><span class="p">:</span> <span class="n">prj_id</span><span class="p">,</span>
+         <span class="s1">&#39;reference_id&#39;</span><span class="p">:</span> <span class="n">ref_id</span><span class="p">,</span>
+         <span class="s1">&#39;location_id&#39;</span><span class="p">:</span> <span class="n">loc_id</span><span class="p">,</span>
+         <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">usr</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="ins_loc_log"><a class="viewcode-back" href="../../api.html#nofa.db.ins_loc_log">[docs]</a><span class="k">def</span> <span class="nf">ins_loc_log</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">usr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert a location log to the database.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param id: A location ID.</span>
+<span class="sd">    :type id: str</span>
+<span class="sd">    :param name: A location name.</span>
+<span class="sd">    :type name: str</span>
+<span class="sd">    :param usr: An username.</span>
+<span class="sd">    :type usr: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INSERT INTO     plugin.location_log(</span>
+<span class="sd">                            location_id,</span>
+<span class="sd">                            location_name,</span>
+<span class="sd">                            username)</span>
+<span class="sd">        VALUES          (   %(location_id)s,</span>
+<span class="sd">                            %(location_name)s,</span>
+<span class="sd">                            %(username)s)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;location_id&#39;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span>
+         <span class="s1">&#39;location_name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+         <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">usr</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="ins_event_log"><a class="viewcode-back" href="../../api.html#nofa.db.ins_event_log">[docs]</a><span class="k">def</span> <span class="nf">ins_event_log</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">loc_id</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">dtst_id</span><span class="p">,</span> <span class="n">prj_id</span><span class="p">,</span> <span class="n">ref_id</span><span class="p">,</span> <span class="n">usr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert an event log to the database.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param loc_id: A location ID.</span>
+<span class="sd">    :type loc_id: str</span>
+<span class="sd">    :param event_id: An event ID.</span>
+<span class="sd">    :type event_id: uuid.UUID</span>
+<span class="sd">    :param dtst_id: A dataset ID.</span>
+<span class="sd">    :type dtst_id: str</span>
+<span class="sd">    :param prj_id: A project ID.</span>
+<span class="sd">    :type prj_id: str</span>
+<span class="sd">    :param ref_id: A reference ID.</span>
+<span class="sd">    :type ref_id: int</span>
+<span class="sd">    :param usr: An username.</span>
+<span class="sd">    :type usr: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INSERT INTO     plugin.event_log(</span>
+<span class="sd">                            event_id,</span>
+<span class="sd">                            location_id,</span>
+<span class="sd">                            dataset_id,</span>
+<span class="sd">                            project_id,</span>
+<span class="sd">                            reference_id,</span>
+<span class="sd">                            username)</span>
+<span class="sd">        VALUES          (   %(event_id)s,</span>
+<span class="sd">                            %(location_id)s,</span>
+<span class="sd">                            %(dataset_id)s,</span>
+<span class="sd">                            %(project_id)s,</span>
+<span class="sd">                            %(reference_id)s,</span>
+<span class="sd">                            %(username)s)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;event_id&#39;</span><span class="p">:</span> <span class="n">event_id</span><span class="p">,</span>
+         <span class="s1">&#39;location_id&#39;</span><span class="p">:</span> <span class="n">loc_id</span><span class="p">,</span>
+         <span class="s1">&#39;dataset_id&#39;</span><span class="p">:</span> <span class="n">dtst_id</span><span class="p">,</span>
+         <span class="s1">&#39;project_id&#39;</span><span class="p">:</span> <span class="n">prj_id</span><span class="p">,</span>
+         <span class="s1">&#39;reference_id&#39;</span><span class="p">:</span> <span class="n">ref_id</span><span class="p">,</span>
+         <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">usr</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="ins_dtst_log"><a class="viewcode-back" href="../../api.html#nofa.db.ins_dtst_log">[docs]</a><span class="k">def</span> <span class="nf">ins_dtst_log</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">usr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert a dataset log to the database.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param id: A dataset ID.</span>
+<span class="sd">    :type id: str</span>
+<span class="sd">    :param usr: An username.</span>
+<span class="sd">    :type usr: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INSERT INTO     plugin.dataset_log(</span>
+<span class="sd">                            dataset_id,</span>
+<span class="sd">                            username)</span>
+<span class="sd">        VALUES          (   %(dataset_id)s,</span>
+<span class="sd">                            %(username)s)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span>
+         <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">usr</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="ins_prj_log"><a class="viewcode-back" href="../../api.html#nofa.db.ins_prj_log">[docs]</a><span class="k">def</span> <span class="nf">ins_prj_log</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">usr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert a project log to the database.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param id: A project ID.</span>
+<span class="sd">    :type id: str</span>
+<span class="sd">    :param usr: An username.</span>
+<span class="sd">    :type usr: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INSERT INTO     plugin.project_log(</span>
+<span class="sd">                            project_id,</span>
+<span class="sd">                            username)</span>
+<span class="sd">        VALUES          (   %(project_id)s,</span>
+<span class="sd">                            %(username)s)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;project_id&#39;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span>
+         <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">usr</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="ins_ref_log"><a class="viewcode-back" href="../../api.html#nofa.db.ins_ref_log">[docs]</a><span class="k">def</span> <span class="nf">ins_ref_log</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">usr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert a reference log to the database.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param id: A reference ID.</span>
+<span class="sd">    :type id: str</span>
+<span class="sd">    :param usr: An username.</span>
+<span class="sd">    :type usr: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">insert_location_log</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INSERT INTO     plugin.reference_log(</span>
+<span class="sd">                            reference_id,</span>
+<span class="sd">                            username)</span>
+<span class="sd">        VALUES          (   %(reference_id)s,</span>
+<span class="sd">                            %(username)s)</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;reference_id&#39;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span>
+         <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">usr</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="get_hist_occ_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_hist_occ_list">[docs]</a><span class="k">def</span> <span class="nf">get_hist_occ_list</span><span class="p">(</span>
+        <span class="n">con</span><span class="p">,</span> <span class="n">usr</span><span class="p">,</span> <span class="n">ins_dt_strt</span><span class="p">,</span> <span class="n">ins_dt_end</span><span class="p">,</span> <span class="n">upd_dt_strt</span><span class="p">,</span> <span class="n">upd_dt_end</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of history occurrences that is used to populate</span>
+<span class="sd">    occurrence history table.</span>
+<span class="sd">    Also returns a list of history occurrences headers.</span>
+<span class="sd">    Data are filtered based on input values.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param usr: An username.</span>
+<span class="sd">    :type usr: str</span>
+<span class="sd">    :param ins_dt_strt: Insert date start.</span>
+<span class="sd">    :type ins_dt_strt: datetime.date</span>
+<span class="sd">    :param ins_dt_end: Insert date end.</span>
+<span class="sd">    :type ins_dt_end: datetime.date</span>
+<span class="sd">    :param upd_dt_strt: Update date start.</span>
+<span class="sd">    :type upd_dt_strt: datetime.date</span>
+<span class="sd">    :param upd_dt_end: Update date end.</span>
+<span class="sd">    :type upd_dt_end: datetime.date</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">     | A tuple containing:</span>
+<span class="sd">     |    - *list* -- a list of history occurrences</span>
+<span class="sd">     |     - *list* -- a list of history occurrences headers</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      occurrence_id,</span>
+<span class="sd">                    event_id,</span>
+<span class="sd">                    dataset_id,</span>
+<span class="sd">                    project_id,</span>
+<span class="sd">                    reference_id,</span>
+<span class="sd">                    location_id,</span>
+<span class="sd">                    username,</span>
+<span class="sd">                    insert_timestamp,</span>
+<span class="sd">                    update_timestamp</span>
+<span class="sd">        FROM        plugin.occurrence_log</span>
+<span class="sd">        WHERE       (%(username)s IS NULL OR &quot;username&quot; LIKE %(username)s)</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    date(insert_timestamp)</span>
+<span class="sd">                        BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    date(update_timestamp)</span>
+<span class="sd">                        BETWEEN %(upd_dt_strt)s AND %(upd_dt_end)s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">usr</span><span class="p">,</span>
+         <span class="s1">&#39;ins_dt_strt&#39;</span><span class="p">:</span> <span class="n">ins_dt_strt</span><span class="p">,</span>
+         <span class="s1">&#39;ins_dt_end&#39;</span><span class="p">:</span> <span class="n">ins_dt_end</span><span class="p">,</span>
+         <span class="s1">&#39;upd_dt_strt&#39;</span><span class="p">:</span> <span class="n">upd_dt_strt</span><span class="p">,</span>
+         <span class="s1">&#39;upd_dt_end&#39;</span><span class="p">:</span> <span class="n">upd_dt_end</span><span class="p">})</span>
+
+    <span class="n">hist_occ_list</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">hist_occ_hdrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">description</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">hist_occ_list</span><span class="p">,</span> <span class="n">hist_occ_hdrs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_hist_loc_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_hist_loc_list">[docs]</a><span class="k">def</span> <span class="nf">get_hist_loc_list</span><span class="p">(</span>
+        <span class="n">con</span><span class="p">,</span> <span class="n">usr</span><span class="p">,</span> <span class="n">ins_dt_strt</span><span class="p">,</span> <span class="n">ins_dt_end</span><span class="p">,</span> <span class="n">upd_dt_strt</span><span class="p">,</span> <span class="n">upd_dt_end</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of history locations that is used to populate</span>
+<span class="sd">    location history table.</span>
+<span class="sd">    Also returns a list of history locations headers.</span>
+<span class="sd">    Data are filtered based on input values.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param usr: An username.</span>
+<span class="sd">    :type usr: str</span>
+<span class="sd">    :param ins_dt_strt: Insert date start.</span>
+<span class="sd">    :type ins_dt_strt: datetime.date</span>
+<span class="sd">    :param ins_dt_end: Insert date end.</span>
+<span class="sd">    :type ins_dt_end: datetime.date</span>
+<span class="sd">    :param upd_dt_strt: Update date start.</span>
+<span class="sd">    :type upd_dt_strt: datetime.date</span>
+<span class="sd">    :param upd_dt_end: Update date end.</span>
+<span class="sd">    :type upd_dt_end: datetime.date</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">     | A tuple containing:</span>
+<span class="sd">     |    - *list* -- a list of history locations</span>
+<span class="sd">     |    - *list* -- a list of history locations headers</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      location_id,</span>
+<span class="sd">                    location_name,</span>
+<span class="sd">                    username,</span>
+<span class="sd">                    insert_timestamp,</span>
+<span class="sd">                    update_timestamp</span>
+<span class="sd">        FROM        plugin.location_log</span>
+<span class="sd">        WHERE       (%(username)s IS NULL OR &quot;username&quot; LIKE %(username)s)</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    date(insert_timestamp)</span>
+<span class="sd">                        BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    date(update_timestamp)</span>
+<span class="sd">                        BETWEEN %(upd_dt_strt)s AND %(upd_dt_end)s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">usr</span><span class="p">,</span>
+         <span class="s1">&#39;ins_dt_strt&#39;</span><span class="p">:</span> <span class="n">ins_dt_strt</span><span class="p">,</span>
+         <span class="s1">&#39;ins_dt_end&#39;</span><span class="p">:</span> <span class="n">ins_dt_end</span><span class="p">,</span>
+         <span class="s1">&#39;upd_dt_strt&#39;</span><span class="p">:</span> <span class="n">upd_dt_strt</span><span class="p">,</span>
+         <span class="s1">&#39;upd_dt_end&#39;</span><span class="p">:</span> <span class="n">upd_dt_end</span><span class="p">})</span>
+
+    <span class="n">hist_loc_list</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">hist_loc_hdrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">description</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">hist_loc_list</span><span class="p">,</span> <span class="n">hist_loc_hdrs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_hist_event_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_hist_event_list">[docs]</a><span class="k">def</span> <span class="nf">get_hist_event_list</span><span class="p">(</span>
+        <span class="n">con</span><span class="p">,</span> <span class="n">usr</span><span class="p">,</span> <span class="n">ins_dt_strt</span><span class="p">,</span> <span class="n">ins_dt_end</span><span class="p">,</span> <span class="n">upd_dt_strt</span><span class="p">,</span> <span class="n">upd_dt_end</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of history events that is used to populate</span>
+<span class="sd">    event history table.</span>
+<span class="sd">    Also returns a list of history events headers.</span>
+<span class="sd">    Data are filtered based on input values.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param usr: An username.</span>
+<span class="sd">    :type usr: str</span>
+<span class="sd">    :param ins_dt_strt: Insert date start.</span>
+<span class="sd">    :type ins_dt_strt: datetime.date</span>
+<span class="sd">    :param ins_dt_end: Insert date end.</span>
+<span class="sd">    :type ins_dt_end: datetime.date</span>
+<span class="sd">    :param upd_dt_strt: Update date start.</span>
+<span class="sd">    :type upd_dt_strt: datetime.date</span>
+<span class="sd">    :param upd_dt_end: Update date end.</span>
+<span class="sd">    :type upd_dt_end: datetime.date</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">     | A tuple containing:</span>
+<span class="sd">     |    - *list* -- a list of history events</span>
+<span class="sd">     |    - *list* -- a list of history events headers</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      event_id,</span>
+<span class="sd">                    location_id,</span>
+<span class="sd">                    dataset_id,</span>
+<span class="sd">                    project_id,</span>
+<span class="sd">                    reference_id,</span>
+<span class="sd">                    username,</span>
+<span class="sd">                    insert_timestamp,</span>
+<span class="sd">                    update_timestamp</span>
+<span class="sd">        FROM        plugin.event_log</span>
+<span class="sd">        WHERE       (%(username)s IS NULL OR &quot;username&quot; LIKE %(username)s)</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    date(insert_timestamp)</span>
+<span class="sd">                        BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    date(update_timestamp)</span>
+<span class="sd">                        BETWEEN %(upd_dt_strt)s AND %(upd_dt_end)s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">usr</span><span class="p">,</span>
+         <span class="s1">&#39;ins_dt_strt&#39;</span><span class="p">:</span> <span class="n">ins_dt_strt</span><span class="p">,</span>
+         <span class="s1">&#39;ins_dt_end&#39;</span><span class="p">:</span> <span class="n">ins_dt_end</span><span class="p">,</span>
+         <span class="s1">&#39;upd_dt_strt&#39;</span><span class="p">:</span> <span class="n">upd_dt_strt</span><span class="p">,</span>
+         <span class="s1">&#39;upd_dt_end&#39;</span><span class="p">:</span> <span class="n">upd_dt_end</span><span class="p">})</span>
+
+    <span class="n">hist_event_list</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">hist_event_hdrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">description</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">hist_event_list</span><span class="p">,</span> <span class="n">hist_event_hdrs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_hist_dtst_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_hist_dtst_list">[docs]</a><span class="k">def</span> <span class="nf">get_hist_dtst_list</span><span class="p">(</span>
+        <span class="n">con</span><span class="p">,</span> <span class="n">usr</span><span class="p">,</span> <span class="n">ins_dt_strt</span><span class="p">,</span> <span class="n">ins_dt_end</span><span class="p">,</span> <span class="n">upd_dt_strt</span><span class="p">,</span> <span class="n">upd_dt_end</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of history datasets that is used to populate</span>
+<span class="sd">    dataset history table.</span>
+<span class="sd">    Also returns a list of history datasets headers.</span>
+<span class="sd">    Data are filtered based on input values.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param usr: An username.</span>
+<span class="sd">    :type usr: str</span>
+<span class="sd">    :param ins_dt_strt: Insert date start.</span>
+<span class="sd">    :type ins_dt_strt: datetime.date</span>
+<span class="sd">    :param ins_dt_end: Insert date end.</span>
+<span class="sd">    :type ins_dt_end: datetime.date</span>
+<span class="sd">    :param upd_dt_strt: Update date start.</span>
+<span class="sd">    :type upd_dt_strt: datetime.date</span>
+<span class="sd">    :param upd_dt_end: Update date end.</span>
+<span class="sd">    :type upd_dt_end: datetime.date</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">     | A tuple containing:</span>
+<span class="sd">     |    - *list* -- a list of history datasets</span>
+<span class="sd">     |    - *list* -- a list of history datasets headers</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      dataset_id,</span>
+<span class="sd">                    username,</span>
+<span class="sd">                    insert_timestamp,</span>
+<span class="sd">                    update_timestamp</span>
+<span class="sd">        FROM        plugin.dataset_log</span>
+<span class="sd">        WHERE       (%(username)s IS NULL OR &quot;username&quot; LIKE %(username)s)</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    date(insert_timestamp)</span>
+<span class="sd">                        BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    date(update_timestamp)</span>
+<span class="sd">                        BETWEEN %(upd_dt_strt)s AND %(upd_dt_end)s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">usr</span><span class="p">,</span>
+         <span class="s1">&#39;ins_dt_strt&#39;</span><span class="p">:</span> <span class="n">ins_dt_strt</span><span class="p">,</span>
+         <span class="s1">&#39;ins_dt_end&#39;</span><span class="p">:</span> <span class="n">ins_dt_end</span><span class="p">,</span>
+         <span class="s1">&#39;upd_dt_strt&#39;</span><span class="p">:</span> <span class="n">upd_dt_strt</span><span class="p">,</span>
+         <span class="s1">&#39;upd_dt_end&#39;</span><span class="p">:</span> <span class="n">upd_dt_end</span><span class="p">})</span>
+
+    <span class="n">hist_dtst_list</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">hist_dtst_hdrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">description</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">hist_dtst_list</span><span class="p">,</span> <span class="n">hist_dtst_hdrs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_hist_prj_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_hist_prj_list">[docs]</a><span class="k">def</span> <span class="nf">get_hist_prj_list</span><span class="p">(</span>
+        <span class="n">con</span><span class="p">,</span> <span class="n">usr</span><span class="p">,</span> <span class="n">ins_dt_strt</span><span class="p">,</span> <span class="n">ins_dt_end</span><span class="p">,</span> <span class="n">upd_dt_strt</span><span class="p">,</span> <span class="n">upd_dt_end</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of history projects that is used to populate</span>
+<span class="sd">    project history table.</span>
+<span class="sd">    Also returns a list of history projects headers.</span>
+<span class="sd">    Data are filtered based on input values.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param usr: An username.</span>
+<span class="sd">    :type usr: str</span>
+<span class="sd">    :param ins_dt_strt: Insert date start.</span>
+<span class="sd">    :type ins_dt_strt: datetime.date</span>
+<span class="sd">    :param ins_dt_end: Insert date end.</span>
+<span class="sd">    :type ins_dt_end: datetime.date</span>
+<span class="sd">    :param upd_dt_strt: Update date start.</span>
+<span class="sd">    :type upd_dt_strt: datetime.date</span>
+<span class="sd">    :param upd_dt_end: Update date end.</span>
+<span class="sd">    :type upd_dt_end: datetime.date</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">     | A tuple containing:</span>
+<span class="sd">     |    - *list* -- a list of history projects</span>
+<span class="sd">     |    - *list* -- a list of history projects headers</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      project_id,</span>
+<span class="sd">                    username,</span>
+<span class="sd">                    insert_timestamp,</span>
+<span class="sd">                    update_timestamp</span>
+<span class="sd">        FROM        plugin.project_log</span>
+<span class="sd">        WHERE       (%(username)s IS NULL OR &quot;username&quot; LIKE %(username)s)</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    date(insert_timestamp)</span>
+<span class="sd">                        BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    date(update_timestamp)</span>
+<span class="sd">                        BETWEEN %(upd_dt_strt)s AND %(upd_dt_end)s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">usr</span><span class="p">,</span>
+         <span class="s1">&#39;ins_dt_strt&#39;</span><span class="p">:</span> <span class="n">ins_dt_strt</span><span class="p">,</span>
+         <span class="s1">&#39;ins_dt_end&#39;</span><span class="p">:</span> <span class="n">ins_dt_end</span><span class="p">,</span>
+         <span class="s1">&#39;upd_dt_strt&#39;</span><span class="p">:</span> <span class="n">upd_dt_strt</span><span class="p">,</span>
+         <span class="s1">&#39;upd_dt_end&#39;</span><span class="p">:</span> <span class="n">upd_dt_end</span><span class="p">})</span>
+
+    <span class="n">hist_prj_list</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">hist_prj_hdrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">description</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">hist_prj_list</span><span class="p">,</span> <span class="n">hist_prj_hdrs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_hist_ref_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_hist_ref_list">[docs]</a><span class="k">def</span> <span class="nf">get_hist_ref_list</span><span class="p">(</span>
+        <span class="n">con</span><span class="p">,</span> <span class="n">usr</span><span class="p">,</span> <span class="n">ins_dt_strt</span><span class="p">,</span> <span class="n">ins_dt_end</span><span class="p">,</span> <span class="n">upd_dt_strt</span><span class="p">,</span> <span class="n">upd_dt_end</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of history references that is used to populate</span>
+<span class="sd">    reference history table.</span>
+<span class="sd">    Also returns a list of history references headers.</span>
+<span class="sd">    Data are filtered based on input values.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param usr: An username.</span>
+<span class="sd">    :type usr: str</span>
+<span class="sd">    :param ins_dt_strt: Insert date start.</span>
+<span class="sd">    :type ins_dt_strt: datetime.date</span>
+<span class="sd">    :param ins_dt_end: Insert date end.</span>
+<span class="sd">    :type ins_dt_end: datetime.date</span>
+<span class="sd">    :param upd_dt_strt: Update date start.</span>
+<span class="sd">    :type upd_dt_strt: datetime.date</span>
+<span class="sd">    :param upd_dt_end: Update date end.</span>
+<span class="sd">    :type upd_dt_end: datetime.date</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">     | A tuple containing:</span>
+<span class="sd">     |    - *list* -- a list of history references</span>
+<span class="sd">     |    - *list* -- a list of history references headers</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      reference_id,</span>
+<span class="sd">                    username,</span>
+<span class="sd">                    insert_timestamp,</span>
+<span class="sd">                    update_timestamp</span>
+<span class="sd">        FROM        plugin.reference_log</span>
+<span class="sd">        WHERE       (%(username)s IS NULL OR &quot;username&quot; LIKE %(username)s)</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    date(insert_timestamp)</span>
+<span class="sd">                        BETWEEN %(ins_dt_strt)s AND %(ins_dt_end)s</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    date(update_timestamp)</span>
+<span class="sd">                        BETWEEN %(upd_dt_strt)s AND %(upd_dt_end)s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">usr</span><span class="p">,</span>
+         <span class="s1">&#39;ins_dt_strt&#39;</span><span class="p">:</span> <span class="n">ins_dt_strt</span><span class="p">,</span>
+         <span class="s1">&#39;ins_dt_end&#39;</span><span class="p">:</span> <span class="n">ins_dt_end</span><span class="p">,</span>
+         <span class="s1">&#39;upd_dt_strt&#39;</span><span class="p">:</span> <span class="n">upd_dt_strt</span><span class="p">,</span>
+         <span class="s1">&#39;upd_dt_end&#39;</span><span class="p">:</span> <span class="n">upd_dt_end</span><span class="p">})</span>
+
+    <span class="n">hist_ref_list</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">hist_ref_hdrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">description</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">hist_ref_list</span><span class="p">,</span> <span class="n">hist_ref_hdrs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_usr_list"><a class="viewcode-back" href="../../api.html#nofa.db.get_usr_list">[docs]</a><span class="k">def</span> <span class="nf">get_usr_list</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of users whose accounts are active.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+
+<span class="sd">    :returns: A list of users whose accounts are active.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      usename u</span>
+<span class="sd">        FROM        pg_catalog.pg_user</span>
+<span class="sd">        WHERE       CURRENT_TIMESTAMP &lt; valuntil</span>
+<span class="sd">        ORDER BY    u</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">)</span>
+
+    <span class="n">usrs</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">usr_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">usrs</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">usr_list</span></div>
+
+
+<div class="viewcode-block" id="get_col_def_val"><a class="viewcode-back" href="../../api.html#nofa.db.get_col_def_val">[docs]</a><span class="k">def</span> <span class="nf">get_col_def_val</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">tbl</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a column default value for the given table in the given schema.</span>
+<span class="sd">    This function returns a default value with database function or cast.</span>
+
+<span class="sd">    :param con: A connection.</span>
+<span class="sd">    :type con: psycopg2.connection</span>
+<span class="sd">    :param schema: A schema.</span>
+<span class="sd">    :type schema: str</span>
+<span class="sd">    :param tbl: A table.</span>
+<span class="sd">    :type tbl: str</span>
+<span class="sd">    :param col: A column.</span>
+<span class="sd">    :type col: str</span>
+
+<span class="sd">    :returns: A column default value.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        SELECT      column_default</span>
+<span class="sd">        FROM        information_schema.columns</span>
+<span class="sd">        WHERE       table_schema = %(schema)s</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    table_name = %(table)s</span>
+<span class="sd">                    AND</span>
+<span class="sd">                    column_name = %(column)s</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="n">schema</span><span class="p">,</span>
+         <span class="s1">&#39;table&#39;</span><span class="p">:</span> <span class="n">tbl</span><span class="p">,</span>
+         <span class="s1">&#39;column&#39;</span><span class="p">:</span> <span class="n">col</span><span class="p">})</span>
+
+    <span class="n">col_def_val</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">col_def_val</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017 Norwegian Institute for Nature Research.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
