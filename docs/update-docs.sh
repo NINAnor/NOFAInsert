@@ -4,11 +4,12 @@ git checkout gh-pages
 git pull
 rm -rf *
 touch .nojekyll
-git checkout master docs
+git checkout master
 cd docs
 make clean
 make html
 cd ..
+rm -rf !(docs)
 mv docs/build/html/* ./
 rm -rf docs
 git add -A
