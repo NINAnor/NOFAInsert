@@ -62,7 +62,7 @@ class TestGuiInit(unittest.TestCase):
         mc.initGui()
         mc.run()
 
-        self.assertIsNotNone(mc, 'Plugin not initalized properly.')
+        self.assertIsNotNone(mc, 'Plugin not initialized properly.')
 
         self.assertEqual(
             mc.ins_mw.loc_tbl.rowCount(), 1,
