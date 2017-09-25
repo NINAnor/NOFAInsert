@@ -24,6 +24,8 @@
  ***************************************************************************/
 """
 
+from PyQt4.QtCore import Qt
+
 import logging
 import os
 import sys
@@ -47,39 +49,120 @@ class TestGuiInit(unittest.TestCase):
 
     def setUp(self):
         """Runs before each test."""
+
         pass
  
     def tearDown(self):
         """Runs after each test."""
+
         pass
 
+    @classmethod
+    def setUpClass(cls):
+        """Runs before an individual class run."""
+
+        cls.mc = NOFAInsert(IFACE)
+        cls.mc.initGui()
+        cls.mc.run()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Runs after an individual class run."""
+
+        cls.mc = None
+
     def test_gui_init(self):
+        """Tests that plugin initializes properly."""
+
+        self.assertIsNotNone(
+            TestGuiInit.mc, 'Plugin not initialized properly.')
+
+    def test_loc_tbl_row_count(self):
+        """Tests that location table row count equals expected value."""
+
+        self.chck_tbl_row_count(TestGuiInit.mc.ins_mw.loc_tbl, 1)
+
+    def test_occ_tbl_row_count(self):
+        """Tests that occurrence table row count equals expected value."""
+
+        self.chck_tbl_row_count(TestGuiInit.mc.ins_mw.occ_tbl, 1)
+
+    def chck_tbl_row_count(self, tbl, exp_row_count):
         """
-        Tests that plugin initializes properly.
+        Checks that table row count equals the given expected value.
+
+        :param tbl: A table.
+        :type tbl: QTableWidget
+        :param exp_row_count: An expected row count.
+        :type exp_row_count: int
         """
 
-        mc = NOFAInsert(IFACE)
-        mc.initGui()
-        mc.run()
-
-        self.assertIsNotNone(mc, 'Plugin not initialized properly.')
-
+        row_count = tbl.rowCount()
         self.assertEqual(
-            mc.ins_mw.loc_tbl.rowCount(), 1,
-            'Location table row count is not 1.')
+            row_count, exp_row_count,
+            'Table "{}" row count "{}" is not as expected "{}".'
+            .format(tbl.objectName(), row_count, exp_row_count))
 
-        self.assertEqual(
-            mc.ins_mw.occ_tbl.rowCount(), 1,
-            'Occurrence table row count is not 1.')
+    def test_cb_cur_txt(self):
+        """Tests for all combo boxes that current text equals default value."""
 
-        for cb, cb_list in mc.ins_mw._nofa_cb_dict.items():
+        for cb, cb_list in TestGuiInit.mc.ins_mw._nofa_cb_dict.items():
             txt = cb.currentText()
             exp_txt = cb_list[2]
 
             self.assertEqual(
                 cb.currentText(), exp_txt,
-                'Combo box "{}" current text "{}" is not as expected "{}"'
+                'Combo box "{}" current text "{}" is not as expected "{}".'
                 .format(cb.objectName(), txt, exp_txt))
+
+    def test_occ_tbl_wdgs(self):
+        """
+        Tests for all occurrence widgets that data corresponds with table data.
+        """
+
+        mc = TestGuiInit.mc
+
+        tbl = mc.ins_mw.occ_tbl
+        tbl_wdgs = mc.ins_mw.occ_tbl_wdg_hdr_dict.keys()
+        m = tbl.currentRow()
+
+        for wdg in tbl_wdgs:
+            wdg_data = mc.ins_mw.get_wdg_list([wdg], False, True)[0]
+            tbl_data = tbl.item(m, tbl_wdgs.index(wdg)).data(Qt.EditRole)
+
+            self.assertEqual(
+                wdg_data, tbl_data,
+                'Widget "{}" data "{}" does not correspond '
+                'with table data "{}".'
+                .format(wdg.objectName(), wdg_data, tbl_data))
+
+    def test_loc_tbl_wdgs(self):
+        """
+        Tests for all current location widgets that data corresponds
+        with table data.
+        """
+
+        mc = TestGuiInit.mc
+
+        tbl = mc.ins_mw.loc_tbl
+        all_tbl_wdgs = mc.ins_mw.loc_tbl_wdg_hdr_dict.keys()
+        cur_tbl_wdgs = \
+            [mc.ins_mw.loc_edit_met_cb] + mc.ins_mw._cur_loc_edit_tbl_wdgs
+        m = tbl.currentRow()
+
+        for wdg in all_tbl_wdgs:
+            if wdg in cur_tbl_wdgs:
+                wdg_data = mc.ins_mw.get_wdg_list([wdg], False, True)[0]
+            else:
+                wdg_data = None
+
+            tbl_data = tbl.item(m, all_tbl_wdgs.index(wdg)).data(Qt.EditRole)
+
+            self.assertEqual(
+                wdg_data, tbl_data,
+                'Widget "{}" data "{}" does not correspond '
+                'with table data "{}".'
+                .format(wdg.objectName(), wdg_data, tbl_data))
 
 if __name__ == "__main__":
     unittest.main()
