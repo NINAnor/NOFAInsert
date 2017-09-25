@@ -24,15 +24,15 @@
  ***************************************************************************/
 """
 
-
-import os
-import unittest
 from qgis.core import (
     QgsProviderRegistry,
     QgsCoordinateReferenceSystem,
     QgsRasterLayer)
 
 import logging
+import os
+import unittest
+
 from utilities import get_qgis_app
 
 LOGGER = logging.getLogger('QGIS')
