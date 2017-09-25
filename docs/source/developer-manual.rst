@@ -227,7 +227,7 @@ by calling a script.
 
 .. hint::
 
-   Execute the script from plugin main directory.
+   Call the script from plugin main directory.
 
 GitHub Repository
 =================
