@@ -54,7 +54,7 @@ class TestMtdt(unittest.TestCase):
         parser.optionxform = str
         parser.read(mtdt_fp)
 
-        sxn_name = 'general' 
+        sxn_name = 'general'
         msg = 'Cannot find section "{}" in "{}"'.format(sxn_name, mtdt_fp)
 
         assert parser.has_section(sxn_name), msg

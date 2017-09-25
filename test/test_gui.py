@@ -45,13 +45,13 @@ QGIS_APP, IFACE, CANVAS, PARENT = get_qgis_app()
 
 
 class TestGuiInit(unittest.TestCase):
-    """Test for plugin initialization."""
+    """Test for plugin GUI initialization."""
 
     def setUp(self):
         """Runs before each test."""
 
         pass
- 
+
     def tearDown(self):
         """Runs after each test."""
 
