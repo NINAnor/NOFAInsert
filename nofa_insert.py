@@ -143,7 +143,7 @@ class NOFAInsert(object):
         self.con_dlg.exec_()
 
     def run(self):
-        """Run method that performs all the real work"""
+        """Runs method that performs all the real work."""
 
         self.con = None
 
