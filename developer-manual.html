@@ -13,6 +13,8 @@
 
   
   
+  
+  
 
   
 
@@ -42,6 +44,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -85,7 +88,10 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="user-manual.html">User Manual</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Manual</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#technologies">Technologies</a><ul>
@@ -119,8 +125,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">NOFAInsert</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">NOFAInsert</a>
+        
       </nav>
 
 
@@ -129,23 +137,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Developer Manual</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Developer Manual</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="_sources/developer-manual.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -358,13 +383,14 @@ for <a class="reference external" href="https://www.python.org/">Python</a> 2.</
 </pre></div>
 </div>
 <p>When you are satisfied with your changes publish updated documentation to
-<a class="reference external" href="https://github.com/NINAnor/NOFAInsert/tree/gh-pages">gh-pages</a> branch.</p>
+<a class="reference external" href="https://github.com/NINAnor/NOFAInsert/tree/gh-pages">gh-pages</a> branch
+by calling a script.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>./docs/update-docs.sh
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Execute the previous command from main directory.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Execute the script from plugin main directory.</p>
 </div>
 </div>
 <div class="section" id="github-repository">
@@ -381,15 +407,18 @@ for <a class="reference external" href="https://www.python.org/">Python</a> 2.</
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="api.html" class="btn btn-neutral float-right" title="API" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="user-manual.html" class="btn btn-neutral" title="User Manual" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="user-manual.html" class="btn btn-neutral" title="User Manual" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

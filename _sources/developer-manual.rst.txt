@@ -218,15 +218,16 @@ To view created pages in `Firefox <https://www.mozilla.org/>`__:
    firefox build/html/index.html &
 
 When you are satisfied with your changes publish updated documentation to
-`gh-pages <https://github.com/NINAnor/NOFAInsert/tree/gh-pages>`__ branch.
+`gh-pages <https://github.com/NINAnor/NOFAInsert/tree/gh-pages>`__ branch
+by calling a script.
 
 .. code-block:: bash
 
    ./docs/update-docs.sh
 
-.. note::
+.. hint::
 
-   Execute the previous command from main directory. 
+   Execute the script from plugin main directory.
 
 GitHub Repository
 =================
