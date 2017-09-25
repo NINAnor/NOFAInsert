@@ -93,7 +93,7 @@ There are three important branches:
    * **master** – main branch.
    * **gh-pages** – branch with :ref:`documentation <online-documentation>`.
    * **before_rework_2017-07-13** – version `0.5 <https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate>`__
-     came with significant changes. This branch server as a backup
+     came with significant changes. This branch serves as a backup
      of the previous version.
 
 Plugin Structure
