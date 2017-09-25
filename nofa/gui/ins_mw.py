@@ -3192,6 +3192,13 @@ class InsMw(QMainWindow, FORM_CLASS):
         tbl_wdgs = self._get_tbl_wdgs()
 
         self._rst_wdgs(tbl_wdgs)
+
+        nofa_cb_dict = self._nofa_cb_dict
+
+        for wdg in tbl_wdgs:
+            if wdg in nofa_cb_dict.keys():
+                self._rst_cb_by_cb_dict({wdg: nofa_cb_dict[wdg]})
+
         self._emit_wdgs_sgnls(tbl_wdgs)
 
     def _rst_all_tbl_rows(self):
