@@ -55,7 +55,7 @@ class TestGuiInit(unittest.TestCase):
 
     def test_gui_init(self):
         """
-        Tests that plugin initializes.
+        Tests that plugin initializes properly.
         """
 
         mc = NOFAInsert(IFACE)
@@ -71,6 +71,15 @@ class TestGuiInit(unittest.TestCase):
         self.assertEqual(
             mc.ins_mw.occ_tbl.rowCount(), 1,
             'Occurrence table row count is not 1.')
+
+        for cb, cb_list in mc.ins_mw._nofa_cb_dict.items():
+            txt = cb.currentText()
+            exp_txt = cb_list[2]
+
+            self.assertEqual(
+                cb.currentText(), exp_txt,
+                'Combo box "{}" current text "{}" is not as expected "{}"'
+                .format(cb.objectName(), txt, exp_txt))
 
 if __name__ == "__main__":
     unittest.main()
