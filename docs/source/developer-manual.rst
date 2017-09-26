@@ -26,12 +26,13 @@ Documentation
 The newest version of plugin
 (`0.5 <https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate>`__)
 was developed for `QGIS <https://www.qgis.org/>`__ 2.18.
-It uses packages `PyQt4 <http://pyqt.sourceforge.net/Docs/PyQt4/>`__
-and `psycopg <http://initd.org/psycopg/>`__.
 
    * `QGIS 2.18 API <https://qgis.org/api/2.18/>`__
    * `PyQt4 <http://pyqt.sourceforge.net/Docs/PyQt4/>`__
    * `psycopg2 <http://initd.org/psycopg/docs/>`__
+   * `unittest <https://docs.python.org/2/library/unittest.html>`__
+   * `nose <https://nose.readthedocs.io/>`__
+   * `coverage <https://coverage.readthedocs.io/en/coverage-4.4.1/>`__
 
 ***********
 Development
@@ -228,6 +229,52 @@ by calling a script.
 .. hint::
 
    Call the script from plugin main directory.
+
+Testing
+=======
+
+Unfortunately NOFAInsert plugin was not developed by using
+`test-driven development <https://en.wikipedia.org/wiki/Test-driven_development>`__
+so test were written later. That means there are not as many test as there
+should be.
+
+.. todo::
+
+   Write tests for:
+
+      * :guilabel:`Location Table`
+      * :guilabel:`Occurrence Table`
+      * :guilabel:`Dataset` :guilabel:`Project` and :guilabel:`Reference`
+        windows
+      * inserting new :guilabel:`Dataset` :guilabel:`Project`
+        and :guilabel:`Reference`
+      * :guilabel:`Reset` button
+      * :guilabel:`Insert to NOFA` button
+      * :guilabel:`History` tab
+
+After trying to make
+`QGIS Tester Plugin <https://github.com/boundlessgeo/qgis-tester-plugin>`__
+work and considering
+`QGIS Desktop for Docker <https://github.com/kartoza/docker-qgis-desktop>`__
+it was decided to use
+`unittest <https://docs.python.org/2/library/unittest.html>`__ framework
+and `nose <https://nose.readthedocs.io/>`__ extension.
+On top of that
+`coverage <https://coverage.readthedocs.io/en/coverage-4.4.1/>`__ tool is used
+for an overview of how much code is tested.
+
+First install all required packages:
+
+.. code-block:: bash
+
+   sudo pip install nose
+   sudo pip install coverage
+
+To run tests execute this command from plugin main directory:
+
+.. code-block:: bash
+
+   make test
 
 GitHub Repository
 =================
