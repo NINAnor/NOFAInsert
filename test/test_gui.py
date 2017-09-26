@@ -208,24 +208,124 @@ class TestGuiInteract(unittest.TestCase):
         """
 
         wb_str = u'drop'
-        self.mc.ins_mw.wb_le.setText(wb_str)
 
-        self.mc.ins_mw.loc_srch_btn.click()
+        self.srch_wb(wb_str)
 
         txt = self.mc.ins_mw.lake_name_statlbl.text()
         exp_txt = u'Found 4 location(s).'
         self.assertEqual(
             txt, exp_txt,
-            u'Searching for location by water body "{}" did not end '
-            u'as expected. Status text is "{}" but should be "{}".'
+            u'Search for location by water body "{}" did not end '
+            u'as expected. Status text is "{}" but it is expected to be "{}".'
             .format(wb_str, txt, exp_txt))
 
         btn = self.mc.ins_mw.loc_load_btn
         self.assertTrue(
             btn.isEnabled(),
-            u'Searching for location by water body "{}" '
-            u'button "{}" is not enabled'
+            u'Search for location by water body "{}" '
+            u'did not enable button "{}".'
             .format(wb_str, btn.objectName()))
+
+    def srch_wb(self, wb_str):
+        """
+        Searches for water body by the given name.
+
+        :param wb_str: Water body string.
+        :type wb_str: str
+        """
+
+        self.mc.ins_mw.cntry_code_cb.setCurrentIndex(0)
+        self.mc.ins_mw.cnty_cb.setCurrentIndex(0)
+        self.mc.ins_mw.muni_cb.setCurrentIndex(0)
+
+        self.mc.ins_mw.wb_le.setText(wb_str)
+
+        self.mc.ins_mw.loc_srch_btn.click()
+
+    def test_loc_srch_fltrs(self):
+        """Tests that location search filters work as expected."""
+ 
+        self.cntry_code_cb = self.mc.ins_mw.cntry_code_cb
+        self.cnty_cb = self.mc.ins_mw.cnty_cb
+        self.muni_cb = self.mc.ins_mw.muni_cb
+
+        # reset all location search filters and check current text
+        idx = 0
+        exp_txt = u'<all>'
+        for cb in (self.cntry_code_cb, self.cnty_cb, self.muni_cb):
+            cb.setCurrentIndex(idx)
+            txt = cb.currentText()
+            self.assertEqual(
+                txt, exp_txt,
+                u'Text on index "{}" of "{}" '
+                u'is "{}" but it is expected to be "{}".'
+                .format(
+                    idx, cb.objectName(),
+                    txt, exp_txt))
+ 
+        # check item count
+        cntry_str = u'NO'
+        self.cntry_code_cb.setCurrentIndex(
+            self.cntry_code_cb.findText(cntry_str))
+
+        self.chck_cb_cnt(self.cntry_code_cb, cntry_str, self.cnty_cb, 20)
+        self.chck_cb_cnt(self.cntry_code_cb, cntry_str, self.muni_cb, 423)
+
+        cnty_str = u'Troms'
+        self.cnty_cb.setCurrentIndex(self.cnty_cb.findText(cnty_str))
+
+        self.chck_cb_cnt(self.cnty_cb, cnty_str, self.muni_cb, 25)
+
+        self.cntry_code_cb.setCurrentIndex(idx)
+        for cb in (self.cnty_cb, self.muni_cb):
+            self.assertEqual(
+                cb.currentIndex(), idx,
+                u'Changing index of "{}" to "{}" '
+                u'did not change index of "{}" to "{}".'
+                .format(
+                    self.cntry_code_cb.objectName(), idx,
+                    cb.objectName(), idx))
+
+    def chck_cb_cnt(self, sig_cb, sig_cb_str, slt_cb, exp_slt_cb_cnt):
+        """
+        Checks that item count of `slot` combo box is as expected.
+
+        :param sig_cb: `Signal` combo box.
+        :type sig_cb: QComboBox
+        :param sig_cb_str: `Signal` combo box string.
+        :type sig_cb_str: str
+        :param slt_cb: `Slot` combo box.
+        :type slt_cb: QComboBox
+        :param exp_slt_cb_cnt: Expected `signal` combo box count.
+        :type exp_slt_cb_cnt: int
+        """
+
+        slt_cb_cnt = slt_cb.count()
+        self.assertEqual(
+            slt_cb_cnt, exp_slt_cb_cnt,
+            u'Changing current item of "{}" to "{}" did not change '
+            u'item count of "{}" as expected. '
+            u'Item count is "{}" but it is expected to be "{}".'
+            .format(
+                sig_cb.objectName(), sig_cb_str,
+                slt_cb.objectName(),
+                slt_cb_cnt, exp_slt_cb_cnt))
+
+    def test_load_loc_lyr(self):
+        """
+        Tests that location layer is added to interface
+        and set as active layer.
+        """
+
+        IFACE.removeAllLayers()
+
+        wb_str = u'drop'
+
+        self.srch_wb(wb_str)
+        self.mc.ins_mw.loc_load_btn.click()
+
+        self.assertIsNotNone(
+            IFACE.activeLayer(), u'Location layer was not added.')
 
 if __name__ == "__main__":
     unittest.main()

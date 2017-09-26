@@ -159,6 +159,7 @@ class QgisInterface(QObject):
     def activeLayer(self):
         """Returns pointer to the active layer."""
 
+        layers = QgsMapLayerRegistry.instance().mapLayers()
         for item in QgsMapLayerRegistry.instance().mapLayers():
             return layers[item]
 
