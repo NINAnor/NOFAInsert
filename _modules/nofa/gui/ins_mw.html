@@ -3352,6 +3352,13 @@
         <span class="n">tbl_wdgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tbl_wdgs</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_rst_wdgs</span><span class="p">(</span><span class="n">tbl_wdgs</span><span class="p">)</span>
+
+        <span class="n">nofa_cb_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nofa_cb_dict</span>
+
+        <span class="k">for</span> <span class="n">wdg</span> <span class="ow">in</span> <span class="n">tbl_wdgs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">wdg</span> <span class="ow">in</span> <span class="n">nofa_cb_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rst_cb_by_cb_dict</span><span class="p">({</span><span class="n">wdg</span><span class="p">:</span> <span class="n">nofa_cb_dict</span><span class="p">[</span><span class="n">wdg</span><span class="p">]})</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_emit_wdgs_sgnls</span><span class="p">(</span><span class="n">tbl_wdgs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_rst_all_tbl_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

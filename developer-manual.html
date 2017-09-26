@@ -107,6 +107,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#plugin-structure">Plugin Structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nina-qgis-plugin-repository">NINA QGIS Plugin Repository</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#online-documentation">Online Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#github-repository">GitHub Repository</a></li>
 </ul>
 </li>
@@ -197,14 +198,15 @@ Additionally NOFAInsert plugin makes extensive use of
 <h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
 <p>The newest version of plugin
 (<a class="reference external" href="https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate">0.5</a>)
-was developed for <a class="reference external" href="https://www.qgis.org/">QGIS</a> 2.18.
-It uses packages <a class="reference external" href="http://pyqt.sourceforge.net/Docs/PyQt4/">PyQt4</a>
-and <a class="reference external" href="http://initd.org/psycopg/">psycopg</a>.</p>
+was developed for <a class="reference external" href="https://www.qgis.org/">QGIS</a> 2.18.</p>
 <blockquote>
 <div><ul class="simple">
 <li><a class="reference external" href="https://qgis.org/api/2.18/">QGIS 2.18 API</a></li>
 <li><a class="reference external" href="http://pyqt.sourceforge.net/Docs/PyQt4/">PyQt4</a></li>
 <li><a class="reference external" href="http://initd.org/psycopg/docs/">psycopg2</a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/unittest.html">unittest</a></li>
+<li><a class="reference external" href="https://nose.readthedocs.io/">nose</a></li>
+<li><a class="reference external" href="https://coverage.readthedocs.io/en/coverage-4.4.1/">coverage</a></li>
 </ul>
 </div></blockquote>
 </div>
@@ -391,6 +393,49 @@ by calling a script.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">Call the script from plugin main directory.</p>
+</div>
+</div>
+<div class="section" id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h3>
+<p>Unfortunately NOFAInsert plugin was not developed by using
+<a class="reference external" href="https://en.wikipedia.org/wiki/Test-driven_development">test-driven development</a>
+so test were written later. That means there are not as many test as there
+should be.</p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p>Write tests for:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li><span class="guilabel">Location Table</span></li>
+<li><span class="guilabel">Occurrence Table</span></li>
+<li><span class="guilabel">Dataset</span> <span class="guilabel">Project</span> and <span class="guilabel">Reference</span>
+windows</li>
+<li>inserting new <span class="guilabel">Dataset</span> <span class="guilabel">Project</span>
+and <span class="guilabel">Reference</span></li>
+<li><span class="guilabel">Reset</span> button</li>
+<li><span class="guilabel">Insert to NOFA</span> button</li>
+<li><span class="guilabel">History</span> tab</li>
+</ul>
+</div></blockquote>
+</div>
+<p>After trying to make
+<a class="reference external" href="https://github.com/boundlessgeo/qgis-tester-plugin">QGIS Tester Plugin</a>
+work and considering
+<a class="reference external" href="https://github.com/kartoza/docker-qgis-desktop">QGIS Desktop for Docker</a>
+it was decided to use
+<a class="reference external" href="https://docs.python.org/2/library/unittest.html">unittest</a> framework
+and <a class="reference external" href="https://nose.readthedocs.io/">nose</a> extension.
+On top of that
+<a class="reference external" href="https://coverage.readthedocs.io/en/coverage-4.4.1/">coverage</a> tool is used
+for an overview of how much code is tested.</p>
+<p>First install all required packages:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo pip install nose
+sudo pip install coverage
+</pre></div>
+</div>
+<p>To run tests execute this command from plugin main directory:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>make <span class="nb">test</span>
+</pre></div>
 </div>
 </div>
 <div class="section" id="github-repository">
