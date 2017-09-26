@@ -42,6 +42,14 @@ QGIS_APP, IFACE, CANVAS, PARENT = get_qgis_app()
 class TestQGIS(unittest.TestCase):
     """Test for QGIS."""
 
+    def shortDescription(self):
+        """
+        Method that overrides default behaviour
+        and allows printing multiline test description.
+        """
+
+        return self._testMethodDoc
+
     def test_providers(self):
         """Tests that QGIS contains several providers."""
 

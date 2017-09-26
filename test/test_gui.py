@@ -47,6 +47,14 @@ QGIS_APP, IFACE, CANVAS, PARENT = get_qgis_app()
 class TestGuiInit(unittest.TestCase):
     """Test for plugin GUI initialization."""
 
+    def shortDescription(self):
+        """
+        Method that overrides default behaviour
+        and allows printing multiline test description.
+        """
+
+        return self._testMethodDoc
+
     def setUp(self):
         """Runs before each test."""
 
@@ -177,6 +185,14 @@ class TestGuiInit(unittest.TestCase):
 
 class TestGuiInteract(unittest.TestCase):
     """Test for plugin GUI interaction."""
+
+    def shortDescription(self):
+        """
+        Method that overrides default behaviour
+        and allows printing multiline test description.
+        """
+
+        return self._testMethodDoc
 
     def setUp(self):
         """Runs before each test."""

@@ -35,6 +35,14 @@ LOGGER = logging.getLogger('QGIS')
 class TestMtdt(unittest.TestCase):
     """Test for plugin metadata."""
 
+    def shortDescription(self):
+        """
+        Method that overrides default behaviour
+        and allows printing multiline test description.
+        """
+
+        return self._testMethodDoc
+
     def test_mtdt(self):
         """Tests that the plugin metadata contains mandatory information."""
 
