@@ -164,5 +164,18 @@ class TestGuiInit(unittest.TestCase):
                 'with table data "{}".'
                 .format(wdg.objectName(), wdg_data, tbl_data))
 
+    def test_txncvg_tw(self):
+        """
+        Tests that there are no checked items
+        in taxonomic coverage tree widget.
+        """
+
+        ckd_txns = TestGuiInit.mc.ins_mw._ckd_txns
+
+        self.assertEqual(
+            len(ckd_txns), 0,
+            'There are checked items in taxonomic coverage tree widget: {}'
+            .format(ckd_txns))
+
 if __name__ == "__main__":
     unittest.main()
