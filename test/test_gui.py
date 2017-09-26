@@ -260,7 +260,7 @@ class TestGuiInteract(unittest.TestCase):
 
     def test_loc_srch_fltrs(self):
         """Tests that location search filters work as expected."""
- 
+
         self.cntry_code_cb = self.mc.ins_mw.cntry_code_cb
         self.cnty_cb = self.mc.ins_mw.cnty_cb
         self.muni_cb = self.mc.ins_mw.muni_cb
@@ -278,7 +278,7 @@ class TestGuiInteract(unittest.TestCase):
                 .format(
                     idx, cb.objectName(),
                     txt, exp_txt))
- 
+
         # check item count
         cntry_str = u'NO'
         self.cntry_code_cb.setCurrentIndex(
