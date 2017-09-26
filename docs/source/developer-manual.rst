@@ -55,6 +55,8 @@ was released. Another Erasmus+ intern Ondřej Svoboda
 (`GitHub profile <https://github.com/svoboond>`__) reworked the whole plugin
 and released version
 `0.5 <https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate>`__.
+Current version is
+`0.5.1 <https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5.1>`__.
 
 Development Tools Setup
 =======================
@@ -160,7 +162,7 @@ users get a notification.
    :guilabel:`Manage and Install Plugins...` :menuselection:`-->`
    :guilabel:`Settings`.
 
-To adjust the file log in to server and edit ``version="0.5"`` to the new
+To adjust the file log in to server and edit ``version="0.5.1"`` to the new
 version. In order to be able to do that you need to have superuser rights.
 
 .. code-block:: bash
