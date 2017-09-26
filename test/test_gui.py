@@ -50,12 +50,12 @@ class TestGuiInit(unittest.TestCase):
     def setUp(self):
         """Runs before each test."""
 
-        pass
+        self.mc = TestGuiInit.mc
 
     def tearDown(self):
         """Runs after each test."""
 
-        pass
+        self.mc = None
 
     @classmethod
     def setUpClass(cls):
@@ -75,17 +75,17 @@ class TestGuiInit(unittest.TestCase):
         """Tests that plugin initializes properly."""
 
         self.assertIsNotNone(
-            TestGuiInit.mc, 'Plugin not initialized properly.')
+            self.mc, 'Plugin not initialized properly.')
 
     def test_loc_tbl_row_count(self):
         """Tests that location table row count equals expected value."""
 
-        self.chck_tbl_row_count(TestGuiInit.mc.ins_mw.loc_tbl, 1)
+        self.chck_tbl_row_count(self.mc.ins_mw.loc_tbl, 1)
 
     def test_occ_tbl_row_count(self):
         """Tests that occurrence table row count equals expected value."""
 
-        self.chck_tbl_row_count(TestGuiInit.mc.ins_mw.occ_tbl, 1)
+        self.chck_tbl_row_count(self.mc.ins_mw.occ_tbl, 1)
 
     def chck_tbl_row_count(self, tbl, exp_row_count):
         """
@@ -106,7 +106,7 @@ class TestGuiInit(unittest.TestCase):
     def test_cb_cur_txt(self):
         """Tests for all combo boxes that current text equals default value."""
 
-        for cb, cb_list in TestGuiInit.mc.ins_mw._nofa_cb_dict.items():
+        for cb, cb_list in self.mc.ins_mw._nofa_cb_dict.items():
             txt = cb.currentText()
             exp_txt = cb_list[2]
 
@@ -120,14 +120,12 @@ class TestGuiInit(unittest.TestCase):
         Tests for all occurrence widgets that data corresponds with table data.
         """
 
-        mc = TestGuiInit.mc
-
-        tbl = mc.ins_mw.occ_tbl
-        tbl_wdgs = mc.ins_mw.occ_tbl_wdg_hdr_dict.keys()
+        tbl = self.mc.ins_mw.occ_tbl
+        tbl_wdgs = self.mc.ins_mw.occ_tbl_wdg_hdr_dict.keys()
         m = tbl.currentRow()
 
         for wdg in tbl_wdgs:
-            wdg_data = mc.ins_mw.get_wdg_list([wdg], False, True)[0]
+            wdg_data = self.mc.ins_mw.get_wdg_list([wdg], False, True)[0]
             tbl_data = tbl.item(m, tbl_wdgs.index(wdg)).data(Qt.EditRole)
 
             self.assertEqual(
@@ -142,17 +140,16 @@ class TestGuiInit(unittest.TestCase):
         with table data.
         """
 
-        mc = TestGuiInit.mc
-
-        tbl = mc.ins_mw.loc_tbl
-        all_tbl_wdgs = mc.ins_mw.loc_tbl_wdg_hdr_dict.keys()
-        cur_tbl_wdgs = \
-            [mc.ins_mw.loc_edit_met_cb] + mc.ins_mw._cur_loc_edit_tbl_wdgs
+        tbl = self.mc.ins_mw.loc_tbl
+        all_tbl_wdgs = self.mc.ins_mw.loc_tbl_wdg_hdr_dict.keys()
+        cur_tbl_wdgs = (
+            [self.mc.ins_mw.loc_edit_met_cb]
+            + self.mc.ins_mw._cur_loc_edit_tbl_wdgs)
         m = tbl.currentRow()
 
         for wdg in all_tbl_wdgs:
             if wdg in cur_tbl_wdgs:
-                wdg_data = mc.ins_mw.get_wdg_list([wdg], False, True)[0]
+                wdg_data = self.mc.ins_mw.get_wdg_list([wdg], False, True)[0]
             else:
                 wdg_data = None
 
@@ -170,7 +167,7 @@ class TestGuiInit(unittest.TestCase):
         in taxonomic coverage tree widget.
         """
 
-        ckd_txns = TestGuiInit.mc.ins_mw._ckd_txns
+        ckd_txns = self.mc.ins_mw._ckd_txns
 
         self.assertEqual(
             len(ckd_txns), 0,
