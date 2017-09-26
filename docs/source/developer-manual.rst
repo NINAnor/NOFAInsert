@@ -134,8 +134,13 @@ Structure with short comments is as follows:
    │   └── create_log_tbls.py   # script for creating log tables
    ├── test/                    # directory with tests
    ├── __init__.py              # module for package initialization
+   ├── LICENSE                  # license file
+   ├── Makefile                 # makefile
    ├── metadata.txt             # plugin metadata
+   ├── nofainsert.png           # PNG plugin icon 64x64 pixels
+   ├── nofainsert.svg           # SVG plugin icon
    ├── nofa_insert.py           # module with main class
+   ├── nofainsert-24.png        # PNG plugin icon 24x24 pixels
    └── README.md                # GitHub readme
 
 NINA QGIS Plugin Repository
