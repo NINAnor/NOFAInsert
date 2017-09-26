@@ -23,9 +23,8 @@ Additionally NOFAInsert plugin makes extensive use of
 Documentation
 =============
 
-The newest version of plugin
-(`0.5 <https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate>`__)
-was developed for `QGIS <https://www.qgis.org/>`__ 2.18.
+The newest version of plugin was developed for
+`QGIS <https://www.qgis.org/>`__ 2.18.
 
    * `QGIS 2.18 API <https://qgis.org/api/2.18/>`__
    * `PyQt4 <http://pyqt.sourceforge.net/Docs/PyQt4/>`__
