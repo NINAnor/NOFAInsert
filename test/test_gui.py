@@ -174,5 +174,58 @@ class TestGuiInit(unittest.TestCase):
             'There are checked items in taxonomic coverage tree widget: {}'
             .format(ckd_txns))
 
+
+class TestGuiInteract(unittest.TestCase):
+    """Test for plugin GUI interaction."""
+
+    def setUp(self):
+        """Runs before each test."""
+
+        self.mc = TestGuiInteract.mc
+
+    def tearDown(self):
+        """Runs after each test."""
+
+        self.mc = None
+
+    @classmethod
+    def setUpClass(cls):
+        """Runs before an individual class run."""
+
+        cls.mc = NOFAInsert(IFACE)
+        cls.mc.initGui()
+        cls.mc.run()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Runs after an individual class run."""
+
+        cls.mc = None
+
+    def test_loc_srch_wb(self):
+        """
+        Tests that searching for location by water body works.
+        """
+
+        wb_str = u'drop'
+        self.mc.ins_mw.wb_le.setText(wb_str)
+
+        self.mc.ins_mw.loc_srch_btn.click()
+
+        txt = self.mc.ins_mw.lake_name_statlbl.text()
+        exp_txt = u'Found 4 location(s).'
+        self.assertEqual(
+            txt, exp_txt,
+            u'Searching for location by water body "{}" did not end '
+            u'as expected. Status text is "{}" but should be "{}".'
+            .format(wb_str, txt, exp_txt))
+
+        btn = self.mc.ins_mw.loc_load_btn
+        self.assertTrue(
+            btn.isEnabled(),
+            u'Searching for location by water body "{}" '
+            u'button "{}" is not enabled'
+            .format(wb_str, btn.objectName()))
+
 if __name__ == "__main__":
     unittest.main()
