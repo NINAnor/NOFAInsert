@@ -75,7 +75,7 @@ class TestGuiInit(unittest.TestCase):
         """Tests that plugin initializes properly."""
 
         self.assertIsNotNone(
-            self.mc, 'Plugin not initialized properly.')
+            self.mc, u'Plugin not initialized properly.')
 
     def test_loc_tbl_row_count(self):
         """Tests that location table row count equals expected value."""
@@ -100,7 +100,7 @@ class TestGuiInit(unittest.TestCase):
         row_count = tbl.rowCount()
         self.assertEqual(
             row_count, exp_row_count,
-            'Table "{}" row count "{}" is not as expected "{}".'
+            u'Table "{}" row count "{}" is not as expected "{}".'
             .format(tbl.objectName(), row_count, exp_row_count))
 
     def test_cb_cur_txt(self):
@@ -112,7 +112,7 @@ class TestGuiInit(unittest.TestCase):
 
             self.assertEqual(
                 cb.currentText(), exp_txt,
-                'Combo box "{}" current text "{}" is not as expected "{}".'
+                u'Combo box "{}" current text "{}" is not as expected "{}".'
                 .format(cb.objectName(), txt, exp_txt))
 
     def test_occ_tbl_wdgs(self):
@@ -130,8 +130,8 @@ class TestGuiInit(unittest.TestCase):
 
             self.assertEqual(
                 wdg_data, tbl_data,
-                'Widget "{}" data "{}" does not correspond '
-                'with table data "{}".'
+                u'Widget "{}" data "{}" does not correspond '
+                u'with table data "{}".'
                 .format(wdg.objectName(), wdg_data, tbl_data))
 
     def test_loc_tbl_wdgs(self):
@@ -157,8 +157,8 @@ class TestGuiInit(unittest.TestCase):
 
             self.assertEqual(
                 wdg_data, tbl_data,
-                'Widget "{}" data "{}" does not correspond '
-                'with table data "{}".'
+                u'Widget "{}" data "{}" does not correspond '
+                u'with table data "{}".'
                 .format(wdg.objectName(), wdg_data, tbl_data))
 
     def test_txncvg_tw(self):
@@ -171,7 +171,7 @@ class TestGuiInit(unittest.TestCase):
 
         self.assertEqual(
             len(ckd_txns), 0,
-            'There are checked items in taxonomic coverage tree widget: {}'
+            u'There are checked items in taxonomic coverage tree widget: {}'
             .format(ckd_txns))
 
 
