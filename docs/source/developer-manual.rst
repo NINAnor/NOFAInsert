@@ -163,13 +163,13 @@ users get a notification.
    :guilabel:`Settings`.
 
 To adjust the file log in to server and edit ``version="0.5.1"`` to the new
-version. In order to be able to do that you need to have superuser rights.
+version.
 
 .. code-block:: bash
 
    ssh <username>@vm-srv-finstad.vm.ntnu.no
    cd /var/www/html/NOFA_plugins
-   sudo nano plugins.xml
+   nano plugins.xml
 
 .. note::
 
