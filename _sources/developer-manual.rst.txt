@@ -23,9 +23,8 @@ Additionally NOFAInsert plugin makes extensive use of
 Documentation
 =============
 
-The newest version of plugin
-(`0.5 <https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate>`__)
-was developed for `QGIS <https://www.qgis.org/>`__ 2.18.
+The newest version of plugin was developed for
+`QGIS <https://www.qgis.org/>`__ 2.18.
 
    * `QGIS 2.18 API <https://qgis.org/api/2.18/>`__
    * `PyQt4 <http://pyqt.sourceforge.net/Docs/PyQt4/>`__
@@ -56,6 +55,8 @@ was released. Another Erasmus+ intern Ondřej Svoboda
 (`GitHub profile <https://github.com/svoboond>`__) reworked the whole plugin
 and released version
 `0.5 <https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate>`__.
+Current version is
+`0.5.1 <https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5.1>`__.
 
 Development Tools Setup
 =======================
@@ -161,14 +162,14 @@ users get a notification.
    :guilabel:`Manage and Install Plugins...` :menuselection:`-->`
    :guilabel:`Settings`.
 
-To adjust the file log in to server and edit ``version="0.5"`` to the new
-version. In order to be able to do that you need to have superuser rights.
+To adjust the file log in to server and edit ``version="0.5.1"`` to the new
+version.
 
 .. code-block:: bash
 
    ssh <username>@vm-srv-finstad.vm.ntnu.no
    cd /var/www/html/NOFA_plugins
-   sudo nano plugins.xml
+   nano plugins.xml
 
 .. note::
 

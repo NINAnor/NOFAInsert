@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Developer Manual &mdash; NOFAInsert 0.5 documentation</title>
+  <title>Developer Manual &mdash; NOFAInsert 0.5.1 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
 
   
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="NOFAInsert 0.5 documentation" href="index.html"/>
+    <link rel="top" title="NOFAInsert 0.5.1 documentation" href="index.html"/>
         <link rel="next" title="API" href="api.html"/>
         <link rel="prev" title="User Manual" href="user-manual.html"/> 
 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.5
+                0.5.1
               </div>
             
           
@@ -196,9 +196,8 @@ Additionally NOFAInsert plugin makes extensive use of
 <a class="reference external" href="http://initd.org/psycopg/">psycopg</a> package.</p>
 <div class="section" id="documentation">
 <h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
-<p>The newest version of plugin
-(<a class="reference external" href="https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate">0.5</a>)
-was developed for <a class="reference external" href="https://www.qgis.org/">QGIS</a> 2.18.</p>
+<p>The newest version of plugin was developed for
+<a class="reference external" href="https://www.qgis.org/">QGIS</a> 2.18.</p>
 <blockquote>
 <div><ul class="simple">
 <li><a class="reference external" href="https://qgis.org/api/2.18/">QGIS 2.18 API</a></li>
@@ -229,7 +228,9 @@ Jakob Miksch (<a class="reference external" href="https://github.com/bufferclip"
 was released. Another Erasmus+ intern Ondřej Svoboda
 (<a class="reference external" href="https://github.com/svoboond">GitHub profile</a>) reworked the whole plugin
 and released version
-<a class="reference external" href="https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate">0.5</a>.</p>
+<a class="reference external" href="https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate">0.5</a>.
+Current version is
+<a class="reference external" href="https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5.1">0.5.1</a>.</p>
 </div>
 <div class="section" id="development-tools-setup">
 <h3>Development Tools Setup<a class="headerlink" href="#development-tools-setup" title="Permalink to this headline">¶</a></h3>
@@ -339,11 +340,11 @@ users get a notification.</p>
 <span class="guilabel">Manage and Install Plugins…</span> <span class="menuselection">‣</span>
 <span class="guilabel">Settings</span>.</p>
 </div>
-<p>To adjust the file log in to server and edit <code class="docutils literal"><span class="pre">version=&quot;0.5&quot;</span></code> to the new
-version. In order to be able to do that you need to have superuser rights.</p>
+<p>To adjust the file log in to server and edit <code class="docutils literal"><span class="pre">version=&quot;0.5.1&quot;</span></code> to the new
+version.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>ssh &lt;username&gt;@vm-srv-finstad.vm.ntnu.no
 <span class="nb">cd</span> /var/www/html/NOFA_plugins
-sudo nano plugins.xml
+nano plugins.xml
 </pre></div>
 </div>
 <div class="admonition note">
@@ -499,7 +500,7 @@ sudo pip install coverage
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.5',
+            VERSION:'0.5.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
