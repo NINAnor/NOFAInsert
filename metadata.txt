@@ -10,7 +10,7 @@
 name=NOFAInsert
 qgisMinimumVersion=2.18
 description=Insert fish occurrence data to NOFA DB
-version=0.5.1
+version=0.5.2
 author=NINA
 email=matteo.destefano@nina.no
 
