@@ -2311,15 +2311,13 @@ class InsMw(QMainWindow, FORM_CLASS):
 
     def pop_cb(self, cb_dict):
         """
-        Populates combo boxes.
+        Populates combo boxe(s) and/or list widget(s).
 
         :param cb_dict:
          | A combo box dictionary:
          |    - key - <combo box name>
          |    - value - [<fill method>, [<arguments>], <default value>]
-        :type cb_dict: dict.
-        :param cb: Who knows.
-        :type cb: bool
+        :type cb_dict: dict
         """
 
         for cb, cb_list in cb_dict.items():
