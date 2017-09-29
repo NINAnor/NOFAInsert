@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nofa.db &mdash; NOFAInsert 0.5.1 documentation</title>
+  <title>nofa.db &mdash; NOFAInsert 0.5.2 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
 
   
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="NOFAInsert 0.5.1 documentation" href="../../index.html"/>
+    <link rel="top" title="NOFAInsert 0.5.2 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.5.1
+                0.5.2
               </div>
             
           
@@ -270,7 +270,7 @@
     <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
     <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        INSERT INTO    nofa.event (</span>
+<span class="sd">        INSERT INTO    nofa.&quot;event&quot; (</span>
 <span class="sd">                           &quot;locationID&quot;,</span>
 <span class="sd">                           &quot;eventID&quot;,</span>
 <span class="sd">                           &quot;samplingProtocol&quot;,</span>
@@ -494,7 +494,7 @@
     <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        SELECT      &quot;locationID&quot;</span>
-<span class="sd">        FROM        nofa.location</span>
+<span class="sd">        FROM        nofa.&quot;location&quot;</span>
 <span class="sd">        WHERE       &quot;locationID&quot; = %s</span>
 <span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
         <span class="p">(</span><span class="n">locid</span><span class="p">,))</span>
@@ -526,7 +526,7 @@
     <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        SELECT      &quot;locationID&quot;</span>
-<span class="sd">        FROM        nofa.location</span>
+<span class="sd">        FROM        nofa.&quot;location&quot;</span>
 <span class="sd">        WHERE       &quot;no_vatn_lnr&quot; = %s</span>
 <span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
         <span class="p">(</span><span class="n">nvl</span><span class="p">,))</span>
@@ -679,7 +679,7 @@
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        SELECT      &quot;scientificName&quot;,</span>
 <span class="sd">                    &quot;family&quot;</span>
-<span class="sd">        FROM        nofa.l_taxon</span>
+<span class="sd">        FROM        nofa.&quot;l_taxon&quot;</span>
 <span class="sd">        WHERE       &quot;scientificName&quot; IS NOT NULL</span>
 <span class="sd">                    AND</span>
 <span class="sd">                    &quot;family&quot; IS NOT NULL</span>
@@ -1451,7 +1451,7 @@
 
 <div class="viewcode-block" id="ins_dtst"><a class="viewcode-back" href="../../api.html#nofa.db.ins_dtst">[docs]</a><span class="k">def</span> <span class="nf">ins_dtst</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">dtst_list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Insert an event to the database.</span>
+<span class="sd">    Insert a dataset to the database.</span>
 
 <span class="sd">    :param con: A connection.</span>
 <span class="sd">    :type con: psycopg2.connection</span>
@@ -1462,7 +1462,7 @@
     <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
     <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        INSERT INTO     nofa.m_dataset (</span>
+<span class="sd">        INSERT INTO     nofa.&quot;m_dataset&quot; (</span>
 <span class="sd">                            &quot;datasetName&quot;,</span>
 <span class="sd">                            &quot;datasetID&quot;,</span>
 <span class="sd">                            &quot;ownerInstitutionCode&quot;,</span>
@@ -1512,7 +1512,7 @@
     <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
     <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        INSERT INTO     nofa.m_project (</span>
+<span class="sd">        INSERT INTO     nofa.&quot;m_project&quot; (</span>
 <span class="sd">                            &quot;organisation&quot;,</span>
 <span class="sd">                            &quot;projectNumber&quot;,</span>
 <span class="sd">                            &quot;projectName&quot;,</span>
@@ -1590,7 +1590,7 @@
     <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
     <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        INSERT INTO     nofa.m_reference (</span>
+<span class="sd">        INSERT INTO     nofa.&quot;m_reference&quot; (</span>
 <span class="sd">                            &quot;titel&quot;,</span>
 <span class="sd">                            &quot;author&quot;,</span>
 <span class="sd">                            &quot;year&quot;,</span>
@@ -1719,7 +1719,7 @@
     <span class="n">cur</span> <span class="o">=</span> <span class="n">_get_db_cur</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
     <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        INSERT INTO     nofa.location (</span>
+<span class="sd">        INSERT INTO     nofa.&quot;location&quot; (</span>
 <span class="sd">                            &quot;locationID&quot;,</span>
 <span class="sd">                            &quot;locationType&quot;,</span>
 <span class="sd">                            &quot;geom&quot;,</span>
@@ -1776,7 +1776,7 @@
     <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        SELECT      &quot;locationID&quot;</span>
-<span class="sd">        FROM        nofa.location loc</span>
+<span class="sd">        FROM        nofa.&quot;location&quot; loc</span>
 <span class="sd">        WHERE       (%(waterBody)s IS NULL OR &quot;waterBody&quot; LIKE %(waterBody)s)</span>
 <span class="sd">                    AND</span>
 <span class="sd">                    (   %(countryCode)s IS NULL</span>
@@ -2452,7 +2452,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.5.1',
+            VERSION:'0.5.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

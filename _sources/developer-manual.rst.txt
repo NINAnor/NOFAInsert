@@ -56,7 +56,7 @@ was released. Another Erasmus+ intern Ondřej Svoboda
 and released version
 `0.5 <https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5-beta_candidate>`__.
 Current version is
-`0.5.1 <https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5.1>`__.
+`0.5.2 <https://github.com/NINAnor/NOFAInsert/releases/tag/v0.5.2>`__.
 
 Development Tools Setup
 =======================
@@ -162,7 +162,7 @@ users get a notification.
    :guilabel:`Manage and Install Plugins...` :menuselection:`-->`
    :guilabel:`Settings`.
 
-To adjust the file log in to server and edit ``version="0.5.1"`` to the new
+To adjust the file log in to server and edit ``version="0.5.2"`` to the new
 version.
 
 .. code-block:: bash
@@ -175,6 +175,8 @@ version.
 
    Version listed in http://vm-srv-finstad.vm.ntnu.no/NOFA_plugins/plugins.xml
    should match version in :file:`metadata.txt`.
+
+   Don't forget to edit documentation.
 
 .. _online-documentation:
 
