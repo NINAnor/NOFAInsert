@@ -61,7 +61,7 @@ class NOFAInsert(object):
         self.org = u'NINA'
         self.app_name = u'NOFAInsert'
 
-        self.settings = QSettings(self.org, self.app_name)
+        self.settings = QSettings(self.org, u'NOFA')
 
         self.host_str = u'host'
         self.port_str = u'port'
