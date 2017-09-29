@@ -110,7 +110,7 @@ def ins_event(con, loc_id, event_id, event_list, dtst_id, prj_id, ref_id):
     cur = _get_db_cur(con)
     cur.execute(
         '''
-        INSERT INTO    nofa.event (
+        INSERT INTO    nofa."event" (
                            "locationID",
                            "eventID",
                            "samplingProtocol",
@@ -334,7 +334,7 @@ def chck_locid(con, locid):
     cur.execute(
         '''
         SELECT      "locationID"
-        FROM        nofa.location
+        FROM        nofa."location"
         WHERE       "locationID" = %s
         ''',
         (locid,))
@@ -366,7 +366,7 @@ def get_locid_from_nvl(con, nvl):
     cur.execute(
         '''
         SELECT      "locationID"
-        FROM        nofa.location
+        FROM        nofa."location"
         WHERE       "no_vatn_lnr" = %s
         ''',
         (nvl,))
@@ -519,7 +519,7 @@ def get_fam_dict(con):
         '''
         SELECT      "scientificName",
                     "family"
-        FROM        nofa.l_taxon
+        FROM        nofa."l_taxon"
         WHERE       "scientificName" IS NOT NULL
                     AND
                     "family" IS NOT NULL
@@ -1291,7 +1291,7 @@ def get_dtst_cnt(con, id):
 
 def ins_dtst(con, dtst_list):
     """
-    Insert an event to the database.
+    Insert a dataset to the database.
 
     :param con: A connection.
     :type con: psycopg2.connection
@@ -1302,7 +1302,7 @@ def ins_dtst(con, dtst_list):
     cur = _get_db_cur(con)
     cur.execute(
         '''
-        INSERT INTO     nofa.m_dataset (
+        INSERT INTO     nofa."m_dataset" (
                             "datasetName",
                             "datasetID",
                             "ownerInstitutionCode",
@@ -1352,7 +1352,7 @@ def ins_prj(con, prj_list):
     cur = _get_db_cur(con)
     cur.execute(
         '''
-        INSERT INTO     nofa.m_project (
+        INSERT INTO     nofa."m_project" (
                             "organisation",
                             "projectNumber",
                             "projectName",
@@ -1430,7 +1430,7 @@ def ins_ref(con, ref_list):
     cur = _get_db_cur(con)
     cur.execute(
         '''
-        INSERT INTO     nofa.m_reference (
+        INSERT INTO     nofa."m_reference" (
                             "titel",
                             "author",
                             "year",
@@ -1559,7 +1559,7 @@ def ins_new_loc(con, locid, utm33_geom, verb_loc):
     cur = _get_db_cur(con)
     cur.execute(
         '''
-        INSERT INTO     nofa.location (
+        INSERT INTO     nofa."location" (
                             "locationID",
                             "locationType",
                             "geom",
@@ -1616,7 +1616,7 @@ def get_loc_by_fltrs(con, wb, cntry_code, cnty, muni):
     cur.execute(
         '''
         SELECT      "locationID"
-        FROM        nofa.location loc
+        FROM        nofa."location" loc
         WHERE       (%(waterBody)s IS NULL OR "waterBody" LIKE %(waterBody)s)
                     AND
                     (   %(countryCode)s IS NULL
