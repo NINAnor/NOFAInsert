@@ -33,22 +33,25 @@ from qgis.gui import QgsMapToolEmitPoint
 from PyQt4 import QtGui, uic
 from PyQt4.QtCore import (
     QSettings, QCoreApplication, Qt, QObject, QDate, QDateTime, QObject,
-    QSignalMapper)
+    QSignalMapper, QUrl)
 from PyQt4.QtGui import (
     QMessageBox, QTreeWidgetItem, QListWidgetItem, QTableWidget,
     QTableWidgetItem, QMainWindow, QDoubleValidator, QIntValidator, QComboBox,
     QLineEdit, QDateEdit, QAbstractItemView, QValidator, QBrush, QColor,
     QPlainTextEdit, QTextCursor, QWidget)
+from PyQt4.QtWebKit import QWebView
 
 from collections import defaultdict, OrderedDict
 import os
 import psycopg2
 import psycopg2.extras
 import datetime
+import urllib
 import uuid
 import sys
 
 import de
+import doc_wdgs
 import dtst_dlg
 import prj_dlg
 import ref_dlg
@@ -336,6 +339,7 @@ class InsMw(QMainWindow, FORM_CLASS):
 
         self._build_main_tab_wdgs()
         self._build_hist_tab_wdgs()
+        self._build_doc_tab_wdgs()
 
         self.main_tabwdg.setCurrentIndex(0)
         self.loc_tabwdg.setCurrentIndex(0)
@@ -483,6 +487,27 @@ class InsMw(QMainWindow, FORM_CLASS):
             self.hist_ins_dtend_de,
             self.hist_upd_dtstrt_de,
             self.hist_upd_dtend_de]
+
+    def _build_doc_tab_wdgs(self):
+        """
+        Builds and sets up widgets in documentation tab.
+        """
+
+        self.web_view = QWebView(self)
+        self.doc_grid_lyt.addWidget(self.web_view, 1, 0, 1, 3)
+
+        self.back_btn = doc_wdgs.BackBtn(self, self.web_view)
+        self.doc_grid_lyt.addWidget(self.back_btn, 0, 0, 1, 1)
+
+        self.fwd_btn = doc_wdgs.FwdBtn(self, self.web_view)
+        self.doc_grid_lyt.addWidget(self.fwd_btn, 0, 1, 1, 1)
+
+        self.url_le = doc_wdgs.UrlLe(self, self.web_view)
+        self.doc_grid_lyt.addWidget(self.url_le, 0, 2, 1, 1)
+
+        doc_url_str = 'https://ninanor.github.io/NOFAInsert/'
+        self.url_le.setText(doc_url_str)
+        self.web_view.load(QUrl(doc_url_str))
 
     def _create_loc_tbl(self):
         """

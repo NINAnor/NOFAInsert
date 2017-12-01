@@ -867,8 +867,8 @@ VatnLnr</string>
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>239</width>
-              <height>351</height>
+              <width>329</width>
+              <height>571</height>
              </rect>
             </property>
             <attribute name="label">
@@ -1096,8 +1096,8 @@ VatnLnr</string>
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>191</width>
-              <height>134</height>
+              <width>329</width>
+              <height>571</height>
              </rect>
             </property>
             <attribute name="label">
@@ -1154,8 +1154,8 @@ VatnLnr</string>
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>187</width>
-              <height>134</height>
+              <width>329</width>
+              <height>571</height>
              </rect>
             </property>
             <attribute name="label">
@@ -1212,8 +1212,8 @@ VatnLnr</string>
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>203</width>
-              <height>245</height>
+              <width>329</width>
+              <height>571</height>
              </rect>
             </property>
             <attribute name="label">
@@ -2349,6 +2349,16 @@ VatnLnr</string>
            </widget>
           </item>
          </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="doc_tabwdg">
+       <attribute name="title">
+        <string>Documentation</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_30">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="doc_grid_lyt"/>
         </item>
        </layout>
       </widget>
