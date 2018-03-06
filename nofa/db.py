@@ -819,11 +819,11 @@ def get_prj_id(con, prj_name, prj_org):
     cur = _get_db_cur(con)
     cur.execute(
         '''
-        SELECT      "projectID" o
+        SELECT      "projectID"
         FROM        nofa."m_project"
         WHERE       "projectName" = %s
                     AND
-                    "organisation" = %s
+                    ("organisation" = %s OR "organisation" IS NULL)
 
         ''',
         (prj_name, prj_org,))
