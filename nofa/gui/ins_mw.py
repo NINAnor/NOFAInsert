@@ -295,11 +295,13 @@ class InsMw(QMainWindow, FORM_CLASS):
         self.loctp_dict = {
             u'Norwegian VatnLnr': 'no_vatn_lnr',
             u'coordinates UTM32': 25832,
-            u'coordinates UTM33': 25833}
+            u'coordinates UTM33': 25833,
+            u'coordinates WGS84': 4326}
 
         self.crs_dict = OrderedDict([
             (u'UTM32', QgsCoordinateReferenceSystem('EPSG:25832')),
-            (u'UTM33', QgsCoordinateReferenceSystem('EPSG:25833'))])
+            (u'UTM33', QgsCoordinateReferenceSystem('EPSG:25833')),
+            (u'WGS84', QgsCoordinateReferenceSystem('EPSG:4326'))])
 
         self.loc_met_list = [
             u'locationID',
@@ -1315,12 +1317,12 @@ class InsMw(QMainWindow, FORM_CLASS):
             QMessageBox.warning(
                 self,
                 u'Coordinates',
-                u'Enter location in this format separated by commas '
+                u'Enter location in this format separated by new line '
                 u'(verbatimLocality is optional):\n'
-                u'"<X> <Y> <verbatimLocality>"\n'
+                u'"<X>|<Y>|<verbatimLocality>"\n'
                 u'For example:\n'
-                u'601404.85 6644928.24 Hovinbk, '
-                u'580033.12 6633807.99 Drengsrudbk')
+                u'601404.85|6644928.24|Hovinbk\n'
+                u'580033.12|6633807.99|Drengsrudbk')
 
     def _get_coor_input_set(self):
         """
@@ -1335,10 +1337,10 @@ class InsMw(QMainWindow, FORM_CLASS):
         if len(coor_txt) == 0:
             raise NoLocExc()
 
-        coor_txt = coor_txt.strip(',')
+        coor_txt = coor_txt.strip('\n')
 
         coor_input_list = \
-            [loc.strip().split(' ') for loc in coor_txt.split(',')]
+            [loc.strip().split('|') for loc in coor_txt.split('\n')]
 
         for m in range(len(coor_input_list)):
             for n in range(2):
@@ -1762,6 +1764,7 @@ class InsMw(QMainWindow, FORM_CLASS):
             ref_id = self._get_ref_id()
 
             for loc_id in locid_list:
+
                 event_id = uuid.uuid4()
 
                 db.ins_event(
@@ -1847,6 +1850,8 @@ class InsMw(QMainWindow, FORM_CLASS):
                 self,
                 u'Norwegian VatLnr',
                 u'Norwegian VatLnr code "{}" was not found.'.format(e.nvl))
+        except:
+            QMessageBox.information(self, u'Error', u'Something went wrong.')
 
     def _chck_occ_tbl(self):
         """
@@ -1883,12 +1888,15 @@ class InsMw(QMainWindow, FORM_CLASS):
             # coordinates
             elif loc_met == self.loc_met_list[1]:
                 locid = self._get_locid_coor(m, row_data)
+                if locid == 'None':
+                    raise LocidMtyExc(m)
             # nvl
             elif loc_met == self.loc_met_list[2]:
                 locid = self._get_locid_nvl(m, row_data)
 
             locid_list.append(locid)
 
+        print(locid_list)
         return locid_list
 
     def _get_locid_locid(self, m, row_data):
