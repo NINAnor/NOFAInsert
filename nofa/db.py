@@ -1531,13 +1531,22 @@ def get_nrst_locid(con, utm33_geom):
     cur.execute(
         '''
         SELECT      "locationID"
-        FROM        nofa."location" l
-        ORDER BY    ST_Distance(%s, l.geom)
-        LIMIT       1
+        FROM        nofa."location" loc
+        WHERE "waterBodyID" = (
+        SELECT id
+        FROM nofa.lake lake
+        WHERE ST_DWithin(%s, lake.geom, 100.0)
+        ORDER BY    ST_Distance(%s, lake.geom)
+        LIMIT       1)
+        ORDER BY    ST_Distance(%s, loc.geom)
+        LIMIT 1;
         ''',
-        (utm33_geom,))
+        (utm33_geom,utm33_geom,utm33_geom,))
 
-    locid = cur.fetchone()[0]
+    try:
+        locid = cur.fetchone()[0]
+    except:
+        locid = None
 
     return locid
 
