@@ -2218,7 +2218,8 @@ def get_usr_list(con):
         '''
         SELECT      usename u
         FROM        pg_catalog.pg_user
-        WHERE       CURRENT_TIMESTAMP < valuntil
+        WHERE       CURRENT_TIMESTAMP < valuntil OR
+                    valuntil IS NULL
         ORDER BY    u
         ''')
 
